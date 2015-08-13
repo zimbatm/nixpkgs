@@ -133,7 +133,7 @@ in
         password required       pam_deny.so
 
         session  required       pam_succeed_if.so audit quiet_success user = gdm
-        session  required       pam_env.so envfile=${config.system.build.pamEnvironment}
+        session  required       pam_env.so readenv=0 conffile=${config.system.build.pamEnvironment}
         session  optional       ${pkgs.systemd}/lib/security/pam_systemd.so
         session  optional       pam_keyinit.so force revoke
         session  optional       pam_permit.so
@@ -141,7 +141,7 @@ in
 
       gdm.text = ''
         auth     requisite      pam_nologin.so
-        auth     required       pam_env.so
+        auth     required       pam_env.so readenv=0 conffile=${config.system.build.pamEnvironment}
 
         auth     required       pam_succeed_if.so uid >= 1000 quiet
         auth     optional       ${gnome3.gnome_keyring}/lib/security/pam_gnome_keyring.so
@@ -158,7 +158,7 @@ in
         ${optionalString config.security.pam.enableEcryptfs
           "password optional ${pkgs.ecryptfs}/lib/security/pam_ecryptfs.so"}
 
-        session  required       pam_env.so envfile=${config.system.build.pamEnvironment}
+        session  required       pam_env.so readenv=0 conffile=${config.system.build.pamEnvironment}
         session  required       pam_unix.so
         ${optionalString config.security.pam.enableEcryptfs
           "session optional ${pkgs.ecryptfs}/lib/security/pam_ecryptfs.so"}
@@ -169,7 +169,7 @@ in
 
       gdm-password.text = ''
         auth     requisite      pam_nologin.so
-        auth     required       pam_env.so envfile=${config.system.build.pamEnvironment}
+        auth     required       pam_env.so readenv=0 conffile=${config.system.build.pamEnvironment}
 
         auth     required       pam_succeed_if.so uid >= 1000 quiet
         auth     optional       ${gnome3.gnome_keyring}/lib/security/pam_gnome_keyring.so
@@ -185,7 +185,7 @@ in
         ${optionalString config.security.pam.enableEcryptfs
           "password optional ${pkgs.ecryptfs}/lib/security/pam_ecryptfs.so"}
 
-        session  required       pam_env.so envfile=${config.system.build.pamEnvironment}
+        session  required       pam_env.so readenv=0 conffile=${config.system.build.pamEnvironment}
         session  required       pam_unix.so
         ${optionalString config.security.pam.enableEcryptfs
           "session optional ${pkgs.ecryptfs}/lib/security/pam_ecryptfs.so"}
@@ -205,7 +205,7 @@ in
         password requisite      pam_unix.so nullok sha512
 
         session  optional       pam_keyinit.so revoke
-        session  required       pam_env.so envfile=${config.system.build.pamEnvironment}
+        session  required       pam_env.so readenv=0 conffile=${config.system.build.pamEnvironment}
         session  required       pam_unix.so
         session  required       pam_loginuid.so
         session  optional       ${pkgs.systemd}/lib/security/pam_systemd.so
