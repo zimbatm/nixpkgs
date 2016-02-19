@@ -11,13 +11,8 @@ import ./make-test.nix ({ pkgs, ...} : {
 
       services.xserver.enable = true;
 
-      services.xserver.displayManager.gdm = {
-        enable = true;
-        autoLogin = {
-          enable = true;
-          user = "alice";
-        };
-      };
+      services.xserver.displayManager.auto.enable = true;
+      services.xserver.displayManager.auto.user = "alice";
       services.xserver.desktopManager.gnome3.enable = true;
 
       virtualisation.memorySize = 512;
@@ -26,14 +21,15 @@ import ./make-test.nix ({ pkgs, ...} : {
   testScript =
     ''
       $machine->waitForX;
-      $machine->sleep(60);
+      $machine->sleep(15);
 
       # Check that logging in has given the user ownership of devices.
       $machine->succeed("getfacl /dev/snd/timer | grep -q alice");
 
       $machine->succeed("su - alice -c 'DISPLAY=:0.0 gnome-terminal &'");
       $machine->waitForWindow(qr/Terminal/);
-      $machine->sleep(20);
+      $machine->mustSucceed("timeout 900 bash -c 'journalctl -f|grep -m 1 \"GNOME Shell started\"'");
+      $machine->sleep(10);
       $machine->screenshot("screen");
     '';
 })

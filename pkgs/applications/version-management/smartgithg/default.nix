@@ -6,18 +6,13 @@
 , which
 }:
 
-let
-  the_version = "6_5_9";
-
-in
-
 stdenv.mkDerivation rec {
-  name = "smartgithg-${the_version}";
+  name = "smartgithg-${version}";
+  version = "7_1_0";
 
   src = fetchurl {
-    url = "http://www.syntevo.com/downloads/smartgit/" +
-          "smartgit-generic-${the_version}.tar.gz";
-    sha256 = "09bvx1jgaqfxg8qv9f306bgh3k057shsi2xllxv1vw3xf0pvkbwa";
+    url = "http://www.syntevo.com/downloads/smartgit/smartgit-linux-${version}.tar.gz";
+    sha256 = "0nlv2ipmv3z1j4642gfsrpsgc2y4mxngiz6mz3nidrbrkz0ylsvy";
   };
 
   buildInputs = [
@@ -28,9 +23,10 @@ stdenv.mkDerivation rec {
   buildCommand = let
     pkg_path = "$out/${name}";
     bin_path = "$out/bin";
+    install_freedesktop_items = ./install_freedesktop_items.sh;
     runtime_paths = lib.makeSearchPath "bin" [
       jre
-      git mercurial subversion
+      #git mercurial subversion # the paths are requested in configuration
       which
     ];
     runtime_lib_paths = lib.makeLibraryPath [
@@ -53,6 +49,8 @@ stdenv.mkDerivation rec {
       --prefix SMARTGITHG_JAVA_HOME : ${jre}
     patchShebangs $out
     cp ${bin_path}/smartgit ${bin_path}/smartgithg
+
+    ${install_freedesktop_items} "${pkg_path}/bin" "$out"
   '';
 
   meta = with stdenv.lib; {

@@ -13,16 +13,18 @@ with stdenv.lib;
 assert x11Support -> pinentry != null;
 
 stdenv.mkDerivation rec {
-  name = "gnupg-2.1.7";
+  name = "gnupg-2.1.11";
 
   src = fetchurl {
     url = "mirror://gnupg/gnupg/${name}.tar.bz2";
-    sha256 = "0vl4wzraln0h4db0kfza4l5by5pgfijqplji5n4riv3zsiv3g2n1";
+    sha256 = "06mn2viiwsyq991arh5i5fhr9jyxq2bi0jkdj7ndfisxihngpc5p";
   };
 
   postPatch = stdenv.lib.optionalString stdenv.isLinux ''
     sed -i 's,"libpcsclite\.so[^"]*","${pcsclite}/lib/libpcsclite.so",g' scd/scdaemon.c
-  '';
+  ''; #" fix Emacs syntax highlighting :-(
+
+  postConfigure = "substituteAllInPlace tools/gpgkey2ssh.c";
 
   buildInputs = [
     pkgconfig libgcrypt libassuan libksba libiconv npth

@@ -36,7 +36,6 @@ in
 
       askPassword = mkOption {
         type = types.str;
-        default = "${pkgs.x11_ssh_askpass}/libexec/x11-ssh-askpass";
         description = ''Program used by SSH to ask for passwords.'';
       };
 
@@ -94,7 +93,9 @@ in
       };
 
       package = mkOption {
+        type = types.package;
         default = pkgs.openssh;
+        defaultText = "pkgs.openssh";
         description = ''
           The package used for the openssh client and daemon.
         '';
@@ -143,16 +144,18 @@ in
         description = ''
           The set of system-wide known SSH hosts.
         '';
-        example = [
-          {
-            hostNames = [ "myhost" "myhost.mydomain.com" "10.10.1.4" ];
-            publicKeyFile = literalExample "./pubkeys/myhost_ssh_host_dsa_key.pub";
-          }
-          {
-            hostNames = [ "myhost2" ];
-            publicKeyFile = literalExample "./pubkeys/myhost2_ssh_host_dsa_key.pub";
-          }
-        ];
+        example = literalExample ''
+          [
+            {
+              hostNames = [ "myhost" "myhost.mydomain.com" "10.10.1.4" ];
+              publicKeyFile = "./pubkeys/myhost_ssh_host_dsa_key.pub";
+            }
+            {
+              hostNames = [ "myhost2" ];
+              publicKeyFile = "./pubkeys/myhost2_ssh_host_dsa_key.pub";
+            }
+          ]
+        '';
       };
 
     };
@@ -182,6 +185,9 @@ in
         ''}
 
         ForwardX11 ${if cfg.forwardX11 then "yes" else "no"}
+
+        # Allow DSA keys for now. (These were deprecated in OpenSSH 7.0.)
+        PubkeyAcceptedKeyTypes +ssh-dss
 
         ${cfg.extraConfig}
       '';
@@ -218,10 +224,9 @@ in
         fi
       '';
 
-    environment.interactiveShellInit = optionalString config.services.xserver.enable
-      ''
-        export SSH_ASKPASS=${askPassword}
-      '';
+    environment.variables.SSH_ASKPASS = optionalString config.services.xserver.enable askPassword;
+
+    programs.ssh.askPassword = mkDefault "${pkgs.x11_ssh_askpass}/libexec/x11-ssh-askpass";
 
   };
 }

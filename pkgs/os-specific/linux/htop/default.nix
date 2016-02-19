@@ -1,17 +1,21 @@
 { fetchFromGitHub, stdenv, autoreconfHook, ncurses }:
 
 stdenv.mkDerivation rec {
-  name = "htop-1.0.3-584-8f07868f";
+  name = "htop-2.0.0";
 
   src = fetchFromGitHub {
-    sha256 = "0s7l9v7n7hw32hznvdq2sykyxgb30hmzycwcjxw8f0c2mww61xcd";
-    rev = "8f07868fefeb844a852fab704c0763b0e9a9bf01";
+    sha256 = "1z8rzf3ndswk3090qypl0bqzq9f32w0ik2k5x4zd7jg4hkx66k7z";
+    rev = "2.0.0";
     repo = "htop";
     owner = "hishamhm";
   };
 
   buildInputs = [ ncurses ];
   nativeBuildInputs = [ autoreconfHook ];
+
+  postPatch = ''
+    touch *.h */*.h # unnecessary regeneration requires Python
+  '';
 
   meta = {
     description = "An interactive process viewer for Linux";

@@ -4,11 +4,11 @@
   withLirc ? false, lirc ? null } :
 
 stdenv.mkDerivation (rec {
-  version = "14.12";
+  version = "15.08";
   name = "rosegarden-${version}";
   src = fetchurl {
     url  = "mirror://sourceforge/rosegarden/${name}.tar.bz2";
-    sha256 = "0zhlxr1njyy6837f09l6p75js0j5mxmls6m02bqafv9j32wgnxpq";
+    sha256 = "1pk24bhpsmvn6rkqgll31na44w03banra1y7kiqd0gajlnw7wlls";
   };
 
   QTDIR=qt4;
@@ -17,7 +17,7 @@ stdenv.mkDerivation (rec {
                   libsndfile libsamplerate perl makedepend libjack2 ]
 		++ stdenv.lib.optional withLirc [ lirc ];
   
-  enableParallelBuilding = true;
+  #enableParallelBuilding = true; issues on hydra
   
   meta = with stdenv.lib; {
     homepage = http://www.rosegardenmusic.com/;
