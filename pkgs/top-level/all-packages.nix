@@ -5878,6 +5878,8 @@ let
 
   heroku = callPackage ../development/tools/heroku { };
 
+  hydra = callPackage ../development/tools/continuous-integration/hydra { };
+
   hyenae = callPackage ../tools/networking/hyenae { };
 
   icestorm = callPackage ../development/tools/icestorm { };

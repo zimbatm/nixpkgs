@@ -118,6 +118,7 @@
   ./services/computing/slurm/slurm.nix
   ./services/computing/torque/mom.nix
   ./services/computing/torque/server.nix
+  ./services/continuous-integration/hydra/default.nix
   ./services/continuous-integration/jenkins/default.nix
   ./services/continuous-integration/jenkins/job-builder.nix
   ./services/continuous-integration/jenkins/slave.nix
