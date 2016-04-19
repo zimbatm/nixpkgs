@@ -3127,6 +3127,8 @@ in
 
   sablotron = callPackage ../tools/text/xml/sablotron { };
 
+  sandstorm = callPackage ../servers/sandstorm { };
+
   safecopy = callPackage ../tools/system/safecopy { };
 
   safe-rm = callPackage ../tools/system/safe-rm { };
