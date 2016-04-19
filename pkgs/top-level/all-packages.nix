@@ -5948,8 +5948,6 @@ in
 
   eggdbus = callPackage ../development/tools/misc/eggdbus { };
 
-  ekam = callPackage ../development/tools/build-managers/ekam { };
-
   egypt = callPackage ../development/tools/analysis/egypt { };
 
   elfutils = callPackage ../development/tools/misc/elfutils { };
