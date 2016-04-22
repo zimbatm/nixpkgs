@@ -227,12 +227,14 @@ in
     inherit name sha256;
     url = "https://github.com/${owner}/${repo}/archive/${rev}.tar.gz";
     meta.homepage = "https://github.com/${owner}/${repo}/";
+    meta.repositories.git = "git://github.com/${owner}/${repo}.git";
   } // { inherit rev; };
 
   fetchFromBitbucket = { owner, repo, rev, sha256, name ? "${repo}-${rev}-src" }: fetchzip {
     inherit name sha256;
     url = "https://bitbucket.org/${owner}/${repo}/get/${rev}.tar.gz";
     meta.homepage = "https://bitbucket.org/${owner}/${repo}/";
+    meta.repositories.git = "git://bitbucket.org/${owner}/${repo}.git";
     extraPostFetch = ''rm -f "$out"/.hg_archival.txt''; # impure file; see #12002
   };
 
@@ -241,6 +243,7 @@ in
     inherit name sha256;
     url = "http://git.savannah.gnu.org/cgit/${repo}.git/snapshot/${repo}-${rev}.tar.gz";
     meta.homepage = "http://git.savannah.gnu.org/cgit/${repo}.git/";
+    meta.repositories.git = "git://git.savannah.gnu.org/${repo}.git/";
   };
 
   # gitlab example
@@ -248,6 +251,7 @@ in
     inherit name sha256;
     url = "https://gitlab.com/${owner}/${repo}/repository/archive.tar.gz?ref=${rev}";
     meta.homepage = "https://gitlab.com/${owner}/${repo}/";
+    meta.repositories.git = "git://gitlab.com/${owner}/${repo}.git";
   };
 
   # gitweb example, snapshot support is optional in gitweb
@@ -255,6 +259,7 @@ in
     inherit name sha256;
     url = "http://repo.or.cz/${repo}.git/snapshot/${rev}.tar.gz";
     meta.homepage = "http://repo.or.cz/${repo}.git/";
+    meta.repositories.git = "git://repo.or.cz/${repo}.git";
   };
 
   fetchNuGet = callPackage ../build-support/fetchnuget { };
