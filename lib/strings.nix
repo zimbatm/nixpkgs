@@ -209,7 +209,11 @@ rec {
        escapeShellArg "esc'ape\nme"
        => "'esc'\\''ape\nme'"
   */
-  escapeShellArg = arg: "'${replaceStrings ["'"] ["'\\''"] (toString arg)}'";
+  escapeShellArg = arg:
+    if arg == null then
+      "''"
+    else
+      "'${replaceStrings ["'"] ["'\\''"] (toString arg)}'";
 
   /* Quote all arguments to be safely passed to the Bourne shell.
 
