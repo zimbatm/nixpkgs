@@ -8,6 +8,13 @@ let
 
   pkgs = import ./default.nix { };
 
+  uniqueByUpdateScript = packages:
+    with pkgs.lib;
+    let
+      byUpdateScript = list: pkg: list // { "${pkg.updateScript}" = pkg; };
+    in
+    attrValues (foldl byUpdateScript {} packages);
+
   packagesWith = cond: return: set:
     pkgs.lib.flatten
       (pkgs.lib.mapAttrsToList
@@ -56,12 +63,13 @@ let
         builtins.getAttr name pkgs;
 
   packages =
-    if package != null then
-      [ (packageByName package) ]
-    else if maintainer != null then
-      packagesWithUpdateScriptAndMaintainer maintainer
-    else
-      builtins.throw "No arguments provided.\n\n${helpText}";
+    uniqueByUpdateScript (
+      if package != null then
+        [ (packageByName package) ]
+      else if maintainer != null then
+        packagesWithUpdateScriptAndMaintainer maintainer
+      else
+        builtins.throw "No arguments provided.\n\n${helpText}");
 
   helpText = ''
     Please run:
