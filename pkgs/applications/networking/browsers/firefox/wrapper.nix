@@ -135,7 +135,10 @@ stdenv.mkDerivation {
   libs = lib.makeLibraryPath libs + ":" + lib.makeSearchPathOutput "lib" "lib64" libs;
   gtk_modules = map (x: x + x.gtkModule) gtk_modules;
 
-  passthru = { unwrapped = browser; };
+  passthru = {
+    unwrapped = browser;
+    updateScript = browser.updateScript;
+  };
 
   meta = browser.meta // {
     description =
