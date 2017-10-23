@@ -22,9 +22,15 @@ stdenv.mkDerivation {
     export SSL_CERT_FILE=${cacert}/etc/ssl/certs/ca-bundle.crt
     export CARGO_HOME=$(mktemp -d cargo-home.XXX)
 
-    cargo vendor
+    cargo vendor --locked | tee result.txt
 
-    cp -ar vendor $out
+    mkdir $out
+
+    # keep the outputted cargo config, remove the indent and target directory
+    # the target directory should be $out but that should change the sha256
+    grep -R '^  ' result.txt | sed 's|^ \+||' | sed "s|directory = \".*|directory = \"REPLACEME\"|" > $out/.config
+
+    cp -ar vendor/* $out/
   '';
 
   outputHashAlgo = "sha256";
