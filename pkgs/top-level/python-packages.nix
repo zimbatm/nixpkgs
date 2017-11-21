@@ -14406,6 +14406,12 @@ in {
       sha256 = "3d132465a75b57aa818341c6521392a06cc660feb3988d7f1074f39bd23c9a92";
     };
 
+    patches = [(
+      pkgs.fetchpatch {
+        url = "https://patch-diff.githubusercontent.com/raw/pexpect/pexpect/pull/457.patch";
+        sha256 = "09a4xib8fxa01snaflw6a0jzvaff8h2svfh4m5069q6cpzp7xjz9";
+      })];
+
     # Wants to run pythonin a subprocess
     doCheck = false;
 
