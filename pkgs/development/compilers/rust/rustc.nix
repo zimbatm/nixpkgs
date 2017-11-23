@@ -111,12 +111,6 @@ stdenv.mkDerivation {
     rm -vr src/test/debuginfo/*
   '';
 
-  preConfigure = ''
-    # Needed flags as the upstream configure script has a broken prefix substitution
-    configureFlagsArray+=("--datadir=$out/share")
-    configureFlagsArray+=("--infodir=$out/share/info")
-  '';
-
   # rustc unfortunately need cmake for compiling llvm-rt but doesn't
   # use it for the normal build. This disables cmake in Nix.
   dontUseCmakeConfigure = true;
