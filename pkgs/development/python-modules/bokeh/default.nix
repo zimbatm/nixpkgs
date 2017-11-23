@@ -75,6 +75,7 @@ buildPythonPackage rec {
   '';
 
   meta = {
+    broken = true;
     description = "Statistical and novel interactive HTML plots for Python";
     homepage = "http://github.com/bokeh/bokeh";
     license = lib.licenses.bsd3;
