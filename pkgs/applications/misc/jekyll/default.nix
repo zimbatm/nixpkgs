@@ -1,15 +1,17 @@
 { lib, bundlerApp, ruby
 , withOptionalDependencies ? false
+, gemdir ? if withOptionalDependencies then "full" else "basic"
 }:
 
-bundlerApp rec {
+bundlerApp {
   pname = "jekyll";
   exes = [ "jekyll" ];
 
   inherit ruby;
-  gemdir = if withOptionalDependencies
-    then ./full
-    else ./basic;
+  gemdir =
+    if builtins.typeOf gemdir == "path"
+    then gemdir
+    else ./. + "/${gemdir}";
 
   meta = with lib; {
     description = "A blog-aware, static site generator, written in Ruby";
@@ -23,7 +25,7 @@ bundlerApp rec {
     '';
     homepage    = https://jekyllrb.com/;
     license     = licenses.mit;
-    maintainers = with maintainers; [ primeos pesterhazy ];
+    maintainers = with maintainers; [ primeos pesterhazy zimbatm ];
     platforms   = platforms.unix;
   };
 }
