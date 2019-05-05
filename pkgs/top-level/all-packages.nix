@@ -3738,6 +3738,12 @@ in
   jdiskreport = callPackage ../tools/misc/jdiskreport { };
 
   jekyll = callPackage ../applications/misc/jekyll { };
+  jekyll-full = jekyll.override {
+    gemdir = "full";
+  };
+  jekyll-github-pages = jekyll.override {
+    gemdir = "github-pages";
+  };
 
   jfsutils = callPackage ../tools/filesystems/jfsutils { };
 
