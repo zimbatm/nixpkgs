@@ -1,6 +1,8 @@
 { stdenv, fetchurl, pkgconfig, libpng, libX11, libXext, libXi, libXtst }:
 
-let version = "1.09"; in
+let
+  version = "1.09";
+in
 stdenv.mkDerivation {
   name = "xautomation-${version}";
   src = fetchurl {

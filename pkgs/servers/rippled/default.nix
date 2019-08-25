@@ -1,5 +1,14 @@
-{ stdenv, fetchFromGitHub, fetchgit, fetchurl, git, cmake, pkgconfig
-, openssl, boost, zlib }:
+{ stdenv
+, fetchFromGitHub
+, fetchgit
+, fetchurl
+, git
+, cmake
+, pkgconfig
+, openssl
+, boost
+, zlib
+}:
 
 let
   sqlite3 = fetchurl {
@@ -99,7 +108,8 @@ let
     leaveDotGit = true;
     fetchSubmodules = false;
   };
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "rippled-${version}";
   version = "1.2.1";
 
@@ -110,8 +120,8 @@ in stdenv.mkDerivation rec {
     sha256 = "1lm0zzz0hi2sh2f4iqq3scapzdjbxcjgr700fgham9wqgaj2ash5";
   };
 
-  hardeningDisable = ["format"];
-  cmakeFlags = ["-Dstatic=OFF"];
+  hardeningDisable = [ "format" ];
+  cmakeFlags = [ "-Dstatic=OFF" ];
 
   nativeBuildInputs = [ pkgconfig cmake git ];
   buildInputs = [ openssl openssl.dev boost zlib ];

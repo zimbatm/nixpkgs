@@ -12,8 +12,8 @@ stdenv.mkDerivation {
   };
 
   installPhase = ''
-     mkdir -p $out/share/emacs/site-lisp
-     cp htmlize.el $out/share/emacs/site-lisp/
+    mkdir -p $out/share/emacs/site-lisp
+    cp htmlize.el $out/share/emacs/site-lisp/
   '';
 
   meta = {

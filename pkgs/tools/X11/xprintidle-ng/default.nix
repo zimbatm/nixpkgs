@@ -1,6 +1,18 @@
-{ stdenv, fetchFromGitHub, libX11, libXScrnSaver, libXext, gnulib
-  , autoconf, automake, libtool, gettext, pkgconfig
-  , git, perl, texinfo, help2man
+{ stdenv
+, fetchFromGitHub
+, libX11
+, libXScrnSaver
+, libXext
+, gnulib
+, autoconf
+, automake
+, libtool
+, gettext
+, pkgconfig
+, git
+, perl
+, texinfo
+, help2man
 }:
 
 stdenv.mkDerivation rec {
@@ -19,9 +31,17 @@ stdenv.mkDerivation rec {
       --replace "AC_PREREQ([2.62])" "AC_PREREQ([2.63])"
   '';
 
-  nativeBuildInputs = [ 
-    autoconf automake gettext git gnulib
-    help2man libtool perl pkgconfig texinfo
+  nativeBuildInputs = [
+    autoconf
+    automake
+    gettext
+    git
+    gnulib
+    help2man
+    libtool
+    perl
+    pkgconfig
+    texinfo
   ];
 
   configurePhase = ''
@@ -32,15 +52,17 @@ stdenv.mkDerivation rec {
   '';
 
   buildInputs = [
-    libX11 libXScrnSaver libXext  
+    libX11
+    libXScrnSaver
+    libXext
   ];
 
   meta = {
-    inherit  version;
+    inherit version;
     description = ''A command-line tool to print idle time from libXss'';
     homepage = http://taktoa.me/xprintidle-ng/;
     license = stdenv.lib.licenses.gpl2;
-    maintainers = [stdenv.lib.maintainers.raskin];
+    maintainers = [ stdenv.lib.maintainers.raskin ];
     platforms = stdenv.lib.platforms.linux;
   };
 }

@@ -12,15 +12,18 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ pkgconfig ];
   propagatedBuildInputs =
-    stdenv.lib.optional stdenv.isLinux systemd ++
-    stdenv.lib.optionals stdenv.isDarwin [ libobjc IOKit ];
+    stdenv.lib.optional stdenv.isLinux systemd
+    ++ stdenv.lib.optionals stdenv.isDarwin [ libobjc IOKit ]
+    ;
 
   patches = [
-    (fetchpatch {
-      name = "libusb.stdfu.patch";
-      url = "https://raw.githubusercontent.com/axoloti/axoloti/1.0.12/platform_linux/src/libusb.stdfu.patch";
-      sha256 = "194j7j61i4q6x0ihm9ms8dxd4vliw20n2rj6cm9h17qzdl9xr33d";
-    })
+    (
+      fetchpatch {
+        name = "libusb.stdfu.patch";
+        url = "https://raw.githubusercontent.com/axoloti/axoloti/1.0.12/platform_linux/src/libusb.stdfu.patch";
+        sha256 = "194j7j61i4q6x0ihm9ms8dxd4vliw20n2rj6cm9h17qzdl9xr33d";
+      }
+    )
   ];
 
   NIX_LDFLAGS = stdenv.lib.optionalString stdenv.isLinux "-lgcc_s";

@@ -5,7 +5,8 @@
     rev = "f79a708978232a2b6b06c2e4173c5314559e0d3a";
     sha256 = "0h7xm4ck3p3380c6bqm5ixrkxwcx6z5vysqdwvfa7gcqx5d6x5zz";
   };
-in buildUBoot rec {
+in
+buildUBoot rec {
   version = "2017.09";
 
   src = fetchFromGitHub {
@@ -27,11 +28,11 @@ in buildUBoot rec {
   '';
 
   defconfig = "rock64-rk3328_defconfig";
-  filesToInstall = [ "spl/u-boot-spl.bin" "tpl/u-boot-tpl.bin" "u-boot.itb" "idbloader.img"];
+  filesToInstall = [ "spl/u-boot-spl.bin" "tpl/u-boot-tpl.bin" "u-boot.itb" "idbloader.img" ];
 
   extraMeta = with lib; {
     maintainers = [ maintainers.lopsided98 ];
-    platforms = ["aarch64-linux"];
+    platforms = [ "aarch64-linux" ];
     # Because of the TPL blob
     license = licenses.unfreeRedistributableFirmware;
   };

@@ -1,8 +1,21 @@
-{ stdenv, buildPythonPackage, fetchFromGitHub, pythonOlder, isPy27
-, backports_functools_lru_cache, configparser, futures, future, jedi, pluggy, python-jsonrpc-server
-, pytest, mock, pytestcov, coverage
+{ stdenv
+, buildPythonPackage
+, fetchFromGitHub
+, pythonOlder
+, isPy27
+, backports_functools_lru_cache
+, configparser
+, futures
+, future
+, jedi
+, pluggy
+, python-jsonrpc-server
+, pytest
+, mock
+, pytestcov
+, coverage
 , # Allow building a limited set of providers, e.g. ["pycodestyle"].
-  providers ? ["*"]
+  providers ? [ "*" ]
   # The following packages are optional and
   # can be overwritten with null as your liking.
 , autopep8 ? null
@@ -31,10 +44,13 @@ buildPythonPackage rec {
   };
 
   # The tests require all the providers, disable otherwise.
-  doCheck = providers == ["*"];
+  doCheck = providers == [ "*" ];
 
   checkInputs = [
-    pytest mock pytestcov coverage
+    pytest
+    mock
+    pytestcov
+    coverage
     # rope is technically a dependency, but we don't add it by default since we
     # already have jedi, which is the preferred option
     rope
@@ -54,7 +70,8 @@ buildPythonPackage rec {
     ++ stdenv.lib.optional (withProvider "rope") rope
     ++ stdenv.lib.optional (withProvider "yapf") yapf
     ++ stdenv.lib.optional isPy27 configparser
-    ++ stdenv.lib.optionals (pythonOlder "3.2") [ backports_functools_lru_cache futures ];
+    ++ stdenv.lib.optionals (pythonOlder "3.2") [ backports_functools_lru_cache futures ]
+    ;
 
   meta = with stdenv.lib; {
     homepage = https://github.com/palantir/python-language-server;

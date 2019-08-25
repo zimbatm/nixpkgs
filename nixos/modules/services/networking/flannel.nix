@@ -12,7 +12,8 @@ let
     SubnetMax = cfg.subnetMax;
     Backend = cfg.backend;
   };
-in {
+in
+{
   options.services.flannel = {
     enable = mkEnableOption "flannel";
 
@@ -45,7 +46,7 @@ in {
       endpoints = mkOption {
         description = "Etcd endpoints";
         type = types.listOf types.str;
-        default = ["http://127.0.0.1:2379"];
+        default = [ "http://127.0.0.1:2379" ];
       };
 
       prefix = mkOption {
@@ -98,7 +99,7 @@ in {
 
     storageBackend = mkOption {
       description = "Determines where flannel stores its configuration at runtime";
-      type = types.enum ["etcd" "kubernetes"];
+      type = types.enum [ "etcd" "kubernetes" ];
       default = "etcd";
     };
 
@@ -147,32 +148,37 @@ in {
       environment = {
         FLANNELD_PUBLIC_IP = cfg.publicIp;
         FLANNELD_IFACE = cfg.iface;
-      } // optionalAttrs (cfg.storageBackend == "etcd") {
-        FLANNELD_ETCD_ENDPOINTS = concatStringsSep "," cfg.etcd.endpoints;
-        FLANNELD_ETCD_KEYFILE = cfg.etcd.keyFile;
-        FLANNELD_ETCD_CERTFILE = cfg.etcd.certFile;
-        FLANNELD_ETCD_CAFILE = cfg.etcd.caFile;
-        ETCDCTL_CERT_FILE = cfg.etcd.certFile;
-        ETCDCTL_KEY_FILE = cfg.etcd.keyFile;
-        ETCDCTL_CA_FILE = cfg.etcd.caFile;
-        ETCDCTL_PEERS = concatStringsSep "," cfg.etcd.endpoints;
-      } // optionalAttrs (cfg.storageBackend == "kubernetes") {
-        FLANNELD_KUBE_SUBNET_MGR = "true";
-        FLANNELD_KUBECONFIG_FILE = cfg.kubeconfig;
-        NODE_NAME = cfg.nodeName;
-      };
+      }
+      // optionalAttrs (cfg.storageBackend == "etcd") {
+           FLANNELD_ETCD_ENDPOINTS = concatStringsSep "," cfg.etcd.endpoints;
+           FLANNELD_ETCD_KEYFILE = cfg.etcd.keyFile;
+           FLANNELD_ETCD_CERTFILE = cfg.etcd.certFile;
+           FLANNELD_ETCD_CAFILE = cfg.etcd.caFile;
+           ETCDCTL_CERT_FILE = cfg.etcd.certFile;
+           ETCDCTL_KEY_FILE = cfg.etcd.keyFile;
+           ETCDCTL_CA_FILE = cfg.etcd.caFile;
+           ETCDCTL_PEERS = concatStringsSep "," cfg.etcd.endpoints;
+         }
+      // optionalAttrs (cfg.storageBackend == "kubernetes") {
+           FLANNELD_KUBE_SUBNET_MGR = "true";
+           FLANNELD_KUBECONFIG_FILE = cfg.kubeconfig;
+           NODE_NAME = cfg.nodeName;
+         }
+      ;
       path = [ pkgs.iptables ];
       preStart = ''
         mkdir -p /run/flannel
         touch /run/flannel/docker
-      '' + optionalString (cfg.storageBackend == "etcd") ''
-        echo "setting network configuration"
-        until ${pkgs.etcdctl.bin}/bin/etcdctl set /coreos.com/network/config '${builtins.toJSON networkConfig}'
-        do
-          echo "setting network configuration, retry"
-          sleep 1
-        done
-      '';
+      ''
+      + optionalString (cfg.storageBackend == "etcd") ''
+          echo "setting network configuration"
+          until ${pkgs.etcdctl.bin}/bin/etcdctl set /coreos.com/network/config '${builtins.toJSON networkConfig}'
+          do
+            echo "setting network configuration, retry"
+            sleep 1
+          done
+        ''
+      ;
       serviceConfig = {
         ExecStart = "${cfg.package}/bin/flannel";
         Restart = "always";
@@ -180,7 +186,7 @@ in {
       };
     };
 
-    services.etcd.enable = mkDefault (cfg.storageBackend == "etcd" && cfg.etcd.endpoints == ["http://127.0.0.1:2379"]);
+    services.etcd.enable = mkDefault (cfg.storageBackend == "etcd" && cfg.etcd.endpoints == [ "http://127.0.0.1:2379" ]);
 
     # for some reason, flannel doesn't let you configure this path
     # see: https://github.com/coreos/flannel/blob/master/Documentation/configuration.md#configuration

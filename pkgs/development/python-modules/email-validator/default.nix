@@ -14,13 +14,15 @@ buildPythonPackage rec {
   propagatedBuildInputs = [
     dnspython
     idna
-  ] ++ (if isPy3k then [ ] else [ ipaddress ]);
+  ]
+  ++ (if isPy3k then [] else [ ipaddress ])
+  ;
 
   meta = with lib; {
     description = "A robust email syntax and deliverability validation library for Python 2.x/3.x.";
-    homepage    = https://github.com/JoshData/python-email-validator;
-    license     = licenses.cc0;
+    homepage = https://github.com/JoshData/python-email-validator;
+    license = licenses.cc0;
     maintainers = with maintainers; [ siddharthist ];
-    platforms   = platforms.unix;
+    platforms = platforms.unix;
   };
 }

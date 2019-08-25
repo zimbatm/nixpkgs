@@ -1,9 +1,38 @@
-{ stdenv, lib, buildPythonPackage, fetchPypi, makeWrapper, isPy3k,
-  python, twisted, jinja2, zope_interface, future, sqlalchemy,
-  sqlalchemy_migrate, dateutil, txaio, autobahn, pyjwt, pyyaml, treq,
-  txrequests, pyjade, boto3, moto, mock, python-lz4, setuptoolsTrial,
-  isort, pylint, flake8, buildbot-worker, buildbot-pkg, parameterized,
-  git, glibcLocales }:
+{ stdenv
+, lib
+, buildPythonPackage
+, fetchPypi
+, makeWrapper
+, isPy3k
+, python
+, twisted
+, jinja2
+, zope_interface
+, future
+, sqlalchemy
+, sqlalchemy_migrate
+, dateutil
+, txaio
+, autobahn
+, pyjwt
+, pyyaml
+, treq
+, txrequests
+, pyjade
+, boto3
+, moto
+, mock
+, python-lz4
+, setuptoolsTrial
+, isort
+, pylint
+, flake8
+, buildbot-worker
+, buildbot-pkg
+, parameterized
+, git
+, glibcLocales
+}:
 
 let
   withPlugins = plugins: buildPythonPackage {
@@ -18,9 +47,11 @@ let
       ln -sfv ${package}/lib $out/lib
     '';
 
-    passthru = package.passthru // {
-      withPlugins = morePlugins: withPlugins (morePlugins ++ plugins);
-    };
+    passthru = package.passthru
+      // {
+           withPlugins = morePlugins: withPlugins (morePlugins ++ plugins);
+         }
+      ;
   };
 
   package = buildPythonPackage rec {
@@ -99,4 +130,5 @@ let
       license = licenses.gpl2;
     };
   };
-in package
+in
+package

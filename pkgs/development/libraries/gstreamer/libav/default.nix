@@ -1,6 +1,16 @@
-{ stdenv, fetchurl, meson, ninja, pkgconfig
-, python, yasm, gst-plugins-base, orc, bzip2
-, gettext, withSystemLibav ? true, libav ? null
+{ stdenv
+, fetchurl
+, meson
+, ninja
+, pkgconfig
+, python
+, yasm
+, gst-plugins-base
+, orc
+, bzip2
+, gettext
+, withSystemLibav ? true
+, libav ? null
 }:
 
 # Note that since gst-libav-1.6, libav is actually ffmpeg. See

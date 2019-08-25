@@ -1,6 +1,17 @@
-{ lib, stdenv, fetchurl, makeWrapper, writeText
-, autoconf, ncurses, graphviz, doxygen
-, ocamlPackages, ltl2ba, coq, why3,
+{ lib
+, stdenv
+, fetchurl
+, makeWrapper
+, writeText
+, autoconf
+, ncurses
+, graphviz
+, doxygen
+, ocamlPackages
+, ltl2ba
+, coq
+, why3
+,
 }:
 
 let
@@ -22,12 +33,12 @@ let
 in
 
 stdenv.mkDerivation rec {
-  name    = "frama-c-${version}";
+  name = "frama-c-${version}";
   version = "19.0";
-  slang   = "Potassium";
+  slang = "Potassium";
 
   src = fetchurl {
-    url    = "http://frama-c.com/download/frama-c-${version}-${slang}.tar.gz";
+    url = "http://frama-c.com/download/frama-c-${version}-${slang}.tar.gz";
     sha256 = "190n1n4k0xbycz25bn0d2gnfxd8w6scz3nlixl7w2k2jvpqlcs3n";
 
   };
@@ -37,8 +48,22 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ autoconf makeWrapper ];
 
   buildInputs = with ocamlPackages; [
-    ncurses ocaml findlib ltl2ba ocamlgraph yojson menhir camlzip
-    lablgtk coq graphviz zarith apron why3 mlgmpidl doxygen
+    ncurses
+    ocaml
+    findlib
+    ltl2ba
+    ocamlgraph
+    yojson
+    menhir
+    camlzip
+    lablgtk
+    coq
+    graphviz
+    zarith
+    apron
+    why3
+    mlgmpidl
+    doxygen
   ];
 
   enableParallelBuilding = true;
@@ -74,9 +99,9 @@ stdenv.mkDerivation rec {
 
   meta = {
     description = "An extensible and collaborative platform dedicated to source-code analysis of C software";
-    homepage    = http://frama-c.com/;
-    license     = stdenv.lib.licenses.lgpl21;
+    homepage = http://frama-c.com/;
+    license = stdenv.lib.licenses.lgpl21;
     maintainers = with stdenv.lib.maintainers; [ thoughtpolice amiddelk ];
-    platforms   = stdenv.lib.platforms.unix;
+    platforms = stdenv.lib.platforms.unix;
   };
 }

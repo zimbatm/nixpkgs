@@ -1,5 +1,8 @@
-{ stdenv, fetchurl, fetchpatch
-, ncurses }:
+{ stdenv
+, fetchurl
+, fetchpatch
+, ncurses
+}:
 
 stdenv.mkDerivation rec {
   name = "tcsh-${version}";
@@ -17,11 +20,13 @@ stdenv.mkDerivation rec {
   buildInputs = [ ncurses ];
 
   patches = stdenv.lib.optional stdenv.hostPlatform.isMusl
-    (fetchpatch {
-      name = "sysmalloc.patch";
-      url = "https://git.alpinelinux.org/cgit/aports/plain/community/tcsh/001-sysmalloc.patch?id=184585c046cdd56512f1a76e426dd799b368f8cf";
-      sha256 = "1qc6ydxhdfizsbkaxhpn3wib8sfphrw10xnnsxx2prvzg9g2zp67";
-    });
+    (
+      fetchpatch {
+        name = "sysmalloc.patch";
+        url = "https://git.alpinelinux.org/cgit/aports/plain/community/tcsh/001-sysmalloc.patch?id=184585c046cdd56512f1a76e426dd799b368f8cf";
+        sha256 = "1qc6ydxhdfizsbkaxhpn3wib8sfphrw10xnnsxx2prvzg9g2zp67";
+      }
+    );
 
   meta = with stdenv.lib;{
     description = "An enhanced version of the Berkeley UNIX C shell (csh)";

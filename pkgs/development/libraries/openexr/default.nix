@@ -25,7 +25,7 @@ stdenv.mkDerivation rec {
     for file in b44ExpLogTable dwaLookups
     do
       # Ecape for both sh and Automake
-      emu=${lib.escapeShellArg (lib.replaceStrings ["$"] ["$$"] emulator)}
+      emu=${lib.escapeShellArg (lib.replaceStrings [ "$" ] [ "$$" ] emulator)}
       before="./$file > $file.h"
       after="$emu $before"
       substituteInPlace IlmImf/Makefile.am \

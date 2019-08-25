@@ -1,6 +1,6 @@
-{ system ? builtins.currentSystem,
-  config ? {},
-  pkgs ? import ../.. { inherit system config; }
+{ system ? builtins.currentSystem
+, config ? {}
+, pkgs ? import ../.. { inherit system config; }
 }:
 
 with import ../lib/testing.nix { inherit system pkgs; };
@@ -25,15 +25,16 @@ let
 
       testScript = { nodes, ... }: let
         user = nodes.machine.config.users.users.alice;
-      in ''
-        startAll;
-        $machine->waitForText(qr/select your user/i);
-        $machine->screenshot("sddm");
-        $machine->sendChars("${user.password}\n");
-        $machine->waitForFile("/home/alice/.Xauthority");
-        $machine->succeed("xauth merge ~alice/.Xauthority");
-        $machine->waitForWindow("^IceWM ");
-      '';
+      in
+        ''
+          startAll;
+          $machine->waitForText(qr/select your user/i);
+          $machine->screenshot("sddm");
+          $machine->sendChars("${user.password}\n");
+          $machine->waitForFile("/home/alice/.Xauthority");
+          $machine->succeed("xauth merge ~alice/.Xauthority");
+          $machine->waitForWindow("^IceWM ");
+        '';
     };
 
     autoLogin = {
@@ -66,4 +67,4 @@ let
     };
   };
 in
-  lib.mapAttrs (lib.const makeTest) tests
+lib.mapAttrs (lib.const makeTest) tests

@@ -1,6 +1,10 @@
-{ stdenv, fetchurl, makeWrapper
-, boost, gmp
-, tcl-8_5, tk-8_5
+{ stdenv
+, fetchurl
+, makeWrapper
+, boost
+, gmp
+, tcl-8_5
+, tk-8_5
 , emacs
 }:
 
@@ -23,7 +27,8 @@ stdenv.mkDerivation {
   src = binaries."${stdenv.hostPlatform.system}" or (throw "unsupported system: ${stdenv.hostPlatform.system}");
 
   libPath = stdenv.lib.makeLibraryPath
-    [ stdenv.cc.cc
+    [
+      stdenv.cc.cc
       boost
       gmp
       tcl-8_5
@@ -51,8 +56,8 @@ stdenv.mkDerivation {
     wrapProgram $out/bin/ozemulator --set OZHOME $out
 
     ${stdenv.lib.optionalString (emacs != null) ''
-      wrapProgram $out/bin/oz --suffix PATH ":" ${stdenv.lib.makeBinPath [ emacs ]}
-    ''}
+    wrapProgram $out/bin/oz --suffix PATH ":" ${stdenv.lib.makeBinPath [ emacs ]}
+  ''}
 
     sed -i $out/share/applications/oz.desktop \
         -e "s,Exec=oz %u,Exec=$out/bin/oz %u,"

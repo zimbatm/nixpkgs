@@ -30,60 +30,69 @@ let
 
     # We can't match on incoming interface in POSTROUTING, so
     # mark packets coming from the external interfaces.
-    ${concatMapStrings (iface: ''
+    ${concatMapStrings (
+    iface: ''
       iptables -w -t nat -A nixos-nat-pre \
         -i '${iface}' -j MARK --set-mark 1
-    '') cfg.internalInterfaces}
+    ''
+  ) cfg.internalInterfaces}
 
     # NAT the marked packets.
     ${optionalString (cfg.internalInterfaces != []) ''
-      iptables -w -t nat -A nixos-nat-post -m mark --mark 1 \
-        ${optionalString (cfg.externalInterface != null) "-o ${cfg.externalInterface}"} ${dest}
-    ''}
+    iptables -w -t nat -A nixos-nat-post -m mark --mark 1 \
+      ${optionalString (cfg.externalInterface != null) "-o ${cfg.externalInterface}"} ${dest}
+  ''}
 
     # NAT packets coming from the internal IPs.
-    ${concatMapStrings (range: ''
+    ${concatMapStrings (
+    range: ''
       iptables -w -t nat -A nixos-nat-post \
         -s '${range}' ${optionalString (cfg.externalInterface != null) "-o ${cfg.externalInterface}"} ${dest}
-    '') cfg.internalIPs}
+    ''
+  ) cfg.internalIPs}
 
     # NAT from external ports to internal ports.
-    ${concatMapStrings (fwd: ''
+    ${concatMapStrings (
+    fwd: ''
       iptables -w -t nat -A nixos-nat-pre \
         -i ${toString cfg.externalInterface} -p ${fwd.proto} \
         --dport ${builtins.toString fwd.sourcePort} \
         -j DNAT --to-destination ${fwd.destination}
 
-      ${concatMapStrings (loopbackip:
+      ${concatMapStrings (
+      loopbackip:
         let
-          m                = builtins.match "([0-9.]+):([0-9-]+)" fwd.destination;
-          destinationIP    = if (m == null) then throw "bad ip:ports `${fwd.destination}'" else elemAt m 0;
+          m = builtins.match "([0-9.]+):([0-9-]+)" fwd.destination;
+          destinationIP = if (m == null) then throw "bad ip:ports `${fwd.destination}'" else elemAt m 0;
           destinationPorts = if (m == null) then throw "bad ip:ports `${fwd.destination}'" else elemAt m 1;
-        in ''
-          # Allow connections to ${loopbackip}:${toString fwd.sourcePort} from the host itself
-          iptables -w -t nat -A OUTPUT \
-            -d ${loopbackip} -p ${fwd.proto} \
-            --dport ${builtins.toString fwd.sourcePort} \
-            -j DNAT --to-destination ${fwd.destination}
+        in
+          ''
+            # Allow connections to ${loopbackip}:${toString fwd.sourcePort} from the host itself
+            iptables -w -t nat -A OUTPUT \
+              -d ${loopbackip} -p ${fwd.proto} \
+              --dport ${builtins.toString fwd.sourcePort} \
+              -j DNAT --to-destination ${fwd.destination}
 
-          # Allow connections to ${loopbackip}:${toString fwd.sourcePort} from other hosts behind NAT
-          iptables -w -t nat -A nixos-nat-pre \
-            -d ${loopbackip} -p ${fwd.proto} \
-            --dport ${builtins.toString fwd.sourcePort} \
-            -j DNAT --to-destination ${fwd.destination}
+            # Allow connections to ${loopbackip}:${toString fwd.sourcePort} from other hosts behind NAT
+            iptables -w -t nat -A nixos-nat-pre \
+              -d ${loopbackip} -p ${fwd.proto} \
+              --dport ${builtins.toString fwd.sourcePort} \
+              -j DNAT --to-destination ${fwd.destination}
 
-          iptables -w -t nat -A nixos-nat-post \
-            -d ${destinationIP} -p ${fwd.proto} \
-            --dport ${destinationPorts} \
-            -j SNAT --to-source ${loopbackip}
-        '') fwd.loopbackIPs}
-    '') cfg.forwardPorts}
+            iptables -w -t nat -A nixos-nat-post \
+              -d ${destinationIP} -p ${fwd.proto} \
+              --dport ${destinationPorts} \
+              -j SNAT --to-source ${loopbackip}
+          ''
+    ) fwd.loopbackIPs}
+    ''
+  ) cfg.forwardPorts}
 
     ${optionalString (cfg.dmzHost != null) ''
-      iptables -w -t nat -A nixos-nat-pre \
-        -i ${toString cfg.externalInterface} -j DNAT \
-        --to-destination ${cfg.dmzHost}
-    ''}
+    iptables -w -t nat -A nixos-nat-pre \
+      -i ${toString cfg.externalInterface} -j DNAT \
+      --to-destination ${cfg.dmzHost}
+  ''}
 
     ${cfg.extraCommands}
 
@@ -157,35 +166,37 @@ in
     };
 
     networking.nat.forwardPorts = mkOption {
-      type = with types; listOf (submodule {
-        options = {
-          sourcePort = mkOption {
-            type = types.either types.int (types.strMatching "[[:digit:]]+:[[:digit:]]+");
-            example = 8080;
-            description = "Source port of the external interface; to specify a port range, use a string with a colon (e.g. \"60000:61000\")";
-          };
+      type = with types; listOf (
+        submodule {
+          options = {
+            sourcePort = mkOption {
+              type = types.either types.int (types.strMatching "[[:digit:]]+:[[:digit:]]+");
+              example = 8080;
+              description = "Source port of the external interface; to specify a port range, use a string with a colon (e.g. \"60000:61000\")";
+            };
 
-          destination = mkOption {
-            type = types.str;
-            example = "10.0.0.1:80";
-            description = "Forward connection to destination ip:port; to specify a port range, use ip:start-end";
-          };
+            destination = mkOption {
+              type = types.str;
+              example = "10.0.0.1:80";
+              description = "Forward connection to destination ip:port; to specify a port range, use ip:start-end";
+            };
 
-          proto = mkOption {
-            type = types.str;
-            default = "tcp";
-            example = "udp";
-            description = "Protocol of forwarded connection";
-          };
+            proto = mkOption {
+              type = types.str;
+              default = "tcp";
+              example = "udp";
+              description = "Protocol of forwarded connection";
+            };
 
-          loopbackIPs = mkOption {
-            type = types.listOf types.str;
-            default = [];
-            example = literalExample ''[ "55.1.2.3" ]'';
-            description = "Public IPs for NAT reflection; for connections to `loopbackip:sourcePort' from the host itself and from other hosts behind NAT";
+            loopbackIPs = mkOption {
+              type = types.listOf types.str;
+              default = [];
+              example = literalExample ''[ "55.1.2.3" ]'';
+              description = "Public IPs for NAT reflection; for connections to `loopbackip:sourcePort' from the host itself and from other hosts behind NAT";
+            };
           };
-        };
-      });
+        }
+      );
       default = [];
       example = [ { sourcePort = 8080; destination = "10.0.0.1:80"; proto = "tcp"; } ];
       description =
@@ -235,48 +246,54 @@ in
 
   config = mkMerge [
     { networking.firewall.extraCommands = mkBefore flushNat; }
-    (mkIf config.networking.nat.enable {
+    (
+      mkIf config.networking.nat.enable {
 
-      assertions = [
-        { assertion = (cfg.dmzHost != null)    -> (cfg.externalInterface != null);
-          message = "networking.nat.dmzHost requires networking.nat.externalInterface";
-        }
-        { assertion = (cfg.forwardPorts != []) -> (cfg.externalInterface != null);
-          message = "networking.nat.forwardPorts requires networking.nat.externalInterface";
-        }
-      ];
+        assertions = [
+          {
+            assertion = (cfg.dmzHost != null) -> (cfg.externalInterface != null);
+            message = "networking.nat.dmzHost requires networking.nat.externalInterface";
+          }
+          {
+            assertion = (cfg.forwardPorts != []) -> (cfg.externalInterface != null);
+            message = "networking.nat.forwardPorts requires networking.nat.externalInterface";
+          }
+        ];
 
-      environment.systemPackages = [ pkgs.iptables ];
+        environment.systemPackages = [ pkgs.iptables ];
 
-      boot = {
-        kernelModules = [ "nf_nat_ftp" ];
-        kernel.sysctl = {
-          "net.ipv4.conf.all.forwarding" = mkOverride 99 true;
-          "net.ipv4.conf.default.forwarding" = mkOverride 99 true;
-        };
-      };
-
-      networking.firewall = mkIf config.networking.firewall.enable {
-        extraCommands = setupNat;
-        extraStopCommands = flushNat;
-      };
-
-      systemd.services = mkIf (!config.networking.firewall.enable) { nat = {
-        description = "Network Address Translation";
-        wantedBy = [ "network.target" ];
-        after = [ "network-pre.target" "systemd-modules-load.service" ];
-        path = [ pkgs.iptables ];
-        unitConfig.ConditionCapability = "CAP_NET_ADMIN";
-
-        serviceConfig = {
-          Type = "oneshot";
-          RemainAfterExit = true;
+        boot = {
+          kernelModules = [ "nf_nat_ftp" ];
+          kernel.sysctl = {
+            "net.ipv4.conf.all.forwarding" = mkOverride 99 true;
+            "net.ipv4.conf.default.forwarding" = mkOverride 99 true;
+          };
         };
 
-        script = flushNat + setupNat;
+        networking.firewall = mkIf config.networking.firewall.enable {
+          extraCommands = setupNat;
+          extraStopCommands = flushNat;
+        };
 
-        postStop = flushNat;
-      }; };
-    })
+        systemd.services = mkIf (!config.networking.firewall.enable) {
+          nat = {
+            description = "Network Address Translation";
+            wantedBy = [ "network.target" ];
+            after = [ "network-pre.target" "systemd-modules-load.service" ];
+            path = [ pkgs.iptables ];
+            unitConfig.ConditionCapability = "CAP_NET_ADMIN";
+
+            serviceConfig = {
+              Type = "oneshot";
+              RemainAfterExit = true;
+            };
+
+            script = flushNat + setupNat;
+
+            postStop = flushNat;
+          };
+        };
+      }
+    )
   ];
 }

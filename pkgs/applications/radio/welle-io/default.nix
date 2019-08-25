@@ -1,11 +1,24 @@
-{ stdenv, fetchFromGitHub, cmake, pkgconfig
-, qtbase, qtcharts, qtmultimedia, qtquickcontrols, qtquickcontrols2
-, faad2, rtl-sdr, soapysdr-with-plugins, libusb, fftwSinglePrec }:
+{ stdenv
+, fetchFromGitHub
+, cmake
+, pkgconfig
+, qtbase
+, qtcharts
+, qtmultimedia
+, qtquickcontrols
+, qtquickcontrols2
+, faad2
+, rtl-sdr
+, soapysdr-with-plugins
+, libusb
+, fftwSinglePrec
+}:
 let
 
   version = "1.0";
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
 
   name = "welle-io-${version}";
 
@@ -32,7 +45,8 @@ in stdenv.mkDerivation {
   ];
 
   cmakeFlags = [
-    "-DRTLSDR=true" "-DSOAPYSDR=true"
+    "-DRTLSDR=true"
+    "-DSOAPYSDR=true"
   ];
 
   enableParallelBuilding = true;

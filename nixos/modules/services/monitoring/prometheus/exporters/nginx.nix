@@ -46,9 +46,11 @@ in
   };
   imports = [
     (mkRenamedOptionModule [ "telemetryEndpoint" ] [ "telemetryPath" ])
-    (mkRemovedOptionModule [ "insecure" ] ''
-      This option was replaced by 'prometheus.exporters.nginx.sslVerify'.
-    '')
+    (
+      mkRemovedOptionModule [ "insecure" ] ''
+        This option was replaced by 'prometheus.exporters.nginx.sslVerify'.
+      ''
+    )
     ({ options.warnings = options.warnings; })
   ];
 }

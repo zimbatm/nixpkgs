@@ -1,5 +1,17 @@
-{ stdenv, fetchhg, fetchpatch, cmake, qt4, fftw, graphicsmagick_q16,
-  lcms2, lensfun, pkgconfig, libjpeg, exiv2, liblqr1 }:
+{ stdenv
+, fetchhg
+, fetchpatch
+, cmake
+, qt4
+, fftw
+, graphicsmagick_q16
+, lcms2
+, lensfun
+, pkgconfig
+, libjpeg
+, exiv2
+, liblqr1
+}:
 
 stdenv.mkDerivation rec {
   name = "photivo-2014-01-25";
@@ -13,11 +25,13 @@ stdenv.mkDerivation rec {
   patches = [
     # Patch fixing build with lensfun >= 0.3, taken from
     # https://www.linuxquestions.org/questions/slackware-14/photivo-4175530230/#post5296578
-    (fetchpatch {
-      url = "https://www.linuxquestions.org/questions/attachment.php?attachmentid=17287&d=1420577220";
-      name = "lensfun-0.3.patch";
-      sha256 = "0ys45x4r4bjjlx0zpd5d56rgjz7k8gxili4r4k8zx3zfka4a3zwv";
-    })
+    (
+      fetchpatch {
+        url = "https://www.linuxquestions.org/questions/attachment.php?attachmentid=17287&d=1420577220";
+        name = "lensfun-0.3.patch";
+        sha256 = "0ys45x4r4bjjlx0zpd5d56rgjz7k8gxili4r4k8zx3zfka4a3zwv";
+      }
+    )
     ./gcc6.patch
   ];
 

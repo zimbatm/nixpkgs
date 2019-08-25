@@ -11,11 +11,13 @@ let
   # saving a rebuild.
   package = pkgs.python3.pkgs.notebook;
 
-  kernels = (pkgs.jupyter-kernel.create  {
-    definitions = if cfg.kernels != null
+  kernels = (
+    pkgs.jupyter-kernel.create {
+      definitions = if cfg.kernels != null
       then cfg.kernels
-      else  pkgs.jupyter-kernel.default;
-  });
+      else pkgs.jupyter-kernel.default;
+    }
+  );
 
   notebookConfig = pkgs.writeText "jupyter_config.py" ''
     ${cfg.notebookConfig}
@@ -23,7 +25,8 @@ let
     c.NotebookApp.password = ${cfg.password}
   '';
 
-in {
+in
+{
   meta.maintainers = with maintainers; [ aborsu ];
 
   options.services.jupyter = {
@@ -102,9 +105,15 @@ in {
     };
 
     kernels = mkOption {
-      type = types.nullOr (types.attrsOf(types.submodule (import ./kernel-options.nix {
-        inherit lib;
-      })));
+      type = types.nullOr (
+        types.attrsOf (
+          types.submodule (
+            import ./kernel-options.nix {
+              inherit lib;
+            }
+          )
+        )
+      );
 
       default = null;
       example = literalExample ''
@@ -141,45 +150,51 @@ in {
   };
 
   config = mkMerge [
-    (mkIf cfg.enable  {
-      systemd.services.jupyter = {
-        description = "Jupyter development server";
+    (
+      mkIf cfg.enable {
+        systemd.services.jupyter = {
+          description = "Jupyter development server";
 
-        after = [ "network.target" ];
-        wantedBy = [ "multi-user.target" ];
+          after = [ "network.target" ];
+          wantedBy = [ "multi-user.target" ];
 
-        # TODO: Patch notebook so we can explicitly pass in a shell
-        path = [ pkgs.bash ]; # needed for sh in cell magic to work
+          # TODO: Patch notebook so we can explicitly pass in a shell
+          path = [ pkgs.bash ]; # needed for sh in cell magic to work
 
-        environment = {
-          JUPYTER_PATH = toString kernels;
-        };
+          environment = {
+            JUPYTER_PATH = toString kernels;
+          };
 
-        serviceConfig = {
-          Restart = "always";
-          ExecStart = ''${package}/bin/jupyter-notebook \
+          serviceConfig = {
+            Restart = "always";
+            ExecStart = ''${package}/bin/jupyter-notebook \
             --no-browser \
             --ip=${cfg.ip} \
             --port=${toString cfg.port} --port-retries 0 \
             --notebook-dir=${cfg.notebookDir} \
             --NotebookApp.config_file=${notebookConfig}
           '';
-          User = cfg.user;
-          Group = cfg.group;
-          WorkingDirectory = "~";
+            User = cfg.user;
+            Group = cfg.group;
+            WorkingDirectory = "~";
+          };
         };
-      };
-    })
-    (mkIf (cfg.enable && (cfg.group == "jupyter")) {
-      users.groups.jupyter = {};
-    })
-    (mkIf (cfg.enable && (cfg.user == "jupyter")) {
-      users.extraUsers.jupyter = {
-        extraGroups = [ cfg.group ];
-        home = "/var/lib/jupyter";
-        createHome = true;
-        useDefaultShell = true; # needed so that the user can start a terminal.
-      };
-    })
+      }
+    )
+    (
+      mkIf (cfg.enable && (cfg.group == "jupyter")) {
+        users.groups.jupyter = {};
+      }
+    )
+    (
+      mkIf (cfg.enable && (cfg.user == "jupyter")) {
+        users.extraUsers.jupyter = {
+          extraGroups = [ cfg.group ];
+          home = "/var/lib/jupyter";
+          createHome = true;
+          useDefaultShell = true; # needed so that the user can start a terminal.
+        };
+      }
+    )
   ];
 }

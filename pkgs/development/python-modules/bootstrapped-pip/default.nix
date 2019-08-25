@@ -14,7 +14,8 @@ let
     sha256 = "c7769ce668c7a333d84e17fe8b524b1c45e7ee9f7908ad0a73e1eda7e6a5aebf";
   };
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   pname = "pip";
   version = "19.1.1";
   name = "${python.libPrefix}-bootstrapped-${pname}-${version}";

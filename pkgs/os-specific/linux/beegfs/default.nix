@@ -1,8 +1,25 @@
-{ stdenv, fetchurl, pkgconfig, unzip, which
-, libuuid, attr, xfsprogs, cppunit, rdma-core
-, zlib, openssl, sqlite, jre, openjdk, ant
-, openssh, perl, gfortran, influxdb, curl
-} :
+{ stdenv
+, fetchurl
+, pkgconfig
+, unzip
+, which
+, libuuid
+, attr
+, xfsprogs
+, cppunit
+, rdma-core
+, zlib
+, openssl
+, sqlite
+, jre
+, openjdk
+, ant
+, openssh
+, perl
+, gfortran
+, influxdb
+, curl
+}:
 
 let
   version = "7.0";
@@ -26,7 +43,8 @@ let
     "upgrade/beegfs_mirror_md/build"
   ];
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "beegfs-${version}";
 
   src = fetchurl {

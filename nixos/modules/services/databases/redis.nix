@@ -126,9 +126,9 @@ in
 
       save = mkOption {
         type = with types; listOf (listOf int);
-        default = [ [900 1] [300 10] [60 10000] ];
+        default = [ [ 900 1 ] [ 300 10 ] [ 60 10000 ] ];
         description = "The schedule in which data is persisted to disk, represented as a list of lists where the first element represent the amount of seconds and the second the number of changes.";
-        example = [ [900 1] [300 10] [60 10000] ];
+        example = [ [ 900 1 ] [ 300 10 ] [ 60 10000 ] ];
       };
 
       dbFilename = mkOption {
@@ -218,14 +218,16 @@ in
     };
 
     users.users.redis =
-      { name = cfg.user;
+      {
+        name = cfg.user;
         description = "Redis database user";
       };
 
     environment.systemPackages = [ cfg.package ];
 
     systemd.services.redis_init =
-      { description = "Redis Server Initialisation";
+      {
+        description = "Redis Server Initialisation";
 
         wantedBy = [ "redis.service" ];
         before = [ "redis.service" ];
@@ -239,7 +241,8 @@ in
       };
 
     systemd.services.redis =
-      { description = "Redis Server";
+      {
+        description = "Redis Server";
 
         wantedBy = [ "multi-user.target" ];
         after = [ "network.target" ];

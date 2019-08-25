@@ -1,10 +1,19 @@
-{ stdenv, lib, fetchurl, fetchpatch, makeWrapper, autoreconfHook
-, pkgconfig, which
-, flex, bison
+{ stdenv
+, lib
+, fetchurl
+, fetchpatch
+, makeWrapper
+, autoreconfHook
+, pkgconfig
+, which
+, flex
+, bison
 , linuxHeaders ? stdenv.cc.libc.linuxHeaders
 , gawk
-, withPerl ? stdenv.hostPlatform == stdenv.buildPlatform && lib.any (lib.meta.platformMatch stdenv.hostPlatform) perl.meta.platforms, perl
-, withPython ? stdenv.hostPlatform == stdenv.buildPlatform && lib.any (lib.meta.platformMatch stdenv.hostPlatform) python.meta.platforms, python
+, withPerl ? stdenv.hostPlatform == stdenv.buildPlatform && lib.any (lib.meta.platformMatch stdenv.hostPlatform) perl.meta.platforms
+, perl
+, withPython ? stdenv.hostPlatform == stdenv.buildPlatform && lib.any (lib.meta.platformMatch stdenv.hostPlatform) python.meta.platforms
+, python
 , swig
 , ncurses
 , pam
@@ -38,20 +47,26 @@ let
   '';
 
   patches = stdenv.lib.optionals stdenv.hostPlatform.isMusl [
-    (fetchpatch {
-      url = "https://git.alpinelinux.org/cgit/aports/plain/testing/apparmor/0003-Added-missing-typedef-definitions-on-parser.patch?id=74b8427cc21f04e32030d047ae92caa618105b53";
-      name = "0003-Added-missing-typedef-definitions-on-parser.patch";
-      sha256 = "0yyaqz8jlmn1bm37arggprqz0njb4lhjni2d9c8qfqj0kll0bam0";
-    })
-    (fetchpatch {
-      url = "https://git.alpinelinux.org/cgit/aports/plain/testing/apparmor/0007-Do-not-build-install-vim-file-with-utils-package.patch?id=74b8427cc21f04e32030d047ae92caa618105b53";
-      name = "0007-Do-not-build-install-vim-file-with-utils-package.patch";
-      sha256 = "1m4dx901biqgnr4w4wz8a2z9r9dxyw7wv6m6mqglqwf2lxinqmp4";
-    })
+    (
+      fetchpatch {
+        url = "https://git.alpinelinux.org/cgit/aports/plain/testing/apparmor/0003-Added-missing-typedef-definitions-on-parser.patch?id=74b8427cc21f04e32030d047ae92caa618105b53";
+        name = "0003-Added-missing-typedef-definitions-on-parser.patch";
+        sha256 = "0yyaqz8jlmn1bm37arggprqz0njb4lhjni2d9c8qfqj0kll0bam0";
+      }
+    )
+    (
+      fetchpatch {
+        url = "https://git.alpinelinux.org/cgit/aports/plain/testing/apparmor/0007-Do-not-build-install-vim-file-with-utils-package.patch?id=74b8427cc21f04e32030d047ae92caa618105b53";
+        name = "0007-Do-not-build-install-vim-file-with-utils-package.patch";
+        sha256 = "1m4dx901biqgnr4w4wz8a2z9r9dxyw7wv6m6mqglqwf2lxinqmp4";
+      }
+    )
     # (alpine patches {1,4,5,6,8} are needed for apparmor 2.11, but not 2.12)
-    ] ++ [
-      ./cross.patch
-    ];
+  ]
+  ++ [
+       ./cross.patch
+     ]
+  ;
 
   # Set to `true` after the next FIXME gets fixed or this gets some
   # common derivation infra. Too much copy-paste to fix one by one.
@@ -76,17 +91,20 @@ let
 
     buildInputs = []
       ++ stdenv.lib.optional withPerl perl
-      ++ stdenv.lib.optional withPython python;
+      ++ stdenv.lib.optional withPython python
+      ;
 
     # required to build apparmor-parser
     dontDisableStatic = true;
 
-    prePatch = prePatchCommon + ''
+    prePatch = prePatchCommon
+      + ''
       substituteInPlace ./libraries/libapparmor/swig/perl/Makefile.am --replace install_vendor install_site
       substituteInPlace ./libraries/libapparmor/swig/perl/Makefile.in --replace install_vendor install_site
       substituteInPlace ./libraries/libapparmor/src/Makefile.am --replace "/usr/include/netinet/in.h" "${stdenv.lib.getDev stdenv.cc.libc}/include/netinet/in.h"
       substituteInPlace ./libraries/libapparmor/src/Makefile.in --replace "/usr/include/netinet/in.h" "${stdenv.lib.getDev stdenv.cc.libc}/include/netinet/in.h"
-    '';
+    ''
+      ;
     inherit patches;
 
     postPatch = "cd ./libraries/libapparmor";
@@ -140,9 +158,11 @@ let
 
     inherit doCheck;
 
-    meta = apparmor-meta "user-land utilities" // {
-      broken = !(withPython && withPerl);
-    };
+    meta = apparmor-meta "user-land utilities"
+      // {
+           broken = !(withPython && withPerl);
+         }
+      ;
   };
 
   apparmor-bin-utils = stdenv.mkDerivation {
@@ -178,13 +198,15 @@ let
 
     buildInputs = [ libapparmor ];
 
-    prePatch = prePatchCommon + ''
+    prePatch = prePatchCommon
+      + ''
       substituteInPlace ./parser/Makefile --replace "/usr/bin/bison" "${bison}/bin/bison"
       substituteInPlace ./parser/Makefile --replace "/usr/bin/flex" "${flex}/bin/flex"
       substituteInPlace ./parser/Makefile --replace "/usr/include/linux/capability.h" "${linuxHeaders}/include/linux/capability.h"
       ## techdoc.pdf still doesn't build ...
       substituteInPlace ./parser/Makefile --replace "manpages htmlmanpages pdf" "manpages htmlmanpages"
-    '';
+    ''
+      ;
     inherit patches;
     postPatch = "cd ./parser";
     makeFlags = ''LANGS= USE_SYSTEM=1 INCLUDEDIR=${libapparmor}/include AR=${stdenv.cc.bintools.targetPrefix}ar'';
@@ -252,5 +274,6 @@ in
     apparmor-parser
     apparmor-pam
     apparmor-profiles
-    apparmor-kernel-patches;
+    apparmor-kernel-patches
+    ;
 }

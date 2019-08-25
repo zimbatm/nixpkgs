@@ -1,6 +1,18 @@
-{ stdenv, fetchurl, pkgconfig, gnome3, gtk3, wrapGAppsHook
-, librsvg, libcanberra-gtk3, clutter-gtk, intltool, itstool
-, libxml2, libgee, libgnome-games-support }:
+{ stdenv
+, fetchurl
+, pkgconfig
+, gnome3
+, gtk3
+, wrapGAppsHook
+, librsvg
+, libcanberra-gtk3
+, clutter-gtk
+, intltool
+, itstool
+, libxml2
+, libgee
+, libgnome-games-support
+}:
 
 stdenv.mkDerivation rec {
   name = "gnome-nibbles-${version}";
@@ -13,8 +25,13 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ pkgconfig wrapGAppsHook intltool itstool libxml2 ];
   buildInputs = [
-    gtk3 librsvg libcanberra-gtk3 clutter-gtk gnome3.adwaita-icon-theme
-    libgee libgnome-games-support
+    gtk3
+    librsvg
+    libcanberra-gtk3
+    clutter-gtk
+    gnome3.adwaita-icon-theme
+    libgee
+    libgnome-games-support
   ];
 
   passthru = {

@@ -1,6 +1,18 @@
-{ mkDerivation, base, Cabal, containers, curry-base, directory
-, extra, filepath, mtl, network-uri, pretty, process, set-extra
-, stdenv, transformers
+{ mkDerivation
+, base
+, Cabal
+, containers
+, curry-base
+, directory
+, extra
+, filepath
+, mtl
+, network-uri
+, pretty
+, process
+, set-extra
+, stdenv
+, transformers
 }:
 mkDerivation {
   pname = "curry-frontend";
@@ -10,12 +22,32 @@ mkDerivation {
   isExecutable = true;
   enableSeparateDataOutput = true;
   libraryHaskellDepends = [
-    base containers curry-base directory extra filepath mtl network-uri
-    pretty process set-extra transformers
+    base
+    containers
+    curry-base
+    directory
+    extra
+    filepath
+    mtl
+    network-uri
+    pretty
+    process
+    set-extra
+    transformers
   ];
   executableHaskellDepends = [
-    base containers curry-base directory extra filepath mtl network-uri
-    pretty process set-extra transformers
+    base
+    containers
+    curry-base
+    directory
+    extra
+    filepath
+    mtl
+    network-uri
+    pretty
+    process
+    set-extra
+    transformers
   ];
   testHaskellDepends = [ base Cabal curry-base filepath ];
   homepage = "http://curry-language.org";

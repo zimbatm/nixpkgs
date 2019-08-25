@@ -2,9 +2,11 @@
 
 with lib;
 
-let modDestDir = "$out/lib/modules/${kernel.modDirVersion}/kernel/drivers/net/wireless/realtek/rtlwifi";
+let
+  modDestDir = "$out/lib/modules/${kernel.modDirVersion}/kernel/drivers/net/wireless/realtek/rtlwifi";
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "rtlwifi_new-${version}";
   version = "2018-02-17";
 

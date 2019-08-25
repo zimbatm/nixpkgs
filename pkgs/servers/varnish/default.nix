@@ -1,5 +1,16 @@
-{ stdenv, fetchurl, pcre, libxslt, groff, ncurses, pkgconfig, readline, libedit
-, python2, python3, makeWrapper }:
+{ stdenv
+, fetchurl
+, pcre
+, libxslt
+, groff
+, ncurses
+, pkgconfig
+, readline
+, libedit
+, python2
+, python3
+, makeWrapper
+}:
 
 let
   common = { version, sha256, python, extraNativeBuildInputs ? [] }:
@@ -15,7 +26,14 @@ let
 
       nativeBuildInputs = with python.pkgs; [ pkgconfig docutils ] ++ extraNativeBuildInputs;
       buildInputs = [
-        pcre libxslt groff ncurses readline libedit makeWrapper python
+        pcre
+        libxslt
+        groff
+        ncurses
+        readline
+        libedit
+        makeWrapper
+        python
       ];
 
       buildFlags = "localstatedir=/var/spool";

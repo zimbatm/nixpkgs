@@ -14,7 +14,7 @@
 }:
 
 stdenv.mkDerivation rec {
-  name    = "llvm-${version}";
+  name = "llvm-${version}";
   version = "3.6-mono-2017-02-15";
 
   src = fetchFromGitHub {
@@ -38,15 +38,16 @@ stdenv.mkDerivation rec {
   cmakeFlags = with stdenv; [
     "-DLLVM_ENABLE_FFI=ON"
     "-DLLVM_BINUTILS_INCDIR=${libbfd.dev}/include"
-  ] ++ stdenv.lib.optional (!isDarwin) "-DBUILD_SHARED_LIBS=ON";
+  ]
+    ++ stdenv.lib.optional (!isDarwin) "-DBUILD_SHARED_LIBS=ON";
 
   enableParallelBuilding = true;
 
   meta = {
     description = "Collection of modular and reusable compiler and toolchain technologies - Mono build";
-    homepage    = http://llvm.org/;
-    license     = stdenv.lib.licenses.bsd3;
+    homepage = http://llvm.org/;
+    license = stdenv.lib.licenses.bsd3;
     maintainers = with stdenv.lib.maintainers; [ thoughtpolice ];
-    platforms   = stdenv.lib.platforms.all;
+    platforms = stdenv.lib.platforms.all;
   };
 }

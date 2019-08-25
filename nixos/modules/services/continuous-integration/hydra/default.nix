@@ -11,27 +11,36 @@ let
   hydraConf = pkgs.writeScript "hydra.conf" cfg.extraConfig;
 
   hydraEnv =
-    { HYDRA_DBI = cfg.dbi;
+    {
+      HYDRA_DBI = cfg.dbi;
       HYDRA_CONFIG = "${baseDir}/hydra.conf";
       HYDRA_DATA = "${baseDir}";
     };
 
   env =
-    { NIX_REMOTE = "daemon";
+    {
+      NIX_REMOTE = "daemon";
       SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt"; # Remove in 16.03
       PGPASSFILE = "${baseDir}/pgpass";
       NIX_REMOTE_SYSTEMS = concatStringsSep ":" cfg.buildMachinesFiles;
-    } // optionalAttrs (cfg.smtpHost != null) {
-      EMAIL_SENDER_TRANSPORT = "SMTP";
-      EMAIL_SENDER_TRANSPORT_host = cfg.smtpHost;
-    } // hydraEnv // cfg.extraEnv;
+    }
+    // optionalAttrs (cfg.smtpHost != null) {
+         EMAIL_SENDER_TRANSPORT = "SMTP";
+         EMAIL_SENDER_TRANSPORT_host = cfg.smtpHost;
+       }
+    // hydraEnv
+    // cfg.extraEnv
+  ;
 
-  serverEnv = env //
-    { HYDRA_TRACKER = cfg.tracker;
-      XDG_CACHE_HOME = "${baseDir}/www/.cache";
-      COLUMNS = "80";
-      PGPASSFILE = "${baseDir}/pgpass-www"; # grrr
-    } // (optionalAttrs cfg.debugServer { DBIC_TRACE = "1"; });
+  serverEnv = env
+    // {
+         HYDRA_TRACKER = cfg.tracker;
+         XDG_CACHE_HOME = "${baseDir}/www/.cache";
+         COLUMNS = "80";
+         PGPASSFILE = "${baseDir}/pgpass-www"; # grrr
+       }
+    // (optionalAttrs cfg.debugServer { DBIC_TRACE = "1"; })
+    ;
 
   localDB = "dbi:Pg:dbname=hydra;user=hydra;";
 
@@ -120,7 +129,7 @@ in
       smtpHost = mkOption {
         type = types.nullOr types.str;
         default = null;
-        example = ["localhost"];
+        example = [ "localhost" ];
         description = ''
           Hostname of the SMTP server to use to send email.
         '';
@@ -199,7 +208,8 @@ in
     };
 
     users.users.hydra =
-      { description = "Hydra";
+      {
+        description = "Hydra";
         group = "hydra";
         createHome = true;
         home = baseDir;
@@ -208,7 +218,8 @@ in
       };
 
     users.users.hydra-queue-runner =
-      { description = "Hydra queue runner";
+      {
+        description = "Hydra queue runner";
         group = "hydra";
         useDefaultShell = true;
         home = "${baseDir}/queue-runner"; # really only to keep SSH happy
@@ -216,7 +227,8 @@ in
       };
 
     users.users.hydra-www =
-      { description = "Hydra web server";
+      {
+        description = "Hydra web server";
         group = "hydra";
         useDefaultShell = true;
         uid = config.ids.uids.hydra-www;
@@ -231,8 +243,8 @@ in
         notification_sender = ${cfg.notificationSender}
         max_servers = 25
         ${optionalString (cfg.logo != null) ''
-          hydra_logo = ${cfg.logo}
-        ''}
+        hydra_logo = ${cfg.logo}
+      ''}
         gc_roots_dir = ${cfg.gcRootsDir}
         use-substitutes = ${if cfg.useSubstitutes then "1" else "0"}
       '';
@@ -251,7 +263,8 @@ in
     '';
 
     systemd.services.hydra-init =
-      { wantedBy = [ "multi-user.target" ];
+      {
+        wantedBy = [ "multi-user.target" ];
         requires = optional haveLocalDB "postgresql.service";
         after = optional haveLocalDB "postgresql.service";
         environment = env;
@@ -270,12 +283,12 @@ in
           chown hydra-queue-runner.hydra ${baseDir}/queue-runner ${baseDir}/build-logs
 
           ${optionalString haveLocalDB ''
-            if ! [ -e ${baseDir}/.db-created ]; then
-              ${pkgs.sudo}/bin/sudo -u ${config.services.postgresql.superUser} ${config.services.postgresql.package}/bin/createuser hydra
-              ${pkgs.sudo}/bin/sudo -u ${config.services.postgresql.superUser} ${config.services.postgresql.package}/bin/createdb -O hydra hydra
-              touch ${baseDir}/.db-created
-            fi
-          ''}
+          if ! [ -e ${baseDir}/.db-created ]; then
+            ${pkgs.sudo}/bin/sudo -u ${config.services.postgresql.superUser} ${config.services.postgresql.package}/bin/createuser hydra
+            ${pkgs.sudo}/bin/sudo -u ${config.services.postgresql.superUser} ${config.services.postgresql.package}/bin/createdb -O hydra hydra
+            touch ${baseDir}/.db-created
+          fi
+        ''}
 
           if [ ! -e ${cfg.gcRootsDir} ]; then
 
@@ -305,16 +318,19 @@ in
       };
 
     systemd.services.hydra-server =
-      { wantedBy = [ "multi-user.target" ];
+      {
+        wantedBy = [ "multi-user.target" ];
         requires = [ "hydra-init.service" ];
         after = [ "hydra-init.service" ];
         environment = serverEnv;
         restartTriggers = [ hydraConf ];
         serviceConfig =
-          { ExecStart =
+          {
+            ExecStart =
               "@${cfg.package}/bin/hydra-server hydra-server -f -h '${cfg.listenHost}' "
               + "-p ${toString cfg.port} --max_spare_servers 5 --max_servers 25 "
-              + "--max_requests 100 ${optionalString cfg.debugServer "-d"}";
+              + "--max_requests 100 ${optionalString cfg.debugServer "-d"}"
+              ;
             User = "hydra-www";
             PermissionsStartOnly = true;
             Restart = "always";
@@ -322,17 +338,21 @@ in
       };
 
     systemd.services.hydra-queue-runner =
-      { wantedBy = [ "multi-user.target" ];
+      {
+        wantedBy = [ "multi-user.target" ];
         requires = [ "hydra-init.service" ];
         after = [ "hydra-init.service" "network.target" ];
         path = [ cfg.package pkgs.nettools pkgs.openssh pkgs.bzip2 config.nix.package ];
         restartTriggers = [ hydraConf ];
-        environment = env // {
-          PGPASSFILE = "${baseDir}/pgpass-queue-runner"; # grrr
-          IN_SYSTEMD = "1"; # to get log severity levels
-        };
+        environment = env
+          // {
+               PGPASSFILE = "${baseDir}/pgpass-queue-runner"; # grrr
+               IN_SYSTEMD = "1"; # to get log severity levels
+             }
+          ;
         serviceConfig =
-          { ExecStart = "@${cfg.package}/bin/hydra-queue-runner hydra-queue-runner -v --option build-use-substitutes ${boolToString cfg.useSubstitutes}";
+          {
+            ExecStart = "@${cfg.package}/bin/hydra-queue-runner hydra-queue-runner -v --option build-use-substitutes ${boolToString cfg.useSubstitutes}";
             ExecStopPost = "${cfg.package}/bin/hydra-queue-runner --unlock";
             User = "hydra-queue-runner";
             Restart = "always";
@@ -344,14 +364,16 @@ in
       };
 
     systemd.services.hydra-evaluator =
-      { wantedBy = [ "multi-user.target" ];
+      {
+        wantedBy = [ "multi-user.target" ];
         requires = [ "hydra-init.service" ];
         after = [ "hydra-init.service" "network.target" ];
         path = with pkgs; [ cfg.package nettools jq ];
         restartTriggers = [ hydraConf ];
         environment = env;
         serviceConfig =
-          { ExecStart = "@${cfg.package}/bin/hydra-evaluator hydra-evaluator";
+          {
+            ExecStart = "@${cfg.package}/bin/hydra-evaluator hydra-evaluator";
             User = "hydra";
             Restart = "always";
             WorkingDirectory = baseDir;
@@ -359,22 +381,26 @@ in
       };
 
     systemd.services.hydra-update-gc-roots =
-      { requires = [ "hydra-init.service" ];
+      {
+        requires = [ "hydra-init.service" ];
         after = [ "hydra-init.service" ];
         environment = env;
         serviceConfig =
-          { ExecStart = "@${cfg.package}/bin/hydra-update-gc-roots hydra-update-gc-roots";
+          {
+            ExecStart = "@${cfg.package}/bin/hydra-update-gc-roots hydra-update-gc-roots";
             User = "hydra";
           };
         startAt = "2,14:15";
       };
 
     systemd.services.hydra-send-stats =
-      { wantedBy = [ "multi-user.target" ];
+      {
+        wantedBy = [ "multi-user.target" ];
         after = [ "hydra-init.service" ];
         environment = env;
         serviceConfig =
-          { ExecStart = "@${cfg.package}/bin/hydra-send-stats hydra-send-stats";
+          {
+            ExecStart = "@${cfg.package}/bin/hydra-send-stats hydra-send-stats";
             User = "hydra";
           };
       };
@@ -382,7 +408,8 @@ in
     # If there is less than a certain amount of free disk space, stop
     # the queue/evaluator to prevent builds from failing or aborting.
     systemd.services.hydra-check-space =
-      { script =
+      {
+        script =
           ''
             if [ $(($(stat -f -c '%a' /nix/store) * $(stat -f -c '%S' /nix/store))) -lt $((${toString cfg.minimumDiskFree} * 1024**3)) ]; then
                 echo "stopping Hydra queue runner due to lack of free space..."
@@ -400,7 +427,8 @@ in
     # logs automatically after a step finishes, but this doesn't work
     # if the queue runner is stopped prematurely.
     systemd.services.hydra-compress-logs =
-      { path = [ pkgs.bzip2 ];
+      {
+        path = [ pkgs.bzip2 ];
         script =
           ''
             find /var/lib/hydra/build-logs -type f -name "*.drv" -mtime +3 -size +0c | xargs -r bzip2 -v -f

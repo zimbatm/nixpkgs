@@ -1,4 +1,7 @@
-{ stdenv, fetchurl, writeText, sbclBootstrap
+{ stdenv
+, fetchurl
+, writeText
+, sbclBootstrap
 , sbclBootstrapHost ? "${sbclBootstrap}/bin/sbcl --disable-debugger --no-userinit --no-sysinit"
 , threadSupport ? (stdenv.isi686 || stdenv.isx86_64 || "aarch64-linux" == stdenv.hostPlatform.system)
   # Meant for sbcl used for creating binaries portable to non-NixOS via save-lisp-and-die.
@@ -9,15 +12,15 @@
 }:
 
 stdenv.mkDerivation rec {
-  name    = "sbcl-${version}";
+  name = "sbcl-${version}";
   version = "1.5.3";
 
   src = fetchurl {
-    url    = "mirror://sourceforge/project/sbcl/sbcl/${version}/${name}-source.tar.bz2";
+    url = "mirror://sourceforge/project/sbcl/sbcl/${version}/${name}-source.tar.bz2";
     sha256 = "0334cfnvjy0ccq9p05mxrgawhww8wb73rp318qcsf9yj8h8r19yj";
   };
 
-  buildInputs = [texinfo];
+  buildInputs = [ texinfo ];
 
   patchPhase = ''
     echo '"${version}.nixos"' > version.lisp-expr
@@ -27,10 +30,10 @@ stdenv.mkDerivation rec {
                (pushnew x features))
              (disable (x)
                (setf features (remove x features))))
-    ''
-    + (if threadSupport then "(enable :sb-thread)" else "(disable :sb-thread)")
-    + stdenv.lib.optionalString stdenv.isAarch32 "(enable :arm)"
-    + ''
+  ''
+  + (if threadSupport then "(enable :sb-thread)" else "(disable :sb-thread)")
+  + stdenv.lib.optionalString stdenv.isAarch32 "(enable :arm)"
+  + ''
       )) " > customize-target-features.lisp
 
     pwd
@@ -58,20 +61,22 @@ stdenv.mkDerivation rec {
     substituteInPlace src/runtime/Config.x86-64-darwin \
       --replace mmacosx-version-min=10.4 mmacosx-version-min=10.5
   ''
-  + (if purgeNixReferences
-    then
-      # This is the default location to look for the core; by default in $out/lib/sbcl
-      ''
-        sed 's@^\(#define SBCL_HOME\) .*$@\1 "/no-such-path"@' \
-          -i src/runtime/runtime.c
-      ''
-    else
-      # Fix software version retrieval
-      ''
-        sed -e "s@/bin/uname@$(command -v uname)@g" -i src/code/*-os.lisp \
-          src/code/run-program.lisp
-      ''
-    );
+  + (
+      if purgeNixReferences
+      then
+        # This is the default location to look for the core; by default in $out/lib/sbcl
+        ''
+          sed 's@^\(#define SBCL_HOME\) .*$@\1 "/no-such-path"@' \
+            -i src/runtime/runtime.c
+        ''
+      else
+        # Fix software version retrieval
+        ''
+          sed -e "s@/bin/uname@$(command -v uname)@g" -i src/code/*-os.lisp \
+            src/code/run-program.lisp
+        ''
+    )
+  ;
 
 
   preBuild = ''
@@ -89,24 +94,29 @@ stdenv.mkDerivation rec {
     INSTALL_ROOT=$out sh install.sh
   ''
   + stdenv.lib.optionalString (!purgeNixReferences) ''
-    cp -r src $out/lib/sbcl
-    cp -r contrib $out/lib/sbcl
-    cat >$out/lib/sbcl/sbclrc <<EOF
-     (setf (logical-pathname-translations "SYS")
-       '(("SYS:SRC;**;*.*.*" #P"$out/lib/sbcl/src/**/*.*")
-         ("SYS:CONTRIB;**;*.*.*" #P"$out/lib/sbcl/contrib/**/*.*")))
-    EOF
-  '';
+      cp -r src $out/lib/sbcl
+      cp -r contrib $out/lib/sbcl
+      cat >$out/lib/sbcl/sbclrc <<EOF
+       (setf (logical-pathname-translations "SYS")
+         '(("SYS:SRC;**;*.*.*" #P"$out/lib/sbcl/src/**/*.*")
+           ("SYS:CONTRIB;**;*.*.*" #P"$out/lib/sbcl/contrib/**/*.*")))
+      EOF
+    ''
+  ;
 
-  setupHook = stdenv.lib.optional purgeNixReferences (writeText "setupHook.sh" ''
-    addEnvHooks "$targetOffset" _setSbclHome
-    _setSbclHome() {
-      export SBCL_HOME='@out@/lib/sbcl/'
-    }
-  '');
+  setupHook = stdenv.lib.optional purgeNixReferences (
+    writeText "setupHook.sh" ''
+      addEnvHooks "$targetOffset" _setSbclHome
+      _setSbclHome() {
+        export SBCL_HOME='@out@/lib/sbcl/'
+      }
+    ''
+  );
 
-  meta = sbclBootstrap.meta // {
-    inherit version;
-    updateWalker = true;
-  };
+  meta = sbclBootstrap.meta
+    // {
+         inherit version;
+         updateWalker = true;
+       }
+    ;
 }

@@ -1,6 +1,8 @@
 { lib, fetchzip }:
 
-let version = "2.2.0"; in
+let
+  version = "2.2.0";
+in
 fetchzip rec {
   name = "redhat-official-${version}";
   url = "https://github.com/RedHatOfficial/RedHatFont/archive/${version}.zip";

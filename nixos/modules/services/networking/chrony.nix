@@ -12,9 +12,9 @@ let
     ${concatMapStringsSep "\n" (server: "server " + server) cfg.servers}
 
     ${optionalString
-      (cfg.initstepslew.enabled && (cfg.servers != []))
-      "initstepslew ${toString cfg.initstepslew.threshold} ${concatStringsSep " " cfg.initstepslew.servers}"
-    }
+    (cfg.initstepslew.enabled && (cfg.servers != []))
+    "initstepslew ${toString cfg.initstepslew.threshold} ${concatStringsSep " " cfg.initstepslew.servers}"
+  }
 
     driftfile ${stateDir}/chrony.drift
     keyfile ${keyFile}
@@ -79,12 +79,14 @@ in
     environment.systemPackages = [ pkgs.chrony ];
 
     users.groups = singleton
-      { name = "chrony";
+      {
+        name = "chrony";
         gid = config.ids.gids.chrony;
       };
 
     users.users = singleton
-      { name = "chrony";
+      {
+        name = "chrony";
         uid = config.ids.uids.chrony;
         group = "chrony";
         description = "chrony daemon user";
@@ -96,12 +98,13 @@ in
     systemd.services.systemd-timedated.environment = { SYSTEMD_TIMEDATED_NTP_SERVICES = "chronyd.service"; };
 
     systemd.services.chronyd =
-      { description = "chrony NTP daemon";
+      {
+        description = "chrony NTP daemon";
 
         wantedBy = [ "multi-user.target" ];
-        wants    = [ "time-sync.target" ];
-        before   = [ "time-sync.target" ];
-        after    = [ "network.target" ];
+        wants = [ "time-sync.target" ];
+        before = [ "time-sync.target" ];
+        after = [ "network.target" ];
         conflicts = [ "ntpd.service" "systemd-timesyncd.service" ];
 
         path = [ pkgs.chrony ];
@@ -115,7 +118,8 @@ in
 
         unitConfig.ConditionCapability = "CAP_SYS_TIME";
         serviceConfig =
-          { Type = "forking";
+          {
+            Type = "forking";
             ExecStart = "${pkgs.chrony}/bin/chronyd ${chronyFlags}";
 
             ProtectHome = "yes";

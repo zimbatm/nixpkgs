@@ -1,6 +1,8 @@
 { fetchurl, stdenv, gettext, libmpcdec, libao }:
 
-let version = "0.2.4"; in
+let
+  version = "0.2.4";
+in
 stdenv.mkDerivation rec {
   name = "mpc123-${version}";
 
@@ -26,7 +28,7 @@ stdenv.mkDerivation rec {
 
     license = stdenv.lib.licenses.gpl2Plus;
 
-    maintainers = [ ];
+    maintainers = [];
     platforms = stdenv.lib.platforms.gnu ++ stdenv.lib.platforms.linux; # arbitrary choice
   };
 }

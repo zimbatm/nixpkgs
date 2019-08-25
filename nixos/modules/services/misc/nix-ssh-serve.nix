@@ -1,12 +1,14 @@
 { config, lib, ... }:
 
 with lib;
-let cfg = config.nix.sshServe;
-    command =
-      if cfg.protocol == "ssh"
-        then "nix-store --serve"
-      else "nix-daemon --stdio";
-in {
+let
+  cfg = config.nix.sshServe;
+  command =
+    if cfg.protocol == "ssh"
+    then "nix-store --serve"
+    else "nix-daemon --stdio";
+in
+{
   options = {
 
     nix.sshServe = {

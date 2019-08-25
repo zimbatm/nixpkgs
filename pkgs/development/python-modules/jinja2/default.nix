@@ -1,5 +1,9 @@
-{ stdenv, buildPythonPackage, fetchPypi
-, pytest, markupsafe }:
+{ stdenv
+, buildPythonPackage
+, fetchPypi
+, pytest
+, markupsafe
+}:
 
 buildPythonPackage rec {
   pname = "Jinja2";

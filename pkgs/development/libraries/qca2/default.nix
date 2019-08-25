@@ -11,7 +11,8 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ cmake pkgconfig ];
   buildInputs = [ openssl_1_0_2 qt ]
-    ++ stdenv.lib.optional stdenv.isDarwin darwin.apple_sdk.frameworks.Security;
+    ++ stdenv.lib.optional stdenv.isDarwin darwin.apple_sdk.frameworks.Security
+    ;
 
   enableParallelBuilding = true;
 

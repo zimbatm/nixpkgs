@@ -1,5 +1,11 @@
-{ lib, fetchPypi, buildPythonPackage, isPy27
-, numpy, enum34, futures, pathlib
+{ lib
+, fetchPypi
+, buildPythonPackage
+, isPy27
+, numpy
+, enum34
+, futures
+, pathlib
 , pytest
 }:
 
@@ -23,7 +29,8 @@ buildPythonPackage rec {
   '';
 
   propagatedBuildInputs = [ numpy ]
-    ++ lib.optional isPy27 [ futures enum34 pathlib ];
+    ++ lib.optional isPy27 [ futures enum34 pathlib ]
+    ;
 
   meta = with lib; {
     description = "Read and write image data from and to TIFF files.";

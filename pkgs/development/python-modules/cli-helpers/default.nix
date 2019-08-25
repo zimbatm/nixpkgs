@@ -25,7 +25,9 @@ buildPythonPackage rec {
     terminaltables
     tabulate
     wcwidth
-  ] ++ (lib.optionals isPy27 [ backports_csv ]);
+  ]
+  ++ (lib.optionals isPy27 [ backports_csv ])
+  ;
 
   checkInputs = [ pytest mock ];
 
@@ -56,7 +58,7 @@ buildPythonPackage rec {
       Read the documentation at http://cli-helpers.rtfd.io
     '';
     homepage = https://cli-helpers.readthedocs.io/en/stable/;
-    license = licenses.bsd3 ;
+    license = licenses.bsd3;
     maintainers = [ maintainers.kalbasit ];
   };
 }

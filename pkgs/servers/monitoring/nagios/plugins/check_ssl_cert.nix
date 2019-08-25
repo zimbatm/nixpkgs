@@ -13,10 +13,12 @@ stdenv.mkDerivation rec {
 
   patches = [
     # https://github.com/matteocorti/check_ssl_cert/pull/114
-    (fetchpatch {
-      url = "https://github.com/matteocorti/check_ssl_cert/commit/2b7aad583d507a70605dd44d918739a65b267bfd.patch";
-      sha256 = "1jk872jgm6k3qc1ks1h3v6p804spjlnxcj2wc8v0hkmwfwiwd2k4";
-    })
+    (
+      fetchpatch {
+        url = "https://github.com/matteocorti/check_ssl_cert/commit/2b7aad583d507a70605dd44d918739a65b267bfd.patch";
+        sha256 = "1jk872jgm6k3qc1ks1h3v6p804spjlnxcj2wc8v0hkmwfwiwd2k4";
+      }
+    )
   ];
 
   nativeBuildInputs = [ makeWrapper ];

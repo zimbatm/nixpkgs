@@ -1,7 +1,32 @@
-{ lib, stdenv, fetchurl, qt4, pkgconfig, boost, expat, cairo, python2Packages,
-  cmake, flex, bison, pango, librsvg, librevenge, libxml2, libcdr, libzip,
-  poppler, imagemagick, openexr, ffmpeg, opencolorio, openimageio,
-  qmake4Hook, libpng, libGL, lndir }:
+{ lib
+, stdenv
+, fetchurl
+, qt4
+, pkgconfig
+, boost
+, expat
+, cairo
+, python2Packages
+, cmake
+, flex
+, bison
+, pango
+, librsvg
+, librevenge
+, libxml2
+, libcdr
+, libzip
+, poppler
+, imagemagick
+, openexr
+, ffmpeg
+, opencolorio
+, openimageio
+, qmake4Hook
+, libpng
+, libGL
+, lndir
+}:
 
 let
   minorVersion = "2.1";
@@ -47,41 +72,60 @@ let
     sha256 = "0n4qfxj8j6rmj4svf68gg2pzg8d1pb74bnphidnf8i2paj6lwniz";
   };
   plugins = map buildPlugin [
-    ({
-      pluginName = "arena";
-      sha256 = "0qba13vn9qdfax7nqlz1ps27zspr5kh795jp1xvbmwjzjzjpkqkf";
-      nativeBuildInputs = [ pkgconfig ];
-      buildInputs = [
-        pango librsvg librevenge libcdr opencolorio libxml2 libzip
-        poppler imagemagick
-      ];
-      preConfigure = ''
-        sed -i 's|pkg-config poppler-glib|pkg-config poppler poppler-glib|g' Makefile.master
-        for i in Extra Bundle; do
-          cp ${lodepngcpp} $i/lodepng.cpp
-          cp ${lodepngh} $i/lodepng.h
-        done
-      '';
-    })
-    ({
-      pluginName = "io";
-      sha256 = "0s196i9fkgr9iw92c94mxgs1lkxbhynkf83vmsgrldflmf0xjky7";
-      nativeBuildInputs = [ pkgconfig ];
-      buildInputs = [
-        libpng ffmpeg openexr opencolorio openimageio boost libGL
-        seexpr
-      ];
-    })
-    ({
-      pluginName = "misc";
-      sha256 = "02h79jrll0c17azxj16as1mks3lmypm4m3da4mms9sg31l3n82qi";
-      buildInputs = [
-        libGL
-      ];
-      preConfigure = ''
-        cp ${CImgh} CImg/CImg.h
-      '';
-    })
+    (
+      {
+        pluginName = "arena";
+        sha256 = "0qba13vn9qdfax7nqlz1ps27zspr5kh795jp1xvbmwjzjzjpkqkf";
+        nativeBuildInputs = [ pkgconfig ];
+        buildInputs = [
+          pango
+          librsvg
+          librevenge
+          libcdr
+          opencolorio
+          libxml2
+          libzip
+          poppler
+          imagemagick
+        ];
+        preConfigure = ''
+          sed -i 's|pkg-config poppler-glib|pkg-config poppler poppler-glib|g' Makefile.master
+          for i in Extra Bundle; do
+            cp ${lodepngcpp} $i/lodepng.cpp
+            cp ${lodepngh} $i/lodepng.h
+          done
+        '';
+      }
+    )
+    (
+      {
+        pluginName = "io";
+        sha256 = "0s196i9fkgr9iw92c94mxgs1lkxbhynkf83vmsgrldflmf0xjky7";
+        nativeBuildInputs = [ pkgconfig ];
+        buildInputs = [
+          libpng
+          ffmpeg
+          openexr
+          opencolorio
+          openimageio
+          boost
+          libGL
+          seexpr
+        ];
+      }
+    )
+    (
+      {
+        pluginName = "misc";
+        sha256 = "02h79jrll0c17azxj16as1mks3lmypm4m3da4mms9sg31l3n82qi";
+        buildInputs = [
+          libGL
+        ];
+        preConfigure = ''
+          cp ${CImgh} CImg/CImg.h
+        '';
+      }
+    )
   ];
 in
 stdenv.mkDerivation {
@@ -96,7 +140,12 @@ stdenv.mkDerivation {
   nativeBuildInputs = [ qmake4Hook pkgconfig python2Packages.wrapPython ];
 
   buildInputs = [
-    qt4 boost expat cairo python2Packages.pyside python2Packages.pysideShiboken
+    qt4
+    boost
+    expat
+    cairo
+    python2Packages.pyside
+    python2Packages.pysideShiboken
   ];
 
   preConfigure = ''

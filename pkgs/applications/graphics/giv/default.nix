@@ -1,5 +1,18 @@
-{ stdenv, fetchFromGitHub, gdk-pixbuf, scons, pkgconfig, gtk2, glib
-, pcre, cfitsio, perl, gob2, vala, libtiff, json-glib }:
+{ stdenv
+, fetchFromGitHub
+, gdk-pixbuf
+, scons
+, pkgconfig
+, gtk2
+, glib
+, pcre
+, cfitsio
+, perl
+, gob2
+, vala
+, libtiff
+, json-glib
+}:
 
 stdenv.mkDerivation rec {
   name = "giv-${version}";
@@ -28,7 +41,7 @@ stdenv.mkDerivation rec {
     description = "Cross platform image and hierarchical vector viewer based";
     homepage = http://giv.sourceforge.net/giv/;
     license = licenses.gpl2Plus;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
     platforms = with platforms; linux;
   };
 }

@@ -1,5 +1,23 @@
-{stdenv, fetchurl, ncurses, libjpeg, libX11, libXt, alsaLib, aalib, libXft, xorgproto, libv4l
-, libFS, libXaw, libXpm, libXext, libSM, libICE, perl, linux}:
+{ stdenv
+, fetchurl
+, ncurses
+, libjpeg
+, libX11
+, libXt
+, alsaLib
+, aalib
+, libXft
+, xorgproto
+, libv4l
+, libFS
+, libXaw
+, libXpm
+, libXext
+, libSM
+, libICE
+, perl
+, linux
+}:
 
 stdenv.mkDerivation rec {
   name = "xawtv-3.106";
@@ -12,14 +30,30 @@ stdenv.mkDerivation rec {
     export NIX_CFLAGS_COMPILE="$NIX_CFLAGS_COMPILE -I${linux}/lib/modules/${linux.modDirVersion}/build"
   '';
 
-  configureFlags= [ "--prefix=" ];
+  configureFlags = [ "--prefix=" ];
 
   NIX_LDFLAGS = "-lgcc_s";
 
   makeFlags = "SUID_ROOT= DESTDIR=\$(out) PREFIX=";
 
-  buildInputs = [ncurses libjpeg libX11 libXt libXft xorgproto libFS perl alsaLib aalib
-                 libXaw libXpm libXext libSM libICE libv4l];
+  buildInputs = [
+    ncurses
+    libjpeg
+    libX11
+    libXt
+    libXft
+    xorgproto
+    libFS
+    perl
+    alsaLib
+    aalib
+    libXaw
+    libXpm
+    libXext
+    libSM
+    libICE
+    libv4l
+  ];
 
   meta = {
     description = "TV application for Linux with apps and tools such as a teletext browser";
@@ -28,5 +62,5 @@ stdenv.mkDerivation rec {
     maintainers = with stdenv.lib.maintainers; [ domenkozar ];
     platforms = stdenv.lib.platforms.linux;
   };
-  
+
 }

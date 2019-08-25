@@ -10,103 +10,112 @@ let
   mkResource = r: ''{names: ${builtins.toJSON r.names}, compress: ${boolToString r.compress}}'';
   mkListener = l: ''{port: ${toString l.port}, bind_address: "${l.bind_address}", type: ${l.type}, tls: ${boolToString l.tls}, x_forwarded: ${boolToString l.x_forwarded}, resources: [${concatStringsSep "," (map mkResource l.resources)}]}'';
   configFile = pkgs.writeText "homeserver.yaml" ''
-${optionalString (cfg.tls_certificate_path != null) ''
-tls_certificate_path: "${cfg.tls_certificate_path}"
-''}
-${optionalString (cfg.tls_private_key_path != null) ''
-tls_private_key_path: "${cfg.tls_private_key_path}"
-''}
-${optionalString (cfg.tls_dh_params_path != null) ''
-tls_dh_params_path: "${cfg.tls_dh_params_path}"
-''}
-no_tls: ${boolToString cfg.no_tls}
-${optionalString (cfg.bind_port != null) ''
-bind_port: ${toString cfg.bind_port}
-''}
-${optionalString (cfg.unsecure_port != null) ''
-unsecure_port: ${toString cfg.unsecure_port}
-''}
-${optionalString (cfg.bind_host != null) ''
-bind_host: "${cfg.bind_host}"
-''}
-server_name: "${cfg.server_name}"
-pid_file: "/run/matrix-synapse.pid"
-web_client: ${boolToString cfg.web_client}
-${optionalString (cfg.public_baseurl != null) ''
-public_baseurl: "${cfg.public_baseurl}"
-''}
-listeners: [${concatStringsSep "," (map mkListener cfg.listeners)}]
-database: {
-  name: "${cfg.database_type}",
-  args: {
-    ${concatStringsSep ",\n    " (
-      mapAttrsToList (n: v: "\"${n}\": ${builtins.toJSON v}") cfg.database_args
-    )}
-  }
-}
-event_cache_size: "${cfg.event_cache_size}"
-verbose: ${cfg.verbose}
-log_config: "${logConfigFile}"
-rc_messages_per_second: ${cfg.rc_messages_per_second}
-rc_message_burst_count: ${cfg.rc_message_burst_count}
-federation_rc_window_size: ${cfg.federation_rc_window_size}
-federation_rc_sleep_limit: ${cfg.federation_rc_sleep_limit}
-federation_rc_sleep_delay: ${cfg.federation_rc_sleep_delay}
-federation_rc_reject_limit: ${cfg.federation_rc_reject_limit}
-federation_rc_concurrent: ${cfg.federation_rc_concurrent}
-media_store_path: "${cfg.dataDir}/media"
-uploads_path: "${cfg.dataDir}/uploads"
-max_upload_size: "${cfg.max_upload_size}"
-max_image_pixels: "${cfg.max_image_pixels}"
-dynamic_thumbnails: ${boolToString cfg.dynamic_thumbnails}
-url_preview_enabled: ${boolToString cfg.url_preview_enabled}
-${optionalString (cfg.url_preview_enabled == true) ''
-url_preview_ip_range_blacklist: ${builtins.toJSON cfg.url_preview_ip_range_blacklist}
-url_preview_ip_range_whitelist: ${builtins.toJSON cfg.url_preview_ip_range_whitelist}
-url_preview_url_blacklist: ${builtins.toJSON cfg.url_preview_url_blacklist}
-''}
-recaptcha_private_key: "${cfg.recaptcha_private_key}"
-recaptcha_public_key: "${cfg.recaptcha_public_key}"
-enable_registration_captcha: ${boolToString cfg.enable_registration_captcha}
-turn_uris: ${builtins.toJSON cfg.turn_uris}
-turn_shared_secret: "${cfg.turn_shared_secret}"
-enable_registration: ${boolToString cfg.enable_registration}
-${optionalString (cfg.registration_shared_secret != null) ''
-registration_shared_secret: "${cfg.registration_shared_secret}"
-''}
-recaptcha_siteverify_api: "https://www.google.com/recaptcha/api/siteverify"
-turn_user_lifetime: "${cfg.turn_user_lifetime}"
-user_creation_max_duration: ${cfg.user_creation_max_duration}
-bcrypt_rounds: ${cfg.bcrypt_rounds}
-allow_guest_access: ${boolToString cfg.allow_guest_access}
-trusted_third_party_id_servers: ${builtins.toJSON cfg.trusted_third_party_id_servers}
-room_invite_state_types: ${builtins.toJSON cfg.room_invite_state_types}
-${optionalString (cfg.macaroon_secret_key != null) ''
-  macaroon_secret_key: "${cfg.macaroon_secret_key}"
-''}
-expire_access_token: ${boolToString cfg.expire_access_token}
-enable_metrics: ${boolToString cfg.enable_metrics}
-report_stats: ${boolToString cfg.report_stats}
-signing_key_path: "${cfg.dataDir}/homeserver.signing.key"
-key_refresh_interval: "${cfg.key_refresh_interval}"
-perspectives:
-  servers: {
-    ${concatStringsSep "},\n" (mapAttrsToList (n: v: ''
-    "${n}": {
-      "verify_keys": {
-        ${concatStringsSep "},\n" (mapAttrsToList (n: v: ''
-        "${n}": {
-          "key": "${v}"
-        }'') v)}
+    ${optionalString (cfg.tls_certificate_path != null) ''
+    tls_certificate_path: "${cfg.tls_certificate_path}"
+  ''}
+    ${optionalString (cfg.tls_private_key_path != null) ''
+    tls_private_key_path: "${cfg.tls_private_key_path}"
+  ''}
+    ${optionalString (cfg.tls_dh_params_path != null) ''
+    tls_dh_params_path: "${cfg.tls_dh_params_path}"
+  ''}
+    no_tls: ${boolToString cfg.no_tls}
+    ${optionalString (cfg.bind_port != null) ''
+    bind_port: ${toString cfg.bind_port}
+  ''}
+    ${optionalString (cfg.unsecure_port != null) ''
+    unsecure_port: ${toString cfg.unsecure_port}
+  ''}
+    ${optionalString (cfg.bind_host != null) ''
+    bind_host: "${cfg.bind_host}"
+  ''}
+    server_name: "${cfg.server_name}"
+    pid_file: "/run/matrix-synapse.pid"
+    web_client: ${boolToString cfg.web_client}
+    ${optionalString (cfg.public_baseurl != null) ''
+    public_baseurl: "${cfg.public_baseurl}"
+  ''}
+    listeners: [${concatStringsSep "," (map mkListener cfg.listeners)}]
+    database: {
+      name: "${cfg.database_type}",
+      args: {
+        ${concatStringsSep ",\n    " (
+    mapAttrsToList (n: v: "\"${n}\": ${builtins.toJSON v}") cfg.database_args
+  )}
       }
-    '') cfg.servers)}
     }
-  }
-app_service_config_files: ${builtins.toJSON cfg.app_service_config_files}
+    event_cache_size: "${cfg.event_cache_size}"
+    verbose: ${cfg.verbose}
+    log_config: "${logConfigFile}"
+    rc_messages_per_second: ${cfg.rc_messages_per_second}
+    rc_message_burst_count: ${cfg.rc_message_burst_count}
+    federation_rc_window_size: ${cfg.federation_rc_window_size}
+    federation_rc_sleep_limit: ${cfg.federation_rc_sleep_limit}
+    federation_rc_sleep_delay: ${cfg.federation_rc_sleep_delay}
+    federation_rc_reject_limit: ${cfg.federation_rc_reject_limit}
+    federation_rc_concurrent: ${cfg.federation_rc_concurrent}
+    media_store_path: "${cfg.dataDir}/media"
+    uploads_path: "${cfg.dataDir}/uploads"
+    max_upload_size: "${cfg.max_upload_size}"
+    max_image_pixels: "${cfg.max_image_pixels}"
+    dynamic_thumbnails: ${boolToString cfg.dynamic_thumbnails}
+    url_preview_enabled: ${boolToString cfg.url_preview_enabled}
+    ${optionalString (cfg.url_preview_enabled == true) ''
+    url_preview_ip_range_blacklist: ${builtins.toJSON cfg.url_preview_ip_range_blacklist}
+    url_preview_ip_range_whitelist: ${builtins.toJSON cfg.url_preview_ip_range_whitelist}
+    url_preview_url_blacklist: ${builtins.toJSON cfg.url_preview_url_blacklist}
+  ''}
+    recaptcha_private_key: "${cfg.recaptcha_private_key}"
+    recaptcha_public_key: "${cfg.recaptcha_public_key}"
+    enable_registration_captcha: ${boolToString cfg.enable_registration_captcha}
+    turn_uris: ${builtins.toJSON cfg.turn_uris}
+    turn_shared_secret: "${cfg.turn_shared_secret}"
+    enable_registration: ${boolToString cfg.enable_registration}
+    ${optionalString (cfg.registration_shared_secret != null) ''
+    registration_shared_secret: "${cfg.registration_shared_secret}"
+  ''}
+    recaptcha_siteverify_api: "https://www.google.com/recaptcha/api/siteverify"
+    turn_user_lifetime: "${cfg.turn_user_lifetime}"
+    user_creation_max_duration: ${cfg.user_creation_max_duration}
+    bcrypt_rounds: ${cfg.bcrypt_rounds}
+    allow_guest_access: ${boolToString cfg.allow_guest_access}
+    trusted_third_party_id_servers: ${builtins.toJSON cfg.trusted_third_party_id_servers}
+    room_invite_state_types: ${builtins.toJSON cfg.room_invite_state_types}
+    ${optionalString (cfg.macaroon_secret_key != null) ''
+    macaroon_secret_key: "${cfg.macaroon_secret_key}"
+  ''}
+    expire_access_token: ${boolToString cfg.expire_access_token}
+    enable_metrics: ${boolToString cfg.enable_metrics}
+    report_stats: ${boolToString cfg.report_stats}
+    signing_key_path: "${cfg.dataDir}/homeserver.signing.key"
+    key_refresh_interval: "${cfg.key_refresh_interval}"
+    perspectives:
+      servers: {
+        ${concatStringsSep "},\n" (
+    mapAttrsToList (
+      n: v: ''
+        "${n}": {
+          "verify_keys": {
+            ${concatStringsSep "},\n" (
+        mapAttrsToList (
+          n: v: ''
+            "${n}": {
+              "key": "${v}"
+            }''
+        ) v
+      )}
+          }
+      ''
+    ) cfg.servers
+  )}
+        }
+      }
+    app_service_config_files: ${builtins.toJSON cfg.app_service_config_files}
 
-${cfg.extraConfig}
-'';
-in {
+    ${cfg.extraConfig}
+  '';
+in
+{
   options = {
     services.matrix-synapse = {
       enable = mkEnableOption "matrix.org synapse";
@@ -210,83 +219,89 @@ in {
         '';
       };
       listeners = mkOption {
-        type = types.listOf (types.submodule {
-          options = {
-            port = mkOption {
-              type = types.int;
-              example = 8448;
-              description = ''
-                The port to listen for HTTP(S) requests on.
-              '';
+        type = types.listOf (
+          types.submodule {
+            options = {
+              port = mkOption {
+                type = types.int;
+                example = 8448;
+                description = ''
+                  The port to listen for HTTP(S) requests on.
+                '';
+              };
+              bind_address = mkOption {
+                type = types.str;
+                default = "";
+                example = "203.0.113.42";
+                description = ''
+                  Local interface to listen on.
+                  The empty string will cause synapse to listen on all interfaces.
+                '';
+              };
+              type = mkOption {
+                type = types.str;
+                default = "http";
+                description = ''
+                  Type of listener.
+                '';
+              };
+              tls = mkOption {
+                type = types.bool;
+                default = true;
+                description = ''
+                  Whether to listen for HTTPS connections rather than HTTP.
+                '';
+              };
+              x_forwarded = mkOption {
+                type = types.bool;
+                default = false;
+                description = ''
+                  Use the X-Forwarded-For (XFF) header as the client IP and not the
+                  actual client IP.
+                '';
+              };
+              resources = mkOption {
+                type = types.listOf (
+                  types.submodule {
+                    options = {
+                      names = mkOption {
+                        type = types.listOf types.str;
+                        description = ''
+                          List of resources to host on this listener.
+                        '';
+                        example = [ "client" "webclient" "federation" ];
+                      };
+                      compress = mkOption {
+                        type = types.bool;
+                        description = ''
+                          Should synapse compress HTTP responses to clients that support it?
+                          This should be disabled if running synapse behind a load balancer
+                          that can do automatic compression.
+                        '';
+                      };
+                    };
+                  }
+                );
+                description = ''
+                  List of HTTP resources to serve on this listener.
+                '';
+              };
             };
-            bind_address = mkOption {
-              type = types.str;
-              default = "";
-              example = "203.0.113.42";
-              description = ''
-                Local interface to listen on.
-                The empty string will cause synapse to listen on all interfaces.
-              '';
-            };
-            type = mkOption {
-              type = types.str;
-              default = "http";
-              description = ''
-                Type of listener.
-              '';
-            };
-            tls = mkOption {
-              type = types.bool;
-              default = true;
-              description = ''
-                Whether to listen for HTTPS connections rather than HTTP.
-              '';
-            };
-            x_forwarded = mkOption {
-              type = types.bool;
-              default = false;
-              description = ''
-                Use the X-Forwarded-For (XFF) header as the client IP and not the
-                actual client IP.
-              '';
-            };
-            resources = mkOption {
-              type = types.listOf (types.submodule {
-                options = {
-                  names = mkOption {
-                    type = types.listOf types.str;
-                    description = ''
-                      List of resources to host on this listener.
-                    '';
-                    example = ["client" "webclient" "federation"];
-                  };
-                  compress = mkOption {
-                    type = types.bool;
-                    description = ''
-                      Should synapse compress HTTP responses to clients that support it?
-                      This should be disabled if running synapse behind a load balancer
-                      that can do automatic compression.
-                    '';
-                  };
-                };
-              });
-              description = ''
-                List of HTTP resources to serve on this listener.
-              '';
-            };
-          };
-        });
-        default = [{
-          port = 8448;
-          bind_address = "";
-          type = "http";
-          tls = true;
-          x_forwarded = false;
-          resources = [
-            { names = ["client" "webclient"]; compress = true; }
-            { names = ["federation"]; compress = false; }
-          ];
-        }];
+          }
+        );
+        default = [
+          {
+            port = 8448;
+            bind_address = "";
+            type = "http";
+            tls = true;
+            x_forwarded = false;
+            resources = [
+              { names = [ "client" "webclient" ]; compress = true; }
+              { names = [ "federation" ]; compress = false; }
+            ];
+          }
+        ];
         description = ''
           List of ports that Synapse should listen on, their purpose and their configuration.
         '';
@@ -343,8 +358,8 @@ in {
       database_type = mkOption {
         type = types.enum [ "sqlite3" "psycopg2" ];
         default = if versionAtLeast config.system.stateVersion "18.03"
-          then "psycopg2"
-          else "sqlite3";
+        then "psycopg2"
+        else "sqlite3";
         description = ''
           The database engine name. Can be sqlite or psycopg2.
         '';
@@ -564,7 +579,7 @@ in {
       };
       room_invite_state_types = mkOption {
         type = types.listOf types.str;
-        default = ["m.room.join_rules" "m.room.canonical_alias" "m.room.avatar" "m.room.name"];
+        default = [ "m.room.join_rules" "m.room.canonical_alias" "m.room.avatar" "m.room.name" ];
         description = ''
           A list of event types that will be included in the room_invite_state
         '';
@@ -595,7 +610,7 @@ in {
       };
       app_service_config_files = mkOption {
         type = types.listOf types.path;
-        default = [ ];
+        default = [];
         description = ''
           A list of application service config file to use
         '';
@@ -639,18 +654,22 @@ in {
 
   config = mkIf cfg.enable {
     users.users = [
-      { name = "matrix-synapse";
+      {
+        name = "matrix-synapse";
         group = "matrix-synapse";
         home = cfg.dataDir;
         createHome = true;
         shell = "${pkgs.bash}/bin/bash";
         uid = config.ids.uids.matrix-synapse;
-      } ];
+      }
+    ];
 
     users.groups = [
-      { name = "matrix-synapse";
+      {
+        name = "matrix-synapse";
         gid = config.ids.gids.matrix-synapse;
-      } ];
+      }
+    ];
 
     services.postgresql.enable = mkIf usePostgresql (mkDefault true);
 
@@ -663,26 +682,28 @@ in {
           --config-path ${configFile} \
           --keys-directory ${cfg.dataDir} \
           --generate-keys
-      '' + optionalString (usePostgresql && cfg.create_local_database) ''
-        if ! test -e "${cfg.dataDir}/db-created"; then
-          ${pkgs.sudo}/bin/sudo -u ${pg.superUser} \
-            ${pg.package}/bin/createuser \
-            --login \
-            --no-createdb \
-            --no-createrole \
-            --encrypted \
-            ${cfg.database_user}
-          ${pkgs.sudo}/bin/sudo -u ${pg.superUser} \
-            ${pg.package}/bin/createdb \
-            --owner=${cfg.database_user} \
-            --encoding=UTF8 \
-            --lc-collate=C \
-            --lc-ctype=C \
-            --template=template0 \
-            ${cfg.database_name}
-          touch "${cfg.dataDir}/db-created"
-        fi
-      '';
+      ''
+      + optionalString (usePostgresql && cfg.create_local_database) ''
+          if ! test -e "${cfg.dataDir}/db-created"; then
+            ${pkgs.sudo}/bin/sudo -u ${pg.superUser} \
+              ${pg.package}/bin/createuser \
+              --login \
+              --no-createdb \
+              --no-createrole \
+              --encrypted \
+              ${cfg.database_user}
+            ${pkgs.sudo}/bin/sudo -u ${pg.superUser} \
+              ${pg.package}/bin/createdb \
+              --owner=${cfg.database_user} \
+              --encoding=UTF8 \
+              --lc-collate=C \
+              --lc-ctype=C \
+              --template=template0 \
+              ${cfg.database_name}
+            touch "${cfg.dataDir}/db-created"
+          fi
+        ''
+      ;
       serviceConfig = {
         Type = "notify";
         User = "matrix-synapse";

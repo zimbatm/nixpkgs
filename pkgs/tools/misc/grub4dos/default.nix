@@ -1,10 +1,12 @@
 { stdenv, fetchFromGitHub, nasm }:
 
-let arch =
-  if stdenv.isi686 then "i386"
-  else if stdenv.isx86_64 then "x86_64"
-  else throw "Unknown architecture";
-in stdenv.mkDerivation rec {
+let
+  arch =
+    if stdenv.isi686 then "i386"
+    else if stdenv.isx86_64 then "x86_64"
+    else throw "Unknown architecture";
+in
+stdenv.mkDerivation rec {
   name = "grub4dos-${version}";
   version = "0.4.6a-2019-05-12";
 

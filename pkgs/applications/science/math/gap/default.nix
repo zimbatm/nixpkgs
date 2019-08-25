@@ -5,18 +5,18 @@
 , makeWrapper
 , m4
 , gmp
-# one of
-# - "minimal" (~400M):
-#     Install the bare minimum of packages required by gap to start.
-#     This is likely to break a lot of stuff. Do not expect upstream support with
-#     this configuration.
-# - "standard" (~700M):
-#     Install the "standard packages" which gap autoloads by default. These
-#     packages are effectively considered a part of gap.
-# - "full" (~1.7G):
-#     Install all available packages. This takes a lot of space.
+  # one of
+  # - "minimal" (~400M):
+  #     Install the bare minimum of packages required by gap to start.
+  #     This is likely to break a lot of stuff. Do not expect upstream support with
+  #     this configuration.
+  # - "standard" (~700M):
+  #     Install the "standard packages" which gap autoloads by default. These
+  #     packages are effectively considered a part of gap.
+  # - "full" (~1.7G):
+  #     Install all available packages. This takes a lot of space.
 , packageSet ? "standard"
-# Kept for backwards compatibility. Overrides packageSet to "full".
+  # Kept for backwards compatibility. Overrides packageSet to "full".
 , keepAllPackages ? false
 }:
 let
@@ -53,7 +53,9 @@ let
   # `find`'s `-name`.
   removeNonWhitelistedPkgs = whitelist: ''
     find pkg -type d -maxdepth 1 -mindepth 1 \
-  '' + (lib.concatStringsSep "\n" (map (str: "-not -name '${str}' \\") whitelist)) + ''
+  ''
+    + (lib.concatStringsSep "\n" (map (str: "-not -name '${str}' \\") whitelist))
+    + ''
     -exec echo "Removing package {}" \; \
     -exec rm -r '{}' \;
   '';
@@ -69,9 +71,11 @@ stdenv.mkDerivation rec {
   };
 
   # remove all non-essential packages (which take up a lot of space)
-  preConfigure = lib.optionalString (!keepAll) (removeNonWhitelistedPkgs packagesToKeep) + ''
+  preConfigure = lib.optionalString (!keepAll) (removeNonWhitelistedPkgs packagesToKeep)
+    + ''
     patchShebangs .
-  '';
+  ''
+    ;
 
   configureFlags = [ "--with-gmp=system" ];
 
@@ -86,11 +90,13 @@ stdenv.mkDerivation rec {
 
   patches = [
     # https://github.com/gap-system/gap/pull/3294
-    (fetchpatch {
-      name = "add-make-install-targets.patch";
-      url = "https://github.com/gap-system/gap/commit/3361c172e6c5ff3bb3f01ba9d6f1dd4ad42cea80.patch";
-      sha256 = "1kwp9qnfvmlbpf1c3rs6j5m2jz22rj7a4hb5x1gj9vkpiyn5pdyj";
-    })
+    (
+      fetchpatch {
+        name = "add-make-install-targets.patch";
+        url = "https://github.com/gap-system/gap/commit/3361c172e6c5ff3bb3f01ba9d6f1dd4ad42cea80.patch";
+        sha256 = "1kwp9qnfvmlbpf1c3rs6j5m2jz22rj7a4hb5x1gj9vkpiyn5pdyj";
+      }
+    )
   ];
 
   # "teststandard" is a superset of testinstall. It takes ~1h instead of ~1min.
@@ -163,11 +169,11 @@ stdenv.mkDerivation rec {
   meta = with lib; {
     description = "Computational discrete algebra system";
     maintainers = with maintainers;
-    [
-      raskin
-      chrisjefferson
-      timokau
-    ];
+      [
+        raskin
+        chrisjefferson
+        timokau
+      ];
     platforms = platforms.all;
     broken = stdenv.isDarwin;
     # keeping all packages increases the package size considerably, wchich

@@ -20,9 +20,11 @@ stdenv.mkDerivation rec {
 
   CFLAGS = "-DACCEPT_USE_OF_DEPRECATED_PROJ_API_H=1";
 
-  postInstall = "" + optionalString stdenv.isDarwin ''
-    ln -s $out/lib/mod_spatialite.{so,dylib}
-  '';
+  postInstall = ""
+    + optionalString stdenv.isDarwin ''
+        ln -s $out/lib/mod_spatialite.{so,dylib}
+      ''
+    ;
 
   meta = {
     description = "Extensible spatial index library in C++";

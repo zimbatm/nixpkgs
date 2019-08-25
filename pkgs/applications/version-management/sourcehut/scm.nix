@@ -1,6 +1,12 @@
-{ stdenv, fetchgit, buildPythonPackage
-, srht, redis, pyyaml, buildsrht
-, writeText }:
+{ stdenv
+, fetchgit
+, buildPythonPackage
+, srht
+, redis
+, pyyaml
+, buildsrht
+, writeText
+}:
 
 buildPythonPackage rec {
   pname = "scmsrht";
@@ -38,13 +44,14 @@ buildPythonPackage rec {
       [meta.sr.ht]
       origin=http://meta.sr.ht.local
     '';
-  in ''
-    # Validation needs config option(s)
-    # webhooks <- ( private-key )
-    # meta.sr.ht <- ( origin )
-    # builds.sr.ht <- ( origin, oauth-client-id )
-    cp ${config} config.ini
-  '';
+  in
+    ''
+      # Validation needs config option(s)
+      # webhooks <- ( private-key )
+      # meta.sr.ht <- ( origin )
+      # builds.sr.ht <- ( origin, oauth-client-id )
+      cp ${config} config.ini
+    '';
 
   meta = with stdenv.lib; {
     homepage = https://git.sr.ht/~sircmpwn/git.sr.ht;

@@ -1,13 +1,38 @@
-{ stdenv, fetchurl, intltool, meson, ninja, pkgconfig, gobject-introspection, python3
-, gtk-doc, docbook_xsl, docbook_xml_dtd_412, docbook_xml_dtd_43, glibcLocales
-, libxml2, upower, glib, wrapGAppsHook, vala, sqlite, libxslt, libstemmer
-, gnome3, icu, libuuid, networkmanager, libsoup, json-glib
-, substituteAll}:
+{ stdenv
+, fetchurl
+, intltool
+, meson
+, ninja
+, pkgconfig
+, gobject-introspection
+, python3
+, gtk-doc
+, docbook_xsl
+, docbook_xml_dtd_412
+, docbook_xml_dtd_43
+, glibcLocales
+, libxml2
+, upower
+, glib
+, wrapGAppsHook
+, vala
+, sqlite
+, libxslt
+, libstemmer
+, gnome3
+, icu
+, libuuid
+, networkmanager
+, libsoup
+, json-glib
+, substituteAll
+}:
 
 let
   pname = "tracker";
   version = "2.2.2";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "${pname}-${version}";
 
   outputs = [ "out" "dev" "devdoc" ];
@@ -18,13 +43,33 @@ in stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    meson ninja vala pkgconfig intltool libxslt wrapGAppsHook gobject-introspection
-    gtk-doc docbook_xsl docbook_xml_dtd_412 docbook_xml_dtd_43 glibcLocales
+    meson
+    ninja
+    vala
+    pkgconfig
+    intltool
+    libxslt
+    wrapGAppsHook
+    gobject-introspection
+    gtk-doc
+    docbook_xsl
+    docbook_xml_dtd_412
+    docbook_xml_dtd_43
+    glibcLocales
     python3 # for data-generators
   ];
 
   buildInputs = [
-    glib libxml2 sqlite upower icu networkmanager libsoup libuuid json-glib libstemmer
+    glib
+    libxml2
+    sqlite
+    upower
+    icu
+    networkmanager
+    libsoup
+    libuuid
+    json-glib
+    libstemmer
   ];
 
   LC_ALL = "en_US.UTF-8";
@@ -38,10 +83,12 @@ in stdenv.mkDerivation rec {
   ];
 
   patches = [
-    (substituteAll {
-      src = ./fix-paths.patch;
-      gdbus = "${glib.bin}/bin/gdbus";
-    })
+    (
+      substituteAll {
+        src = ./fix-paths.patch;
+        gdbus = "${glib.bin}/bin/gdbus";
+      }
+    )
   ];
 
   postPatch = ''

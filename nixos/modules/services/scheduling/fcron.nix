@@ -14,14 +14,15 @@ let
       SHELL=${pkgs.bash}/bin/bash
       PATH=${config.system.path}/bin:${config.system.path}/sbin
       ${optionalString (config.services.cron.mailto != null) ''
-        MAILTO="${config.services.cron.mailto}"
-      ''}
+      MAILTO="${config.services.cron.mailto}"
+    ''}
       NIX_CONF_DIR=/etc/nix
       ${lib.concatStrings (map (job: job + "\n") config.services.cron.systemCronJobs)}
     '';
 
   allowdeny = target: users:
-    { source = pkgs.writeText "fcron.${target}" (concatStringsSep "\n" users);
+    {
+      source = pkgs.writeText "fcron.${target}" (concatStringsSep "\n" users);
       target = "fcron.${target}";
       mode = "644";
       gid = config.ids.gids.fcron;
@@ -87,10 +88,12 @@ in
     services.fcron.systab = systemCronJobs;
 
     environment.etc =
-      [ (allowdeny "allow" (cfg.allow))
+      [
+        (allowdeny "allow" (cfg.allow))
         (allowdeny "deny" cfg.deny)
         # see man 5 fcron.conf
-        { source =
+        {
+          source =
             let
               isSendmailWrapped =
                 lib.hasAttr "sendmail" config.security.wrappers;
@@ -98,16 +101,16 @@ in
                 if isSendmailWrapped then "/run/wrappers/bin/sendmail"
                 else "${config.system.path}/bin/sendmail";
             in
-            pkgs.writeText "fcron.conf" ''
-              fcrontabs   =       /var/spool/fcron
-              pidfile     =       /run/fcron.pid
-              fifofile    =       /run/fcron.fifo
-              fcronallow  =       /etc/fcron.allow
-              fcrondeny   =       /etc/fcron.deny
-              shell       =       /bin/sh
-              sendmail    =       ${sendmailPath}
-              editor      =       ${pkgs.vim}/bin/vim
-            '';
+              pkgs.writeText "fcron.conf" ''
+                fcrontabs   =       /var/spool/fcron
+                pidfile     =       /run/fcron.pid
+                fifofile    =       /run/fcron.fifo
+                fcronallow  =       /etc/fcron.allow
+                fcrondeny   =       /etc/fcron.deny
+                shell       =       /bin/sh
+                sendmail    =       ${sendmailPath}
+                editor      =       ${pkgs.vim}/bin/vim
+              '';
           target = "fcron.conf";
           gid = config.ids.gids.fcron;
           mode = "0644";

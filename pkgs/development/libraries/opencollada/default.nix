@@ -1,5 +1,12 @@
-{ lib, stdenv, fetchFromGitHub, cmake, pkgconfig, libxml2, pcre
-, darwin}:
+{ lib
+, stdenv
+, fetchFromGitHub
+, cmake
+, pkgconfig
+, libxml2
+, pcre
+, darwin
+}:
 
 stdenv.mkDerivation rec {
   name = "opencollada-${version}";
@@ -15,7 +22,8 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ cmake ]
-    ++ lib.optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [ AGL ]);
+    ++ lib.optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [ AGL ])
+    ;
 
   propagatedBuildInputs = [ libxml2 pcre ];
 
@@ -23,10 +31,12 @@ stdenv.mkDerivation rec {
 
   patchPhase = ''
     patch -p1 < ${./pcre.patch}
-  '' + lib.optionalString stdenv.isDarwin ''
-    substituteInPlace GeneratedSaxParser/src/GeneratedSaxParserUtils.cpp \
-      --replace math.h cmath
-  '';
+  ''
+  + lib.optionalString stdenv.isDarwin ''
+      substituteInPlace GeneratedSaxParser/src/GeneratedSaxParserUtils.cpp \
+        --replace math.h cmath
+    ''
+  ;
 
   meta = {
     description = "A library for handling the COLLADA file format";

@@ -20,7 +20,8 @@ with import ../../lib/qemu-flags.nix { inherit pkgs; };
   config = {
 
     systemd.services.backdoor =
-      { wantedBy = [ "multi-user.target" ];
+      {
+        wantedBy = [ "multi-user.target" ];
         requires = [ "dev-hvc0.device" "dev-${qemuSerialDevice}.device" ];
         after = [ "dev-hvc0.device" "dev-${qemuSerialDevice}.device" ];
         script =
@@ -113,7 +114,7 @@ with import ../../lib/qemu-flags.nix { inherit pkgs; };
 
     # Prevent tests from accessing the Internet.
     networking.defaultGateway = mkOverride 150 "";
-    networking.nameservers = mkOverride 150 [ ];
+    networking.nameservers = mkOverride 150 [];
 
     systemd.globalEnvironment.GCOV_PREFIX = "/tmp/xchg/coverage-data";
 

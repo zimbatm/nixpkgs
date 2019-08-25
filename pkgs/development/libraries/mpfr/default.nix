@@ -18,8 +18,9 @@ stdenv.mkDerivation rec {
   propagatedBuildInputs = [ gmp ];
 
   configureFlags =
-    stdenv.lib.optional stdenv.hostPlatform.isSunOS "--disable-thread-safe" ++
-    stdenv.lib.optional stdenv.hostPlatform.is64bit "--with-pic";
+    stdenv.lib.optional stdenv.hostPlatform.isSunOS "--disable-thread-safe"
+    ++ stdenv.lib.optional stdenv.hostPlatform.is64bit "--with-pic"
+    ;
 
   doCheck = true; # not cross;
 
@@ -43,7 +44,7 @@ stdenv.mkDerivation rec {
 
     license = stdenv.lib.licenses.lgpl2Plus;
 
-    maintainers = [ ];
+    maintainers = [];
     platforms = stdenv.lib.platforms.all;
   };
 }

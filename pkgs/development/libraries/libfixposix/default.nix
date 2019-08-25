@@ -1,8 +1,8 @@
 { stdenv, fetchFromGitHub, autoreconfHook, pkgconfig }:
 
 stdenv.mkDerivation rec {
-  name="libfixposix-${version}";
-  version="0.4.3";
+  name = "libfixposix-${version}";
+  version = "0.4.3";
 
   src = fetchFromGitHub {
     owner = "sionescu";

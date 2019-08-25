@@ -36,10 +36,12 @@ python3.pkgs.buildPythonApplication rec {
   };
 
   patches = [
-    (substituteAll {
-      src = ./fix-paths.patch;
-      perl = "${perl}/bin/perl";
-    })
+    (
+      substituteAll {
+        src = ./fix-paths.patch;
+        perl = "${perl}/bin/perl";
+      }
+    )
   ];
 
   postPatch = ''

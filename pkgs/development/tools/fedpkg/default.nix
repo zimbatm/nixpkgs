@@ -13,7 +13,8 @@ let
     propagatedBuildInputs = [ python_fedora pyopenssl ];
     doCheck = false;
   };
-in buildPythonApplication rec {
+in
+buildPythonApplication rec {
   pname = "fedpkg";
   version = "1.29";
 
@@ -30,6 +31,6 @@ in buildPythonApplication rec {
     description = "Subclass of the rpkg project for dealing with rpm packaging";
     homepage = https://pagure.io/fedpkg;
     license = licenses.gpl2;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
   };
 }

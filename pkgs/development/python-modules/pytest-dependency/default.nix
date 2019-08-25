@@ -11,11 +11,13 @@ buildPythonPackage rec {
 
   patches = [
     # Fix tests for pytest>=4.2.0. Remove with the next release
-    (fetchpatch {
-      url = "https://github.com/RKrahl/pytest-dependency/commit/089395bf77e629ee789666361ee12395d840252c.patch";
-      sha256 = "1nkha2gndrr3mx11kx2ipxhphqd6wr25hvkrfwzyrispqfhgl0wm";
-      excludes = [ "doc/src/changelog.rst" ];
-    })
+    (
+      fetchpatch {
+        url = "https://github.com/RKrahl/pytest-dependency/commit/089395bf77e629ee789666361ee12395d840252c.patch";
+        sha256 = "1nkha2gndrr3mx11kx2ipxhphqd6wr25hvkrfwzyrispqfhgl0wm";
+        excludes = [ "doc/src/changelog.rst" ];
+      }
+    )
   ];
 
   propagatedBuildInputs = [ pytest ];

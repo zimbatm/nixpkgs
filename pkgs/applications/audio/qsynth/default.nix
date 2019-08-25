@@ -1,6 +1,6 @@
 { stdenv, fetchurl, alsaLib, fluidsynth, libjack2, qt5, autoconf, pkgconfig }:
 
-stdenv.mkDerivation  rec {
+stdenv.mkDerivation rec {
   name = "qsynth-${version}";
   version = "0.5.7";
 

@@ -1,5 +1,12 @@
-{ stdenv, fetchFromGitHub, pkgconfig
-, buildGoPackage, gpgme, lvm2, btrfs-progs, libseccomp, systemd
+{ stdenv
+, fetchFromGitHub
+, pkgconfig
+, buildGoPackage
+, gpgme
+, lvm2
+, btrfs-progs
+, libseccomp
+, systemd
 , go-md2man
 }:
 
@@ -8,9 +15,9 @@ buildGoPackage rec {
   version = "1.5.1";
 
   src = fetchFromGitHub {
-    owner  = "containers";
-    repo   = "libpod";
-    rev    = "v${version}";
+    owner = "containers";
+    repo = "libpod";
+    rev = "v${version}";
     sha256 = "1jg7fdshqz0x71339i0wndskb17x1k5rwpkjiwd463f96fnbfp4x";
   };
 

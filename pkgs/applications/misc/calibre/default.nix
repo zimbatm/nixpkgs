@@ -1,7 +1,27 @@
-{ stdenv, mkDerivation,  fetchurl, poppler_utils, pkgconfig, libpng
-, imagemagick, libjpeg, fontconfig, podofo, qtbase, qmake, icu, sqlite
-, unrarSupport ? false, chmlib, python2Packages, libusb1, libmtp
-, xdg_utils, makeDesktopItem, wrapGAppsHook, removeReferencesTo, qt5
+{ stdenv
+, mkDerivation
+, fetchurl
+, poppler_utils
+, pkgconfig
+, libpng
+, imagemagick
+, libjpeg
+, fontconfig
+, podofo
+, qtbase
+, qmake
+, icu
+, sqlite
+, unrarSupport ? false
+, chmlib
+, python2Packages
+, libusb1
+, libmtp
+, xdg_utils
+, makeDesktopItem
+, wrapGAppsHook
+, removeReferencesTo
+, qt5
 }:
 
 mkDerivation rec {
@@ -20,7 +40,9 @@ mkDerivation rec {
     # - switches the version update from enabled to disabled by default
     ./no_updates_dialog.patch
     # the unrar patch is not from debian
-  ] ++ stdenv.lib.optional (!unrarSupport) ./dont_build_unrar_plugin.patch;
+  ]
+  ++ stdenv.lib.optional (!unrarSupport) ./dont_build_unrar_plugin.patch
+  ;
 
   prePatch = ''
     sed -i "/pyqt_sip_dir/ s:=.*:= '${python2Packages.pyqt5_with_qtwebkit}/share/sip/PyQt5':"  \
@@ -38,15 +60,43 @@ mkDerivation rec {
   nativeBuildInputs = [ pkgconfig qmake removeReferencesTo wrapGAppsHook ];
 
   buildInputs = [
-    poppler_utils libpng imagemagick libjpeg
-    fontconfig podofo qtbase chmlib icu sqlite libusb1 libmtp xdg_utils
-  ] ++ (with python2Packages; [
-    apsw cssselect css-parser dateutil dnspython html5-parser lxml mechanize netifaces pillow
-    python pyqt5_with_qtwebkit sip
-    regex msgpack beautifulsoup4
-    # the following are distributed with calibre, but we use upstream instead
-    odfpy
-  ]);
+    poppler_utils
+    libpng
+    imagemagick
+    libjpeg
+    fontconfig
+    podofo
+    qtbase
+    chmlib
+    icu
+    sqlite
+    libusb1
+    libmtp
+    xdg_utils
+  ]
+  ++ (
+       with python2Packages; [
+         apsw
+         cssselect
+         css-parser
+         dateutil
+         dnspython
+         html5-parser
+         lxml
+         mechanize
+         netifaces
+         pillow
+         python
+         pyqt5_with_qtwebkit
+         sip
+         regex
+         msgpack
+         beautifulsoup4
+         # the following are distributed with calibre, but we use upstream instead
+         odfpy
+       ]
+     )
+  ;
 
   installPhase = ''
     runHook preInstall

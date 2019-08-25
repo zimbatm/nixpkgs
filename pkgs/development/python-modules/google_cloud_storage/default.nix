@@ -21,7 +21,7 @@ buildPythonPackage rec {
   propagatedBuildInputs = [ google_resumable_media google_api_core google_cloud_core ];
 
   checkPhase = ''
-   pytest tests/unit
+    pytest tests/unit
   '';
 
   meta = with stdenv.lib; {

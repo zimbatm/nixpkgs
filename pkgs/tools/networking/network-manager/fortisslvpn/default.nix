@@ -1,10 +1,23 @@
-{ stdenv, fetchurl, substituteAll, openfortivpn, intltool, pkgconfig, file, gtk3,
-networkmanager, ppp, libsecret, withGnome ? true, gnome3 }:
+{ stdenv
+, fetchurl
+, substituteAll
+, openfortivpn
+, intltool
+, pkgconfig
+, file
+, gtk3
+, networkmanager
+, ppp
+, libsecret
+, withGnome ? true
+, gnome3
+}:
 
 let
   pname = "NetworkManager-fortisslvpn";
   version = "1.2.10";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "${pname}${if withGnome then "-gnome" else ""}-${version}";
 
   src = fetchurl {
@@ -13,14 +26,17 @@ in stdenv.mkDerivation rec {
   };
 
   patches = [
-    (substituteAll {
-      src = ./fix-paths.patch;
-      inherit openfortivpn;
-    })
+    (
+      substituteAll {
+        src = ./fix-paths.patch;
+        inherit openfortivpn;
+      }
+    )
   ];
 
   buildInputs = [ openfortivpn networkmanager ppp ]
-    ++ stdenv.lib.optionals withGnome [ gtk3 libsecret gnome3.networkmanagerapplet ];
+    ++ stdenv.lib.optionals withGnome [ gtk3 libsecret gnome3.networkmanagerapplet ]
+    ;
 
   nativeBuildInputs = [ intltool pkgconfig file ];
 
@@ -44,4 +60,3 @@ in stdenv.mkDerivation rec {
     license = licenses.gpl2;
   };
 }
-

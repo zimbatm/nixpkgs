@@ -31,19 +31,22 @@ rec {
   overrideDerivation = drv: f:
     let
       newDrv = derivation (drv.drvAttrs // (f drv));
-    in lib.flip (extendDerivation true) newDrv (
-      { meta = drv.meta or {};
-        passthru = if drv ? passthru then drv.passthru else {};
-      }
-      //
-      (drv.passthru or {})
-      //
-      (if (drv ? crossDrv && drv ? nativeDrv)
-       then {
-         crossDrv = overrideDerivation drv.crossDrv f;
-         nativeDrv = overrideDerivation drv.nativeDrv f;
-       }
-       else { }));
+    in
+      lib.flip (extendDerivation true) newDrv (
+        {
+          meta = drv.meta or {};
+          passthru = if drv ? passthru then drv.passthru else {};
+        }
+        // (drv.passthru or {})
+        // (
+             if (drv ? crossDrv && drv ? nativeDrv)
+             then {
+               crossDrv = overrideDerivation drv.crossDrv f;
+               nativeDrv = overrideDerivation drv.nativeDrv f;
+             }
+             else {}
+           )
+      );
 
 
   /* `makeOverridable` takes a function from attribute set to attribute set and
@@ -69,13 +72,16 @@ rec {
       ff = f origArgs;
       overrideWith = newArgs: origArgs // (if lib.isFunction newArgs then newArgs origArgs else newArgs);
     in
-      if builtins.isAttrs ff then (ff // {
-        override = newArgs: makeOverridable f (overrideWith newArgs);
-        overrideDerivation = fdrv:
-          makeOverridable (args: overrideDerivation (f args) fdrv) origArgs;
-        ${if ff ? overrideAttrs then "overrideAttrs" else null} = fdrv:
-          makeOverridable (args: (f args).overrideAttrs fdrv) origArgs;
-      })
+      if builtins.isAttrs ff then (
+        ff
+        // {
+             override = newArgs: makeOverridable f (overrideWith newArgs);
+             overrideDerivation = fdrv:
+               makeOverridable (args: overrideDerivation (f args) fdrv) origArgs;
+             ${if ff ? overrideAttrs then "overrideAttrs" else null} = fdrv:
+               makeOverridable (args: (f args).overrideAttrs fdrv) origArgs;
+           }
+      )
       else if lib.isFunction ff then {
         override = newArgs: makeOverridable f (overrideWith newArgs);
         __functor = self: ff;
@@ -109,7 +115,8 @@ rec {
     let
       f = if lib.isFunction fn then fn else import fn;
       auto = builtins.intersectAttrs (lib.functionArgs f) autoArgs;
-    in makeOverridable f (auto // args);
+    in
+      makeOverridable f (auto // args);
 
 
   /* Like callPackage, but for a function that returns an attribute
@@ -122,7 +129,8 @@ rec {
       origArgs = auto // args;
       pkgs = f origArgs;
       mkAttrOverridable = name: _: makeOverridable (newArgs: (f newArgs).${name}) origArgs;
-    in lib.mapAttrs mkAttrOverridable pkgs;
+    in
+      lib.mapAttrs mkAttrOverridable pkgs;
 
 
   /* Add attributes to each output of a derivation without changing
@@ -131,24 +139,31 @@ rec {
     let
       outputs = drv.outputs or [ "out" ];
 
-      commonAttrs = drv // (builtins.listToAttrs outputsList) //
-        ({ all = map (x: x.value) outputsList; }) // passthru;
+      commonAttrs = drv // (builtins.listToAttrs outputsList)
+        // ({ all = map (x: x.value) outputsList; })
+        // passthru
+        ;
 
       outputToAttrListElement = outputName:
-        { name = outputName;
-          value = commonAttrs // {
-            inherit (drv.${outputName}) type outputName;
-            drvPath = assert condition; drv.${outputName}.drvPath;
-            outPath = assert condition; drv.${outputName}.outPath;
-          };
+        {
+          name = outputName;
+          value = commonAttrs
+            // {
+                 inherit (drv.${outputName}) type outputName;
+                 drvPath = assert condition; drv.${outputName}.drvPath;
+                 outPath = assert condition; drv.${outputName}.outPath;
+               }
+            ;
         };
 
       outputsList = map outputToAttrListElement outputs;
-    in commonAttrs // {
-      outputUnspecified = true;
-      drvPath = assert condition; drv.drvPath;
-      outPath = assert condition; drv.outPath;
-    };
+    in
+      commonAttrs
+      // {
+           outputUnspecified = true;
+           drvPath = assert condition; drv.drvPath;
+           outPath = assert condition; drv.outPath;
+         };
 
   /* Strip a derivation of all non-essential attributes, returning
      only those needed by hydra-eval-jobs. Also strictly evaluate the
@@ -156,31 +171,38 @@ rec {
      garbage collection. */
   hydraJob = drv:
     let
-      outputs = drv.outputs or ["out"];
+      outputs = drv.outputs or [ "out" ];
 
       commonAttrs =
         { inherit (drv) name system meta; inherit outputs; }
         // lib.optionalAttrs (drv._hydraAggregate or false) {
-          _hydraAggregate = true;
-          constituents = map hydraJob (lib.flatten drv.constituents);
-        }
-        // (lib.listToAttrs outputsList);
+             _hydraAggregate = true;
+             constituents = map hydraJob (lib.flatten drv.constituents);
+           }
+        // (lib.listToAttrs outputsList)
+        ;
 
       makeOutput = outputName:
-        let output = drv.${outputName}; in
-        { name = outputName;
-          value = commonAttrs // {
-            outPath = output.outPath;
-            drvPath = output.drvPath;
-            type = "derivation";
-            inherit outputName;
+        let
+          output = drv.${outputName};
+        in
+          {
+            name = outputName;
+            value = commonAttrs
+              // {
+                   outPath = output.outPath;
+                   drvPath = output.drvPath;
+                   type = "derivation";
+                   inherit outputName;
+                 }
+              ;
           };
-        };
 
       outputsList = map makeOutput outputs;
 
       drv' = (lib.head outputsList).value;
-    in lib.deepSeq drv' drv';
+    in
+      lib.deepSeq drv' drv';
 
   /* Make a set of packages with a common scope. All packages called
      with the provided `callPackage' will be evaluated with the same
@@ -192,15 +214,19 @@ rec {
      provided by `newScope' and the set provides a `newScope' attribute
      which can form the parent scope for later package sets. */
   makeScope = newScope: f:
-    let self = f self // {
-          newScope = scope: newScope (self // scope);
-          callPackage = self.newScope {};
-          overrideScope = g: lib.warn
-            "`overrideScope` (from `lib.makeScope`) is deprecated. Do `overrideScope' (self: super: { … })` instead of `overrideScope (super: self: { … })`. All other overrides have the parameters in that order, including other definitions of `overrideScope`. This was the only definition violating the pattern."
-            (makeScope newScope (lib.fixedPoints.extends (lib.flip g) f));
-          overrideScope' = g: makeScope newScope (lib.fixedPoints.extends g f);
-          packages = f;
-        };
-    in self;
+    let
+      self = f self
+        // {
+             newScope = scope: newScope (self // scope);
+             callPackage = self.newScope {};
+             overrideScope = g: lib.warn
+               "`overrideScope` (from `lib.makeScope`) is deprecated. Do `overrideScope' (self: super: { … })` instead of `overrideScope (super: self: { … })`. All other overrides have the parameters in that order, including other definitions of `overrideScope`. This was the only definition violating the pattern."
+               (makeScope newScope (lib.fixedPoints.extends (lib.flip g) f));
+             overrideScope' = g: makeScope newScope (lib.fixedPoints.extends g f);
+             packages = f;
+           }
+        ;
+    in
+      self;
 
 }

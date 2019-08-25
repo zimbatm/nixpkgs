@@ -1,6 +1,8 @@
 { lib, fetchzip }:
 
-let version = "3.1"; in
+let
+  version = "3.1";
+in
 
 fetchzip {
   name = "intel2200BGFirmware-${version}";

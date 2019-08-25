@@ -9,7 +9,9 @@ let
   defaultConfig = builtins.fromJSON (readFile "${pkgs.mattermost}/config/config.json");
 
   mattermostConf = foldl recursiveUpdate defaultConfig
-    [ { ServiceSettings.SiteURL = cfg.siteUrl;
+    [
+      {
+        ServiceSettings.SiteURL = cfg.siteUrl;
         ServiceSettings.ListenAddress = cfg.listenAddress;
         TeamSettings.SiteName = cfg.siteName;
         SqlSettings.DriverName = "postgres";
@@ -75,7 +77,7 @@ in
 
       extraConfig = mkOption {
         type = types.attrs;
-        default = { };
+        default = {};
         description = ''
           Addtional configuration options as Nix attribute set in config.json schema.
         '';
@@ -133,7 +135,7 @@ in
         enable = mkEnableOption "Mattermost IRC bridge";
         parameters = mkOption {
           type = types.listOf types.str;
-          default = [ ];
+          default = [];
           example = [ "-mmserver chat.example.com" "-bind [::]:6667" ];
           description = ''
             Set commandline parameters to pass to matterircd. See
@@ -145,86 +147,98 @@ in
   };
 
   config = mkMerge [
-    (mkIf cfg.enable {
-      users.users = optionalAttrs (cfg.user == "mattermost") (singleton {
-        name = "mattermost";
-        group = cfg.group;
-        uid = config.ids.uids.mattermost;
-        home = cfg.statePath;
-      });
+    (
+      mkIf cfg.enable {
+        users.users = optionalAttrs (cfg.user == "mattermost") (
+          singleton {
+            name = "mattermost";
+            group = cfg.group;
+            uid = config.ids.uids.mattermost;
+            home = cfg.statePath;
+          }
+        );
 
-      users.groups = optionalAttrs (cfg.group == "mattermost") (singleton {
-        name = "mattermost";
-        gid = config.ids.gids.mattermost;
-      });
+        users.groups = optionalAttrs (cfg.group == "mattermost") (
+          singleton {
+            name = "mattermost";
+            gid = config.ids.gids.mattermost;
+          }
+        );
 
-      services.postgresql.enable = cfg.localDatabaseCreate;
+        services.postgresql.enable = cfg.localDatabaseCreate;
 
-      # The systemd service will fail to execute the preStart hook
-      # if the WorkingDirectory does not exist
-      system.activationScripts.mattermost = ''
-        mkdir -p ${cfg.statePath}
-      '';
-
-      systemd.services.mattermost = {
-        description = "Mattermost chat service";
-        wantedBy = [ "multi-user.target" ];
-        after = [ "network.target" "postgresql.service" ];
-
-        preStart = ''
-          mkdir -p ${cfg.statePath}/{data,config,logs}
-          ln -sf ${pkgs.mattermost}/{bin,fonts,i18n,templates,client} ${cfg.statePath}
-        '' + lib.optionalString (!cfg.mutableConfig) ''
-          ln -sf ${mattermostConfJSON} ${cfg.statePath}/config/config.json
-        '' + lib.optionalString cfg.mutableConfig ''
-          if ! test -e "${cfg.statePath}/config/.initial-created"; then
-            rm -f ${cfg.statePath}/config/config.json
-            cp ${mattermostConfJSON} ${cfg.statePath}/config/config.json
-            touch ${cfg.statePath}/config/.initial-created
-          fi
-        '' + lib.optionalString cfg.localDatabaseCreate ''
-          if ! test -e "${cfg.statePath}/.db-created"; then
-            ${pkgs.sudo}/bin/sudo -u ${config.services.postgresql.superUser} \
-              ${config.services.postgresql.package}/bin/psql postgres -c \
-                "CREATE ROLE ${cfg.localDatabaseUser} WITH LOGIN NOCREATEDB NOCREATEROLE ENCRYPTED PASSWORD '${cfg.localDatabasePassword}'"
-            ${pkgs.sudo}/bin/sudo -u ${config.services.postgresql.superUser} \
-              ${config.services.postgresql.package}/bin/createdb \
-                --owner ${cfg.localDatabaseUser} ${cfg.localDatabaseName}
-            touch ${cfg.statePath}/.db-created
-          fi
-        '' + ''
-          chown ${cfg.user}:${cfg.group} -R ${cfg.statePath}
-          chmod u+rw,g+r,o-rwx -R ${cfg.statePath}
+        # The systemd service will fail to execute the preStart hook
+        # if the WorkingDirectory does not exist
+        system.activationScripts.mattermost = ''
+          mkdir -p ${cfg.statePath}
         '';
 
-        serviceConfig = {
-          PermissionsStartOnly = true;
-          User = cfg.user;
-          Group = cfg.group;
-          ExecStart = "${pkgs.mattermost}/bin/mattermost";
-          WorkingDirectory = "${cfg.statePath}";
-          Restart = "always";
-          RestartSec = "10";
-          LimitNOFILE = "49152";
+        systemd.services.mattermost = {
+          description = "Mattermost chat service";
+          wantedBy = [ "multi-user.target" ];
+          after = [ "network.target" "postgresql.service" ];
+
+          preStart = ''
+            mkdir -p ${cfg.statePath}/{data,config,logs}
+            ln -sf ${pkgs.mattermost}/{bin,fonts,i18n,templates,client} ${cfg.statePath}
+          ''
+          + lib.optionalString (!cfg.mutableConfig) ''
+              ln -sf ${mattermostConfJSON} ${cfg.statePath}/config/config.json
+            ''
+          + lib.optionalString cfg.mutableConfig ''
+              if ! test -e "${cfg.statePath}/config/.initial-created"; then
+                rm -f ${cfg.statePath}/config/config.json
+                cp ${mattermostConfJSON} ${cfg.statePath}/config/config.json
+                touch ${cfg.statePath}/config/.initial-created
+              fi
+            ''
+          + lib.optionalString cfg.localDatabaseCreate ''
+              if ! test -e "${cfg.statePath}/.db-created"; then
+                ${pkgs.sudo}/bin/sudo -u ${config.services.postgresql.superUser} \
+                  ${config.services.postgresql.package}/bin/psql postgres -c \
+                    "CREATE ROLE ${cfg.localDatabaseUser} WITH LOGIN NOCREATEDB NOCREATEROLE ENCRYPTED PASSWORD '${cfg.localDatabasePassword}'"
+                ${pkgs.sudo}/bin/sudo -u ${config.services.postgresql.superUser} \
+                  ${config.services.postgresql.package}/bin/createdb \
+                    --owner ${cfg.localDatabaseUser} ${cfg.localDatabaseName}
+                touch ${cfg.statePath}/.db-created
+              fi
+            ''
+          + ''
+            chown ${cfg.user}:${cfg.group} -R ${cfg.statePath}
+            chmod u+rw,g+r,o-rwx -R ${cfg.statePath}
+          ''
+          ;
+
+          serviceConfig = {
+            PermissionsStartOnly = true;
+            User = cfg.user;
+            Group = cfg.group;
+            ExecStart = "${pkgs.mattermost}/bin/mattermost";
+            WorkingDirectory = "${cfg.statePath}";
+            Restart = "always";
+            RestartSec = "10";
+            LimitNOFILE = "49152";
+          };
+          unitConfig.JoinsNamespaceOf = mkIf cfg.localDatabaseCreate "postgresql.service";
         };
-        unitConfig.JoinsNamespaceOf = mkIf cfg.localDatabaseCreate "postgresql.service";
-      };
-    })
-    (mkIf cfg.matterircd.enable {
-      systemd.services.matterircd = {
-        description = "Mattermost IRC bridge service";
-        wantedBy = [ "multi-user.target" ];
-        serviceConfig = {
-          User = "nobody";
-          Group = "nogroup";
-          ExecStart = "${pkgs.matterircd.bin}/bin/matterircd ${concatStringsSep " " cfg.matterircd.parameters}";
-          WorkingDirectory = "/tmp";
-          PrivateTmp = true;
-          Restart = "always";
-          RestartSec = "5";
+      }
+    )
+    (
+      mkIf cfg.matterircd.enable {
+        systemd.services.matterircd = {
+          description = "Mattermost IRC bridge service";
+          wantedBy = [ "multi-user.target" ];
+          serviceConfig = {
+            User = "nobody";
+            Group = "nogroup";
+            ExecStart = "${pkgs.matterircd.bin}/bin/matterircd ${concatStringsSep " " cfg.matterircd.parameters}";
+            WorkingDirectory = "/tmp";
+            PrivateTmp = true;
+            Restart = "always";
+            RestartSec = "5";
+          };
         };
-      };
-    })
+      }
+    )
   ];
 }
-

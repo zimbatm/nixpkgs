@@ -15,7 +15,7 @@
 , adwaita-icon-theme
 }:
 
- python3.pkgs.buildPythonApplication rec {
+python3.pkgs.buildPythonApplication rec {
   name = "accerciser-${version}";
   version = "3.32.3";
 

@@ -1,5 +1,10 @@
-{ stdenv, fetchFromGitHub, fetchpatch, coreutils
-, python3Packages, substituteAll }:
+{ stdenv
+, fetchFromGitHub
+, fetchpatch
+, coreutils
+, python3Packages
+, substituteAll
+}:
 
 python3Packages.buildPythonApplication rec {
   name = "trash-cli-${version}";
@@ -14,18 +19,24 @@ python3Packages.buildPythonApplication rec {
   };
 
   patches = [
-    (substituteAll {
-      src = ./nix-paths.patch;
-      df = "${coreutils}/bin/df";
-      libc = let ext = if stdenv.isDarwin then ".dylib" else ".so.6";
-             in "${stdenv.cc.libc}/lib/libc${ext}";
-    })
+    (
+      substituteAll {
+        src = ./nix-paths.patch;
+        df = "${coreutils}/bin/df";
+        libc = let
+          ext = if stdenv.isDarwin then ".dylib" else ".so.6";
+        in
+          "${stdenv.cc.libc}/lib/libc${ext}";
+      }
+    )
 
     # Fix build on Python 3.6.
-    (fetchpatch {
-      url = "https://github.com/andreafrancia/trash-cli/commit/a21b80d1e69783bb09376c3f60dd2f2a10578805.patch";
-      sha256 = "0w49rjh433sjfc2cl5a9wlbr6kcn9f1qg905qsyv7ay3ar75wvyp";
-    })
+    (
+      fetchpatch {
+        url = "https://github.com/andreafrancia/trash-cli/commit/a21b80d1e69783bb09376c3f60dd2f2a10578805.patch";
+        sha256 = "0w49rjh433sjfc2cl5a9wlbr6kcn9f1qg905qsyv7ay3ar75wvyp";
+      }
+    )
   ];
 
   checkInputs = with python3Packages; [

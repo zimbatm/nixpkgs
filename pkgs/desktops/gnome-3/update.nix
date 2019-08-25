@@ -13,4 +13,5 @@ let
     latest_tag=$(python "${./find-latest-version.py}" "$package_name" "$version_policy" "stable")
     update-source-version "$attr_path" "$latest_tag"
   '';
-in [ updateScript packageName attrPath versionPolicy ]
+in
+[ updateScript packageName attrPath versionPolicy ]

@@ -41,7 +41,7 @@ in
 
     # In stage 1 of the boot, mount the CD/DVD as the root FS by label
     # so that we don't need to know its device.
-    fileSystems = [ ];
+    fileSystems = [];
 
     # boot.initrd.availableKernelModules = [ "mvsdio" "reiserfs" "ext3" "ext4" ];
 
@@ -50,7 +50,9 @@ in
     # Closures to be copied to the Nix store on the CD, namely the init
     # script and the top-level system configuration directory.
     tarball.storeContents =
-      [ { object = config.system.build.toplevel;
+      [
+        {
+          object = config.system.build.toplevel;
           symlink = "/run/current-system";
         }
       ];
@@ -58,10 +60,13 @@ in
     # Individual files to be included on the CD, outside of the Nix
     # store on the CD.
     tarball.contents =
-      [ { source = config.system.build.initialRamdisk + "/" + config.system.boot.loader.initrdFile;
+      [
+        {
+          source = config.system.build.initialRamdisk + "/" + config.system.boot.loader.initrdFile;
           target = "/boot/" + config.system.boot.loader.initrdFile;
         }
-        { source = versionFile;
+        {
+          source = versionFile;
           target = "/nixos-version.txt";
         }
       ];

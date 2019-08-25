@@ -8,7 +8,7 @@ stdenv.mkDerivation rec {
   src = fetchzip {
     url = "https://github.com/aantron/markup.ml/archive/${version}.tar.gz";
     sha256 = "09qm73m6c6wjh51w61vnfsnis37m28cf1r6hnkr3bbg903ahwbp5";
-    };
+  };
 
   buildInputs = [ ocaml findlib ocamlbuild lwt ];
 
@@ -25,7 +25,7 @@ stdenv.mkDerivation rec {
     platforms = ocaml.meta.platforms or [];
     maintainers = with maintainers; [
       gal_bolle
-      ];
+    ];
   };
 
 }

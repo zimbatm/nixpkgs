@@ -7,7 +7,7 @@ rec {
 
   description = '''';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/trivial-utf-8/2011-10-01/trivial-utf-8-20111001-darcs.tgz'';
@@ -16,7 +16,7 @@ rec {
 
   packageName = "trivial-utf-8";
 
-  asdFilesToKeep = ["trivial-utf-8.asd"];
+  asdFilesToKeep = [ "trivial-utf-8.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM trivial-utf-8 DESCRIPTION NIL SHA256

@@ -1,7 +1,11 @@
-{ stdenv, fetchurl
-, zlibSupport ? true, zlib ? null
-, sslSupport ? true, openssl ? null
-, idnSupport ? true, libidn ? null
+{ stdenv
+, fetchurl
+, zlibSupport ? true
+, zlib ? null
+, sslSupport ? true
+, openssl ? null
+, idnSupport ? true
+, libidn ? null
 }:
 
 assert zlibSupport -> zlib != null;
@@ -21,10 +25,11 @@ stdenv.mkDerivation rec {
     sha256 = "0r69gq8if9yy1amjzl7qrq9lzhhna7qgz905ln4wvkwchha1ppja";
   };
 
-  buildInputs = [ ]
+  buildInputs = []
     ++ optional zlibSupport zlib
     ++ optional sslSupport openssl
-    ++ optional idnSupport libidn;
+    ++ optional idnSupport libidn
+    ;
 
   meta = {
     description = "A portable high-level Jabber/XMPP library for C++";

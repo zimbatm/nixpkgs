@@ -1,6 +1,17 @@
-{ lib, buildPythonPackage, fetchPypi
-, setuptools_scm, django, dateutil, whoosh, pysolr
-, coverage, mock, nose, geopy, requests }:
+{ lib
+, buildPythonPackage
+, fetchPypi
+, setuptools_scm
+, django
+, dateutil
+, whoosh
+, pysolr
+, coverage
+, mock
+, nose
+, geopy
+, requests
+}:
 
 buildPythonPackage rec {
   pname = "django-haystack";

@@ -7,7 +7,7 @@ stdenv.mkDerivation rec {
   src = fetchFromGitHub {
     owner = "stp";
     repo = "stp";
-    rev    = "stp-${version}";
+    rev = "stp-${version}";
     sha256 = "1jh23wjm62nnqfx447g2y53bbangq04hjrvqc35v9xxpcjgj3i49";
   };
 
@@ -29,7 +29,7 @@ stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "Simple Theorem Prover";
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
     platforms = platforms.linux;
     license = licenses.mit;
   };

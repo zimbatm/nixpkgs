@@ -25,9 +25,10 @@ stdenv.mkDerivation rec {
 
   outputs = [ "out" "info" ];
 
-  buildInputs = [ ]
+  buildInputs = []
     ++ stdenv.lib.optional stdenv.isLinux acl
-    ++ stdenv.lib.optional stdenv.isDarwin autoreconfHook;
+    ++ stdenv.lib.optional stdenv.isDarwin autoreconfHook
+    ;
 
   # May have some issues with root compilation because the bootstrap tool
   # cannot be used as a login shell for now.
@@ -61,7 +62,7 @@ stdenv.mkDerivation rec {
 
     license = stdenv.lib.licenses.gpl3Plus;
 
-    maintainers = [ ];
+    maintainers = [];
     platforms = stdenv.lib.platforms.all;
 
     priority = 10;

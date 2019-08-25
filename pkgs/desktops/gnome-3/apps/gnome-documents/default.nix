@@ -1,10 +1,35 @@
-{ stdenv, meson, ninja, gettext, fetchurl, evince, gjs
-, pkgconfig, gtk3, glib, tracker, tracker-miners
-, itstool, libxslt, webkitgtk, libgdata
-, gnome-desktop, libzapojit, libgepub
-, gnome3, gdk-pixbuf, libsoup, docbook_xsl, docbook_xml_dtd_42
-, gobject-introspection, inkscape, poppler_utils
-, desktop-file-utils, wrapGAppsHook, python3, gsettings-desktop-schemas }:
+{ stdenv
+, meson
+, ninja
+, gettext
+, fetchurl
+, evince
+, gjs
+, pkgconfig
+, gtk3
+, glib
+, tracker
+, tracker-miners
+, itstool
+, libxslt
+, webkitgtk
+, libgdata
+, gnome-desktop
+, libzapojit
+, libgepub
+, gnome3
+, gdk-pixbuf
+, libsoup
+, docbook_xsl
+, docbook_xml_dtd_42
+, gobject-introspection
+, inkscape
+, poppler_utils
+, desktop-file-utils
+, wrapGAppsHook
+, python3
+, gsettings-desktop-schemas
+}:
 
 stdenv.mkDerivation rec {
   name = "gnome-documents-${version}";
@@ -22,15 +47,37 @@ stdenv.mkDerivation rec {
   ];
 
   nativeBuildInputs = [
-    meson ninja pkgconfig gettext itstool libxslt desktop-file-utils docbook_xsl docbook_xml_dtd_42 wrapGAppsHook python3
-    inkscape poppler_utils # building getting started
+    meson
+    ninja
+    pkgconfig
+    gettext
+    itstool
+    libxslt
+    desktop-file-utils
+    docbook_xsl
+    docbook_xml_dtd_42
+    wrapGAppsHook
+    python3
+    inkscape
+    poppler_utils # building getting started
   ];
   buildInputs = [
-    gtk3 glib gsettings-desktop-schemas
-    gdk-pixbuf gnome3.adwaita-icon-theme evince
-    libsoup webkitgtk gjs gobject-introspection
-    tracker tracker-miners libgdata
-    gnome-desktop libzapojit libgepub
+    gtk3
+    glib
+    gsettings-desktop-schemas
+    gdk-pixbuf
+    gnome3.adwaita-icon-theme
+    evince
+    libsoup
+    webkitgtk
+    gjs
+    gobject-introspection
+    tracker
+    tracker-miners
+    libgdata
+    gnome-desktop
+    libzapojit
+    libgepub
   ];
 
   postPatch = ''

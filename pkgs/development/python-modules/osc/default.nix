@@ -1,5 +1,9 @@
-{ stdenv, buildPythonPackage , fetchFromGitHub
-, bashInteractive , urlgrabber, m2crypto
+{ stdenv
+, buildPythonPackage
+, fetchFromGitHub
+, bashInteractive
+, urlgrabber
+, m2crypto
 }:
 
 buildPythonPackage rec {

@@ -5,7 +5,7 @@ rec {
 
   description = ''HTML Parser'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/cl-html-parse/2016-10-31/cl-html-parse-20161031-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "cl-html-parse";
 
-  asdFilesToKeep = ["cl-html-parse.asd"];
+  asdFilesToKeep = [ "cl-html-parse.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM cl-html-parse DESCRIPTION HTML Parser SHA256

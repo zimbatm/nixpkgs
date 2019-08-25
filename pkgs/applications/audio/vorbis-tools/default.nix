@@ -1,5 +1,14 @@
-{ stdenv, fetchurl, fetchzip, libogg, libvorbis, libao, pkgconfig, curl
-, speex, flac }:
+{ stdenv
+, fetchurl
+, fetchzip
+, libogg
+, libvorbis
+, libao
+, pkgconfig
+, curl
+, speex
+, flac
+}:
 
 let
   debPatch = fetchzip {
@@ -34,4 +43,3 @@ stdenv.mkDerivation {
     platforms = platforms.all;
   };
 }
-

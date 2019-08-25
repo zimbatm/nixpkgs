@@ -1,19 +1,53 @@
-{ stdenv, fetchFromGitHub, cmake, boost165, pkgconfig, python35
-, tbb, openimageio, libjpeg, libpng, zlib, libtiff, ilmbase
-, freetype, openexr, libXdmcp, libxkbcommon, epoxy, at-spi2-core
-, dbus, doxygen, qt5, c-blosc, libGLU, gnome3, gtk3, pcre
-, bison, flex, libpthreadstubs, libX11
-, embree2, makeWrapper, gsettings-desktop-schemas, glib
-, withOpenCL ? true , opencl-headers, ocl-icd, opencl-clhpp
+{ stdenv
+, fetchFromGitHub
+, cmake
+, boost165
+, pkgconfig
+, python35
+, tbb
+, openimageio
+, libjpeg
+, libpng
+, zlib
+, libtiff
+, ilmbase
+, freetype
+, openexr
+, libXdmcp
+, libxkbcommon
+, epoxy
+, at-spi2-core
+, dbus
+, doxygen
+, qt5
+, c-blosc
+, libGLU
+, gnome3
+, gtk3
+, pcre
+, bison
+, flex
+, libpthreadstubs
+, libX11
+, embree2
+, makeWrapper
+, gsettings-desktop-schemas
+, glib
+, withOpenCL ? true
+, opencl-headers
+, ocl-icd
+, opencl-clhpp
 }:
 
-let boost_static = boost165.override {
-      python = python35;
-      enableStatic = true;
-      enablePython = true;
-    };
+let
+  boost_static = boost165.override {
+    python = python35;
+    enableStatic = true;
+    enablePython = true;
+  };
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "luxcorerender-${version}";
   version = "2.0";
 
@@ -25,18 +59,46 @@ in stdenv.mkDerivation rec {
   };
 
   buildInputs =
-   [ embree2 pkgconfig cmake zlib boost_static libjpeg
-     libtiff libpng ilmbase freetype openexr openimageio
-     tbb qt5.full c-blosc libGLU pcre bison
-     flex libX11 libpthreadstubs python35 libXdmcp libxkbcommon
-     epoxy at-spi2-core dbus doxygen
-     # needed for GSETTINGS_SCHEMAS_PATH
-     gsettings-desktop-schemas glib gtk3
-     # needed for XDG_ICON_DIRS
-     gnome3.adwaita-icon-theme
-     makeWrapper
-     (stdenv.lib.getLib gnome3.dconf)
-   ] ++ stdenv.lib.optionals withOpenCL [opencl-headers ocl-icd opencl-clhpp];
+    [
+      embree2
+      pkgconfig
+      cmake
+      zlib
+      boost_static
+      libjpeg
+      libtiff
+      libpng
+      ilmbase
+      freetype
+      openexr
+      openimageio
+      tbb
+      qt5.full
+      c-blosc
+      libGLU
+      pcre
+      bison
+      flex
+      libX11
+      libpthreadstubs
+      python35
+      libXdmcp
+      libxkbcommon
+      epoxy
+      at-spi2-core
+      dbus
+      doxygen
+      # needed for GSETTINGS_SCHEMAS_PATH
+      gsettings-desktop-schemas
+      glib
+      gtk3
+      # needed for XDG_ICON_DIRS
+      gnome3.adwaita-icon-theme
+      makeWrapper
+      (stdenv.lib.getLib gnome3.dconf)
+    ]
+    ++ stdenv.lib.optionals withOpenCL [ opencl-headers ocl-icd opencl-clhpp ]
+  ;
 
   cmakeFlags = [
     "-DOpenEXR_Iex_INCLUDE_DIR=${openexr.dev}/include/OpenEXR"
@@ -48,8 +110,10 @@ in stdenv.mkDerivation rec {
     "-DEMBREE_INCLUDE_PATH=${embree2}/include"
     "-DEMBREE_LIBRARY=${embree2}/lib/libembree.so"
     "-DBoost_PYTHON_LIBRARY_RELEASE=${boost_static}/lib/libboost_python3-mt.so"
-  ] ++ stdenv.lib.optional withOpenCL
-       "-DOPENCL_INCLUDE_DIR=${opencl-headers}/include";
+  ]
+  ++ stdenv.lib.optional withOpenCL
+       "-DOPENCL_INCLUDE_DIR=${opencl-headers}/include"
+  ;
   preConfigure = ''
     NIX_CFLAGS_COMPILE+=" -isystem ${python35}/include/python3.5"
     NIX_LDFLAGS+=" -lpython3"

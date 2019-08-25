@@ -33,8 +33,8 @@ let
 in
 
 stdenv.mkDerivation rec {
-  name     = "ccl-${version}";
-  version  = "1.11.5";
+  name = "ccl-${version}";
+  version = "1.11.5";
 
   src = fetchurl {
     url = "https://github.com/Clozure/ccl/releases/download/v${version}/ccl-${version}-${cfg.arch}.tar.gz";
@@ -85,9 +85,9 @@ stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "Clozure Common Lisp";
-    homepage    = https://ccl.clozure.com/;
+    homepage = https://ccl.clozure.com/;
     maintainers = with maintainers; [ raskin muflax tohl ];
-    platforms   = attrNames options;
-    license     = licenses.lgpl21;
+    platforms = attrNames options;
+    license = licenses.lgpl21;
   };
 }

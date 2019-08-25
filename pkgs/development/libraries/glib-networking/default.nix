@@ -1,5 +1,17 @@
-{ stdenv, fetchurl, meson, ninja, pkgconfig, glib, gettext, python3, gnutls, p11-kit, libproxy, gnome3
-, gsettings-desktop-schemas }:
+{ stdenv
+, fetchurl
+, meson
+, ninja
+, pkgconfig
+, glib
+, gettext
+, python3
+, gnutls
+, p11-kit
+, libproxy
+, gnome3
+, gsettings-desktop-schemas
+}:
 
 let
   pname = "glib-networking";
@@ -23,7 +35,10 @@ stdenv.mkDerivation rec {
   '';
 
   nativeBuildInputs = [
-    meson ninja pkgconfig gettext
+    meson
+    ninja
+    pkgconfig
+    gettext
     python3 # install_script
   ];
   propagatedBuildInputs = [ glib gnutls p11-kit libproxy gsettings-desktop-schemas ];

@@ -28,7 +28,8 @@ rec {
           outputHashAlgo = "sha256";
           outputHash = all;
         };
-      } // (lib.mapAttrs languageFile languages);
+      }
+      // (lib.mapAttrs languageFile languages);
 
   v3 = makeLanguages {
     tessdataRev = "3cf1e2df1fe1d1da29295c9ef0983796c7958b7d";

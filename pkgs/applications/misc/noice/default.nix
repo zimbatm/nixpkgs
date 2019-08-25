@@ -12,8 +12,8 @@ stdenv.mkDerivation rec {
     sha256 = "03rwglcy47fh6rb630vws10m95bxpcfv47nxrlws2li2ljam8prw";
   };
 
-  configFile = optionalString (conf!=null) (builtins.toFile "config.def.h" conf);
-  preBuild = optionalString (conf!=null) "cp ${configFile} config.def.h";
+  configFile = optionalString (conf != null) (builtins.toFile "config.def.h" conf);
+  preBuild = optionalString (conf != null) "cp ${configFile} config.def.h";
 
   buildInputs = [ ncurses ];
 

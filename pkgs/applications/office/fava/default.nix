@@ -15,7 +15,7 @@ buildPythonApplication rec {
   doCheck = false;
 
   propagatedBuildInputs = with python3.pkgs;
-    [ 
+    [
       Babel
       cheroot
       flaskbabel

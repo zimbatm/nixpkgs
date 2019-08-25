@@ -73,12 +73,14 @@ in
 
   config = mkIf cfg.enable {
 
-    users.users = mkIf (cfg.user == null) [ {
-      name = u;
-      uid = config.ids.uids.yandexdisk;
-      group = "nogroup";
-      home = dir;
-    } ];
+    users.users = mkIf (cfg.user == null) [
+      {
+        name = u;
+        uid = config.ids.uids.yandexdisk;
+        group = "nogroup";
+        home = dir;
+      }
+    ];
 
     systemd.services.yandex-disk = {
       description = "Yandex-disk server";
@@ -110,4 +112,3 @@ in
   };
 
 }
-

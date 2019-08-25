@@ -8,11 +8,11 @@ stdenv.mkDerivation rec {
     sha256 = "19hwv197p7c23f43vvav5bs19z9b72jzca2npkjsxgprwj5ardjk";
   };
 
-  preBuild=''
+  preBuild = ''
     makeFlags="PREFIX=$out"
   '';
 
-  patchPhase=''
+  patchPhase = ''
     tar -xf testsuite.tar
     patchShebangs .
   '';
@@ -25,7 +25,7 @@ stdenv.mkDerivation rec {
   meta = with stdenv.lib; {
     description = "Converts filenames from one encoding to another";
     platforms = platforms.linux ++ platforms.freebsd ++ platforms.cygwin;
-    maintainers = [ ];
+    maintainers = [];
     license = licenses.gpl2Plus;
   };
 }

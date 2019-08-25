@@ -1,6 +1,6 @@
 { stdenv, fetchgit, asciidoc, docbook_xsl, libxslt }:
 stdenv.mkDerivation rec {
-  name    = "trace-cmd-${version}";
+  name = "trace-cmd-${version}";
   version = "2.8.3";
 
   src = fetchgit (import ./src.nix);
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
 
   outputs = [ "out" "lib" "dev" "man" ];
 
-  MANPAGE_DOCBOOK_XSL="${docbook_xsl}/xml/xsl/docbook/manpages/docbook.xsl";
+  MANPAGE_DOCBOOK_XSL = "${docbook_xsl}/xml/xsl/docbook/manpages/docbook.xsl";
 
   dontConfigure = true;
 
@@ -32,9 +32,9 @@ stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "User-space tools for the Linux kernel ftrace subsystem";
-    homepage    = http://kernelshark.org/;
-    license     = licenses.gpl2;
-    platforms   = platforms.linux;
+    homepage = http://kernelshark.org/;
+    license = licenses.gpl2;
+    platforms = platforms.linux;
     maintainers = with maintainers; [ thoughtpolice basvandijk ];
   };
 }

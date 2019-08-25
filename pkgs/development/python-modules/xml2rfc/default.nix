@@ -1,5 +1,14 @@
-{ lib, fetchPypi, buildPythonPackage, intervaltree, pyflakes, requests, lxml, google-i18n-address
-, pycountry, html5lib, six
+{ lib
+, fetchPypi
+, buildPythonPackage
+, intervaltree
+, pyflakes
+, requests
+, lxml
+, google-i18n-address
+, pycountry
+, html5lib
+, six
 , stdenv
 }:
 

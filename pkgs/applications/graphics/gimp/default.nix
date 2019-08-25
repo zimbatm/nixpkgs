@@ -1,13 +1,54 @@
-{ stdenv, fetchurl, substituteAll, pkgconfig, intltool, babl, gegl, gtk2, glib, gdk-pixbuf, isocodes
-, pango, cairo, freetype, fontconfig, lcms, libpng, libjpeg, poppler, poppler_data, libtiff
-, libmng, librsvg, libwmf, zlib, libzip, ghostscript, aalib, shared-mime-info
-, python2Packages, libexif, gettext, xorg, glib-networking, libmypaint, gexiv2
-, harfbuzz, mypaint-brushes, libwebp, libheif, libgudev, openexr
-, AppKit, Cocoa, gtk-mac-integration-gtk2 }:
+{ stdenv
+, fetchurl
+, substituteAll
+, pkgconfig
+, intltool
+, babl
+, gegl
+, gtk2
+, glib
+, gdk-pixbuf
+, isocodes
+, pango
+, cairo
+, freetype
+, fontconfig
+, lcms
+, libpng
+, libjpeg
+, poppler
+, poppler_data
+, libtiff
+, libmng
+, librsvg
+, libwmf
+, zlib
+, libzip
+, ghostscript
+, aalib
+, shared-mime-info
+, python2Packages
+, libexif
+, gettext
+, xorg
+, glib-networking
+, libmypaint
+, gexiv2
+, harfbuzz
+, mypaint-brushes
+, libwebp
+, libheif
+, libgudev
+, openexr
+, AppKit
+, Cocoa
+, gtk-mac-integration-gtk2
+}:
 
 let
   inherit (python2Packages) pygtk wrapPython python;
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   pname = "gimp";
   version = "2.10.12";
 
@@ -19,13 +60,50 @@ in stdenv.mkDerivation rec {
   nativeBuildInputs = [ pkgconfig intltool gettext wrapPython ];
   propagatedBuildInputs = [ gegl ]; # needed by gimp-2.0.pc
   buildInputs = [
-    babl gegl gtk2 glib gdk-pixbuf pango cairo gexiv2 harfbuzz isocodes
-    freetype fontconfig lcms libpng libjpeg poppler poppler_data libtiff openexr
-    libmng librsvg libwmf zlib libzip ghostscript aalib shared-mime-info libwebp libheif
-    python pygtk libexif xorg.libXpm glib-networking libmypaint mypaint-brushes
-  ] ++ stdenv.lib.optionals stdenv.isDarwin [
-    AppKit Cocoa gtk-mac-integration-gtk2
-  ] ++ stdenv.lib.optionals stdenv.isLinux [ libgudev ];
+    babl
+    gegl
+    gtk2
+    glib
+    gdk-pixbuf
+    pango
+    cairo
+    gexiv2
+    harfbuzz
+    isocodes
+    freetype
+    fontconfig
+    lcms
+    libpng
+    libjpeg
+    poppler
+    poppler_data
+    libtiff
+    openexr
+    libmng
+    librsvg
+    libwmf
+    zlib
+    libzip
+    ghostscript
+    aalib
+    shared-mime-info
+    libwebp
+    libheif
+    python
+    pygtk
+    libexif
+    xorg.libXpm
+    glib-networking
+    libmypaint
+    mypaint-brushes
+  ]
+  ++ stdenv.lib.optionals stdenv.isDarwin [
+       AppKit
+       Cocoa
+       gtk-mac-integration-gtk2
+     ]
+  ++ stdenv.lib.optionals stdenv.isLinux [ libgudev ]
+  ;
 
   pythonPath = [ pygtk ];
 
@@ -40,10 +118,12 @@ in stdenv.mkDerivation rec {
   patches = [
     # to remove compiler from the runtime closure, reference was retained via
     # gimp --version --verbose output
-    (substituteAll {
-      src = ./remove-cc-reference.patch;
-      cc_version = stdenv.cc.cc.name;
-    })
+    (
+      substituteAll {
+        src = ./remove-cc-reference.patch;
+        cc_version = stdenv.cc.cc.name;
+      }
+    )
   ];
 
   postFixup = ''

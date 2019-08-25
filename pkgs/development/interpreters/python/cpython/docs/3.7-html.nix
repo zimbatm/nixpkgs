@@ -13,6 +13,6 @@ stdenv.mkDerivation rec {
     cp -R ./ $out/share/doc/python37/html
   '';
   meta = {
-    maintainers = [ ];
+    maintainers = [];
   };
 }

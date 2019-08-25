@@ -1,4 +1,9 @@
-{ pkgs, stdenv, lib, haskellLib, ghc, all-cabal-hashes
+{ pkgs
+, stdenv
+, lib
+, haskellLib
+, ghc
+, all-cabal-hashes
 , buildHaskellPackages
 , compilerConfig ? (self: super: {})
 , packageSetConfig ? (self: super: {})
@@ -23,14 +28,26 @@ let
   nixConfiguration = configurationNix { inherit pkgs haskellLib; };
 
   extensible-self = makeExtensible
-    (extends overrides
-      (extends packageSetConfig
-        (extends compilerConfig
-          (extends commonConfiguration
-            (extends nixConfiguration
-              (extends nonHackagePackages
-                haskellPackages))))));
+    (
+      extends overrides
+        (
+          extends packageSetConfig
+            (
+              extends compilerConfig
+                (
+                  extends commonConfiguration
+                    (
+                      extends nixConfiguration
+                        (
+                          extends nonHackagePackages
+                            haskellPackages
+                        )
+                    )
+                )
+            )
+        )
+    );
 
 in
 
-  extensible-self
+extensible-self

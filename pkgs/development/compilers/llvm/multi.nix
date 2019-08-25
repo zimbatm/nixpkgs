@@ -1,8 +1,8 @@
-{ runCommand,
-clang,
-gcc64,
-gcc32,
-glibc_multi
+{ runCommand
+, clang
+, gcc64
+, gcc32
+, glibc_multi
 }:
 
 let
@@ -45,4 +45,5 @@ let
     '';
   };
 
-in clangMulti
+in
+clangMulti

@@ -1,13 +1,22 @@
-{ stdenv, fetchFromGitHub, cmake, pkgconfig, boost, gnuradio
-, pythonSupport ? true, python, swig, limesuite
-} :
+{ stdenv
+, fetchFromGitHub
+, cmake
+, pkgconfig
+, boost
+, gnuradio
+, pythonSupport ? true
+, python
+, swig
+, limesuite
+}:
 
 assert pythonSupport -> python != null && swig != null;
 
 let
   version = "2.0.0";
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "gr-limesdr-${version}";
 
   src = fetchFromGitHub {
@@ -20,11 +29,17 @@ in stdenv.mkDerivation rec {
   nativeBuildInputs = [
     cmake
     pkgconfig
-  ] ++ stdenv.lib.optionals pythonSupport [ swig ];
+  ]
+  ++ stdenv.lib.optionals pythonSupport [ swig ]
+  ;
 
   buildInputs = [
-    boost gnuradio limesuite
-  ] ++ stdenv.lib.optionals pythonSupport [ python ];
+    boost
+    gnuradio
+    limesuite
+  ]
+  ++ stdenv.lib.optionals pythonSupport [ python ]
+  ;
 
 
   enableParallelBuilding = true;

@@ -15,11 +15,13 @@ stdenv.mkDerivation rec {
   };
 
   patches = [
-    (substituteAll {
-      src = ./fix-paths.patch;
-      file = "${file}/bin/file";
-      tput = "${ncurses}/bin/tput";
-    })
+    (
+      substituteAll {
+        src = ./fix-paths.patch;
+        file = "${file}/bin/file";
+        tput = "${ncurses}/bin/tput";
+      }
+    )
   ];
 
   meta = with stdenv.lib; {

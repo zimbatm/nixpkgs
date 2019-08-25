@@ -1,6 +1,22 @@
-{ stdenv, fetchFromGitHub
-, meson, ninja, pkgconfig, pantheon, gettext, wrapGAppsHook, python3, desktop-file-utils
-, gtk3, glib, libgee, libgda, gtksourceview, libxml2, libsecret, libssh2 }:
+{ stdenv
+, fetchFromGitHub
+, meson
+, ninja
+, pkgconfig
+, pantheon
+, gettext
+, wrapGAppsHook
+, python3
+, desktop-file-utils
+, gtk3
+, glib
+, libgee
+, libgda
+, gtksourceview
+, libxml2
+, libsecret
+, libssh2
+}:
 
 
 let
@@ -9,7 +25,8 @@ let
     postgresSupport = true;
   };
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   pname = "sequeler";
   version = "0.7.2";
 

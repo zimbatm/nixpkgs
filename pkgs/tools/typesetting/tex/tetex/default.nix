@@ -31,11 +31,20 @@ stdenv.mkDerivation {
   setupHook = ./setup-hook.sh;
 
   configureFlags =
-    [ "--disable-multiplatform" "--without-x11" "--without-xdvik"
-      "--without-oxdvik" "--without-texinfo" "--without-texi2html"
-      "--with-system-zlib" "--with-system-pnglib" "--with-system-ncurses" ]
+    [
+      "--disable-multiplatform"
+      "--without-x11"
+      "--without-xdvik"
+      "--without-oxdvik"
+      "--without-texinfo"
+      "--without-texi2html"
+      "--with-system-zlib"
+      "--with-system-pnglib"
+      "--with-system-ncurses"
+    ]
     # couldn't get gsftopk working on darwin
-    ++ stdenv.lib.optional stdenv.isDarwin "--without-gsftopk";
+    ++ stdenv.lib.optional stdenv.isDarwin "--without-gsftopk"
+  ;
 
   postUnpack = ''
     mkdir -p $out/share/texmf
@@ -46,11 +55,10 @@ stdenv.mkDerivation {
   '';
 
   meta = with stdenv.lib; {
-    description  = "A full-featured (La)TeX distribution";
-    homepage     = http://www.tug.org/tetex/;
-    maintainers  = with maintainers; [ lovek323 ];
-    platforms    = platforms.unix;
+    description = "A full-featured (La)TeX distribution";
+    homepage = http://www.tug.org/tetex/;
+    maintainers = with maintainers; [ lovek323 ];
+    platforms = platforms.unix;
     hydraPlatforms = [];
   };
 }
-

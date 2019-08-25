@@ -1,6 +1,6 @@
 { stdenv, fetchurl, pkgconfig, intltool, glib, libxfce4util, libxfce4ui, gtk }:
 let
-  p_name  = "garcon";
+  p_name = "garcon";
   ver_maj = "0.4";
   ver_min = "0";
 in

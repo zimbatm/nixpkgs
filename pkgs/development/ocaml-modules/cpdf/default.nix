@@ -1,6 +1,8 @@
 { stdenv, fetchgit, ocaml, findlib, camlpdf, ncurses }:
 
-let version = "2.2.1"; in
+let
+  version = "2.2.1";
+in
 
 stdenv.mkDerivation {
   name = "ocaml${ocaml.version}-cpdf-${version}";
@@ -15,10 +17,10 @@ stdenv.mkDerivation {
   propagatedBuildInputs = [ camlpdf ];
 
   makeFlags = with stdenv.lib;
-  optionals (versionAtLeast ocaml.version "4.06") [
-    "OCAMLBCFLAGS+=-unsafe-string"
-    "OCAMLNCFLAGS+=-unsafe-string"
-  ];
+    optionals (versionAtLeast ocaml.version "4.06") [
+      "OCAMLBCFLAGS+=-unsafe-string"
+      "OCAMLNCFLAGS+=-unsafe-string"
+    ];
 
   createFindlibDestdir = true;
 

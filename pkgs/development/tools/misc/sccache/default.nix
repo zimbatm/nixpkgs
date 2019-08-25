@@ -14,11 +14,15 @@ rustPlatform.buildRustPackage rec {
 
   cargoBuildFlags = [ "--features=all" ];
   nativeBuildInputs = [
-    pkgconfig cargo rustc
+    pkgconfig
+    cargo
+    rustc
   ];
   buildInputs = [
     openssl
-  ] ++ stdenv.lib.optional stdenv.isDarwin darwin.apple_sdk.frameworks.Security;
+  ]
+  ++ stdenv.lib.optional stdenv.isDarwin darwin.apple_sdk.frameworks.Security
+  ;
   # Tests fail because of client server setup which is not possible inside the pure environment,
   # see https://github.com/mozilla/sccache/issues/460
   checkPhase = null;

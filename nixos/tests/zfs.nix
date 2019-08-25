@@ -1,6 +1,6 @@
-{ system ? builtins.currentSystem,
-  config ? {},
-  pkgs ? import ../.. { inherit system config; }
+{ system ? builtins.currentSystem
+, config ? {}
+, pkgs ? import ../.. { inherit system config; }
 }:
 
 with import ../lib/testing.nix { inherit system pkgs; };
@@ -10,10 +10,10 @@ let
   makeTest = import ./make-test.nix;
 
   makeZfsTest = name:
-    { kernelPackage ? pkgs.linuxPackages_latest
-    , enableUnstable ? false
-    , extraTest ? ""
-    }:
+  { kernelPackage ? pkgs.linuxPackages_latest
+  , enableUnstable ? false
+  , extraTest ? ""
+  }:
     makeTest {
       name = "zfs-" + name;
       meta = with pkgs.stdenv.lib.maintainers; {
@@ -58,14 +58,17 @@ let
 
         );
 
-      '' + extraTest;
+      ''
+      + extraTest
+      ;
 
     };
 
 
-in {
+in
+{
 
-  stable = makeZfsTest "stable" { };
+  stable = makeZfsTest "stable" {};
 
   unstable = makeZfsTest "unstable" {
     enableUnstable = true;
@@ -83,6 +86,6 @@ in {
     '';
   };
 
-  installer = (import ./installer.nix { }).zfsroot;
+  installer = (import ./installer.nix {}).zfsroot;
 
 }

@@ -1,6 +1,8 @@
 { stdenv, fetchFromGitHub, elk5Version, buildGoPackage, libpcap }:
 
-let beat = package : extraArgs : buildGoPackage (rec {
+let
+  beat = package: extraArgs: buildGoPackage (
+    rec {
       name = "${package}-${version}";
       version = elk5Version;
 
@@ -21,11 +23,14 @@ let beat = package : extraArgs : buildGoPackage (rec {
         maintainers = with maintainers; [ fadenb basvandijk ];
         platforms = platforms.linux;
       };
-    } // extraArgs);
-in {
-  filebeat5   = beat "filebeat"   {meta.description = "Lightweight shipper for logfiles";};
-  heartbeat5  = beat "heartbeat"  {meta.description = "Lightweight shipper for uptime monitoring";};
-  metricbeat5 = beat "metricbeat" {meta.description = "Lightweight shipper for metrics";};
+    }
+    // extraArgs
+  );
+in
+{
+  filebeat5 = beat "filebeat" { meta.description = "Lightweight shipper for logfiles"; };
+  heartbeat5 = beat "heartbeat" { meta.description = "Lightweight shipper for uptime monitoring"; };
+  metricbeat5 = beat "metricbeat" { meta.description = "Lightweight shipper for metrics"; };
   packetbeat5 = beat "packetbeat" {
     buildInputs = [ libpcap ];
     meta.description = "Network packet analyzer that ships data to Elasticsearch";

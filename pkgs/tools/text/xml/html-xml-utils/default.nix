@@ -9,7 +9,7 @@ stdenv.mkDerivation rec {
     sha256 = "1vwqp5q276j8di9zql3kygf31z2frp2c59yjqlrvvwcvccvkcdwr";
   };
 
-  buildInputs = [curl libiconv];
+  buildInputs = [ curl libiconv ];
 
   meta = with stdenv.lib; {
     description = "Utilities for manipulating HTML and XML files";

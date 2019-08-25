@@ -1,6 +1,15 @@
 { stdenv
-, libiconv, fetchurl, zlib, openssl, tcl, readline, sqlite, ed, which
-, tcllib, withJson ? true
+, libiconv
+, fetchurl
+, zlib
+, openssl
+, tcl
+, readline
+, sqlite
+, ed
+, which
+, tcllib
+, withJson ? true
 }:
 
 stdenv.mkDerivation rec {
@@ -17,7 +26,8 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [ zlib openssl readline sqlite which ed ]
-             ++ stdenv.lib.optional stdenv.isDarwin libiconv;
+    ++ stdenv.lib.optional stdenv.isDarwin libiconv
+    ;
   nativeBuildInputs = [ tcl ];
 
   doCheck = stdenv.hostPlatform == stdenv.buildPlatform;
@@ -26,7 +36,7 @@ stdenv.mkDerivation rec {
   '';
   configureFlags = stdenv.lib.optional withJson "--json";
 
-  preBuild=''
+  preBuild = ''
     export USER=nonexistent-but-specified-user
   '';
 
@@ -47,7 +57,8 @@ stdenv.mkDerivation rec {
     homepage = http://www.fossil-scm.org/;
     license = stdenv.lib.licenses.bsd2;
     platforms = with stdenv.lib.platforms; all;
-    maintainers = [ #Add your name here!
+    maintainers = [
+      #Add your name here!
       stdenv.lib.maintainers.z77z
       stdenv.lib.maintainers.viric
     ];

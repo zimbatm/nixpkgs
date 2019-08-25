@@ -59,29 +59,33 @@ in
 
   config = mkIf cfg.enable {
 
-    users.users = optionalAttrs (cfg.user == name) (singleton {
-      name = name;
-      uid = config.ids.uids.headphones;
-      group = cfg.group;
-      description = "headphones user";
-      home = cfg.dataDir;
-      createHome = true;
-    });
+    users.users = optionalAttrs (cfg.user == name) (
+      singleton {
+        name = name;
+        uid = config.ids.uids.headphones;
+        group = cfg.group;
+        description = "headphones user";
+        home = cfg.dataDir;
+        createHome = true;
+      }
+    );
 
-    users.groups = optionalAttrs (cfg.group == name) (singleton {
-      name = name;
-      gid = config.ids.gids.headphones;
-    });
+    users.groups = optionalAttrs (cfg.group == name) (
+      singleton {
+        name = name;
+        gid = config.ids.gids.headphones;
+      }
+    );
 
     systemd.services.headphones = {
-        description = "Headphones Server";
-        wantedBy    = [ "multi-user.target" ];
-        after = [ "network.target" ];
-        serviceConfig = {
-          User = cfg.user;
-          Group = cfg.group;
-          ExecStart = "${pkgs.headphones}/bin/headphones --datadir ${cfg.dataDir} --config ${cfg.configFile} --host ${cfg.host} --port ${toString cfg.port}";
-        };
+      description = "Headphones Server";
+      wantedBy = [ "multi-user.target" ];
+      after = [ "network.target" ];
+      serviceConfig = {
+        User = cfg.user;
+        Group = cfg.group;
+        ExecStart = "${pkgs.headphones}/bin/headphones --datadir ${cfg.dataDir} --config ${cfg.configFile} --host ${cfg.host} --port ${toString cfg.port}";
+      };
     };
   };
 }

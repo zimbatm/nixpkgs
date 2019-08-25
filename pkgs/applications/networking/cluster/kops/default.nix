@@ -3,8 +3,10 @@
 let
   goPackagePath = "k8s.io/kops";
 
-  generic = { version, sha256, ...}@attrs:
-    let attrs' = builtins.removeAttrs attrs ["version" "sha256"] ; in
+  generic = { version, sha256, ... }@attrs:
+    let
+      attrs' = builtins.removeAttrs attrs [ "version" "sha256" ];
+    in
       buildGoPackage {
         name = "kops-${version}";
 
@@ -17,8 +19,8 @@ let
           inherit sha256;
         };
 
-        buildInputs = [go-bindata];
-        subPackages = ["cmd/kops"];
+        buildInputs = [ go-bindata ];
+        subPackages = [ "cmd/kops" ];
 
         buildFlagsArray = ''
           -ldflags=
@@ -42,11 +44,13 @@ let
           description = "Easiest way to get a production Kubernetes up and running";
           homepage = https://github.com/kubernetes/kops;
           license = licenses.asl20;
-          maintainers = with maintainers; [offline zimbatm];
+          maintainers = with maintainers; [ offline zimbatm ];
           platforms = platforms.unix;
         };
-      } // attrs';
-in rec {
+      }
+      // attrs';
+in
+rec {
 
   mkKops = generic;
 

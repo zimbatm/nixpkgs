@@ -1,4 +1,6 @@
-{ fetchurl, stdenv, python2
+{ fetchurl
+, stdenv
+, python2
 
 , enableStandardFeatures ? false
 , sourceHighlight ? null
@@ -17,52 +19,63 @@
 , docbook_xsl_ns ? null
 , docbook_xsl ? null
 , fop ? null
-# TODO: Package this:
-#, epubcheck ? null
+  # TODO: Package this:
+  #, epubcheck ? null
 , gnused ? null
 , coreutils ? null
 
-# if true, enable all the below filters and backends
+  # if true, enable all the below filters and backends
 , enableExtraPlugins ? false
 
-# unzip is needed to extract filter and backend plugins
+  # unzip is needed to extract filter and backend plugins
 , unzip ? null
-# filters
-, enableDitaaFilter ? false, jre ? null
-, enableMscgenFilter ? false, mscgen ? null
-, enableDiagFilter ? false, blockdiag ? null, seqdiag ? null, actdiag ? null, nwdiag ? null
-, enableQrcodeFilter ? false, qrencode ? null
-, enableMatplotlibFilter ? false, matplotlib ? null, numpy ? null
-, enableAafigureFilter ? false, aafigure ? null, recursivePthLoader ? null
-# backends
+  # filters
+, enableDitaaFilter ? false
+, jre ? null
+, enableMscgenFilter ? false
+, mscgen ? null
+, enableDiagFilter ? false
+, blockdiag ? null
+, seqdiag ? null
+, actdiag ? null
+, nwdiag ? null
+, enableQrcodeFilter ? false
+, qrencode ? null
+, enableMatplotlibFilter ? false
+, matplotlib ? null
+, numpy ? null
+, enableAafigureFilter ? false
+, aafigure ? null
+, recursivePthLoader ? null
+  # backends
 , enableDeckjsBackend ? false
 , enableOdfBackend ? false
 
-# java is problematic on some platforms, where it is unfree
+  # java is problematic on some platforms, where it is unfree
 , enableJava ? true
 }:
 
-assert enableStandardFeatures ->
-  sourceHighlight != null &&
-  highlight != null &&
-  pygments != null &&
-  graphviz != null &&
-  texlive != null &&
-  dblatexFull != null &&
-  libxslt != null &&
-  w3m != null &&
-  lynx != null &&
-  imagemagick != null &&
-  lilypond != null &&
-  libxml2 != null &&
-  docbook_xml_dtd_45 != null &&
-  docbook_xsl_ns != null &&
-  docbook_xsl != null &&
-  (fop != null || !enableJava) &&
-# TODO: Package this:
-#  epubcheck != null &&
-  gnused != null &&
-  coreutils != null;
+assert enableStandardFeatures
+-> sourceHighlight != null
+   && highlight != null
+   && pygments != null
+   && graphviz != null
+   && texlive != null
+   && dblatexFull != null
+   && libxslt != null
+   && w3m != null
+   && lynx != null
+   && imagemagick != null
+   && lilypond != null
+   && libxml2 != null
+   && docbook_xml_dtd_45 != null
+   && docbook_xsl_ns != null
+   && docbook_xsl != null
+   && (fop != null || !enableJava)
+   && # TODO: Package this:
+   #  epubcheck != null &&
+   gnused != null
+   && coreutils != null;
 
 # filters
 assert enableExtraPlugins || enableDitaaFilter || enableMscgenFilter || enableDiagFilter || enableQrcodeFilter || enableAafigureFilter -> unzip != null;
@@ -111,11 +124,14 @@ let
   };
 
   # there are no archives or tags, using latest commit in master branch as per 2013-09-22
-  matplotlibFilterSrc = let commit = "75f0d009629f93f33fab04b83faca20cc35dd358"; in fetchurl rec {
-    name = "mplw-${commit}.tar.gz";
-    url = "https://api.github.com/repos/lvv/mplw/tarball/${commit}";
-    sha256 = "0yfhkm2dr8gnp0fcg25x89hwiymkri2m5cyqzmzragzwj0hbmcf1";
-  };
+  matplotlibFilterSrc = let
+    commit = "75f0d009629f93f33fab04b83faca20cc35dd358";
+  in
+    fetchurl rec {
+      name = "mplw-${commit}.tar.gz";
+      url = "https://api.github.com/repos/lvv/mplw/tarball/${commit}";
+      sha256 = "0yfhkm2dr8gnp0fcg25x89hwiymkri2m5cyqzmzragzwj0hbmcf1";
+    };
 
   aafigureFilterSrc = fetchurl {
     url = "https://asciidoc-aafigure-filter.googlecode.com/files/aafigure-filter-1.1.zip";
@@ -157,99 +173,109 @@ stdenv.mkDerivation rec {
   patchPhase = with stdenv.lib; ''
     mkdir -p "$out/etc/asciidoc/filters"
     mkdir -p "$out/etc/asciidoc/backends"
-  '' + optionalString _enableDitaaFilter ''
-    echo "Extracting ditaa filter"
-    unzip -d "$out/etc/asciidoc/filters/ditaa" "${ditaaFilterSrc}"
-    sed -i -e "s|java -jar|${jre}/bin/java -jar|" \
-        "$out/etc/asciidoc/filters/ditaa/ditaa2img.py"
-  '' + optionalString _enableMscgenFilter ''
-    echo "Extracting mscgen filter"
-    unzip -d "$out/etc/asciidoc/filters/mscgen" "${mscgenFilterSrc}"
-    sed -i -e "s|filter-wrapper.py mscgen|filter-wrapper.py ${mscgen}/bin/mscgen|" \
-        "$out/etc/asciidoc/filters/mscgen/mscgen-filter.conf"
-  '' + optionalString _enableDiagFilter ''
-    echo "Extracting diag filter"
-    unzip -d "$out/etc/asciidoc/filters/diag" "${diagFilterSrc}"
-    sed -i \
-        -e "s|filter='blockdiag|filter=\'${blockdiag}/bin/blockdiag|" \
-        -e "s|filter='seqdiag|filter=\'${seqdiag}/bin/seqdiag|" \
-        -e "s|filter='actdiag|filter=\'${actdiag}/bin/actdiag|" \
-        -e "s|filter='nwdiag|filter=\'${nwdiag}/bin/nwdiag|" \
-        -e "s|filter='packetdiag|filter=\'${nwdiag}/bin/packetdiag|" \
-        "$out/etc/asciidoc/filters/diag/diag-filter.conf"
-  '' + optionalString _enableQrcodeFilter ''
-    echo "Extracting qrcode filter"
-    unzip -d "$out/etc/asciidoc/filters/qrcode" "${qrcodeFilterSrc}"
-    sed -i -e "s|systemcmd('qrencode|systemcmd('${qrencode}/bin/qrencode|" \
-        "$out/etc/asciidoc/filters/qrcode/qrcode2img.py"
-  '' + optionalString _enableMatplotlibFilter ''
-    echo "Extracting mpl (matplotlib) filter"
-    mkdir -p "$out/etc/asciidoc/filters/mpl"
-    tar xvf "${matplotlibFilterSrc}" -C "$out/etc/asciidoc/filters/mpl" --strip-components=1
-    # Stop asciidoc from loading mpl/.old/chart-filter.conf
-    rm -rf "$out/etc/asciidoc/filters/mpl/.old"
-    # Add matplotlib and numpy to sys.path
-    matplotlib_path="$(toPythonPath ${matplotlib})"
-    numpy_path="$(toPythonPath ${numpy})"
-    sed -i "/^import.*sys/asys.path.append(\"$matplotlib_path\"); sys.path.append(\"$numpy_path\");" \
-        "$out/etc/asciidoc/filters/mpl/mplw.py"
-  '' + optionalString _enableAafigureFilter ''
-    echo "Extracting aafigure filter"
-    unzip -d "$out/etc/asciidoc/filters/aafigure" "${aafigureFilterSrc}"
-    # Add aafigure to sys.path (and it needs recursive-pth-loader)
-    pth_loader_path="$(toPythonPath ${recursivePthLoader})"
-    aafigure_path="$(toPythonPath ${aafigure})"
-    sed -i "/^import.*sys/asys.path.append(\"$pth_loader_path\"); sys.path.append(\"$aafigure_path\"); import sitecustomize" \
-        "$out/etc/asciidoc/filters/aafigure/aafig2img.py"
-  '' + optionalString _enableDeckjsBackend ''
-    echo "Extracting deckjs backend"
-    unzip -d "$out/etc/asciidoc/backends/deckjs" "${deckjsBackendSrc}"
-  '' + optionalString _enableOdfBackend ''
-    echo "Extracting odf backend (odt + odp)"
-    unzip -d "$out/etc/asciidoc/backends/odt" "${odtBackendSrc}"
-    unzip -d "$out/etc/asciidoc/backends/odp" "${odpBackendSrc}"
-    # The odt backend has a TODO note about removing this hardcoded path, but
-    # the odp backend already has that fix. Copy it here until fixed upstream.
-    sed -i "s|'/etc/asciidoc/backends/odt/asciidoc.ott'|os.path.dirname(__file__),'asciidoc.ott'|" \
-        "$out/etc/asciidoc/backends/odt/a2x-backend.py"
-  '' + optionalString enableStandardFeatures ''
-    sed -e "s|dot|${graphviz}/bin/dot|g" \
-        -e "s|neato|${graphviz}/bin/neato|g" \
-        -e "s|twopi|${graphviz}/bin/twopi|g" \
-        -e "s|circo|${graphviz}/bin/circo|g" \
-        -e "s|fdp|${graphviz}/bin/fdp|g" \
-        -i "filters/graphviz/graphviz2png.py"
+  ''
+    + optionalString _enableDitaaFilter ''
+        echo "Extracting ditaa filter"
+        unzip -d "$out/etc/asciidoc/filters/ditaa" "${ditaaFilterSrc}"
+        sed -i -e "s|java -jar|${jre}/bin/java -jar|" \
+            "$out/etc/asciidoc/filters/ditaa/ditaa2img.py"
+      ''
+    + optionalString _enableMscgenFilter ''
+        echo "Extracting mscgen filter"
+        unzip -d "$out/etc/asciidoc/filters/mscgen" "${mscgenFilterSrc}"
+        sed -i -e "s|filter-wrapper.py mscgen|filter-wrapper.py ${mscgen}/bin/mscgen|" \
+            "$out/etc/asciidoc/filters/mscgen/mscgen-filter.conf"
+      ''
+    + optionalString _enableDiagFilter ''
+        echo "Extracting diag filter"
+        unzip -d "$out/etc/asciidoc/filters/diag" "${diagFilterSrc}"
+        sed -i \
+            -e "s|filter='blockdiag|filter=\'${blockdiag}/bin/blockdiag|" \
+            -e "s|filter='seqdiag|filter=\'${seqdiag}/bin/seqdiag|" \
+            -e "s|filter='actdiag|filter=\'${actdiag}/bin/actdiag|" \
+            -e "s|filter='nwdiag|filter=\'${nwdiag}/bin/nwdiag|" \
+            -e "s|filter='packetdiag|filter=\'${nwdiag}/bin/packetdiag|" \
+            "$out/etc/asciidoc/filters/diag/diag-filter.conf"
+      ''
+    + optionalString _enableQrcodeFilter ''
+        echo "Extracting qrcode filter"
+        unzip -d "$out/etc/asciidoc/filters/qrcode" "${qrcodeFilterSrc}"
+        sed -i -e "s|systemcmd('qrencode|systemcmd('${qrencode}/bin/qrencode|" \
+            "$out/etc/asciidoc/filters/qrcode/qrcode2img.py"
+      ''
+    + optionalString _enableMatplotlibFilter ''
+        echo "Extracting mpl (matplotlib) filter"
+        mkdir -p "$out/etc/asciidoc/filters/mpl"
+        tar xvf "${matplotlibFilterSrc}" -C "$out/etc/asciidoc/filters/mpl" --strip-components=1
+        # Stop asciidoc from loading mpl/.old/chart-filter.conf
+        rm -rf "$out/etc/asciidoc/filters/mpl/.old"
+        # Add matplotlib and numpy to sys.path
+        matplotlib_path="$(toPythonPath ${matplotlib})"
+        numpy_path="$(toPythonPath ${numpy})"
+        sed -i "/^import.*sys/asys.path.append(\"$matplotlib_path\"); sys.path.append(\"$numpy_path\");" \
+            "$out/etc/asciidoc/filters/mpl/mplw.py"
+      ''
+    + optionalString _enableAafigureFilter ''
+        echo "Extracting aafigure filter"
+        unzip -d "$out/etc/asciidoc/filters/aafigure" "${aafigureFilterSrc}"
+        # Add aafigure to sys.path (and it needs recursive-pth-loader)
+        pth_loader_path="$(toPythonPath ${recursivePthLoader})"
+        aafigure_path="$(toPythonPath ${aafigure})"
+        sed -i "/^import.*sys/asys.path.append(\"$pth_loader_path\"); sys.path.append(\"$aafigure_path\"); import sitecustomize" \
+            "$out/etc/asciidoc/filters/aafigure/aafig2img.py"
+      ''
+    + optionalString _enableDeckjsBackend ''
+        echo "Extracting deckjs backend"
+        unzip -d "$out/etc/asciidoc/backends/deckjs" "${deckjsBackendSrc}"
+      ''
+    + optionalString _enableOdfBackend ''
+        echo "Extracting odf backend (odt + odp)"
+        unzip -d "$out/etc/asciidoc/backends/odt" "${odtBackendSrc}"
+        unzip -d "$out/etc/asciidoc/backends/odp" "${odpBackendSrc}"
+        # The odt backend has a TODO note about removing this hardcoded path, but
+        # the odp backend already has that fix. Copy it here until fixed upstream.
+        sed -i "s|'/etc/asciidoc/backends/odt/asciidoc.ott'|os.path.dirname(__file__),'asciidoc.ott'|" \
+            "$out/etc/asciidoc/backends/odt/a2x-backend.py"
+      ''
+    + optionalString enableStandardFeatures ''
+        sed -e "s|dot|${graphviz}/bin/dot|g" \
+            -e "s|neato|${graphviz}/bin/neato|g" \
+            -e "s|twopi|${graphviz}/bin/twopi|g" \
+            -e "s|circo|${graphviz}/bin/circo|g" \
+            -e "s|fdp|${graphviz}/bin/fdp|g" \
+            -i "filters/graphviz/graphviz2png.py"
 
-    sed -e "s|run('latex|run('${texlive}/bin/latex|g" \
-        -e "s|cmd = 'dvipng'|cmd = '${texlive}/bin/dvipng'|g" \
-        -i "filters/latex/latex2png.py"
+        sed -e "s|run('latex|run('${texlive}/bin/latex|g" \
+            -e "s|cmd = 'dvipng'|cmd = '${texlive}/bin/dvipng'|g" \
+            -i "filters/latex/latex2png.py"
 
-    sed -e "s|run('abc2ly|run('${lilypond}/bin/abc2ly|g" \
-        -e "s|run('lilypond|run('${lilypond}/bin/lilypond|g" \
-        -e "s|run('convert|run('${imagemagick.out}/bin/convert|g" \
-        -i "filters/music/music2png.py"
+        sed -e "s|run('abc2ly|run('${lilypond}/bin/abc2ly|g" \
+            -e "s|run('lilypond|run('${lilypond}/bin/lilypond|g" \
+            -e "s|run('convert|run('${imagemagick.out}/bin/convert|g" \
+            -i "filters/music/music2png.py"
 
-    sed -e 's|filter="source-highlight|filter="${sourceHighlight}/bin/source-highlight|' \
-        -e 's|filter="highlight|filter="${highlight}/bin/highlight|' \
-        -e 's|filter="pygmentize|filter="${pygments}/bin/pygmentize|' \
-        -i "filters/source/source-highlight-filter.conf"
+        sed -e 's|filter="source-highlight|filter="${sourceHighlight}/bin/source-highlight|' \
+            -e 's|filter="highlight|filter="${highlight}/bin/highlight|' \
+            -e 's|filter="pygmentize|filter="${pygments}/bin/pygmentize|' \
+            -i "filters/source/source-highlight-filter.conf"
 
-    # ENV is custom environment passed to programs that a2x invokes. Here we
-    # use it to work around an impurity in the tetex package; tetex tools
-    # cannot find their neighbours (e.g. pdflatex doesn't find mktextfm).
-    # We can remove PATH= when those impurities are fixed.
-    # TODO: Is this still necessary when using texlive?
-    sed -e "s|^ENV =.*|ENV = dict(XML_CATALOG_FILES='${docbook_xml_dtd_45}/xml/dtd/docbook/catalog.xml ${docbook_xsl_ns}/xml/xsl/docbook/catalog.xml ${docbook_xsl}/xml/xsl/docbook/catalog.xml', PATH='${stdenv.lib.makeBinPath [ texlive coreutils gnused ]}')|" \
-        -e "s|^ASCIIDOC =.*|ASCIIDOC = '$out/bin/asciidoc'|" \
-        -e "s|^XSLTPROC =.*|XSLTPROC = '${libxslt.bin}/bin/xsltproc'|" \
-        -e "s|^DBLATEX =.*|DBLATEX = '${dblatexFull}/bin/dblatex'|" \
-        ${optionalString enableJava ''-e "s|^FOP =.*|FOP = '${fop}/bin/fop'|"''} \
-        -e "s|^W3M =.*|W3M = '${w3m}/bin/w3m'|" \
-        -e "s|^LYNX =.*|LYNX = '${lynx}/bin/lynx'|" \
-        -e "s|^XMLLINT =.*|XMLLINT = '${libxml2.bin}/bin/xmllint'|" \
-        -e "s|^EPUBCHECK =.*|EPUBCHECK = 'nixpkgs_is_missing_epubcheck'|" \
-        -i a2x.py
-  '' + ''
+        # ENV is custom environment passed to programs that a2x invokes. Here we
+        # use it to work around an impurity in the tetex package; tetex tools
+        # cannot find their neighbours (e.g. pdflatex doesn't find mktextfm).
+        # We can remove PATH= when those impurities are fixed.
+        # TODO: Is this still necessary when using texlive?
+        sed -e "s|^ENV =.*|ENV = dict(XML_CATALOG_FILES='${docbook_xml_dtd_45}/xml/dtd/docbook/catalog.xml ${docbook_xsl_ns}/xml/xsl/docbook/catalog.xml ${docbook_xsl}/xml/xsl/docbook/catalog.xml', PATH='${stdenv.lib.makeBinPath [ texlive coreutils gnused ]}')|" \
+            -e "s|^ASCIIDOC =.*|ASCIIDOC = '$out/bin/asciidoc'|" \
+            -e "s|^XSLTPROC =.*|XSLTPROC = '${libxslt.bin}/bin/xsltproc'|" \
+            -e "s|^DBLATEX =.*|DBLATEX = '${dblatexFull}/bin/dblatex'|" \
+            ${optionalString enableJava ''-e "s|^FOP =.*|FOP = '${fop}/bin/fop'|"''} \
+            -e "s|^W3M =.*|W3M = '${w3m}/bin/w3m'|" \
+            -e "s|^LYNX =.*|LYNX = '${lynx}/bin/lynx'|" \
+            -e "s|^XMLLINT =.*|XMLLINT = '${libxml2.bin}/bin/xmllint'|" \
+            -e "s|^EPUBCHECK =.*|EPUBCHECK = 'nixpkgs_is_missing_epubcheck'|" \
+            -i a2x.py
+      ''
+    + ''
     for n in $(find "$out" . -name \*.py); do
       sed -i -e "s,^#![[:space:]]*.*/bin/env python,#!${python2}/bin/python,g" "$n"
       chmod +x "$n"

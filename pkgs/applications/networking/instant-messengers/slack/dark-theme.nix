@@ -5,7 +5,8 @@ stdenv.mkDerivation rec {
   version = "2019-07-26";
   name = "slack-theme-black-${version}";
 
-  src = fetchgit { inherit rev;
+  src = fetchgit {
+    inherit rev;
     url = "https://github.com/laCour/slack-night-mode";
     sha256 = "1jwxy63qzgvr83idsgcg7yhm9kn0ybfji1m964c5c6ypzcm7j10v";
   };

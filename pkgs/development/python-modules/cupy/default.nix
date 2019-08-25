@@ -1,7 +1,17 @@
-{ stdenv, buildPythonPackage
-, fetchPypi, isPy3k, linuxPackages
-, fastrlock, numpy, six, wheel, pytest, mock
-, cudatoolkit, cudnn, nccl
+{ stdenv
+, buildPythonPackage
+, fetchPypi
+, isPy3k
+, linuxPackages
+, fastrlock
+, numpy
+, six
+, wheel
+, pytest
+, mock
+, cudatoolkit
+, cudnn
+, nccl
 }:
 
 buildPythonPackage rec {

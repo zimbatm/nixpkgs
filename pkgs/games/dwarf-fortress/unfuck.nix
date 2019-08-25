@@ -1,6 +1,19 @@
-{ stdenv, lib, fetchFromGitHub, cmake
-, libGL, libSM, SDL, SDL_image, SDL_ttf, glew, openalSoft
-, ncurses, glib, gtk2, libsndfile, zlib
+{ stdenv
+, lib
+, fetchFromGitHub
+, cmake
+, libGL
+, libSM
+, SDL
+, SDL_image
+, SDL_ttf
+, glew
+, openalSoft
+, ncurses
+, glib
+, gtk2
+, libsndfile
+, zlib
 , dfVersion
 }:
 
@@ -35,8 +48,8 @@ let
   };
 
   release = if hasAttr dfVersion unfuck-releases
-            then getAttr dfVersion unfuck-releases
-            else throw "[unfuck] Unknown Dwarf Fortress version: ${dfVersion}";
+  then getAttr dfVersion unfuck-releases
+  else throw "[unfuck] Unknown Dwarf Fortress version: ${dfVersion}";
 in
 
 stdenv.mkDerivation {
@@ -56,8 +69,17 @@ stdenv.mkDerivation {
 
   nativeBuildInputs = [ cmake ];
   buildInputs = [
-    libSM SDL SDL_image SDL_ttf glew openalSoft
-    ncurses gtk2 libsndfile zlib libGL
+    libSM
+    SDL
+    SDL_image
+    SDL_ttf
+    glew
+    openalSoft
+    ncurses
+    gtk2
+    libsndfile
+    zlib
+    libGL
   ];
 
   # Don't strip unused symbols; dfhack hooks into some of them.

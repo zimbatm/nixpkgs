@@ -2,7 +2,7 @@
 
 with stdenv.lib;
 stdenv.mkDerivation rec {
-  p_name  = "xfce4-cpufreq-plugin";
+  p_name = "xfce4-cpufreq-plugin";
   ver_maj = "1.1";
   ver_min = "3";
 

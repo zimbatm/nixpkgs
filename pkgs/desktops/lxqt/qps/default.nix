@@ -1,5 +1,11 @@
-{ stdenv, fetchFromGitHub, cmake, qtbase, qtx11extras, qttools,
-  lxqt-build-tools }:
+{ stdenv
+, fetchFromGitHub
+, cmake
+, qtbase
+, qtx11extras
+, qttools
+, lxqt-build-tools
+}:
 
 stdenv.mkDerivation rec {
   pname = "qps";

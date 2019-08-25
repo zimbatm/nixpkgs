@@ -12,9 +12,9 @@ bundlerEnv rec {
 
   meta = with lib; {
     description = "A streamlined development and deployment workflow for Chef platform";
-    homepage    = https://downloads.chef.io/chef-dk/;
-    license     = licenses.asl20;
+    homepage = https://downloads.chef.io/chef-dk/;
+    license = licenses.asl20;
     maintainers = with maintainers; [ offline nicknovitski ];
-    platforms   = platforms.unix;
+    platforms = platforms.unix;
   };
 }

@@ -1,8 +1,18 @@
-{ stdenv, lib, fetchurl, fetchpatch, pkgconfig, libtool
+{ stdenv
+, lib
+, fetchurl
+, fetchpatch
+, pkgconfig
+, libtool
 , gtk ? null
-, libpulseaudio, gst_all_1, libvorbis, libcap
+, libpulseaudio
+, gst_all_1
+, libvorbis
+, libcap
 , CoreServices
-, withAlsa ? stdenv.isLinux, alsaLib }:
+, withAlsa ? stdenv.isLinux
+, alsaLib
+}:
 
 stdenv.mkDerivation rec {
   name = "libcanberra-0.30";
@@ -14,27 +24,33 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ pkgconfig libtool ];
   buildInputs = [
-    libpulseaudio libvorbis gtk
-  ] ++ (with gst_all_1; [ gstreamer gst-plugins-base ])
-    ++ lib.optional stdenv.isDarwin CoreServices
-    ++ lib.optional stdenv.isLinux libcap
-    ++ lib.optional withAlsa alsaLib;
+    libpulseaudio
+    libvorbis
+    gtk
+  ]
+  ++ (with gst_all_1; [ gstreamer gst-plugins-base ])
+  ++ lib.optional stdenv.isDarwin CoreServices
+  ++ lib.optional stdenv.isLinux libcap
+  ++ lib.optional withAlsa alsaLib
+  ;
 
   configureFlags = [ "--disable-oss" ];
 
   patches = [
-    (fetchpatch {
-      name = "0001-gtk-Don-t-assume-all-GdkDisplays-are-GdkX11Displays-.patch";
-      url = http://git.0pointer.net/libcanberra.git/patch/?id=c0620e432650e81062c1967cc669829dbd29b310;
-      sha256 = "0rc7zwn39yxzxp37qh329g7375r5ywcqcaak8ryd0dgvg8m5hcx9";
-    })
+    (
+      fetchpatch {
+        name = "0001-gtk-Don-t-assume-all-GdkDisplays-are-GdkX11Displays-.patch";
+        url = http://git.0pointer.net/libcanberra.git/patch/?id=c0620e432650e81062c1967cc669829dbd29b310;
+        sha256 = "0rc7zwn39yxzxp37qh329g7375r5ywcqcaak8ryd0dgvg8m5hcx9";
+      }
+    )
   ];
 
   postPatch = (stdenv.lib.optional stdenv.isDarwin) ''
     patch -p0 < ${fetchpatch {
-      url = "https://raw.githubusercontent.com/macports/macports-ports/master/audio/libcanberra/files/patch-configure.diff";
-      sha256 = "1f7h7ifpqvbfhqygn1b7klvwi80zmpv3538vbmq7ql7bkf1q8h31";
-    }}
+    url = "https://raw.githubusercontent.com/macports/macports-ports/master/audio/libcanberra/files/patch-configure.diff";
+    sha256 = "1f7h7ifpqvbfhqygn1b7klvwi80zmpv3538vbmq7ql7bkf1q8h31";
+  }}
   '';
 
   postInstall = ''
@@ -62,7 +78,7 @@ stdenv.mkDerivation rec {
 
     license = stdenv.lib.licenses.lgpl2Plus;
 
-    maintainers = [ ];
+    maintainers = [];
     platforms = stdenv.lib.platforms.unix;
   };
 }

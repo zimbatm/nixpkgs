@@ -1,7 +1,14 @@
-{ stdenv, fetchgit, buildPythonPackage
+{ stdenv
+, fetchgit
+, buildPythonPackage
 , python
 , buildGoModule
-, srht, redis, celery, pyyaml, markdown }:
+, srht
+, redis
+, celery
+, pyyaml
+, markdown
+}:
 
 let
   version = "0.45.13";
@@ -13,7 +20,8 @@ let
 
     modSha256 = "1jm259ncw8dgqp0fqbjn30c4y3v3vwqj41gfh99jx30bwlmpgfax";
   };
-in buildPythonPackage rec {
+in
+buildPythonPackage rec {
   inherit version;
   pname = "buildsrht";
 

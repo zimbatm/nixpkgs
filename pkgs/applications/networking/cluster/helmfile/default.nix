@@ -1,6 +1,8 @@
 { lib, buildGoModule, fetchFromGitHub, makeWrapper, kubernetes-helm, ... }:
 
-let version = "0.79.3"; in
+let
+  version = "0.79.3";
+in
 
 buildGoModule {
   pname = "helmfile";

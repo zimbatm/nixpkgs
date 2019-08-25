@@ -1,4 +1,7 @@
-{ lib, stdenv, fetchurl, pkgconfig
+{ lib
+, stdenv
+, fetchurl
+, pkgconfig
 , wayland
 }:
 
@@ -17,10 +20,10 @@ stdenv.mkDerivation rec {
 
   meta = {
     description = "Wayland protocol extensions";
-    homepage    = https://wayland.freedesktop.org/;
-    license     = lib.licenses.mit;
-    platforms   = lib.platforms.linux;
-    maintainers = with lib.maintainers; [ ];
+    homepage = https://wayland.freedesktop.org/;
+    license = lib.licenses.mit;
+    platforms = lib.platforms.linux;
+    maintainers = with lib.maintainers; [];
   };
 
   passthru.version = version;

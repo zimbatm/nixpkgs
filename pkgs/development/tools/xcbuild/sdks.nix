@@ -1,5 +1,11 @@
-{ runCommand, lib, toolchainName, sdkName
-, writeText, version, xcodePlatform }:
+{ runCommand
+, lib
+, toolchainName
+, sdkName
+, writeText
+, version
+, xcodePlatform
+}:
 
 let
   inherit (lib.generators) toPlist;

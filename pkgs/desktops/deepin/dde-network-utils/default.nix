@@ -1,5 +1,15 @@
-{ stdenv, mkDerivation, fetchFromGitHub, substituteAll, qmake, pkgconfig, qttools,
-  dde-qt-dbus-factory, proxychains, which, deepin }:
+{ stdenv
+, mkDerivation
+, fetchFromGitHub
+, substituteAll
+, qmake
+, pkgconfig
+, qttools
+, dde-qt-dbus-factory
+, proxychains
+, which
+, deepin
+}:
 
 mkDerivation rec {
   name = "${pname}-${version}";
@@ -27,10 +37,12 @@ mkDerivation rec {
   ];
 
   patches = [
-    (substituteAll {
-      src = ./fix-paths.patch;
-      inherit which proxychains;
-    })
+    (
+      substituteAll {
+        src = ./fix-paths.patch;
+        inherit which proxychains;
+      }
+    )
   ];
 
   postPatch = ''

@@ -20,19 +20,22 @@ let
 
     cmakeFlags = [
       "-DCMAKE_CXX_FLAGS=-std=c++11"
-    ] ++
-    # Maybe with compiler-rt this won't be needed?
-    (stdenv.lib.optional stdenv.isLinux "-DGCC_INSTALL_PREFIX=${gcc}") ++
-    (stdenv.lib.optional (stdenv.cc.libc != null) "-DC_INCLUDE_DIRS=${stdenv.cc.libc}/include");
+    ]
+    ++ # Maybe with compiler-rt this won't be needed?
+    (stdenv.lib.optional stdenv.isLinux "-DGCC_INSTALL_PREFIX=${gcc}")
+    ++ (stdenv.lib.optional (stdenv.cc.libc != null) "-DC_INCLUDE_DIRS=${stdenv.cc.libc}/include")
+    ;
 
     patches = [ ./purity.patch ];
 
     postPatch = ''
       sed -i -e 's/Args.hasArg(options::OPT_nostdlibinc)/true/' lib/Driver/Tools.cpp
       sed -i -e 's/DriverArgs.hasArg(options::OPT_nostdlibinc)/true/' lib/Driver/ToolChains.cpp
-    '' + stdenv.lib.optionalString stdenv.hostPlatform.isMusl ''
-      sed -i -e 's/lgcc_s/lgcc_eh/' lib/Driver/Tools.cpp
-    '';
+    ''
+    + stdenv.lib.optionalString stdenv.hostPlatform.isMusl ''
+        sed -i -e 's/lgcc_s/lgcc_eh/' lib/Driver/Tools.cpp
+      ''
+    ;
 
     outputs = [ "out" "lib" "python" ];
 
@@ -66,15 +69,18 @@ let
     passthru = {
       isClang = true;
       inherit llvm;
-    } // stdenv.lib.optionalAttrs stdenv.isLinux {
-      inherit gcc;
-    };
+    }
+    // stdenv.lib.optionalAttrs stdenv.isLinux {
+         inherit gcc;
+       }
+    ;
 
     meta = {
       description = "A c, c++, objective-c, and objective-c++ frontend for the llvm compiler";
-      homepage    = http://llvm.org/;
-      license     = stdenv.lib.licenses.ncsa;
-      platforms   = stdenv.lib.platforms.all;
+      homepage = http://llvm.org/;
+      license = stdenv.lib.licenses.ncsa;
+      platforms = stdenv.lib.platforms.all;
     };
   };
-in self
+in
+self

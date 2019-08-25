@@ -1,7 +1,18 @@
-{ stdenv, fetchurl, pkgconfig, libevent, openssl, zlib, torsocks
-, libseccomp, systemd, libcap, lzma, zstd, scrypt
+{ stdenv
+, fetchurl
+, pkgconfig
+, libevent
+, openssl
+, zlib
+, torsocks
+, libseccomp
+, systemd
+, libcap
+, lzma
+, zstd
+, scrypt
 
-# for update.nix
+  # for update.nix
 , writeScript
 , common-updater-scripts
 , bash
@@ -25,8 +36,9 @@ stdenv.mkDerivation rec {
   outputs = [ "out" "geoip" ];
 
   nativeBuildInputs = [ pkgconfig ];
-  buildInputs = [ libevent openssl zlib lzma zstd scrypt ] ++
-    stdenv.lib.optionals stdenv.isLinux [ libseccomp systemd libcap ];
+  buildInputs = [ libevent openssl zlib lzma zstd scrypt ]
+    ++ stdenv.lib.optionals stdenv.isLinux [ libseccomp systemd libcap ]
+    ;
 
   NIX_CFLAGS_LINK = stdenv.lib.optionalString stdenv.cc.isGNU "-lgcc_s";
 
@@ -59,7 +71,7 @@ stdenv.mkDerivation rec {
       gnugrep
       gnused
       nix
-    ;
+      ;
   };
 
   meta = with stdenv.lib; {

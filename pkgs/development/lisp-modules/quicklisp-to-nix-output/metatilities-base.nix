@@ -5,7 +5,7 @@ rec {
 
   description = ''These are metabang.com's Common Lisp basic utilities.'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/metatilities-base/2017-04-03/metatilities-base-20170403-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "metatilities-base";
 
-  asdFilesToKeep = ["metatilities-base.asd"];
+  asdFilesToKeep = [ "metatilities-base.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM metatilities-base DESCRIPTION

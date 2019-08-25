@@ -1,96 +1,101 @@
-import ./make-test.nix ({ pkgs, ...} : 
+import ./make-test.nix (
+  { pkgs, ... }:
 
-let
+    let
 
-  backend =
-    { pkgs, ... }:
+      backend =
+        { pkgs, ... }:
 
-    { services.httpd.enable = true;
-      services.httpd.adminAddr = "foo@example.org";
-      services.httpd.documentRoot = "${pkgs.valgrind.doc}/share/doc/valgrind/html";
-      networking.firewall.allowedTCPPorts = [ 80 ];
-    };
+          {
+            services.httpd.enable = true;
+            services.httpd.adminAddr = "foo@example.org";
+            services.httpd.documentRoot = "${pkgs.valgrind.doc}/share/doc/valgrind/html";
+            networking.firewall.allowedTCPPorts = [ 80 ];
+          };
 
-in
+    in
 
-{
-  name = "proxy";
-  meta = with pkgs.stdenv.lib.maintainers; {
-    maintainers = [ eelco ];
-  };
-
-  nodes =
-    { proxy =
-        { nodes, ... }:
-
-        { services.httpd.enable = true;
-          services.httpd.adminAddr = "bar@example.org";
-          services.httpd.extraModules = [ "proxy_balancer" "lbmethod_byrequests" ];
-
-          services.httpd.extraConfig =
-            ''
-              ExtendedStatus on
-
-              <Location /server-status>
-                Require all granted
-                SetHandler server-status
-              </Location>
-
-              <Proxy balancer://cluster>
-                Require all granted
-                BalancerMember http://${nodes.backend1.config.networking.hostName} retry=0
-                BalancerMember http://${nodes.backend2.config.networking.hostName} retry=0
-              </Proxy>
-
-              ProxyStatus       full
-              ProxyPass         /server-status !
-              ProxyPass         /       balancer://cluster/
-              ProxyPassReverse  /       balancer://cluster/
-
-              # For testing; don't want to wait forever for dead backend servers.
-              ProxyTimeout      5
-            '';
-
-          networking.firewall.allowedTCPPorts = [ 80 ];
+      {
+        name = "proxy";
+        meta = with pkgs.stdenv.lib.maintainers; {
+          maintainers = [ eelco ];
         };
 
-      backend1 = backend;
-      backend2 = backend;
+        nodes =
+          {
+            proxy =
+              { nodes, ... }:
 
-      client = { ... }: { };
-    };
+                {
+                  services.httpd.enable = true;
+                  services.httpd.adminAddr = "bar@example.org";
+                  services.httpd.extraModules = [ "proxy_balancer" "lbmethod_byrequests" ];
 
-  testScript =
-    ''
-      startAll;
+                  services.httpd.extraConfig =
+                    ''
+                      ExtendedStatus on
 
-      $proxy->waitForUnit("httpd");
-      $backend1->waitForUnit("httpd");
-      $backend2->waitForUnit("httpd");
-      $client->waitForUnit("network.target");
+                      <Location /server-status>
+                        Require all granted
+                        SetHandler server-status
+                      </Location>
 
-      # With the back-ends up, the proxy should work.
-      $client->succeed("curl --fail http://proxy/");
+                      <Proxy balancer://cluster>
+                        Require all granted
+                        BalancerMember http://${nodes.backend1.config.networking.hostName} retry=0
+                        BalancerMember http://${nodes.backend2.config.networking.hostName} retry=0
+                      </Proxy>
 
-      $client->succeed("curl --fail http://proxy/server-status");
+                      ProxyStatus       full
+                      ProxyPass         /server-status !
+                      ProxyPass         /       balancer://cluster/
+                      ProxyPassReverse  /       balancer://cluster/
 
-      # Block the first back-end.
-      $backend1->block;
+                      # For testing; don't want to wait forever for dead backend servers.
+                      ProxyTimeout      5
+                    '';
 
-      # The proxy should still work.
-      $client->succeed("curl --fail http://proxy/");
+                  networking.firewall.allowedTCPPorts = [ 80 ];
+                };
 
-      $client->succeed("curl --fail http://proxy/");
+            backend1 = backend;
+            backend2 = backend;
 
-      # Block the second back-end.
-      $backend2->block;
+            client = { ... }: {};
+          };
 
-      # Now the proxy should fail as well.
-      $client->fail("curl --fail http://proxy/");
+        testScript =
+          ''
+            startAll;
 
-      # But if the second back-end comes back, the proxy should start
-      # working again.
-      $backend2->unblock;
-      $client->succeed("curl --fail http://proxy/");
-    '';
-})
+            $proxy->waitForUnit("httpd");
+            $backend1->waitForUnit("httpd");
+            $backend2->waitForUnit("httpd");
+            $client->waitForUnit("network.target");
+
+            # With the back-ends up, the proxy should work.
+            $client->succeed("curl --fail http://proxy/");
+
+            $client->succeed("curl --fail http://proxy/server-status");
+
+            # Block the first back-end.
+            $backend1->block;
+
+            # The proxy should still work.
+            $client->succeed("curl --fail http://proxy/");
+
+            $client->succeed("curl --fail http://proxy/");
+
+            # Block the second back-end.
+            $backend2->block;
+
+            # Now the proxy should fail as well.
+            $client->fail("curl --fail http://proxy/");
+
+            # But if the second back-end comes back, the proxy should start
+            # working again.
+            $backend2->unblock;
+            $client->succeed("curl --fail http://proxy/");
+          '';
+      }
+)

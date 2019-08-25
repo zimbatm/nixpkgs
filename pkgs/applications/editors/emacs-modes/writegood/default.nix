@@ -1,8 +1,10 @@
-{stdenv, fetchurl, emacs}:
+{ stdenv, fetchurl, emacs }:
 
-let version = "2.0.2";
+let
+  version = "2.0.2";
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "writegood-mode-${version}";
   src = fetchurl {
     url = "https://github.com/bnbeckwith/writegood-mode/archive/v${version}.tar.gz";

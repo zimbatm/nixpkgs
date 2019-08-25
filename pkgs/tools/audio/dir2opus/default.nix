@@ -1,6 +1,8 @@
 { stdenv, fetchurl, python, mutagen, wrapPython, opusTools, mpg123 }:
 
-let version = "0.12.2"; in
+let
+  version = "0.12.2";
+in
 stdenv.mkDerivation rec {
   name = "dir2opus-${version}";
 

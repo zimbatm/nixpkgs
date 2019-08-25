@@ -39,7 +39,7 @@ stdenv.mkDerivation rec {
     license = stdenv.lib.licenses.gpl2Plus;
     description = "Stalin, an optimizing Scheme compiler";
 
-    maintainers = [ ];
-    platforms = ["i686-linux"];  # doesn't want to work on 64-bit platforms
+    maintainers = [];
+    platforms = [ "i686-linux" ]; # doesn't want to work on 64-bit platforms
   };
 }

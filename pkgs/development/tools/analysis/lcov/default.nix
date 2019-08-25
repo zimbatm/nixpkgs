@@ -1,4 +1,4 @@
-{stdenv, fetchurl, perl}:
+{ stdenv, fetchurl, perl }:
 
 stdenv.mkDerivation rec {
   name = "lcov-1.14";

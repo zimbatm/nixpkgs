@@ -9,9 +9,11 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ pkgconfig ];
-  buildInputs = [ libxkbcommon ] ++ lib.optionals stdenv.isDarwin [
-    autoreconfHook
-  ];
+  buildInputs = [ libxkbcommon ]
+    ++ lib.optionals stdenv.isDarwin [
+         autoreconfHook
+       ]
+    ;
 
   configureFlags = [ "--disable-debug" ];
 

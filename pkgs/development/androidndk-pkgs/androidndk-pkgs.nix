@@ -1,7 +1,11 @@
 { stdenv
 , makeWrapper
-, runCommand, wrapBintoolsWith, wrapCCWith
-, buildAndroidndk, androidndk, targetAndroidndkPkgs
+, runCommand
+, wrapBintoolsWith
+, wrapCCWith
+, buildAndroidndk
+, androidndk
+, targetAndroidndkPkgs
 }:
 
 let

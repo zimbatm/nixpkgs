@@ -7,7 +7,7 @@ let
   '';
 in
 stdenv.mkDerivation rec {
-  name    = "cov-build-${version}";
+  name = "cov-build-${version}";
   version = "7.0.2";
 
   src =
@@ -40,9 +40,9 @@ stdenv.mkDerivation rec {
 
   meta = {
     description = "Coverity Scan build tools";
-    homepage    = "https://scan.coverity.com";
-    license     = stdenv.lib.licenses.unfreeRedistributable;
-    platforms   = stdenv.lib.platforms.linux;
+    homepage = "https://scan.coverity.com";
+    license = stdenv.lib.licenses.unfreeRedistributable;
+    platforms = stdenv.lib.platforms.linux;
     maintainers = [ stdenv.lib.maintainers.thoughtpolice ];
   };
 }

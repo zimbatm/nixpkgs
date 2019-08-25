@@ -72,7 +72,8 @@ let
     EndSection
   '';
 
-in writeScriptBin "xdummy" ''
+in
+writeScriptBin "xdummy" ''
   #!${runtimeShell}
   exec ${xorg.xorgserver.out}/bin/Xorg \
     -noreset \

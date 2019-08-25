@@ -3,7 +3,8 @@
 let
   clang = llvmPackages.clang-unwrapped;
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   pname = "clang-tools";
   version = stdenv.lib.getVersion clang;
 
@@ -27,8 +28,10 @@ in stdenv.mkDerivation {
     runHook postInstall
   '';
 
-  meta = clang.meta // {
-    description = "Standalone command line tools for C++ development";
-    maintainers = with stdenv.lib.maintainers; [ aherrmann ];
-  };
+  meta = clang.meta
+    // {
+         description = "Standalone command line tools for C++ development";
+         maintainers = with stdenv.lib.maintainers; [ aherrmann ];
+       }
+    ;
 }

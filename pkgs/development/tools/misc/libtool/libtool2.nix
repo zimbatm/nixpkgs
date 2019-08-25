@@ -1,4 +1,8 @@
-{ stdenv, fetchurl, m4, perl, help2man
+{ stdenv
+, fetchurl
+, m4
+, perl
+, help2man
 }:
 
 stdenv.mkDerivation rec {
@@ -43,7 +47,7 @@ stdenv.mkDerivation rec {
     '';
     homepage = https://www.gnu.org/software/libtool/;
     license = licenses.gpl2Plus;
-    maintainers = [ ];
+    maintainers = [];
     platforms = platforms.unix;
   };
 }

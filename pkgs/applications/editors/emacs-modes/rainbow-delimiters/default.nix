@@ -1,8 +1,10 @@
-{stdenv, fetchurl, emacs}:
+{ stdenv, fetchurl, emacs }:
 
-let version = "1.3.13";
+let
+  version = "1.3.13";
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "emacs-rainbow-delimiters-${version}";
 
   src = fetchurl {

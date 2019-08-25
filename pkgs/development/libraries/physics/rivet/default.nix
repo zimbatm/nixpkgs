@@ -13,21 +13,23 @@ stdenv.mkDerivation rec {
     ./darwin.patch # configure relies on impure sw_vers to -Dunix
   ];
 
-  latex = texlive.combine { inherit (texlive)
-    scheme-basic
-    collection-pstricks
-    collection-fontsrecommended
-    l3kernel
-    l3packages
-    mathastext
-    pgf
-    relsize
-    sfmath
-    siunitx
-    xcolor
-    xkeyval
-    xstring
-    ;};
+  latex = texlive.combine {
+    inherit (texlive)
+      scheme-basic
+      collection-pstricks
+      collection-fontsrecommended
+      l3kernel
+      l3packages
+      mathastext
+      pgf
+      relsize
+      sfmath
+      siunitx
+      xcolor
+      xkeyval
+      xstring
+      ;
+  };
   buildInputs = [ hepmc2 imagemagick python2 latex makeWrapper ];
   propagatedBuildInputs = [ fastjet ghostscript gsl yoda ];
 
@@ -72,9 +74,9 @@ stdenv.mkDerivation rec {
 
   meta = {
     description = "A framework for comparison of experimental measurements from high-energy particle colliders to theory predictions";
-    license     = stdenv.lib.licenses.gpl2;
-    homepage    = https://rivet.hepforge.org;
-    platforms   = stdenv.lib.platforms.unix;
+    license = stdenv.lib.licenses.gpl2;
+    homepage = https://rivet.hepforge.org;
+    platforms = stdenv.lib.platforms.unix;
     maintainers = with stdenv.lib.maintainers; [ veprbl ];
   };
 }

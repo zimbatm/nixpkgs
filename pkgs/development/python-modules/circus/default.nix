@@ -1,5 +1,12 @@
-{ stdenv, buildPythonPackage, fetchPypi
-, iowait, psutil, pyzmq, tornado, mock }:
+{ stdenv
+, buildPythonPackage
+, fetchPypi
+, iowait
+, psutil
+, pyzmq
+, tornado
+, mock
+}:
 
 buildPythonPackage rec {
   pname = "circus";

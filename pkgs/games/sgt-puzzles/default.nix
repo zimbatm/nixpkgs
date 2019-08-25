@@ -1,6 +1,12 @@
-{ stdenv, fetchurl
-, gtk3, libX11
-, makeWrapper, pkgconfig, perl, autoreconfHook, wrapGAppsHook
+{ stdenv
+, fetchurl
+, gtk3
+, libX11
+, makeWrapper
+, pkgconfig
+, perl
+, autoreconfHook
+, wrapGAppsHook
 }:
 
 stdenv.mkDerivation rec {
@@ -8,15 +14,15 @@ stdenv.mkDerivation rec {
   version = "20180429.31384ca";
 
   src = fetchurl {
-   url = "http://www.chiark.greenend.org.uk/~sgtatham/puzzles/puzzles-${version}.tar.gz";
-   sha256 = "0r97kyy0rxgzw78lby2kwi8fg1yimw8a3biy5psgd983d0nwcf9l";
+    url = "http://www.chiark.greenend.org.uk/~sgtatham/puzzles/puzzles-${version}.tar.gz";
+    sha256 = "0r97kyy0rxgzw78lby2kwi8fg1yimw8a3biy5psgd983d0nwcf9l";
   };
 
   nativeBuildInputs = [ autoreconfHook makeWrapper pkgconfig perl wrapGAppsHook ];
 
   buildInputs = [ gtk3 libX11 ];
 
-  makeFlags = ["prefix=$(out)" "gamesdir=$(out)/bin"];
+  makeFlags = [ "prefix=$(out)" "gamesdir=$(out)/bin" ];
   preInstall = ''
     mkdir -p "$out"/{bin,share/doc/sgtpuzzles}
     cp gamedesc.txt LICENCE README "$out/share/doc/sgtpuzzles"

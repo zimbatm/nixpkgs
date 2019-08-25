@@ -5,7 +5,11 @@
 # mkdir -p ~/.config/obs-studio/plugins
 # ln -s ~/.nix-profile/share/obs/obs-plugins/obs-linuxbrowser ~/.config/obs-studio/plugins/
 
-{ stdenv, fetchFromGitHub, obs-studio, cmake, libcef
+{ stdenv
+, fetchFromGitHub
+, obs-studio
+, cmake
+, libcef
 }:
 
 stdenv.mkDerivation rec {

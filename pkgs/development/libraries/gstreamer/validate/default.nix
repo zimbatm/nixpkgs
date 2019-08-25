@@ -1,5 +1,11 @@
-{ stdenv, fetchurl, pkgconfig, gstreamer, gst-plugins-base
-, python, gobject-introspection, json-glib
+{ stdenv
+, fetchurl
+, pkgconfig
+, gstreamer
+, gst-plugins-base
+, python
+, gobject-introspection
+, json-glib
 }:
 
 stdenv.mkDerivation rec {
@@ -21,11 +27,13 @@ stdenv.mkDerivation rec {
   outputs = [ "out" "dev" ];
 
   nativeBuildInputs = [
-    pkgconfig gobject-introspection
+    pkgconfig
+    gobject-introspection
   ];
 
   buildInputs = [
-    python json-glib
+    python
+    json-glib
   ];
 
   propagatedBuildInputs = [ gstreamer gst-plugins-base ];

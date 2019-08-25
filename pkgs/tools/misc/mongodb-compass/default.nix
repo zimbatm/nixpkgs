@@ -1,6 +1,25 @@
-{ stdenv, fetchurl, dpkg
-, alsaLib, atk, cairo, cups, curl, dbus, expat, fontconfig, freetype, glib
-, gnome2, gnome3, libnotify, libxcb, nspr, nss, systemd, xorg }:
+{ stdenv
+, fetchurl
+, dpkg
+, alsaLib
+, atk
+, cairo
+, cups
+, curl
+, dbus
+, expat
+, fontconfig
+, freetype
+, glib
+, gnome2
+, gnome3
+, libnotify
+, libxcb
+, nspr
+, nss
+, systemd
+, xorg
+}:
 
 let
 
@@ -40,7 +59,9 @@ let
     xorg.libXrender
     xorg.libXtst
     xorg.libXScrnSaver
-  ] + ":${stdenv.cc.cc.lib}/lib64";
+  ]
+  + ":${stdenv.cc.cc.lib}/lib64"
+  ;
 
   src =
     if stdenv.hostPlatform.system == "x86_64-linux" then
@@ -51,7 +72,8 @@ let
     else
       throw "MongoDB compass is not supported on ${stdenv.hostPlatform.system}";
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "mongodb-compass-${version}";
 
   inherit src;

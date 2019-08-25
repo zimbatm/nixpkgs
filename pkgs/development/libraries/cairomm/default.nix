@@ -15,9 +15,12 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ pkgconfig ];
   propagatedBuildInputs = [ cairo libsigcxx ];
   buildInputs = [ fontconfig freetype ]
-  ++ stdenv.lib.optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
-    ApplicationServices
-  ]);
+    ++ stdenv.lib.optionals stdenv.isDarwin (
+         with darwin.apple_sdk.frameworks; [
+           ApplicationServices
+         ]
+       )
+    ;
 
   doCheck = true;
 

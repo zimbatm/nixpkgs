@@ -1,10 +1,21 @@
-{ stdenv, fetchurl, fetchpatch, openssl, zlib, pcre, libxml2, libxslt
-, substituteAll, gd, geoip
+{ stdenv
+, fetchurl
+, fetchpatch
+, openssl
+, zlib
+, pcre
+, libxml2
+, libxslt
+, substituteAll
+, gd
+, geoip
 , withDebug ? false
 , withStream ? true
 , withMail ? false
 , modules ? []
-, version, sha256, ...
+, version
+, sha256
+, ...
 }:
 
 with stdenv.lib;
@@ -12,11 +23,14 @@ with stdenv.lib;
 let
 
   mapModules = attrPath: flip concatMap modules
-    (mod:
-      let supports = mod.supports or (_: true);
-      in
-        if supports version then mod.${attrPath} or []
-        else throw "Module at ${toString mod.src} does not support nginx version ${version}!");
+    (
+      mod:
+        let
+          supports = mod.supports or (_: true);
+        in
+          if supports version then mod.${attrPath} or []
+          else throw "Module at ${toString mod.src} does not support nginx version ${version}!"
+    );
 
 in
 
@@ -29,7 +43,8 @@ stdenv.mkDerivation {
   };
 
   buildInputs = [ openssl zlib pcre libxml2 libxslt gd geoip ]
-    ++ mapModules "inputs";
+    ++ mapModules "inputs"
+    ;
 
   configureFlags = [
     "--with-http_ssl_module"
@@ -53,21 +68,25 @@ stdenv.mkDerivation {
     "--with-pcre-jit"
     # Install destination problems
     # "--with-http_perl_module"
-  ] ++ optional withDebug [
-    "--with-debug"
-  ] ++ optional withStream [
-    "--with-stream"
-    "--with-stream_geoip_module"
-    "--with-stream_realip_module"
-    "--with-stream_ssl_module"
-    "--with-stream_ssl_preread_module"
-  ] ++ optional withMail [
-    "--with-mail"
-    "--with-mail_ssl_module"
   ]
-    ++ optional (gd != null) "--with-http_image_filter_module"
-    ++ optional (with stdenv.hostPlatform; isLinux || isFreeBSD) "--with-file-aio"
-    ++ map (mod: "--add-module=${mod.src}") modules;
+  ++ optional withDebug [
+       "--with-debug"
+     ]
+  ++ optional withStream [
+       "--with-stream"
+       "--with-stream_geoip_module"
+       "--with-stream_realip_module"
+       "--with-stream_ssl_module"
+       "--with-stream_ssl_preread_module"
+     ]
+  ++ optional withMail [
+       "--with-mail"
+       "--with-mail_ssl_module"
+     ]
+  ++ optional (gd != null) "--with-http_image_filter_module"
+  ++ optional (with stdenv.hostPlatform; isLinux || isFreeBSD) "--with-file-aio"
+  ++ map (mod: "--add-module=${mod.src}") modules
+  ;
 
   NIX_CFLAGS_COMPILE = [ "-I${libxml2.dev}/include/libxml2" ] ++ optional stdenv.isDarwin "-Wno-error=deprecated-declarations";
 
@@ -75,25 +94,36 @@ stdenv.mkDerivation {
 
   preConfigure = (concatMapStringsSep "\n" (mod: mod.preConfigure or "") modules);
 
-  patches = stdenv.lib.singleton (substituteAll {
-    src = ./nix-etag-1.15.4.patch;
-    preInstall = ''
-      export nixStoreDir="$NIX_STORE" nixStoreDirLen="''${#NIX_STORE}"
-    '';
-  }) ++ stdenv.lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
-    (fetchpatch {
-      url = "https://raw.githubusercontent.com/openwrt/packages/master/net/nginx/patches/102-sizeof_test_fix.patch";
-      sha256 = "0i2k30ac8d7inj9l6bl0684kjglam2f68z8lf3xggcc2i5wzhh8a";
-    })
-    (fetchpatch {
-      url = "https://raw.githubusercontent.com/openwrt/packages/master/net/nginx/patches/101-feature_test_fix.patch";
-      sha256 = "0v6890a85aqmw60pgj3mm7g8nkaphgq65dj4v9c6h58wdsrc6f0y";
-    })
-    (fetchpatch {
-      url = "https://raw.githubusercontent.com/openwrt/packages/master/net/nginx/patches/103-sys_nerr.patch";
-      sha256 = "0s497x6mkz947aw29wdy073k8dyjq8j99lax1a1mzpikzr4rxlmd";
-    })
-  ] ++ mapModules "patches";
+  patches = stdenv.lib.singleton (
+    substituteAll {
+      src = ./nix-etag-1.15.4.patch;
+      preInstall = ''
+        export nixStoreDir="$NIX_STORE" nixStoreDirLen="''${#NIX_STORE}"
+      '';
+    }
+  )
+  ++ stdenv.lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
+       (
+         fetchpatch {
+           url = "https://raw.githubusercontent.com/openwrt/packages/master/net/nginx/patches/102-sizeof_test_fix.patch";
+           sha256 = "0i2k30ac8d7inj9l6bl0684kjglam2f68z8lf3xggcc2i5wzhh8a";
+         }
+       )
+       (
+         fetchpatch {
+           url = "https://raw.githubusercontent.com/openwrt/packages/master/net/nginx/patches/101-feature_test_fix.patch";
+           sha256 = "0v6890a85aqmw60pgj3mm7g8nkaphgq65dj4v9c6h58wdsrc6f0y";
+         }
+       )
+       (
+         fetchpatch {
+           url = "https://raw.githubusercontent.com/openwrt/packages/master/net/nginx/patches/103-sys_nerr.patch";
+           sha256 = "0s497x6mkz947aw29wdy073k8dyjq8j99lax1a1mzpikzr4rxlmd";
+         }
+       )
+     ]
+  ++ mapModules "patches"
+  ;
 
   hardeningEnable = optional (!stdenv.isDarwin) "pie";
 
@@ -107,9 +137,9 @@ stdenv.mkDerivation {
 
   meta = {
     description = "A reverse proxy and lightweight webserver";
-    homepage    = http://nginx.org;
-    license     = licenses.bsd2;
-    platforms   = platforms.all;
+    homepage = http://nginx.org;
+    license = licenses.bsd2;
+    platforms = platforms.all;
     maintainers = with maintainers; [ thoughtpolice raskin fpletz globin ];
   };
 }

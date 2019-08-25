@@ -1,8 +1,15 @@
-{ stdenv, lib, fetchgit, cmake, llvmPackages, boost, python
+{ stdenv
+, lib
+, fetchgit
+, cmake
+, llvmPackages
+, boost
+, python
 , gocode ? null
 , godef ? null
 , rustracerd ? null
-, fixDarwinDylibNames, Cocoa ? null
+, fixDarwinDylibNames
+, Cocoa ? null
 }:
 
 stdenv.mkDerivation rec {
@@ -17,7 +24,8 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ cmake ];
   buildInputs = [ boost llvmPackages.libclang ]
-    ++ stdenv.lib.optional stdenv.isDarwin [ fixDarwinDylibNames Cocoa ];
+    ++ stdenv.lib.optional stdenv.isDarwin [ fixDarwinDylibNames Cocoa ]
+    ;
 
   buildPhase = ''
     export EXTRA_CMAKE_ARGS=-DPATH_TO_LLVM_ROOT=${llvmPackages.clang-unwrapped}
@@ -55,13 +63,17 @@ stdenv.mkDerivation rec {
       cp -r third_party/$p $out/lib/ycmd/third_party
     done
 
-  '' + lib.optionalString (gocode != null) ''
-    ln -s ${gocode}/bin/gocode $out/lib/ycmd/third_party/gocode
-  '' + lib.optionalString (godef != null) ''
-    ln -s ${godef}/bin/godef $out/lib/ycmd/third_party/godef
-  '' + lib.optionalString (rustracerd != null) ''
-    ln -s ${rustracerd}/bin/racerd $out/lib/ycmd/third_party/racerd/target/release
-  '';
+  ''
+  + lib.optionalString (gocode != null) ''
+      ln -s ${gocode}/bin/gocode $out/lib/ycmd/third_party/gocode
+    ''
+  + lib.optionalString (godef != null) ''
+      ln -s ${godef}/bin/godef $out/lib/ycmd/third_party/godef
+    ''
+  + lib.optionalString (rustracerd != null) ''
+      ln -s ${rustracerd}/bin/racerd $out/lib/ycmd/third_party/racerd/target/release
+    ''
+  ;
 
   # fixup the argv[0] and replace __file__ with the corresponding path so
   # python won't be thrown off by argv[0]

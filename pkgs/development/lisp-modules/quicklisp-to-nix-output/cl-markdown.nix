@@ -14,7 +14,7 @@ rec {
 
   packageName = "cl-markdown";
 
-  asdFilesToKeep = ["cl-markdown.asd"];
+  asdFilesToKeep = [ "cl-markdown.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM cl-markdown DESCRIPTION NIL SHA256

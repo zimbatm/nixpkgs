@@ -1,6 +1,25 @@
-{ stdenv, fetchurl, fetchFromGitHub, makeDesktopItem, cmake, boost, zlib
-, openssl, R, qtbase, qtxmlpatterns, qtsensors, qtwebengine, qtwebchannel
-, libuuid, hunspellDicts, unzip, ant, jdk, gnumake, makeWrapper, pandoc
+{ stdenv
+, fetchurl
+, fetchFromGitHub
+, makeDesktopItem
+, cmake
+, boost
+, zlib
+, openssl
+, R
+, qtbase
+, qtxmlpatterns
+, qtsensors
+, qtwebengine
+, qtwebchannel
+, libuuid
+, hunspellDicts
+, unzip
+, ant
+, jdk
+, gnumake
+, makeWrapper
+, pandoc
 , llvmPackages
 }:
 
@@ -17,8 +36,18 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ cmake unzip ant jdk makeWrapper pandoc ];
 
-  buildInputs = [ boost zlib openssl R qtbase qtxmlpatterns qtsensors
-                  qtwebengine qtwebchannel libuuid ];
+  buildInputs = [
+    boost
+    zlib
+    openssl
+    R
+    qtbase
+    qtxmlpatterns
+    qtsensors
+    qtwebengine
+    qtwebchannel
+    libuuid
+  ];
 
   src = fetchFromGitHub {
     owner = "rstudio";
@@ -109,15 +138,16 @@ stdenv.mkDerivation rec {
   };
 
   postInstall = ''
-      wrapProgram $out/bin/rstudio --suffix PATH : ${gnumake}/bin
-      mkdir $out/share
-      cp -r ${desktopItem}/share/applications $out/share
-      mkdir $out/share/icons
-      ln $out/rstudio.png $out/share/icons
+    wrapProgram $out/bin/rstudio --suffix PATH : ${gnumake}/bin
+    mkdir $out/share
+    cp -r ${desktopItem}/share/applications $out/share
+    mkdir $out/share/icons
+    ln $out/rstudio.png $out/share/icons
   '';
 
   meta = with stdenv.lib;
-    { description = "Set of integrated tools for the R language";
+    {
+      description = "Set of integrated tools for the R language";
       homepage = https://www.rstudio.com/;
       license = licenses.agpl3;
       maintainers = with maintainers; [ ehmry changlinli ciil ];

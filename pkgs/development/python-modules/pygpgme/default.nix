@@ -1,5 +1,9 @@
-{ stdenv, buildPythonPackage, fetchurl, isPyPy
-, gpgme }:
+{ stdenv
+, buildPythonPackage
+, fetchurl
+, isPyPy
+, gpgme
+}:
 
 buildPythonPackage rec {
   version = "0.3";
@@ -20,6 +24,6 @@ buildPythonPackage rec {
     homepage = "https://launchpad.net/pygpgme";
     description = "A Python wrapper for the GPGME library";
     license = licenses.lgpl21;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
   };
 }

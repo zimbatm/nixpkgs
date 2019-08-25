@@ -14,7 +14,7 @@ rec {
 
   packageName = "mssql";
 
-  asdFilesToKeep = ["mssql.asd"];
+  asdFilesToKeep = [ "mssql.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM mssql DESCRIPTION NIL SHA256

@@ -14,7 +14,7 @@ rec {
 
   packageName = "abnf";
 
-  asdFilesToKeep = ["abnf.asd"];
+  asdFilesToKeep = [ "abnf.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM abnf DESCRIPTION ABNF Parser Generator, per RFC2234 SHA256

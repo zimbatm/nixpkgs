@@ -1,7 +1,25 @@
-{ stdenv, fetchurl, meson, ninja, pkgconfig, gettext, efl,
-  xcbutilkeysyms, libXrandr, libXdmcp, libxcb, libffi, pam, alsaLib,
-  luajit, bzip2, libpthreadstubs, gdbm, libcap, mesa,
-  xkeyboard_config, pcre
+{ stdenv
+, fetchurl
+, meson
+, ninja
+, pkgconfig
+, gettext
+, efl
+, xcbutilkeysyms
+, libXrandr
+, libXdmcp
+, libxcb
+, libffi
+, pam
+, alsaLib
+, luajit
+, bzip2
+, libpthreadstubs
+, gdbm
+, libcap
+, mesa
+, xkeyboard_config
+, pcre
 }:
 
 stdenv.mkDerivation rec {
@@ -36,8 +54,9 @@ stdenv.mkDerivation rec {
     pcre
     mesa
     xkeyboard_config
-  ] ++
-    stdenv.lib.optionals stdenv.isLinux [ libcap ];
+  ]
+  ++ stdenv.lib.optionals stdenv.isLinux [ libcap ]
+  ;
 
   patches = [
     # Some programs installed by enlightenment (to set the cpu frequency,

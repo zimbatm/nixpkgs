@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
   preConfigure = ''
     substituteInPlace ./configure \
        --replace /bin/bash $shell
-    '';
+  '';
 
   buildInputs = [ wxGTK30 openssl curl ];
 

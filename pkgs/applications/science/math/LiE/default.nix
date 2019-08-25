@@ -1,10 +1,13 @@
-{ stdenv, fetchurl
-, bison, readline }:
+{ stdenv
+, fetchurl
+, bison
+, readline
+}:
 
 stdenv.mkDerivation rec {
   version = "2.2.2";
-     # The current version of LiE is 2.2.2, which is more or less unchanged
-     # since about the year 2000. Minor bugfixes do get applied now and then.
+  # The current version of LiE is 2.2.2, which is more or less unchanged
+  # since about the year 2000. Minor bugfixes do get applied now and then.
   name = "lie-${version}";
 
   meta = {
@@ -20,7 +23,7 @@ stdenv.mkDerivation rec {
     ''; # take from the website
 
     platforms = stdenv.lib.platforms.linux;
-    maintainers = [ ]; # this package is probably not going to change anyway
+    maintainers = []; # this package is probably not going to change anyway
   };
 
   src = fetchurl {

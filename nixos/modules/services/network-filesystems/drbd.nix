@@ -4,7 +4,9 @@
 
 with lib;
 
-let cfg = config.services.drbd; in
+let
+  cfg = config.services.drbd;
+in
 
 {
 
@@ -48,7 +50,8 @@ let cfg = config.services.drbd; in
       '';
 
     environment.etc = singleton
-      { source = pkgs.writeText "drbd.conf" cfg.config;
+      {
+        source = pkgs.writeText "drbd.conf" cfg.config;
         target = "drbd.conf";
       };
 

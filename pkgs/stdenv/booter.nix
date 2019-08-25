@@ -65,55 +65,67 @@ stageFuns: let
         then rnul pred
         else let
           # Note the cycle -- call-by-need ensures finite fold.
-          cur  = op pred (builtins.elemAt list n) succ;
+          cur = op pred (builtins.elemAt list n) succ;
           succ = go cur (n + 1);
-        in cur;
+        in
+          cur;
       lapp = lnul cur;
       cur = go lapp 0;
-    in cur;
+    in
+      cur;
 
   # Take the list and disallow custom overrides in all but the final stage,
   # and allow it in the final flag. Only defaults this boolean field if it
   # isn't already set.
   withAllowCustomOverrides = lib.lists.imap1
-    (index: stageFun: prevStage:
+    (
+      index: stageFun: prevStage:
       # So true by default for only the first element because one
       # 1-indexing. Since we reverse the list, this means this is true
       # for the final stage.
-      { allowCustomOverrides = index == 1; }
-      // (stageFun prevStage))
+        { allowCustomOverrides = index == 1; }
+        // (stageFun prevStage)
+    )
     (lib.lists.reverseList stageFuns);
 
   # Adds the stdenv to the arguments, and sticks in it the previous stage for
   # debugging purposes.
   folder = nextStage: stageFun: prevStage: let
     args = stageFun prevStage;
-    args' = args // {
-      stdenv = args.stdenv // {
-        # For debugging
-        __bootPackages = prevStage;
-        __hatPackages = nextStage;
-      };
-    };
+    args' = args
+      // {
+           stdenv = args.stdenv
+             // {
+                  # For debugging
+                  __bootPackages = prevStage;
+                  __hatPackages = nextStage;
+                }
+             ;
+         }
+      ;
     thisStage =
       if args.__raw or false
       then args'
-      else allPackages ((builtins.removeAttrs args' ["selfBuild"]) // {
-        adjacentPackages = if args.selfBuild or true then null else rec {
-          pkgsBuildBuild = prevStage.buildPackages;
-          pkgsBuildHost = prevStage;
-          pkgsBuildTarget =
-            if args.stdenv.targetPlatform == args.stdenv.hostPlatform
-            then pkgsBuildHost
-            else assert args.stdenv.hostPlatform == args.stdenv.buildPlatform; thisStage;
-          pkgsHostHost =
-            if args.stdenv.hostPlatform == args.stdenv.targetPlatform
-            then thisStage
-            else assert args.stdenv.buildPlatform == args.stdenv.hostPlatform; pkgsBuildHost;
-          pkgsTargetTarget = nextStage;
-        };
-      });
-  in thisStage;
+      else allPackages (
+        (builtins.removeAttrs args' [ "selfBuild" ])
+        // {
+             adjacentPackages = if args.selfBuild or true then null else rec {
+               pkgsBuildBuild = prevStage.buildPackages;
+               pkgsBuildHost = prevStage;
+               pkgsBuildTarget =
+                 if args.stdenv.targetPlatform == args.stdenv.hostPlatform
+                 then pkgsBuildHost
+                 else assert args.stdenv.hostPlatform == args.stdenv.buildPlatform; thisStage;
+               pkgsHostHost =
+                 if args.stdenv.hostPlatform == args.stdenv.targetPlatform
+                 then thisStage
+                 else assert args.stdenv.buildPlatform == args.stdenv.hostPlatform; pkgsBuildHost;
+               pkgsTargetTarget = nextStage;
+             };
+           }
+      );
+  in
+    thisStage;
 
   # This is a hack for resolving cross-compiled compilers' run-time
   # deps. (That is, compilers that are themselves cross-compiled, as
@@ -126,4 +138,5 @@ stageFuns: let
       else buildPackages.gcc;
   };
 
-in dfold folder postStage (_: {}) withAllowCustomOverrides
+in
+dfold folder postStage (_: {}) withAllowCustomOverrides

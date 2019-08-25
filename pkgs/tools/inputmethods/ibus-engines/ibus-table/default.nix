@@ -1,16 +1,24 @@
-{ stdenv, fetchFromGitHub
-, autoreconfHook, docbook2x, pkgconfig
-, gtk3, dconf, gobject-introspection
-, ibus, python3, wrapGAppsHook }:
+{ stdenv
+, fetchFromGitHub
+, autoreconfHook
+, docbook2x
+, pkgconfig
+, gtk3
+, dconf
+, gobject-introspection
+, ibus
+, python3
+, wrapGAppsHook
+}:
 
 stdenv.mkDerivation rec {
   pname = "ibus-table";
   version = "1.9.21";
 
   src = fetchFromGitHub {
-    owner  = "kaio";
-    repo   = "ibus-table";
-    rev    = version;
+    owner = "kaio";
+    repo = "ibus-table";
+    rev = version;
     sha256 = "1rswbhbfvir443mw3p7xw6calkpfss4fcgn8nhfnrbin49q6w1vm";
   };
 
@@ -34,10 +42,14 @@ stdenv.mkDerivation rec {
     gtk3
     gobject-introspection
     ibus
-    (python3.withPackages (pypkgs: with pypkgs; [
-      pygobject3
-      (toPythonModule ibus)
-    ]))
+    (
+      python3.withPackages (
+        pypkgs: with pypkgs; [
+          pygobject3
+          (toPythonModule ibus)
+        ]
+      )
+    )
   ];
 
   nativeBuildInputs = [
@@ -55,10 +67,10 @@ stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     isIbusEngine = true;
-    description  = "An IBus framework for table-based input methods";
-    homepage     = https://github.com/kaio/ibus-table/wiki;
-    license      = licenses.lgpl21;
-    platforms    = platforms.linux;
-    maintainers  = with maintainers; [ mudri ];
+    description = "An IBus framework for table-based input methods";
+    homepage = https://github.com/kaio/ibus-table/wiki;
+    license = licenses.lgpl21;
+    platforms = platforms.linux;
+    maintainers = with maintainers; [ mudri ];
   };
 }

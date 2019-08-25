@@ -1,6 +1,8 @@
 { fetchsvn, stdenv, emacs }:
 
-let revision = "17339"; in
+let
+  revision = "17339";
+in
 stdenv.mkDerivation rec {
   name = "scala-mode-r${revision}";
 
@@ -25,6 +27,6 @@ stdenv.mkDerivation rec {
     # non-copyleft, BSD-style
     license = "permissive";
 
-    maintainers = [ ];
+    maintainers = [];
   };
 }

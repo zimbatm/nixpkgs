@@ -1,10 +1,27 @@
-{ stdenv, lib, fetchurl, pkgconfig, intltool, glib, gtk, dbus-glib, upower, xfconf
-, libxfce4ui, libxfce4util, libnotify, xfce4-panel, hicolor-icon-theme
-, withGtk3 ? false, gtk3, libxfce4ui_gtk3, xfce4panel_gtk3 }:
+{ stdenv
+, lib
+, fetchurl
+, pkgconfig
+, intltool
+, glib
+, gtk
+, dbus-glib
+, upower
+, xfconf
+, libxfce4ui
+, libxfce4util
+, libnotify
+, xfce4-panel
+, hicolor-icon-theme
+, withGtk3 ? false
+, gtk3
+, libxfce4ui_gtk3
+, xfce4panel_gtk3
+}:
 let
-  p_name  = "xfce4-power-manager";
+  p_name = "xfce4-power-manager";
   ver_maj = if withGtk3 then "1.6" else "1.4";
-  ver_min = if withGtk3 then "0"   else "4";
+  ver_min = if withGtk3 then "0" else "4";
 in
 stdenv.mkDerivation rec {
   name = "${p_name}-${ver_maj}.${ver_min}";
@@ -18,12 +35,23 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs =
-    [ pkgconfig intltool glib dbus-glib upower xfconf libxfce4util
-      libnotify hicolor-icon-theme
-    ] ++
-    (if withGtk3
-    then [ gtk3 libxfce4ui_gtk3 xfce4panel_gtk3 ]
-    else [ gtk  libxfce4ui      xfce4-panel      ]);
+    [
+      pkgconfig
+      intltool
+      glib
+      dbus-glib
+      upower
+      xfconf
+      libxfce4util
+      libnotify
+      hicolor-icon-theme
+    ]
+    ++ (
+         if withGtk3
+         then [ gtk3 libxfce4ui_gtk3 xfce4panel_gtk3 ]
+         else [ gtk libxfce4ui xfce4-panel ]
+       )
+  ;
 
   postPatch = lib.optionalString withGtk3 ''
     substituteInPlace configure --replace gio-2.0 gio-unix-2.0

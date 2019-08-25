@@ -6,7 +6,7 @@
 buildGoPackage rec {
   name = "ineffassign-unstable-${version}";
   version = "2018-09-09";
-	rev = "1003c8bd00dc2869cb5ca5282e6ce33834fed514";
+  rev = "1003c8bd00dc2869cb5ca5282e6ce33834fed514";
 
   goPackagePath = "github.com/gordonklaus/ineffassign";
   excludedPackages = ''testdata'';

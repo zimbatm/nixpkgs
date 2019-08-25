@@ -1,5 +1,12 @@
-{ stdenv, fetchurl, fetchpatch, scons, pkgconfig
-, SDL, SDL_mixer, libGLU_combined, physfs
+{ stdenv
+, fetchurl
+, fetchpatch
+, scons
+, pkgconfig
+, SDL
+, SDL_mixer
+, libGLU_combined
+, physfs
 }:
 
 let
@@ -8,7 +15,8 @@ let
     sha256 = "05mz77vml396mff43dbs50524rlm4fyds6widypagfbh5hc55qdc";
   };
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "dxx-rebirth-${version}";
   version = "0.59.100";
 
@@ -19,16 +27,20 @@ in stdenv.mkDerivation rec {
 
   # TODO: drop these when upgrading to version > 0.59.100
   patches = [
-    (fetchpatch {
-      name   = "dxx-gcc7-fix1.patch";
-      url    = "https://github.com/dxx-rebirth/dxx-rebirth/commit/1ed7cec714c623758e3418ec69eaf3b3ff03e9f6.patch";
-      sha256 = "026pn8xglmxryaj8555h5rhzkx30lxmksja1fzdlfyb1vll75gq0";
-    })
-    (fetchpatch {
-      name   = "dxx-gcc7-fix2.patch";
-      url    = "https://github.com/dxx-rebirth/dxx-rebirth/commit/73057ad8ec6977ac747637db1080686f11b4c3cc.patch";
-      sha256 = "0s506vdd2djrrm3xl0ygn9ylpg6y8qxii2nnzk3sf9133glp3swy";
-    })
+    (
+      fetchpatch {
+        name = "dxx-gcc7-fix1.patch";
+        url = "https://github.com/dxx-rebirth/dxx-rebirth/commit/1ed7cec714c623758e3418ec69eaf3b3ff03e9f6.patch";
+        sha256 = "026pn8xglmxryaj8555h5rhzkx30lxmksja1fzdlfyb1vll75gq0";
+      }
+    )
+    (
+      fetchpatch {
+        name = "dxx-gcc7-fix2.patch";
+        url = "https://github.com/dxx-rebirth/dxx-rebirth/commit/73057ad8ec6977ac747637db1080686f11b4c3cc.patch";
+        sha256 = "0s506vdd2djrrm3xl0ygn9ylpg6y8qxii2nnzk3sf9133glp3swy";
+      }
+    )
   ];
 
   nativeBuildInputs = [ pkgconfig scons ];

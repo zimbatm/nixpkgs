@@ -6,15 +6,22 @@ with lib;
 
 let
 
-  mkMassRebuild = args: mkOption (builtins.removeAttrs args [ "feature" ] // {
-    type = args.type or (types.uniq types.bool);
-    default = args.default or false;
-    description = (args.description or ''
-      Whether to ${args.feature} while building nixpkgs packages.
-    '') + ''
-      Changing the default may cause a mass rebuild.
-    '';
-  });
+  mkMassRebuild = args: mkOption (
+    builtins.removeAttrs args [ "feature" ]
+    // {
+         type = args.type or (types.uniq types.bool);
+         default = args.default or false;
+         description = (
+           args.description or ''
+             Whether to ${args.feature} while building nixpkgs packages.
+           ''
+         )
+         + ''
+           Changing the default may cause a mass rebuild.
+         ''
+         ;
+       }
+  );
 
   options = {
 
@@ -34,7 +41,8 @@ let
 
   };
 
-in {
+in
+{
 
   inherit options;
 

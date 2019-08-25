@@ -2,7 +2,8 @@
 
 let
   version = "1.2";
-in fetchzip rec {
+in
+fetchzip rec {
   name = "marathi-cursive-${version}";
 
   url = "https://github.com/MihailJP/MarathiCursive/releases/download/${version}/MarathiCursive-${version}.7z";

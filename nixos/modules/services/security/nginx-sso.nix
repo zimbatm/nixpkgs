@@ -6,7 +6,8 @@ let
   cfg = config.services.nginx.sso;
   pkg = getBin pkgs.nginx-sso;
   configYml = pkgs.writeText "nginx-sso.yml" (builtins.toJSON cfg.configuration);
-in {
+in
+{
   options.services.nginx.sso = {
     enable = mkEnableOption "nginx-sso service";
 

@@ -1,4 +1,4 @@
-{stdenv, fetchurl, fetchpatch, libX11, libXext, xorgproto, libjpeg, libungif, libtiff, libpng}:
+{ stdenv, fetchurl, fetchpatch, libX11, libXext, xorgproto, libjpeg, libungif, libtiff, libpng }:
 
 stdenv.mkDerivation {
   name = "imlib-1.9.15";
@@ -8,11 +8,13 @@ stdenv.mkDerivation {
   };
 
   patches = [
-    (fetchpatch {
-      name = "CVE-2007-3568.patch";
-      url = https://gitweb.gentoo.org/repo/gentoo.git/plain/media-libs/imlib/files/imlib-1.9.15-bpp16-CVE-2007-3568.patch;
-      sha256 = "0lxfibi094gki39sq1w4p0hcx25xlk0875agbhjkjngzx862wvbg";
-    })
+    (
+      fetchpatch {
+        name = "CVE-2007-3568.patch";
+        url = https://gitweb.gentoo.org/repo/gentoo.git/plain/media-libs/imlib/files/imlib-1.9.15-bpp16-CVE-2007-3568.patch;
+        sha256 = "0lxfibi094gki39sq1w4p0hcx25xlk0875agbhjkjngzx862wvbg";
+      }
+    )
   ];
 
   configureFlags = [
@@ -21,7 +23,7 @@ stdenv.mkDerivation {
     "--x-libraries=${libX11.out}/lib"
   ];
 
-  buildInputs = [libjpeg libXext libX11 xorgproto libtiff libungif libpng];
+  buildInputs = [ libjpeg libXext libX11 xorgproto libtiff libungif libpng ];
 
   meta = with stdenv.lib; {
     description = "An image loading and rendering library for X11";

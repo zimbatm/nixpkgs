@@ -20,8 +20,14 @@ mkDerivation rec {
 
   buildInputs = [ qtbase qtquickcontrols2 qtgraphicaleffects ];
   propagatedBuildInputs = with python3.pkgs; [
-    libsavitar numpy-stl pyserial requests uranium zeroconf
-  ] ++ plugins;
+    libsavitar
+    numpy-stl
+    pyserial
+    requests
+    uranium
+    zeroconf
+  ]
+    ++ plugins;
   nativeBuildInputs = [ cmake python3.pkgs.wrapPython ];
 
   cmakeFlags = [

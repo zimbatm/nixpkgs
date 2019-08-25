@@ -1,10 +1,22 @@
-{
-  mkDerivation, lib, copyPathsToStore, writeScript,
-  extra-cmake-modules, kdoctools,
-  kconfig, kcrash, ki18n, kio, kparts, kservice, kwindowsystem, plasma-framework
+{ mkDerivation
+, lib
+, copyPathsToStore
+, writeScript
+, extra-cmake-modules
+, kdoctools
+, kconfig
+, kcrash
+, ki18n
+, kio
+, kparts
+, kservice
+, kwindowsystem
+, plasma-framework
 }:
 
-let inherit (lib) getLib; in
+let
+  inherit (lib) getLib;
+in
 
 mkDerivation {
   name = "kinit";
@@ -12,7 +24,12 @@ mkDerivation {
   outputs = [ "out" "dev" ];
   nativeBuildInputs = [ extra-cmake-modules kdoctools ];
   buildInputs = [
-    kconfig kcrash ki18n kio kservice kwindowsystem
+    kconfig
+    kcrash
+    ki18n
+    kio
+    kservice
+    kwindowsystem
   ];
   patches = copyPathsToStore (lib.readPathsFromFile ./. ./series);
   CXXFLAGS = [

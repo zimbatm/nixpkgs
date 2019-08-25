@@ -29,10 +29,11 @@
 }:
 
 let
-  customHunspell = hunspellWithDicts [hunspellDicts.en-us];
+  customHunspell = hunspellWithDicts [ hunspellDicts.en-us ];
   majorVersion = "1.4";
   version = "${majorVersion}.1";
-in python3.pkgs.buildPythonApplication rec {
+in
+python3.pkgs.buildPythonApplication rec {
   name = "onboard-${version}";
   src = fetchurl {
     url = "https://launchpad.net/onboard/${majorVersion}/${version}/+download/${name}.tar.gz";
@@ -40,10 +41,12 @@ in python3.pkgs.buildPythonApplication rec {
   };
 
   patches = [
-    (substituteAll {
-      src = ./fix-paths.patch;
-      inherit mousetweaks;
-    })
+    (
+      substituteAll {
+        src = ./fix-paths.patch;
+        inherit mousetweaks;
+      }
+    )
     # Allow loading hunspell dictionaries installed in NixOS system path
     ./hunspell-use-xdg-datadirs.patch
   ];
@@ -91,7 +94,9 @@ in python3.pkgs.buildPythonApplication rec {
     wrapGAppsHook
     xorg.libXtst
     xorg.libxkbfile
-  ] ++ stdenv.lib.optional atspiSupport at-spi2-core;
+  ]
+  ++ stdenv.lib.optional atspiSupport at-spi2-core
+  ;
 
   nativeBuildInputs = [
     glibcLocales

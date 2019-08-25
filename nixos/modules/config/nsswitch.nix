@@ -24,23 +24,28 @@ let
     ++ optional resolved "resolve [!UNAVAIL=return]"
     ++ [ "dns" ]
     ++ optional nssmdns "mdns"
-    ++ optional myhostname "myhostname";
+    ++ optional myhostname "myhostname"
+    ;
 
   passwdArray = [ "files" ]
     ++ optional sssd "sss"
     ++ optional ldap "ldap"
     ++ optional mymachines "mymachines"
     ++ optional googleOsLogin "cache_oslogin oslogin"
-    ++ [ "systemd" ];
+    ++ [ "systemd" ]
+    ;
 
   shadowArray = [ "files" ]
     ++ optional sssd "sss"
-    ++ optional ldap "ldap";
+    ++ optional ldap "ldap"
+    ;
 
   servicesArray = [ "files" ]
-    ++ optional sssd "sss";
+    ++ optional sssd "sss"
+    ;
 
-in {
+in
+{
   options = {
 
     # NSS modules.  Hacky!
@@ -111,6 +116,7 @@ in {
     # fallbacks. Systemd also provides nss-mymachines to return IP
     # addresses of local containers.
     system.nssModules = (optionals canLoadExternalModules [ config.systemd.package.out ])
-      ++ optional googleOsLogin pkgs.google-compute-engine-oslogin.out;
+      ++ optional googleOsLogin pkgs.google-compute-engine-oslogin.out
+      ;
   };
 }

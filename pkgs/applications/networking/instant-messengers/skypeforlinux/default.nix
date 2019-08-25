@@ -1,7 +1,35 @@
-{ stdenv, fetchurl, dpkg
-, alsaLib, atk, cairo, cups, curl, dbus, expat, fontconfig, freetype, gdk-pixbuf, glib, glibc, gnome2, gnome3
-, gtk3, libnotify, libpulseaudio, libsecret, libv4l, nspr, nss, pango, systemd, wrapGAppsHook, xorg
-, at-spi2-atk, libuuid, at-spi2-core }:
+{ stdenv
+, fetchurl
+, dpkg
+, alsaLib
+, atk
+, cairo
+, cups
+, curl
+, dbus
+, expat
+, fontconfig
+, freetype
+, gdk-pixbuf
+, glib
+, glibc
+, gnome2
+, gnome3
+, gtk3
+, libnotify
+, libpulseaudio
+, libsecret
+, libv4l
+, nspr
+, nss
+, pango
+, systemd
+, wrapGAppsHook
+, xorg
+, at-spi2-atk
+, libuuid
+, at-spi2-core
+}:
 
 let
 
@@ -54,7 +82,9 @@ let
     xorg.libXtst
     xorg.libXScrnSaver
     xorg.libxcb
-  ] + ":${stdenv.cc.cc.lib}/lib64";
+  ]
+  + ":${stdenv.cc.cc.lib}/lib64"
+  ;
 
   src =
     if stdenv.hostPlatform.system == "x86_64-linux" then
@@ -65,7 +95,8 @@ let
     else
       throw "Skype for linux is not supported on ${stdenv.hostPlatform.system}";
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "skypeforlinux-${version}";
 
   system = "x86_64-linux";

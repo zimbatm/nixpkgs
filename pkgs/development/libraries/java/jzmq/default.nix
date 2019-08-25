@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
 
   preConfigure = ''
     ${if stdenv.hostPlatform.system == "x86_64-darwin" then
-      '' sed -i -e 's~/Headers~/include~' -e 's~_JNI_INC_SUBDIRS=\".*\"~_JNI_INC_SUBDIRS=\"darwin\"~' configure
+    '' sed -i -e 's~/Headers~/include~' -e 's~_JNI_INC_SUBDIRS=\".*\"~_JNI_INC_SUBDIRS=\"darwin\"~' configure
       '' else ""}
   '';
 

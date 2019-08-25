@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
     substituteInPlace build.sh --replace "gksu " ""
   '';
 
-  nativeBuildInputs  = [
+  nativeBuildInputs = [
     gnome-themes-extra
     inkscape
     xcursorgen

@@ -6,7 +6,7 @@ let
   cfg = config.networking.rxe;
 
   runRxeCmd = cmd: ifcs:
-    concatStrings ( map (x: "${pkgs.rdma-core}/bin/rxe_cfg -n ${cmd} ${x};") ifcs);
+    concatStrings (map (x: "${pkgs.rdma-core}/bin/rxe_cfg -n ${cmd} ${x};") ifcs);
 
   startScript = pkgs.writeShellScriptBin "rxe-start" ''
     ${pkgs.rdma-core}/bin/rxe_cfg -n start
@@ -19,7 +19,8 @@ let
     ${pkgs.rdma-core}/bin/rxe_cfg -n stop
   '';
 
-in {
+in
+{
   ###### interface
 
   options = {
@@ -27,7 +28,7 @@ in {
       enable = mkEnableOption "RDMA over converged ethernet";
       interfaces = mkOption {
         type = types.listOf types.str;
-        default = [ ];
+        default = [];
         example = [ "eth0" ];
         description = ''
           Enable RDMA on the listed interfaces. The corresponding virtual
@@ -60,4 +61,3 @@ in {
     };
   };
 }
-

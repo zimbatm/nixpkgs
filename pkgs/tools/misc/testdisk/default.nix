@@ -9,7 +9,8 @@ stdenv.mkDerivation {
   };
 
   buildInputs = [ ncurses libjpeg zlib openssl libuuid ]
-    ++ stdenv.lib.optionals (!stdenv.isDarwin) [ e2fsprogs ntfs3g ];
+    ++ stdenv.lib.optionals (!stdenv.isDarwin) [ e2fsprogs ntfs3g ]
+    ;
 
   enableParallelBuilding = true;
 

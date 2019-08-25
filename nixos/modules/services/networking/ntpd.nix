@@ -104,14 +104,16 @@ in
     systemd.services.systemd-timedated.environment = { SYSTEMD_TIMEDATED_NTP_SERVICES = "ntpd.service"; };
 
     users.users = singleton
-      { name = ntpUser;
+      {
+        name = ntpUser;
         uid = config.ids.uids.ntp;
         description = "NTP daemon user";
         home = stateDir;
       };
 
     systemd.services.ntpd =
-      { description = "NTP Daemon";
+      {
+        description = "NTP Daemon";
 
         wantedBy = [ "multi-user.target" ];
         wants = [ "time-sync.target" ];

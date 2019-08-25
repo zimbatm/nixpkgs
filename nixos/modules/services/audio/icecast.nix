@@ -36,7 +36,8 @@ let
       ${cfg.extraConf}
     </icecast>
   '';
-in {
+in
+{
 
   ###### interface
 
@@ -70,7 +71,7 @@ in {
         description = "Base directory used for logging.";
         default = "/var/log/icecast";
       };
-      
+
       listen = {
         port = mkOption {
           type = types.int;

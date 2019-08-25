@@ -1,11 +1,30 @@
-{ stdenv, lib, fetchurl, perl, pkgconfig, systemd, openssl
-, bzip2, zlib, lz4, inotify-tools, pam, libcap
-, clucene_core_2, icu, openldap, libsodium, libstemmer, cyrus_sasl
+{ stdenv
+, lib
+, fetchurl
+, perl
+, pkgconfig
+, systemd
+, openssl
+, bzip2
+, zlib
+, lz4
+, inotify-tools
+, pam
+, libcap
+, clucene_core_2
+, icu
+, openldap
+, libsodium
+, libstemmer
+, cyrus_sasl
 , nixosTests
-# Auth modules
-, withMySQL ? false, mysql
-, withPgSQL ? false, postgresql
-, withSQLite ? true, sqlite
+  # Auth modules
+, withMySQL ? false
+, mysql
+, withPgSQL ? false
+, postgresql
+, withSQLite ? true
+, sqlite
 }:
 
 stdenv.mkDerivation rec {
@@ -17,7 +36,8 @@ stdenv.mkDerivation rec {
     ++ lib.optionals (stdenv.isLinux) [ systemd pam libcap inotify-tools ]
     ++ lib.optional withMySQL mysql.connector-c
     ++ lib.optional withPgSQL postgresql
-    ++ lib.optional withSQLite sqlite;
+    ++ lib.optional withSQLite sqlite
+    ;
 
   src = fetchurl {
     url = "https://dovecot.org/releases/2.3/${name}.tar.gz";
@@ -59,26 +79,29 @@ stdenv.mkDerivation rec {
     "--with-ldap"
     "--with-lucene"
     "--with-icu"
-  ] ++ lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
-    "i_cv_epoll_works=${if stdenv.isLinux then "yes" else "no"}"
-    "i_cv_posix_fallocate_works=${if stdenv.isDarwin then "no" else "yes"}"
-    "i_cv_inotify_works=${if stdenv.isLinux then "yes" else "no"}"
-    "i_cv_signed_size_t=no"
-    "i_cv_signed_time_t=yes"
-    "i_cv_c99_vsnprintf=yes"
-    "lib_cv_va_copy=yes"
-    "i_cv_mmap_plays_with_write=yes"
-    "i_cv_gmtime_max_time_t=${toString stdenv.hostPlatform.parsed.cpu.bits}"
-    "i_cv_signed_time_t=yes"
-    "i_cv_fd_passing=yes"
-    "lib_cv_va_copy=yes"
-    "lib_cv___va_copy=yes"
-    "lib_cv_va_val_copy=yes"
-  ] ++ lib.optional (stdenv.isLinux) "--with-systemdsystemunitdir=$(out)/etc/systemd/system"
-    ++ lib.optional (stdenv.isDarwin) "--enable-static"
-    ++ lib.optional withMySQL "--with-mysql"
-    ++ lib.optional withPgSQL "--with-pgsql"
-    ++ lib.optional withSQLite "--with-sqlite";
+  ]
+  ++ lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
+       "i_cv_epoll_works=${if stdenv.isLinux then "yes" else "no"}"
+       "i_cv_posix_fallocate_works=${if stdenv.isDarwin then "no" else "yes"}"
+       "i_cv_inotify_works=${if stdenv.isLinux then "yes" else "no"}"
+       "i_cv_signed_size_t=no"
+       "i_cv_signed_time_t=yes"
+       "i_cv_c99_vsnprintf=yes"
+       "lib_cv_va_copy=yes"
+       "i_cv_mmap_plays_with_write=yes"
+       "i_cv_gmtime_max_time_t=${toString stdenv.hostPlatform.parsed.cpu.bits}"
+       "i_cv_signed_time_t=yes"
+       "i_cv_fd_passing=yes"
+       "lib_cv_va_copy=yes"
+       "lib_cv___va_copy=yes"
+       "lib_cv_va_val_copy=yes"
+     ]
+  ++ lib.optional (stdenv.isLinux) "--with-systemdsystemunitdir=$(out)/etc/systemd/system"
+  ++ lib.optional (stdenv.isDarwin) "--enable-static"
+  ++ lib.optional withMySQL "--with-mysql"
+  ++ lib.optional withPgSQL "--with-pgsql"
+  ++ lib.optional withSQLite "--with-sqlite"
+  ;
 
   meta = {
     homepage = https://dovecot.org/;

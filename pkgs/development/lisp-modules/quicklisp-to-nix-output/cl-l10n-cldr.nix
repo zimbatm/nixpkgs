@@ -5,7 +5,7 @@ rec {
 
   description = ''The necessary CLDR files for cl-l10n packaged in a QuickLisp friendly way.'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/cl-l10n-cldr/2012-09-09/cl-l10n-cldr-20120909-darcs.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "cl-l10n-cldr";
 
-  asdFilesToKeep = ["cl-l10n-cldr.asd"];
+  asdFilesToKeep = [ "cl-l10n-cldr.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM cl-l10n-cldr DESCRIPTION

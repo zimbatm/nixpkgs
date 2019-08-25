@@ -1,10 +1,11 @@
-{stdenv, fetchurl, runtimeShell, traceDeps ? false}:
+{ stdenv, fetchurl, runtimeShell, traceDeps ? false }:
 
 let
   traceLog = "/tmp/steam-trace-dependencies.log";
   version = "1.0.0.59";
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "steam-original-${version}";
 
   src = fetchurl {
@@ -17,14 +18,14 @@ in stdenv.mkDerivation rec {
   postInstall = ''
     rm $out/bin/steamdeps
     ${stdenv.lib.optionalString traceDeps ''
-      cat > $out/bin/steamdeps <<EOF
-      #!${runtimeShell}
-      echo \$1 >> ${traceLog}
-      cat \$1 >> ${traceLog}
-      echo >> ${traceLog}
-      EOF
-      chmod +x $out/bin/steamdeps
-    ''}
+    cat > $out/bin/steamdeps <<EOF
+    #!${runtimeShell}
+    echo \$1 >> ${traceLog}
+    cat \$1 >> ${traceLog}
+    echo >> ${traceLog}
+    EOF
+    chmod +x $out/bin/steamdeps
+  ''}
     install -d $out/lib/udev/rules.d
     install -m644 lib/udev/rules.d/*.rules $out/lib/udev/rules.d
   '';

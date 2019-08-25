@@ -9,16 +9,22 @@ stdenv.mkDerivation rec {
   };
 
   patches = stdenv.lib.optionals stdenv.isDarwin [
-    (fetchurl {
-      url = "https://trac.macports.org/export/70964/trunk/dports/audio/cdparanoia/files/osx_interface.patch";
-      sha256 = "1n86kzm2ssl8fdf5wlhp6ncb2bf6b9xlb5vg0mhc85r69prqzjiy";
-    })
-    (fetchurl {
-      url = "https://trac.macports.org/export/70964/trunk/dports/audio/cdparanoia/files/patch-paranoia_paranoia.c.10.4.diff";
-      sha256 = "17l2qhn8sh4jy6ryy5si6ll6dndcm0r537rlmk4a6a8vkn852vad";
-    })
-    ] ++ stdenv.lib.optional stdenv.hostPlatform.isMusl ./utils.patch
-    ++ [./fix_private_keyword.patch];
+    (
+      fetchurl {
+        url = "https://trac.macports.org/export/70964/trunk/dports/audio/cdparanoia/files/osx_interface.patch";
+        sha256 = "1n86kzm2ssl8fdf5wlhp6ncb2bf6b9xlb5vg0mhc85r69prqzjiy";
+      }
+    )
+    (
+      fetchurl {
+        url = "https://trac.macports.org/export/70964/trunk/dports/audio/cdparanoia/files/patch-paranoia_paranoia.c.10.4.diff";
+        sha256 = "17l2qhn8sh4jy6ryy5si6ll6dndcm0r537rlmk4a6a8vkn852vad";
+      }
+    )
+  ]
+  ++ stdenv.lib.optional stdenv.hostPlatform.isMusl ./utils.patch
+  ++ [ ./fix_private_keyword.patch ]
+  ;
 
   nativeBuildInputs = stdenv.lib.optional stdenv.isAarch64 autoreconfHook;
 
@@ -29,10 +35,12 @@ stdenv.mkDerivation rec {
 
   hardeningDisable = [ "format" ];
 
-  preConfigure = "unset CC" + stdenv.lib.optionalString stdenv.isAarch64 '';
+  preConfigure = "unset CC"
+    + stdenv.lib.optionalString stdenv.isAarch64 '';
     cp ${gnu-config}/config.sub configure.sub
     cp ${gnu-config}/config.guess configure.guess
-  '';
+  ''
+    ;
 
   meta = with stdenv.lib; {
     homepage = https://xiph.org/paranoia;

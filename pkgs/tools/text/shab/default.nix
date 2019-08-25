@@ -55,12 +55,14 @@ let
      parameters:       variables to expose to the template
    */
   render = shabScript: parameters:
-    let extraParams = {
-          inherit shabScript;
-        };
-    in runCommand "out" (parameters // extraParams) ''
-      ${shab}/bin/shab "$shabScript" >$out
-    '';
+    let
+      extraParams = {
+        inherit shabScript;
+      };
+    in
+      runCommand "out" (parameters // extraParams) ''
+        ${shab}/bin/shab "$shabScript" >$out
+      '';
 
   /*
      shabScriptText:   a string to use as a template
@@ -71,4 +73,4 @@ let
     render (writeText "template" shabScriptText) parameters;
 
 in
-  shab
+shab

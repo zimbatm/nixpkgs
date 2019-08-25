@@ -26,7 +26,8 @@ let
     pillow
   ];
 
-in buildPythonApplication rec {
+in
+buildPythonApplication rec {
   pname = "ocrmypdf";
   version = "8.2.3";
   disabled = ! python3Packages.isPy3k;
@@ -65,13 +66,14 @@ in buildPythonApplication rec {
     pytestrunner
     python-xmp-toolkit
     setuptools
-  ] ++ runtimeDeps;
+  ]
+    ++ runtimeDeps;
 
 
   postPatch = ''
     substituteInPlace src/ocrmypdf/leptonica.py \
       --replace "ffi.dlopen(find_library('lept'))" \
-      'ffi.dlopen("${stdenv.lib.makeLibraryPath [leptonica]}/liblept${stdenv.hostPlatform.extensions.sharedLibrary}")'
+      'ffi.dlopen("${stdenv.lib.makeLibraryPath [ leptonica ]}/liblept${stdenv.hostPlatform.extensions.sharedLibrary}")'
   '';
 
   # The tests take potentially 20+ minutes, depending on machine

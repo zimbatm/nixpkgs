@@ -1,5 +1,16 @@
-{ stdenv, buildPythonPackage, fetchPypi, isPy3k
-, scipy, numpy, matplotlib, tables, pyaml, urllib3, rpy2, mpi4py }:
+{ stdenv
+, buildPythonPackage
+, fetchPypi
+, isPy3k
+, scipy
+, numpy
+, matplotlib
+, tables
+, pyaml
+, urllib3
+, rpy2
+, mpi4py
+}:
 
 buildPythonPackage rec {
   pname = "NeuroTools";

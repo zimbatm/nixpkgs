@@ -1,10 +1,9 @@
-{
-  stdenv,
-  fetchurl,
-  gfortran,
-  cmake,
-  python2,
-  shared ? false
+{ stdenv
+, fetchurl
+, gfortran
+, cmake
+, python2
+, shared ? false
 }:
 let
   inherit (stdenv.lib) optional;
@@ -25,7 +24,8 @@ stdenv.mkDerivation rec {
     "-DUSE_OPTIMIZED_BLAS=ON"
     "-DCMAKE_Fortran_FLAGS=-fPIC"
   ]
-  ++ (optional shared "-DBUILD_SHARED_LIBS=ON");
+  ++ (optional shared "-DBUILD_SHARED_LIBS=ON")
+  ;
 
   doCheck = ! shared;
 

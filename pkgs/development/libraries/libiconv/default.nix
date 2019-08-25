@@ -1,4 +1,6 @@
-{ fetchurl, stdenv, lib
+{ fetchurl
+, stdenv
+, lib
 , enableStatic ? stdenv.hostPlatform.useAndroidPrebuilt
 , enableShared ? !stdenv.hostPlatform.useAndroidPrebuilt
 }:
@@ -25,13 +27,16 @@ stdenv.mkDerivation rec {
         sed '/^_GL_WARN_ON_USE (gets/d' -i srclib/stdio.in.h
       ''
     + lib.optionalString (!enableShared) ''
-      sed -i -e '/preload/d' Makefile.in
-    '';
+        sed -i -e '/preload/d' Makefile.in
+      ''
+  ;
 
   configureFlags = [
     (lib.enableFeature enableStatic "static")
     (lib.enableFeature enableShared "shared")
-  ] ++ lib.optional stdenv.isFreeBSD "--with-pic";
+  ]
+  ++ lib.optional stdenv.isFreeBSD "--with-pic"
+  ;
 
   meta = {
     description = "An iconv(3) implementation";
@@ -49,7 +54,7 @@ stdenv.mkDerivation rec {
     homepage = https://www.gnu.org/software/libiconv/;
     license = lib.licenses.lgpl2Plus;
 
-    maintainers = [ ];
+    maintainers = [];
 
     # This library is not needed on GNU platforms.
     hydraPlatforms = with lib.platforms; cygwin ++ darwin ++ freebsd;

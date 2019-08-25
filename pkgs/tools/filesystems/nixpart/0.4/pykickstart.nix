@@ -7,7 +7,8 @@ buildPythonApplication rec {
 
   src = fetchurl rec {
     url = "https://src.fedoraproject.org/repo/pkgs/pykickstart/"
-        + "${name}.tar.gz/${md5_path}/${name}.tar.gz";
+      + "${name}.tar.gz/${md5_path}/${name}.tar.gz"
+      ;
     sha256 = "e0d0f98ac4c5607e6a48d5c1fba2d50cc804de1081043f9da68cbfc69cad957a";
   };
 

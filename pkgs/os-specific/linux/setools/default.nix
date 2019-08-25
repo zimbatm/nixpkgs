@@ -1,5 +1,12 @@
-{ stdenv, fetchFromGitHub, bison, flex, python3 , swig
-, libsepol, libselinux, checkpolicy
+{ stdenv
+, fetchFromGitHub
+, bison
+, flex
+, python3
+, swig
+, libsepol
+, libselinux
+, checkpolicy
 , withGraphics ? false
 }:
 
@@ -20,7 +27,8 @@ buildPythonApplication rec {
   nativeBuildInputs = [ bison flex swig ];
   buildInputs = [ libsepol ];
   propagatedBuildInputs = [ enum34 libselinux networkx ]
-    ++ optionals withGraphics [ pyqt5 ];
+    ++ optionals withGraphics [ pyqt5 ]
+    ;
 
   checkInputs = [ tox checkpolicy ];
   preCheck = ''

@@ -125,9 +125,9 @@ in
 
       [lockd]
       ${optionalString (cfg.lockdPort != null) ''
-        port=${toString cfg.lockdPort}
-        udp-port=${toString cfg.lockdPort}
-      ''}
+      port=${toString cfg.lockdPort}
+      udp-port=${toString cfg.lockdPort}
+    ''}
     '';
 
     services.rpcbind.enable = true;
@@ -137,7 +137,8 @@ in
     environment.etc.exports.source = exports;
 
     systemd.services.nfs-server =
-      { enable = true;
+      {
+        enable = true;
         wantedBy = [ "multi-user.target" ];
 
         preStart =
@@ -147,7 +148,8 @@ in
       };
 
     systemd.services.nfs-mountd =
-      { enable = true;
+      {
+        enable = true;
         restartTriggers = [ exports ];
 
         preStart =
@@ -155,14 +157,14 @@ in
             mkdir -p /var/lib/nfs
 
             ${optionalString cfg.createMountPoints
-              ''
-                # create export directories:
-                # skip comments, take first col which may either be a quoted
-                # "foo bar" or just foo (-> man export)
-                sed '/^#.*/d;s/^"\([^"]*\)".*/\1/;t;s/[ ].*//' ${exports} \
-                | xargs -d '\n' mkdir -p
-              ''
-            }
+            ''
+              # create export directories:
+              # skip comments, take first col which may either be a quoted
+              # "foo bar" or just foo (-> man export)
+              sed '/^#.*/d;s/^"\([^"]*\)".*/\1/;t;s/[ ].*//' ${exports} \
+              | xargs -d '\n' mkdir -p
+            ''
+          }
           '';
       };
 

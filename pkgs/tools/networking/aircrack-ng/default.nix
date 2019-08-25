@@ -1,6 +1,17 @@
-{ stdenv, fetchurl, libpcap, openssl, zlib, wirelesstools
-, iw, ethtool, pciutils, libnl, pkgconfig, makeWrapper
-, autoreconfHook }:
+{ stdenv
+, fetchurl
+, libpcap
+, openssl
+, zlib
+, wirelesstools
+, iw
+, ethtool
+, pciutils
+, libnl
+, pkgconfig
+, makeWrapper
+, autoreconfHook
+}:
 
 stdenv.mkDerivation rec {
   name = "aircrack-ng-1.5.2";
@@ -19,8 +30,10 @@ stdenv.mkDerivation rec {
 
   postFixup = ''
     wrapProgram $out/bin/airmon-ng --prefix PATH : ${stdenv.lib.makeBinPath [
-      ethtool iw pciutils
-    ]}
+    ethtool
+    iw
+    pciutils
+  ]}
   '';
 
   meta = with stdenv.lib; {

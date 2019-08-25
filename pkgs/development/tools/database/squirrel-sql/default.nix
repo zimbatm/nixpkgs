@@ -1,12 +1,17 @@
 # To enable specific database drivers, override this derivation and pass the
 # driver packages in the drivers argument (e.g. mysql_jdbc, postgresql_jdbc).
-{ stdenv, fetchurl, makeDesktopItem, makeWrapper, unzip
+{ stdenv
+, fetchurl
+, makeDesktopItem
+, makeWrapper
+, unzip
 , jre
 , drivers ? []
 }:
 let
   version = "3.9.1";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "squirrel-sql-${version}";
 
   src = fetchurl {

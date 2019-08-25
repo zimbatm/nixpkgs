@@ -12,7 +12,8 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ autoreconfHook pkgconfig ]
-    ++ stdenv.lib.optional stdenv.isDarwin libiconv;
+    ++ stdenv.lib.optional stdenv.isDarwin libiconv
+    ;
 
   configureFlags = [ "--enable-compat-symlinks" ];
 

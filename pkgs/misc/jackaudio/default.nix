@@ -1,15 +1,30 @@
-{ stdenv, fetchFromGitHub, pkgconfig, python2Packages, makeWrapper
+{ stdenv
+, fetchFromGitHub
+, pkgconfig
+, python2Packages
+, makeWrapper
 , fetchpatch
-, bash, libsamplerate, libsndfile, readline, eigen, celt
+, bash
+, libsamplerate
+, libsndfile
+, readline
+, eigen
+, celt
 , wafHook
-# Darwin Dependencies
-, aften, AudioUnit, CoreAudio, libobjc, Accelerate
+  # Darwin Dependencies
+, aften
+, AudioUnit
+, CoreAudio
+, libobjc
+, Accelerate
 
-# Optional Dependencies
-, dbus ? null, libffado ? null, alsaLib ? null
+  # Optional Dependencies
+, dbus ? null
+, libffado ? null
+, alsaLib ? null
 , libopus ? null
 
-# Extra options
+  # Extra options
 , prefix ? ""
 }:
 
@@ -38,35 +53,58 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ pkgconfig python makeWrapper wafHook ];
-  buildInputs = [ libsamplerate libsndfile readline eigen celt
-    optDbus optPythonDBus optLibffado optAlsaLib optLibopus
-  ] ++ optionals stdenv.isDarwin [
-    aften AudioUnit CoreAudio Accelerate libobjc
-  ];
+  buildInputs = [
+    libsamplerate
+    libsndfile
+    readline
+    eigen
+    celt
+    optDbus
+    optPythonDBus
+    optLibffado
+    optAlsaLib
+    optLibopus
+  ]
+  ++ optionals stdenv.isDarwin [
+       aften
+       AudioUnit
+       CoreAudio
+       Accelerate
+       libobjc
+     ]
+  ;
 
   prePatch = ''
     substituteInPlace svnversion_regenerate.sh \
         --replace /bin/bash ${bash}/bin/bash
   '';
 
-  patches = [ (fetchpatch {
-    url = "https://github.com/jackaudio/jack2/commit/d851fada460d42508a6f82b19867f63853062583.patch";
-    sha256 = "1iwwxjzvgrj7dz3s8alzlhcgmcarjcbkrgvsmy6kafw21pyyw7hp";
-  }) ];
+  patches = [
+    (
+      fetchpatch {
+        url = "https://github.com/jackaudio/jack2/commit/d851fada460d42508a6f82b19867f63853062583.patch";
+        sha256 = "1iwwxjzvgrj7dz3s8alzlhcgmcarjcbkrgvsmy6kafw21pyyw7hp";
+      }
+    )
+  ];
 
   wafConfigureFlags = [
     "--classic"
     "--autostart=${if (optDbus != null) then "dbus" else "classic"}"
-  ] ++ optional (optDbus != null) "--dbus"
-    ++ optional (optLibffado != null) "--firewire"
-    ++ optional (optAlsaLib != null) "--alsa";
+  ]
+  ++ optional (optDbus != null) "--dbus"
+  ++ optional (optLibffado != null) "--firewire"
+  ++ optional (optAlsaLib != null) "--alsa"
+  ;
 
-  postInstall = (if libOnly then ''
-    rm -rf $out/{bin,share}
-    rm -rf $out/lib/{jack,libjacknet*,libjackserver*}
-  '' else ''
-    wrapProgram $out/bin/jack_control --set PYTHONPATH $PYTHONPATH
-  '');
+  postInstall = (
+    if libOnly then ''
+      rm -rf $out/{bin,share}
+      rm -rf $out/lib/{jack,libjacknet*,libjackserver*}
+    '' else ''
+      wrapProgram $out/bin/jack_control --set PYTHONPATH $PYTHONPATH
+    ''
+  );
 
   meta = {
     description = "JACK audio connection kit, version 2 with jackdbus";

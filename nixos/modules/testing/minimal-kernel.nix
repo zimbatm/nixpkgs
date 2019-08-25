@@ -1,8 +1,11 @@
 { config, pkgs, lib, ... }:
 
 let
-  configfile = builtins.storePath (builtins.toFile "config" (lib.concatStringsSep "\n"
-    (map (builtins.getAttr "configLine") config.system.requiredKernelConfig))
+  configfile = builtins.storePath (
+    builtins.toFile "config" (
+      lib.concatStringsSep "\n"
+        (map (builtins.getAttr "configLine") config.system.requiredKernelConfig)
+    )
   );
 
   origKernel = pkgs.buildLinux {
@@ -12,17 +15,25 @@ let
     kernelPatches = [ pkgs.kernelPatches.cifs_timeout_2_6_38 ];
   };
 
-  kernel = origKernel // (derivation (origKernel.drvAttrs // {
-    configurePhase = ''
-      runHook preConfigure
-      mkdir ../build
-      make $makeFlags "''${makeFlagsArray[@]}" mrproper
-      make $makeFlags "''${makeFlagsArray[@]}" KCONFIG_ALLCONFIG=${configfile} allnoconfig
-      runHook postConfigure
-    '';
-  }));
+  kernel = origKernel
+    // (
+         derivation (
+           origKernel.drvAttrs
+           // {
+                configurePhase = ''
+                  runHook preConfigure
+                  mkdir ../build
+                  make $makeFlags "''${makeFlagsArray[@]}" mrproper
+                  make $makeFlags "''${makeFlagsArray[@]}" KCONFIG_ALLCONFIG=${configfile} allnoconfig
+                  runHook postConfigure
+                '';
+              }
+         )
+       )
+    ;
 
-   kernelPackages = pkgs.linuxPackagesFor kernel;
-in {
+  kernelPackages = pkgs.linuxPackagesFor kernel;
+in
+{
   boot.kernelPackages = kernelPackages;
 }

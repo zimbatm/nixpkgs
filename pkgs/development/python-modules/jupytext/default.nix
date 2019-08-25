@@ -1,4 +1,7 @@
-{ lib, buildPythonPackage, fetchPypi, isPy27
+{ lib
+, buildPythonPackage
+, fetchPypi
+, isPy27
 , mock
 , nbformat
 , pytest
@@ -17,7 +20,9 @@ buildPythonPackage rec {
   propagatedBuildInputs = [
     pyyaml
     nbformat
-  ] ++ lib.optionals isPy27 [ mock ]; # why they put it in install_requires, who knows
+  ]
+  ++ lib.optionals isPy27 [ mock ]
+  ; # why they put it in install_requires, who knows
 
   checkInputs = [
     pytest

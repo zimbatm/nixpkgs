@@ -1,14 +1,25 @@
-{ aspell, audiofile
+{ aspell
+, audiofile
 , gsmakeDerivation
 , cups
 , fetchurl
-, gmp, gnutls
-, libffi, libbfd
-, libjpeg, libtiff, libpng, giflib, libungif
-, libxml2, libxslt, libiconv
-, libobjc, libgcrypt
+, gmp
+, gnutls
+, libffi
+, libbfd
+, libjpeg
+, libtiff
+, libpng
+, giflib
+, libungif
+, libxml2
+, libxslt
+, libiconv
+, libobjc
+, libgcrypt
 , icu
-, pkgconfig, portaudio
+, pkgconfig
+, portaudio
 }:
 let
   version = "1.26.0";
@@ -21,13 +32,23 @@ gsmakeDerivation {
   };
   nativeBuildInputs = [ pkgconfig ];
   propagatedBuildInputs = [
-    aspell audiofile
+    aspell
+    audiofile
     cups
-    gmp gnutls
-    libffi libbfd
-    libjpeg libtiff libpng giflib libungif
-    libxml2 libxslt libiconv
-    libobjc libgcrypt
+    gmp
+    gnutls
+    libffi
+    libbfd
+    libjpeg
+    libtiff
+    libpng
+    giflib
+    libungif
+    libxml2
+    libxslt
+    libiconv
+    libobjc
+    libgcrypt
     icu
     portaudio
   ];

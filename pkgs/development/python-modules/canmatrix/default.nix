@@ -39,7 +39,9 @@ buildPythonPackage rec {
     xlrd
     XlsxWriter
     pyyaml
-  ] ++ lib.optional (pythonOlder "3.5") typing;
+  ]
+  ++ lib.optional (pythonOlder "3.5") typing
+  ;
 
   checkInputs = [
     pytest
@@ -56,4 +58,3 @@ buildPythonPackage rec {
     maintainers = with maintainers; [ sorki ];
   };
 }
-

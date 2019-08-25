@@ -10,7 +10,7 @@ let
       owner = "gillesdegottex";
     };
     meta = with stdenv.lib; {
-     license = licenses.asl20;
+      license = licenses.asl20;
     };
   };
 
@@ -22,11 +22,12 @@ let
       owner = "gillesdegottex";
     };
     meta = with stdenv.lib; {
-     license = licenses.gpl3Plus;
+      license = licenses.gpl3Plus;
     };
   };
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "dfasma-${version}";
   version = "1.4.5";
 

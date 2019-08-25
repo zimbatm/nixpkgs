@@ -1,13 +1,23 @@
-{ stdenv, lib, fetchurl, unzip
-, qt4 ? null, qmake4Hook ? null
-, withQt5 ? false, qtbase ? null, qtmacextras ? null, qmake ? null
+{ stdenv
+, lib
+, fetchurl
+, unzip
+, qt4 ? null
+, qmake4Hook ? null
+, withQt5 ? false
+, qtbase ? null
+, qtmacextras ? null
+, qmake ? null
 , fixDarwinDylibNames
 }:
 
 # Fix Xcode 8 compilation problem
-let xcodePatch =
-  fetchurl { url = "https://raw.githubusercontent.com/Homebrew/formula-patches/a651d71/qscintilla2/xcode-8.patch";
-             sha256 = "1a88309fdfd421f4458550b710a562c622d72d6e6fdd697107e4a43161d69bc9"; };
+let
+  xcodePatch =
+    fetchurl {
+      url = "https://raw.githubusercontent.com/Homebrew/formula-patches/a651d71/qscintilla2/xcode-8.patch";
+      sha256 = "1a88309fdfd421f4458550b710a562c622d72d6e6fdd697107e4a43161d69bc9";
+    };
 in
 stdenv.mkDerivation rec {
   pname = "qscintilla";
@@ -26,7 +36,8 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ unzip ]
     ++ (if withQt5 then [ qmake ] else [ qmake4Hook ])
-    ++ lib.optional stdenv.isDarwin fixDarwinDylibNames;
+    ++ lib.optional stdenv.isDarwin fixDarwinDylibNames
+    ;
 
 
   patches = lib.optional (stdenv.isDarwin && withQt5) [ xcodePatch ];
@@ -40,12 +51,12 @@ stdenv.mkDerivation rec {
       -e "s,\$\$\\[QT_INSTALL_HEADERS\\],$out/include/," \
       -e "s,\$\$\\[QT_INSTALL_TRANSLATIONS\\],$out/translations," \
     ${if withQt5 then ''
-      -e "s,\$\$\\[QT_HOST_DATA\\]/mkspecs,$out/mkspecs," \
-      -e "s,\$\$\\[QT_INSTALL_DATA\\]/mkspecs,$out/mkspecs," \
-      -e "s,\$\$\\[QT_INSTALL_DATA\\],$out/share,"
-    '' else ''
-      -e "s,\$\$\\[QT_INSTALL_DATA\\],$out/share/qt,"
-    ''}
+    -e "s,\$\$\\[QT_HOST_DATA\\]/mkspecs,$out/mkspecs," \
+    -e "s,\$\$\\[QT_INSTALL_DATA\\]/mkspecs,$out/mkspecs," \
+    -e "s,\$\$\\[QT_INSTALL_DATA\\],$out/share,"
+  '' else ''
+    -e "s,\$\$\\[QT_INSTALL_DATA\\],$out/share/qt,"
+  ''}
   '';
 
   meta = with stdenv.lib; {

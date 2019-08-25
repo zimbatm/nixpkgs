@@ -66,8 +66,9 @@ in
       serviceConfig = {
         Restart = "always";
         RestartSec = "5s";
-        ExecStart = "${pkgs.nix-serve}/bin/nix-serve " +
-          "--listen ${cfg.bindAddress}:${toString cfg.port} ${cfg.extraParams}";
+        ExecStart = "${pkgs.nix-serve}/bin/nix-serve "
+          + "--listen ${cfg.bindAddress}:${toString cfg.port} ${cfg.extraParams}"
+          ;
         User = "nix-serve";
         Group = "nogroup";
       };

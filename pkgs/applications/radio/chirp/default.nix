@@ -1,5 +1,11 @@
-{ stdenv, fetchurl, libxml2Python, libxslt, makeWrapper
-, pyserial, pygtk }:
+{ stdenv
+, fetchurl
+, libxml2Python
+, libxslt
+, makeWrapper
+, pyserial
+, pygtk
+}:
 
 stdenv.mkDerivation rec {
   pname = "chirp-daily";
@@ -12,7 +18,10 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ makeWrapper ];
   buildInputs = [
-    pyserial pygtk libxml2Python libxslt
+    pyserial
+    pygtk
+    libxml2Python
+    libxslt
   ];
 
   installPhase = ''

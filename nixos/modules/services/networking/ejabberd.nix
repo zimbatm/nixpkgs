@@ -15,7 +15,8 @@ let
 
   dumps = lib.escapeShellArgs cfg.loadDumps;
 
-in {
+in
+{
 
   ###### interface
 
@@ -94,18 +95,24 @@ in {
   config = mkIf cfg.enable {
     environment.systemPackages = [ cfg.package ];
 
-    users.users = optionalAttrs (cfg.user == "ejabberd") (singleton
-      { name = "ejabberd";
-        group = cfg.group;
-        home = cfg.spoolDir;
-        createHome = true;
-        uid = config.ids.uids.ejabberd;
-      });
+    users.users = optionalAttrs (cfg.user == "ejabberd") (
+      singleton
+        {
+          name = "ejabberd";
+          group = cfg.group;
+          home = cfg.spoolDir;
+          createHome = true;
+          uid = config.ids.uids.ejabberd;
+        }
+    );
 
-    users.groups = optionalAttrs (cfg.group == "ejabberd") (singleton
-      { name = "ejabberd";
-        gid = config.ids.gids.ejabberd;
-      });
+    users.groups = optionalAttrs (cfg.group == "ejabberd") (
+      singleton
+        {
+          name = "ejabberd";
+          gid = config.ids.gids.ejabberd;
+        }
+    );
 
     systemd.services.ejabberd = {
       description = "ejabberd server";

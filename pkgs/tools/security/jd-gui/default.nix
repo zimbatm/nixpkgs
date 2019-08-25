@@ -5,7 +5,7 @@ let
   name = "jd-gui-${version}";
 
   src = fetchurl {
-    url    = "https://github.com/java-decompiler/jd-gui/archive/v${version}.tar.gz";
+    url = "https://github.com/java-decompiler/jd-gui/archive/v${version}.tar.gz";
     sha256 = "0anz7szlr5kgmsmkyv34jdynsnk8v6kvibcyz98jsd96fh725lax";
   };
 
@@ -63,7 +63,8 @@ let
     categories = "Development;Debugger;";
   };
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   inherit name version src;
 
   nativeBuildInputs = [ gradle_2_5 perl makeWrapper ];
@@ -75,28 +76,29 @@ in stdenv.mkDerivation rec {
 
   installPhase = let
     jar = "$out/share/jd-gui/${name}.jar";
-  in ''
-    mkdir -p $out/bin $out/share/{jd-gui,icons/hicolor/128x128/apps}
-    cp build/libs/${name}.jar ${jar}
-    cp src/linux/resources/jd_icon_128.png $out/share/icons/hicolor/128x128/apps/jd-gui.png
+  in
+    ''
+      mkdir -p $out/bin $out/share/{jd-gui,icons/hicolor/128x128/apps}
+      cp build/libs/${name}.jar ${jar}
+      cp src/linux/resources/jd_icon_128.png $out/share/icons/hicolor/128x128/apps/jd-gui.png
 
-    cat > $out/bin/jd-gui <<EOF
-    #!${runtimeShell}
-    export JAVA_HOME=${jre}
-    ${jre}/bin/java -jar ${jar} $@
-    EOF
-    chmod +x $out/bin/jd-gui
+      cat > $out/bin/jd-gui <<EOF
+      #!${runtimeShell}
+      export JAVA_HOME=${jre}
+      ${jre}/bin/java -jar ${jar} $@
+      EOF
+      chmod +x $out/bin/jd-gui
 
-    ${(desktopItem "$out/bin/jd-gui").buildCommand}
-  '';
+      ${(desktopItem "$out/bin/jd-gui").buildCommand}
+    '';
 
   dontStrip = true;
 
   meta = with stdenv.lib; {
     description = "Fast Java Decompiler with powerful GUI";
-    homepage    = "http://jd.benow.ca/";
-    license     = licenses.gpl3;
-    platforms   = platforms.unix;
+    homepage = "http://jd.benow.ca/";
+    license = licenses.gpl3;
+    platforms = platforms.unix;
     maintainers = [ maintainers.thoughtpolice ];
   };
 }

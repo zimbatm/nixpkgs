@@ -1,7 +1,19 @@
-{ stdenv, fetchurl, fetchFromGitHub
-, file, libxslt, docbook_xml_dtd_412, docbook_xsl, xmlto
-, w3m, gnugrep, gnused, coreutils, xset
-, mimiSupport ? false, gawk ? null }:
+{ stdenv
+, fetchurl
+, fetchFromGitHub
+, file
+, libxslt
+, docbook_xml_dtd_412
+, docbook_xsl
+, xmlto
+, w3m
+, gnugrep
+, gnused
+, coreutils
+, xset
+, mimiSupport ? false
+, gawk ? null
+}:
 
 assert mimiSupport -> gawk != null;
 
@@ -29,7 +41,8 @@ stdenv.mkDerivation rec {
 
   postInstall = stdenv.lib.optionalString mimiSupport ''
     cp ${mimisrc}/xdg-open $out/bin/xdg-open
-  '' + ''
+  ''
+  + ''
     sed  '2s#.#\
     cut()   { ${coreutils}/bin/cut  "$@"; }\
     sed()   { ${gnused}/bin/sed     "$@"; }\
@@ -51,7 +64,8 @@ stdenv.mkDerivation rec {
       --replace "/bin/echo" "${coreutils}/bin/echo"
 
     sed 's# which # type -P #g' -i "$out"/bin/*
-  '';
+  ''
+  ;
 
   meta = with stdenv.lib; {
     homepage = https://www.freedesktop.org/wiki/Software/xdg-utils/;

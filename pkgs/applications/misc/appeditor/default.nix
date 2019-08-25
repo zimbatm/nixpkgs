@@ -10,7 +10,8 @@
 , gtk3
 , hicolor-icon-theme
 , libgee
-, wrapGAppsHook }:
+, wrapGAppsHook
+}:
 
 stdenv.mkDerivation rec {
   pname = "appeditor";

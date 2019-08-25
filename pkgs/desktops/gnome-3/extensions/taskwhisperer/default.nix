@@ -26,11 +26,13 @@ stdenv.mkDerivation rec {
   ];
 
   patches = [
-    (substituteAll {
-      src = ./fix-paths.patch;
-      task = "${taskwarrior}/bin/task";
-      shell = "${runtimeShell}";
-    })
+    (
+      substituteAll {
+        src = ./fix-paths.patch;
+        task = "${taskwarrior}/bin/task";
+        shell = "${runtimeShell}";
+      }
+    )
   ];
 
   meta = with stdenv.lib; {

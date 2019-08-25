@@ -1,16 +1,37 @@
-{ stdenv, lib, fetchurl, doxygen, extra-cmake-modules, graphviz, kdoctools
+{ stdenv
+, lib
+, fetchurl
+, doxygen
+, extra-cmake-modules
+, graphviz
+, kdoctools
 , wrapQtAppsHook
 
-, akonadi, alkimia, aqbanking, gmp, gwenhywfar, kactivities, karchive
-, kcmutils, kcontacts, kdewebkit, kdiagram, kholidays, kidentitymanagement
-, kitemmodels, libical, libofx, qgpgme
+, akonadi
+, alkimia
+, aqbanking
+, gmp
+, gwenhywfar
+, kactivities
+, karchive
+, kcmutils
+, kcontacts
+, kdewebkit
+, kdiagram
+, kholidays
+, kidentitymanagement
+, kitemmodels
+, libical
+, libofx
+, qgpgme
 
 , sqlcipher
 
-# Needed for running tests:
-, qtbase, xvfb_run
+  # Needed for running tests:
+, qtbase
+, xvfb_run
 
-# For weboob, which only supports Python 2.x:
+  # For weboob, which only supports Python 2.x:
 , python2Packages
 }:
 
@@ -29,14 +50,32 @@ stdenv.mkDerivation rec {
   enableParallelBuilding = true;
 
   nativeBuildInputs = [
-    doxygen extra-cmake-modules graphviz kdoctools python2Packages.wrapPython
+    doxygen
+    extra-cmake-modules
+    graphviz
+    kdoctools
+    python2Packages.wrapPython
     wrapQtAppsHook
   ];
 
   buildInputs = [
-    akonadi alkimia aqbanking gmp gwenhywfar kactivities karchive kcmutils
-    kcontacts kdewebkit kdiagram kholidays kidentitymanagement kitemmodels
-    libical libofx qgpgme
+    akonadi
+    alkimia
+    aqbanking
+    gmp
+    gwenhywfar
+    kactivities
+    karchive
+    kcmutils
+    kcontacts
+    kdewebkit
+    kdiagram
+    kholidays
+    kidentitymanagement
+    kitemmodels
+    libical
+    libofx
+    qgpgme
     sqlcipher
 
     # Put it into buildInputs so that CMake can find it, even though we patch

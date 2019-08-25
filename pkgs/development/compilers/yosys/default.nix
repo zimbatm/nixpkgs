@@ -1,7 +1,14 @@
-{ stdenv, fetchFromGitHub
-, pkgconfig, bison, flex
-, tcl, readline, libffi, python3
-, protobuf, zlib
+{ stdenv
+, fetchFromGitHub
+, pkgconfig
+, bison
+, flex
+, tcl
+, readline
+, libffi
+, python3
+, protobuf
+, zlib
 }:
 
 with builtins;
@@ -11,24 +18,28 @@ stdenv.mkDerivation rec {
   version = "2019.08.21";
 
   srcs = [
-    (fetchFromGitHub {
-      owner  = "yosyshq";
-      repo   = "yosys";
-      rev    = "fe1b2337fd7950e1d563be5b8ccbaa81688261e4";
-      sha256 = "0z7sngc2z081yyhzh8c2kchg48sp2333hn1wa94q5vsgnyzlqrdw";
-      name   = "yosys";
-    })
+    (
+      fetchFromGitHub {
+        owner = "yosyshq";
+        repo = "yosys";
+        rev = "fe1b2337fd7950e1d563be5b8ccbaa81688261e4";
+        sha256 = "0z7sngc2z081yyhzh8c2kchg48sp2333hn1wa94q5vsgnyzlqrdw";
+        name = "yosys";
+      }
+    )
 
     # NOTE: the version of abc used here is synchronized with
     # the one in the yosys Makefile of the version above;
     # keep them the same for quality purposes.
-    (fetchFromGitHub {
-      owner  = "berkeley-abc";
-      repo   = "abc";
-      rev    = "5776ad07e7247993976bffed4802a5737c456782";
-      sha256 = "1la4idmssg44rp6hd63sd5vybvs3vr14yzvwcg03ls37p39cslnl";
-      name   = "yosys-abc";
-    })
+    (
+      fetchFromGitHub {
+        owner = "berkeley-abc";
+        repo = "abc";
+        rev = "5776ad07e7247993976bffed4802a5737c456782";
+        sha256 = "1la4idmssg44rp6hd63sd5vybvs3vr14yzvwcg03ls37p39cslnl";
+        name = "yosys-abc";
+      }
+    )
   ];
   sourceRoot = "yosys";
 
@@ -73,9 +84,9 @@ stdenv.mkDerivation rec {
       adding additional passes as needed by extending the yosys C++
       code base.
     '';
-    homepage    = http://www.clifford.at/yosys/;
-    license     = stdenv.lib.licenses.isc;
+    homepage = http://www.clifford.at/yosys/;
+    license = stdenv.lib.licenses.isc;
     maintainers = with stdenv.lib.maintainers; [ shell thoughtpolice emily ];
-    platforms   = stdenv.lib.platforms.all;
+    platforms = stdenv.lib.platforms.all;
   };
 }

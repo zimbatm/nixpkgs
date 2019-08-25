@@ -64,25 +64,25 @@ rec {
       <html><body><h1>Hello from NGINX</h1></body></html>
     '';
   in
-  buildImage {
-    name = "nginx-container";
-    tag = "latest";
-    contents = pkgs.nginx;
+    buildImage {
+      name = "nginx-container";
+      tag = "latest";
+      contents = pkgs.nginx;
 
-    runAsRoot = ''
-      #!${pkgs.stdenv.shell}
-      ${shadowSetup}
-      groupadd --system nginx
-      useradd --system --gid nginx nginx
-    '';
+      runAsRoot = ''
+        #!${pkgs.stdenv.shell}
+        ${shadowSetup}
+        groupadd --system nginx
+        useradd --system --gid nginx nginx
+      '';
 
-    config = {
-      Cmd = [ "nginx" "-c" nginxConf ];
-      ExposedPorts = {
-        "${nginxPort}/tcp" = {};
+      config = {
+        Cmd = [ "nginx" "-c" nginxConf ];
+        ExposedPorts = {
+          "${nginxPort}/tcp" = {};
+        };
       };
     };
-  };
 
   # 4. example of pulling an image. could be used as a base for other images
   nixFromDockerHub = pullImage {
@@ -174,7 +174,9 @@ rec {
       Env = [ "PATH=${pkgs.coreutils}/bin/" ];
       WorkingDir = "/example-output";
       Cmd = [
-        "${pkgs.bash}/bin/bash" "-c" "echo hello > foo; cat foo"
+        "${pkgs.bash}/bin/bash"
+        "-c"
+        "echo hello > foo; cat foo"
       ];
     };
   };
@@ -215,16 +217,17 @@ rec {
         echo layer2 > tmp/layer3
       '';
     };
-  in pkgs.dockerTools.buildImage {
-    name = "l3";
-    fromImage = l2;
-    tag = "latest";
-    contents = [ pkgs.coreutils ];
-    extraCommands = ''
-      mkdir -p tmp
-      echo layer3 > tmp/layer3
-    '';
-  };
+  in
+    pkgs.dockerTools.buildImage {
+      name = "l3";
+      fromImage = l2;
+      tag = "latest";
+      contents = [ pkgs.coreutils ];
+      extraCommands = ''
+        mkdir -p tmp
+        echo layer3 > tmp/layer3
+      '';
+    };
 
   # 14. Create another layered image, for comparing layers with image 10.
   another-layered-image = pkgs.dockerTools.buildLayeredImage {

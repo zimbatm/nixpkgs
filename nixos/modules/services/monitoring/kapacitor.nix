@@ -27,29 +27,29 @@ let
         boltdb = "${cfg.dataDir}/kapacitor.db"
 
       ${optionalString (cfg.loadDirectory != null) ''
-        [load]
-          enabled = true
-          dir = "${cfg.loadDirectory}"
-      ''}
+      [load]
+        enabled = true
+        dir = "${cfg.loadDirectory}"
+    ''}
 
       ${optionalString (cfg.defaultDatabase.enable) ''
-        [[influxdb]]
-          name = "default"
-          enabled = true
-          default = true
-          urls = [ "${cfg.defaultDatabase.url}" ]
-          username = "${cfg.defaultDatabase.username}"
-          password = "${cfg.defaultDatabase.password}"
-      ''}
+      [[influxdb]]
+        name = "default"
+        enabled = true
+        default = true
+        urls = [ "${cfg.defaultDatabase.url}" ]
+        username = "${cfg.defaultDatabase.username}"
+        password = "${cfg.defaultDatabase.password}"
+    ''}
 
       ${optionalString (cfg.alerta.enable) ''
-        [alerta]
-          enabled = true
-          url = "${cfg.alerta.url}"
-          token = "${cfg.alerta.token}"
-          environment = "${cfg.alerta.environment}"
-          origin = "${cfg.alerta.origin}"
-      ''}
+      [alerta]
+        enabled = true
+        url = "${cfg.alerta.url}"
+        token = "${cfg.alerta.token}"
+        environment = "${cfg.alerta.environment}"
+        origin = "${cfg.alerta.origin}"
+    ''}
 
       ${cfg.extraConfig}
     '';

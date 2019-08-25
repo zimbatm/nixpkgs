@@ -8,11 +8,13 @@ stdenv.mkDerivation {
   buildInputs = [ wget ];
 
   nativeBuildInputs = [
-    (rWrapper.override {
-      packages = with rPackages; [
-        data_table
-        parallel
-      ];
-    })
+    (
+      rWrapper.override {
+        packages = with rPackages; [
+          data_table
+          parallel
+        ];
+      }
+    )
   ];
 }

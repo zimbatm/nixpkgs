@@ -1,4 +1,4 @@
-{requireFile, autoPatchelfHook, pkgs, pkgs_i686, licenseAccepted ? false}:
+{ requireFile, autoPatchelfHook, pkgs, pkgs_i686, licenseAccepted ? false }:
 
 { toolsVersion ? "25.2.5"
 , platformToolsVersion ? "28.0.1"
@@ -11,8 +11,8 @@
 , includeSystemImages ? false
 , systemImageTypes ? [ "default" ]
 , abiVersions ? [ "armeabi-v7a" ]
-, lldbVersions ? [ ]
-, cmakeVersions ? [ ]
+, lldbVersions ? []
+, cmakeVersions ? []
 , includeNDK ? false
 , ndkVersion ? "18.1.5063045"
 , useGoogleAPIs ? false
@@ -25,8 +25,8 @@ let
 
   # Determine the Android os identifier from Nix's system identifier
   os = if stdenv.system == "x86_64-linux" then "linux"
-    else if stdenv.system == "x86_64-darwin" then "macosx"
-    else throw "No Android SDK tarballs are available for system architecture: ${stdenv.system}";
+  else if stdenv.system == "x86_64-darwin" then "macosx"
+  else throw "No Android SDK tarballs are available for system architecture: ${stdenv.system}";
 
   # Generated Nix packages
   packages = import ./generated/packages.nix {
@@ -61,10 +61,16 @@ let
   system-images-packages =
     lib.recursiveUpdate
       system-images-packages-android
-      (lib.recursiveUpdate system-images-packages-android-tv
-        (lib.recursiveUpdate system-images-packages-android-wear
-          (lib.recursiveUpdate system-images-packages-android-wear-cn
-            (lib.recursiveUpdate system-images-packages-google_apis system-images-packages-google_apis_playstore))));
+      (
+        lib.recursiveUpdate system-images-packages-android-tv
+          (
+            lib.recursiveUpdate system-images-packages-android-wear
+              (
+                lib.recursiveUpdate system-images-packages-android-wear-cn
+                  (lib.recursiveUpdate system-images-packages-google_apis system-images-packages-google_apis_playstore)
+              )
+          )
+      );
 
   # Generated addons
   addons = import ./generated/addons.nix {
@@ -81,11 +87,12 @@ rec {
     package = packages.platform-tools."${platformToolsVersion}";
   };
 
-  build-tools = map (version:
-    import ./build-tools.nix {
-      inherit deployAndroidPackage os autoPatchelfHook makeWrapper pkgs pkgs_i686 lib;
-      package = packages.build-tools."${version}";
-    }
+  build-tools = map (
+    version:
+      import ./build-tools.nix {
+        inherit deployAndroidPackage os autoPatchelfHook makeWrapper pkgs pkgs_i686 lib;
+        package = packages.build-tools."${version}";
+      }
   ) buildToolsVersions;
 
   docs = deployAndroidPackage {
@@ -98,49 +105,58 @@ rec {
     package = packages.emulator."${emulatorVersion}"."${os}";
   };
 
-  platforms = map (version:
-    deployAndroidPackage {
-      inherit os;
-      package = packages.platforms."${version}";
-    }
+  platforms = map (
+    version:
+      deployAndroidPackage {
+        inherit os;
+        package = packages.platforms."${version}";
+      }
   ) platformVersions;
 
-  sources = map (version:
-    deployAndroidPackage {
-      inherit os;
-      package = packages.sources."${version}";
-    }
+  sources = map (
+    version:
+      deployAndroidPackage {
+        inherit os;
+        package = packages.sources."${version}";
+      }
   ) platformVersions;
 
-  system-images = lib.flatten (map (apiVersion:
-    map (type:
-      map (abiVersion:
-        deployAndroidPackage {
-          inherit os;
-          package = system-images-packages.${apiVersion}.${type}.${abiVersion};
-          # Patch 'google_apis' system images so they're recognized by the sdk.
-          # Without this, `android list targets` shows 'Tag/ABIs : no ABIs' instead
-          # of 'Tag/ABIs : google_apis*/*' and the emulator fails with an ABI-related error.
-          patchInstructions = lib.optionalString (lib.hasPrefix "google_apis" type) ''
-            sed -i '/^Addon.Vendor/d' source.properties
-          '';
-        }
-      ) abiVersions
-    ) systemImageTypes
-  ) platformVersions);
+  system-images = lib.flatten (
+    map (
+      apiVersion:
+        map (
+          type:
+            map (
+              abiVersion:
+                deployAndroidPackage {
+                  inherit os;
+                  package = system-images-packages.${apiVersion}.${type}.${abiVersion};
+                  # Patch 'google_apis' system images so they're recognized by the sdk.
+                  # Without this, `android list targets` shows 'Tag/ABIs : no ABIs' instead
+                  # of 'Tag/ABIs : google_apis*/*' and the emulator fails with an ABI-related error.
+                  patchInstructions = lib.optionalString (lib.hasPrefix "google_apis" type) ''
+                    sed -i '/^Addon.Vendor/d' source.properties
+                  '';
+                }
+            ) abiVersions
+        ) systemImageTypes
+    ) platformVersions
+  );
 
-  lldb = map (version:
-    import ./lldb.nix {
-      inherit deployAndroidPackage os autoPatchelfHook pkgs lib;
-      package = packages.lldb."${version}";
-    }
+  lldb = map (
+    version:
+      import ./lldb.nix {
+        inherit deployAndroidPackage os autoPatchelfHook pkgs lib;
+        package = packages.lldb."${version}";
+      }
   ) lldbVersions;
 
-  cmake = map (version:
-    import ./cmake.nix {
-      inherit deployAndroidPackage os autoPatchelfHook pkgs lib;
-      package = packages.cmake."${version}";
-    }
+  cmake = map (
+    version:
+      import ./cmake.nix {
+        inherit deployAndroidPackage os autoPatchelfHook pkgs lib;
+        package = packages.cmake."${version}";
+      }
   ) cmakeVersions;
 
   ndk-bundle = import ./ndk-bundle {
@@ -148,42 +164,48 @@ rec {
     package = packages.ndk-bundle."${ndkVersion}";
   };
 
-  google-apis = map (version:
-    deployAndroidPackage {
-      inherit os;
-      package = addons.addons."${version}".google_apis;
-    }
+  google-apis = map (
+    version:
+      deployAndroidPackage {
+        inherit os;
+        package = addons.addons."${version}".google_apis;
+      }
   ) (builtins.filter (platformVersion: platformVersion < "26") platformVersions); # API level 26 and higher include Google APIs by default
 
-  google-tv-addons = map (version:
-    deployAndroidPackage {
-      inherit os;
-      package = addons.addons."${version}".google_tv_addon;
-    }
+  google-tv-addons = map (
+    version:
+      deployAndroidPackage {
+        inherit os;
+        package = addons.addons."${version}".google_tv_addon;
+      }
   ) platformVersions;
 
   # Function that automatically links all plugins for which multiple versions can coexist
-  linkPlugins = {name, plugins}:
+  linkPlugins = { name, plugins }:
     lib.optionalString (plugins != []) ''
       mkdir -p ${name}
-      ${lib.concatMapStrings (plugin: ''
+      ${lib.concatMapStrings (
+      plugin: ''
         ln -s ${plugin}/libexec/android-sdk/${name}/* ${name}
-      '') plugins}
+      ''
+    ) plugins}
     '';
 
   # Function that automatically links a plugin for which only one version exists
-  linkPlugin = {name, plugin, check ? true}:
+  linkPlugin = { name, plugin, check ? true }:
     lib.optionalString check ''
       ln -s ${plugin}/libexec/android-sdk/* ${name}
     '';
 
   # Links all plugins related to a requested platform
-  linkPlatformPlugins = {name, plugins, check}:
+  linkPlatformPlugins = { name, plugins, check }:
     lib.optionalString check ''
       mkdir -p ${name}
-      ${lib.concatMapStrings (plugin: ''
+      ${lib.concatMapStrings (
+      plugin: ''
         ln -s ${plugin}/libexec/android-sdk/${name}/* ${name}
-      '') plugins}
+      ''
+    ) plugins}
     ''; # */
 
   # This derivation deploys the tools package and symlinks all the desired
@@ -210,20 +232,23 @@ rec {
       ${linkPlugin { name = "ndk-bundle"; plugin = ndk-bundle; check = includeNDK; }}
 
       ${lib.optionalString includeSystemImages ''
-        mkdir -p system-images
-        ${lib.concatMapStrings (system-image: ''
-          apiVersion=$(basename $(echo ${system-image}/libexec/android-sdk/system-images/*))
-          type=$(basename $(echo ${system-image}/libexec/android-sdk/system-images/*/*))
-          mkdir -p system-images/$apiVersion/$type
-          ln -s ${system-image}/libexec/android-sdk/system-images/$apiVersion/$type/* system-images/$apiVersion/$type
-        '') system-images}
-      ''}
+      mkdir -p system-images
+      ${lib.concatMapStrings (
+      system-image: ''
+        apiVersion=$(basename $(echo ${system-image}/libexec/android-sdk/system-images/*))
+        type=$(basename $(echo ${system-image}/libexec/android-sdk/system-images/*/*))
+        mkdir -p system-images/$apiVersion/$type
+        ln -s ${system-image}/libexec/android-sdk/system-images/$apiVersion/$type/* system-images/$apiVersion/$type
+      ''
+    ) system-images}
+    ''}
 
       ${linkPlatformPlugins { name = "add-ons"; plugins = google-apis; check = useGoogleAPIs; }}
       ${linkPlatformPlugins { name = "add-ons"; plugins = google-apis; check = useGoogleTVAddOns; }}
 
       # Link extras
-      ${lib.concatMapStrings (identifier:
+      ${lib.concatMapStrings (
+      identifier:
         let
           path = addons.extras."${identifier}".path;
           addon = deployAndroidPackage {
@@ -231,11 +256,12 @@ rec {
             package = addons.extras."${identifier}";
           };
         in
-        ''
-          targetDir=$(dirname ${path})
-          mkdir -p $targetDir
-          ln -s ${addon}/libexec/android-sdk/${path} $targetDir
-        '') includeExtras}
+          ''
+            targetDir=$(dirname ${path})
+            mkdir -p $targetDir
+            ln -s ${addon}/libexec/android-sdk/${path} $targetDir
+          ''
+    ) includeExtras}
 
       # Expose common executables in bin/
       mkdir -p $out/bin

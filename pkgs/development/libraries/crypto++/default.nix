@@ -19,9 +19,9 @@ stdenv.mkDerivation rec {
 
 
   configurePhase = ''
-      sed -i GNUmakefile \
-        -e 's|-march=native|-fPIC|g' \
-        -e '/^CXXFLAGS =/s|-g ||'
+    sed -i GNUmakefile \
+      -e 's|-march=native|-fPIC|g' \
+      -e '/^CXXFLAGS =/s|-g ||'
   '';
 
   enableParallelBuilding = true;
@@ -44,6 +44,6 @@ stdenv.mkDerivation rec {
     homepage = http://cryptopp.com/;
     license = licenses.boost;
     platforms = platforms.all;
-    maintainers = [ ];
+    maintainers = [];
   };
 }

@@ -121,7 +121,7 @@ in
 
           If this file does not exists, then it is created with a generated
           <option>syncserver.secret</option> settings.
-       '';
+        '';
       };
     };
   };
@@ -154,19 +154,21 @@ in
         chmod 755 $(dirname ${cfg.privateConfig})
         chown ${user}:${group} ${cfg.privateConfig}
 
-      '' + optionalString (cfg.sqlUri == defaultSqlUri) ''
-        if ! test -e $(dirname ${defaultDbLocation}); then
-          mkdir -m 700 -p $(dirname ${defaultDbLocation})
-          chown ${user}:${group} $(dirname ${defaultDbLocation})
-        fi
+      ''
+      + optionalString (cfg.sqlUri == defaultSqlUri) ''
+          if ! test -e $(dirname ${defaultDbLocation}); then
+            mkdir -m 700 -p $(dirname ${defaultDbLocation})
+            chown ${user}:${group} $(dirname ${defaultDbLocation})
+          fi
 
-        # Move previous database file if it exists
-        oldDb="/var/db/firefox-sync-server.db"
-        if test -f $oldDb; then
-          mv $oldDb ${defaultDbLocation}
-          chown ${user}:${group} ${defaultDbLocation}
-        fi
-      '';
+          # Move previous database file if it exists
+          oldDb="/var/db/firefox-sync-server.db"
+          if test -f $oldDb; then
+            mv $oldDb ${defaultDbLocation}
+            chown ${user}:${group} ${defaultDbLocation}
+          fi
+        ''
+      ;
 
       script = ''
         gunicorn --paste ${syncServerIni}

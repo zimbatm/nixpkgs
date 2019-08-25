@@ -1,6 +1,23 @@
-{ stdenv, buildPythonPackage, fetchPypi, jinja2, jinja2_pluralize, pygments,
-  six, inflect, mock, nose, coverage, pycodestyle, flake8, pyflakes, git,
-  pylint, pydocstyle, fetchpatch, glibcLocales }:
+{ stdenv
+, buildPythonPackage
+, fetchPypi
+, jinja2
+, jinja2_pluralize
+, pygments
+, six
+, inflect
+, mock
+, nose
+, coverage
+, pycodestyle
+, flake8
+, pyflakes
+, git
+, pylint
+, pydocstyle
+, fetchpatch
+, glibcLocales
+}:
 
 buildPythonPackage rec {
   pname = "diff_cover";
@@ -16,11 +33,13 @@ buildPythonPackage rec {
   };
 
   patches = [
-    (fetchpatch {
-      name = "tests-fix.patch";
-      url = "https://github.com/Bachmann1234/diff-cover/commit/85c30959c8ed2aa3848f400095a2418f15bb7777.patch";
-      sha256 = "0xni4syrxww9kdv8495f416vqgfdys4w2hgf5rdi35hy3ybfslh0";
-    })
+    (
+      fetchpatch {
+        name = "tests-fix.patch";
+        url = "https://github.com/Bachmann1234/diff-cover/commit/85c30959c8ed2aa3848f400095a2418f15bb7777.patch";
+        sha256 = "0xni4syrxww9kdv8495f416vqgfdys4w2hgf5rdi35hy3ybfslh0";
+      }
+    )
   ];
 
   propagatedBuildInputs = [ jinja2 jinja2_pluralize pygments six inflect ];

@@ -1,8 +1,20 @@
-{ stdenv, fetchurl, pkgconfig, intltool, exo, gtk, libxfce4util, libxfce4ui
-, xfconf, udev, libgudev, libnotify, hicolor-icon-theme }:
+{ stdenv
+, fetchurl
+, pkgconfig
+, intltool
+, exo
+, gtk
+, libxfce4util
+, libxfce4ui
+, xfconf
+, udev
+, libgudev
+, libnotify
+, hicolor-icon-theme
+}:
 
 stdenv.mkDerivation rec {
-  p_name  = "thunar-volman";
+  p_name = "thunar-volman";
   ver_maj = "0.8";
   ver_min = "1";
   name = "${p_name}-${ver_maj}.${ver_min}";
@@ -14,8 +26,18 @@ stdenv.mkDerivation rec {
 
 
   buildInputs =
-    [ pkgconfig intltool exo gtk udev libgudev libxfce4ui libxfce4util
-      xfconf libnotify hicolor-icon-theme
+    [
+      pkgconfig
+      intltool
+      exo
+      gtk
+      udev
+      libgudev
+      libxfce4ui
+      libxfce4util
+      xfconf
+      libnotify
+      hicolor-icon-theme
     ];
 
   enableParallelBuilding = true;

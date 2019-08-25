@@ -15,9 +15,9 @@ perlPackages.buildPerlPackage rec {
   '';
 
   outputs = [ "bin" "out" "doc" ]; # bin just links the user-run executable
-  propagatedBuildOutputs = [ ]; # otherwise out propagates bin -> cycle
+  propagatedBuildOutputs = []; # otherwise out propagates bin -> cycle
 
-  buildInputs = with perlPackages; [ ]; # plugins will need some
+  buildInputs = with perlPackages; []; # plugins will need some
 
   preConfigure = ''
     touch Makefile.PL
@@ -59,4 +59,3 @@ perlPackages.buildPerlPackage rec {
     platforms = platforms.unix;
   };
 }
-

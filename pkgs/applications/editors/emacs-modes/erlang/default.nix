@@ -4,7 +4,7 @@ stdenv.mkDerivation {
 
   name = "erlang-mode-${erlang.version}";
 
-  buildInputs = [ ];
+  buildInputs = [];
 
   inherit erlang;
 

@@ -11,7 +11,7 @@ let
 
   gitlabSocket = "${cfg.statePath}/tmp/sockets/gitlab.socket";
   gitalySocket = "${cfg.statePath}/tmp/sockets/gitaly.socket";
-  pathUrlQuote = url: replaceStrings ["/"] ["%2F"] url;
+  pathUrlQuote = url: replaceStrings [ "/" ] [ "%2F" ] url;
   pgSuperUser = config.services.postgresql.superUser;
 
   databaseConfig = {
@@ -23,11 +23,13 @@ let
       username = cfg.databaseUsername;
       encoding = "utf8";
       pool = cfg.databasePool;
-    } // cfg.extraDatabaseConfig;
+    }
+    // cfg.extraDatabaseConfig
+    ;
   };
 
   gitalyToml = pkgs.writeText "gitaly.toml" ''
-    socket_path = "${lib.escape ["\""] gitalySocket}"
+    socket_path = "${lib.escape [ "\"" ] gitalySocket}"
     bin_dir = "${cfg.packages.gitaly}/bin"
     prometheus_listen_addr = "localhost:9236"
 
@@ -40,11 +42,17 @@ let
     [gitlab-shell]
     dir = "${cfg.packages.gitlab-shell}"
 
-    ${concatStringsSep "\n" (attrValues (mapAttrs (k: v: ''
-    [[storage]]
-    name = "${lib.escape ["\""] k}"
-    path = "${lib.escape ["\""] v.path}"
-    '') gitlabConfig.production.repositories.storages))}
+    ${concatStringsSep "\n" (
+    attrValues (
+      mapAttrs (
+        k: v: ''
+          [[storage]]
+          name = "${lib.escape [ "\"" ] k}"
+          path = "${lib.escape [ "\"" ] v.path}"
+        ''
+      ) gitlabConfig.production.repositories.storages
+    )
+  )}
   '';
 
   gitlabShellConfig = {
@@ -99,7 +107,7 @@ let
       artifacts.enabled = true;
       lfs.enabled = true;
       gravatar.enabled = true;
-      cron_jobs = { };
+      cron_jobs = {};
       gitlab_ci.builds_path = "${cfg.statePath}/builds";
       ldap.enabled = false;
       omniauth.enabled = false;
@@ -152,7 +160,7 @@ let
           --set PATH '${lib.makeBinPath [ pkgs.nodejs pkgs.gzip pkgs.git pkgs.gnutar config.services.postgresql.package pkgs.coreutils pkgs.procps ]}:$PATH' \
           --set RAKEOPT '-f ${cfg.packages.gitlab}/share/gitlab/Rakefile' \
           --run 'cd ${cfg.packages.gitlab}/share/gitlab'
-     '';
+    '';
   };
 
   gitlab-rails = pkgs.stdenv.mkDerivation rec {
@@ -166,7 +174,7 @@ let
           ${concatStrings (mapAttrsToList (name: value: "--set ${name} '${value}' ") gitlabEnv)} \
           --set PATH '${lib.makeBinPath [ pkgs.nodejs pkgs.gzip pkgs.git pkgs.gnutar config.services.postgresql.package pkgs.coreutils pkgs.procps ]}:$PATH' \
           --run 'cd ${cfg.packages.gitlab}/share/gitlab'
-     '';
+    '';
   };
 
   extraGitlabRb = pkgs.writeText "extra-gitlab.rb" cfg.extraGitlabRb;
@@ -189,7 +197,8 @@ let
     end
   '';
 
-in {
+in
+{
 
   options = {
     services.gitlab = {
@@ -480,7 +489,8 @@ in {
     services.postfix.enable = mkDefault true;
 
     users.users = [
-      { name = cfg.user;
+      {
+        name = cfg.user;
         group = cfg.group;
         home = "${cfg.statePath}/home";
         shell = "${pkgs.bash}/bin/bash";
@@ -489,7 +499,8 @@ in {
     ];
 
     users.groups = [
-      { name = cfg.group;
+      {
+        name = cfg.group;
         gid = config.ids.gids.gitlab;
       }
     ];
@@ -533,8 +544,10 @@ in {
       "L+ ${cfg.statePath}/config/unicorn.rb - - - - ${./defaultUnicornConfig.rb}"
 
       "L+ ${cfg.statePath}/config/initializers/extra-gitlab.rb - - - - ${extraGitlabRb}"
-    ] ++ optional cfg.smtp.enable
-      "L+ ${cfg.statePath}/config/initializers/smtp_settings.rb - - - - ${smtpSettings}" ;
+    ]
+    ++ optional cfg.smtp.enable
+         "L+ ${cfg.statePath}/config/initializers/smtp_settings.rb - - - - ${smtpSettings}"
+    ;
 
     systemd.services.gitlab-sidekiq = {
       after = [ "network.target" "redis.service" "gitlab.service" ];
@@ -555,7 +568,7 @@ in {
         TimeoutSec = "infinity";
         Restart = "on-failure";
         WorkingDirectory = "${cfg.packages.gitlab}/share/gitlab";
-        ExecStart="${cfg.packages.gitlab.rubyEnv}/bin/sidekiq -C \"${cfg.packages.gitlab}/share/gitlab/config/sidekiq_queues.yml\" -e production -P ${cfg.statePath}/tmp/sidekiq.pid";
+        ExecStart = "${cfg.packages.gitlab.rubyEnv}/bin/sidekiq -C \"${cfg.packages.gitlab}/share/gitlab/config/sidekiq_queues.yml\" -e production -P ${cfg.statePath}/tmp/sidekiq.pid";
       };
     };
 
@@ -564,7 +577,7 @@ in {
       wantedBy = [ "multi-user.target" ];
       path = with pkgs; [
         openssh
-        procps  # See https://gitlab.com/gitlab-org/gitaly/issues/1562
+        procps # See https://gitlab.com/gitlab-org/gitaly/issues/1562
         gitAndTools.git
         cfg.packages.gitaly.rubyEnv
         cfg.packages.gitaly.rubyEnv.wrappedRuby
@@ -608,7 +621,8 @@ in {
           + "-listenAddr /run/gitlab/gitlab-workhorse.socket "
           + "-authSocket ${gitlabSocket} "
           + "-documentRoot ${cfg.packages.gitlab}/share/gitlab/public "
-          + "-secretPath ${cfg.statePath}/.gitlab_workhorse_secret";
+          + "-secretPath ${cfg.statePath}/.gitlab_workhorse_secret"
+          ;
       };
     };
 

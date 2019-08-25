@@ -13,7 +13,11 @@ buildPythonPackage rec {
   nativeBuildInputs = [ pkgconfig pygtk ];
 
   propagatedBuildInputs = [
-    pygtk libsexy glib pango libxml2
+    pygtk
+    libsexy
+    glib
+    pango
+    libxml2
   ];
 
   postInstall = ''

@@ -13,7 +13,7 @@
 
 buildPythonPackage rec {
   pname = "odo";
-  version= "unstable-2019-07-16";
+  version = "unstable-2019-07-16";
 
   src = fetchFromGitHub {
     owner = "blaze";

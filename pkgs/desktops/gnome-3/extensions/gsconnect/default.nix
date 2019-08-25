@@ -1,6 +1,23 @@
-{ stdenv, fetchFromGitHub, substituteAll, python3, openssl, folks, gsound
-, meson, ninja, libxml2, pkgconfig, gobject-introspection, wrapGAppsHook
-, glib, gtk3, at-spi2-core, upower, openssh, gnome3 }:
+{ stdenv
+, fetchFromGitHub
+, substituteAll
+, python3
+, openssl
+, folks
+, gsound
+, meson
+, ninja
+, libxml2
+, pkgconfig
+, gobject-introspection
+, wrapGAppsHook
+, glib
+, gtk3
+, at-spi2-core
+, upower
+, openssh
+, gnome3
+}:
 
 stdenv.mkDerivation rec {
   name = "gnome-shell-gsconnect-${version}";
@@ -15,15 +32,19 @@ stdenv.mkDerivation rec {
 
   patches = [
     # Make typelibs available in the extension
-    (substituteAll {
-      src = ./fix-paths.patch;
-      gapplication = "${glib.bin}/bin/gapplication";
-      mutter_gsettings_path = "${gnome3.mutter}/share/gsettings-schemas/${gnome3.mutter.name}/glib-2.0/schemas";
-    })
+    (
+      substituteAll {
+        src = ./fix-paths.patch;
+        gapplication = "${glib.bin}/bin/gapplication";
+        mutter_gsettings_path = "${gnome3.mutter}/share/gsettings-schemas/${gnome3.mutter.name}/glib-2.0/schemas";
+      }
+    )
   ];
 
   nativeBuildInputs = [
-    meson ninja pkgconfig
+    meson
+    ninja
+    pkgconfig
     gobject-introspection # for locating typelibs
     wrapGAppsHook # for wrapping daemons
     libxml2 # xmllint

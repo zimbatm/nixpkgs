@@ -1,6 +1,13 @@
-{ stdenv, fetchFromGitHub, meson, ninja, pkgconfig
-, cairo, wayland, wayland-protocols
-, buildDocs ? true, scdoc
+{ stdenv
+, fetchFromGitHub
+, meson
+, ninja
+, pkgconfig
+, cairo
+, wayland
+, wayland-protocols
+, buildDocs ? true
+, scdoc
 }:
 
 stdenv.mkDerivation rec {
@@ -18,7 +25,9 @@ stdenv.mkDerivation rec {
     meson
     ninja
     pkgconfig
-  ] ++ stdenv.lib.optional buildDocs scdoc;
+  ]
+  ++ stdenv.lib.optional buildDocs scdoc
+  ;
 
   buildInputs = [
     cairo

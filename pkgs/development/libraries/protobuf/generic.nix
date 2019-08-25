@@ -1,5 +1,9 @@
-{ stdenv, version, src
-, autoreconfHook, zlib, gtest
+{ stdenv
+, version
+, src
+, autoreconfHook
+, zlib
+, gtest
 , ...
 }:
 
@@ -12,10 +16,12 @@ stdenv.mkDerivation rec {
     rm -rf gtest
     cp -r ${gtest.src}/googletest gtest
     chmod -R a+w gtest
-  '' + stdenv.lib.optionalString stdenv.isDarwin ''
-    substituteInPlace src/google/protobuf/testing/googletest.cc \
-      --replace 'tmpnam(b)' '"'$TMPDIR'/foo"'
-  '';
+  ''
+  + stdenv.lib.optionalString stdenv.isDarwin ''
+      substituteInPlace src/google/protobuf/testing/googletest.cc \
+        --replace 'tmpnam(b)' '"'$TMPDIR'/foo"'
+    ''
+  ;
 
   outputs = [ "out" "lib" ];
 

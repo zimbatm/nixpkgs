@@ -2,9 +2,11 @@
 
 with stdenv.lib;
 
-let version = "2.0.2";
+let
+  version = "2.0.2";
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "magma-${version}";
   src = fetchurl {
     url = "https://icl.cs.utk.edu/projectsfiles/magma/downloads/magma-${version}.tar.gz";
@@ -17,7 +19,7 @@ in stdenv.mkDerivation {
   doCheck = false;
   #checkTarget = "tests";
 
-  enableParallelBuilding=true;
+  enableParallelBuilding = true;
 
   # MAGMA's default CMake setup does not care about installation. So we copy files directly.
   installPhase = ''

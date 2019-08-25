@@ -10,7 +10,7 @@ buildGoPackage rec {
   src = fetchFromGitHub {
     owner = "apache";
     repo = "incubator-mynewt-newt";
-    rev = "mynewt_${builtins.replaceStrings ["."] ["_"] version}_tag";
+    rev = "mynewt_${builtins.replaceStrings [ "." ] [ "_" ] version}_tag";
     sha256 = "0ia6q1wf3ki2yw8ngw5gnbdrb7268qwi078j05f8gs1sppb3g563";
   };
 

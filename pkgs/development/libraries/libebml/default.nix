@@ -5,9 +5,9 @@ stdenv.mkDerivation rec {
   version = "1.3.9";
 
   src = fetchFromGitHub {
-    owner  = "Matroska-Org";
-    repo   = "libebml";
-    rev    = "release-${version}";
+    owner = "Matroska-Org";
+    repo = "libebml";
+    rev = "release-${version}";
     sha256 = "0q2xfabaymrf0xkhwc9akx6m04lgra2b53wcn9mnh5dqiiazizi7";
   };
 

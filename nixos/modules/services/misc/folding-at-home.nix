@@ -4,7 +4,8 @@ let
   stateDir = "/var/lib/foldingathome";
   cfg = config.services.foldingAtHome;
   fahUser = "foldingathome";
-in {
+in
+{
 
   ###### interface
 
@@ -43,7 +44,8 @@ in {
   config = mkIf cfg.enable {
 
     users.users = singleton
-      { name = fahUser;
+      {
+        name = fahUser;
         uid = config.ids.uids.foldingathome;
         description = "Folding@Home user";
         home = stateDir;
@@ -61,8 +63,8 @@ in {
     };
 
     services.foldingAtHome.config = ''
-        [settings]
-        username=${cfg.nickname}
+      [settings]
+      username=${cfg.nickname}
     '';
   };
 }

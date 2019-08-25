@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, xmpppy, pythonIRClib, python, pythonPackages, runtimeShell } :
+{ stdenv, fetchurl, xmpppy, pythonIRClib, python, pythonPackages, runtimeShell }:
 
 stdenv.mkDerivation rec {
   name = "pyIRCt-${version}";
@@ -12,7 +12,8 @@ stdenv.mkDerivation rec {
   buildInputs = [ pythonPackages.wrapPython ];
 
   pythonPath = [
-    xmpppy pythonIRClib
+    xmpppy
+    pythonIRClib
   ];
 
   /* doConfigure should be removed if not needed */

@@ -1,7 +1,27 @@
-{ stdenv, fetchurl, adns, curl, gettext, gmp, gnutls, libextractor
-, libgcrypt, libgnurl, libidn, libmicrohttpd, libtool, libunistring
-, makeWrapper, ncurses, pkgconfig, libxml2, sqlite, zlib
-, libpulseaudio, libopus, libogg }:
+{ stdenv
+, fetchurl
+, adns
+, curl
+, gettext
+, gmp
+, gnutls
+, libextractor
+, libgcrypt
+, libgnurl
+, libidn
+, libmicrohttpd
+, libtool
+, libunistring
+, makeWrapper
+, ncurses
+, pkgconfig
+, libxml2
+, sqlite
+, zlib
+, libpulseaudio
+, libopus
+, libogg
+}:
 
 stdenv.mkDerivation rec {
   name = "gnunet-0.11.0";
@@ -12,9 +32,27 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [
-    adns curl gettext gmp gnutls libextractor libgcrypt libgnurl libidn
-    libmicrohttpd libtool libunistring libxml2 makeWrapper ncurses
-    pkgconfig sqlite zlib libpulseaudio libopus libogg
+    adns
+    curl
+    gettext
+    gmp
+    gnutls
+    libextractor
+    libgcrypt
+    libgnurl
+    libidn
+    libmicrohttpd
+    libtool
+    libunistring
+    libxml2
+    makeWrapper
+    ncurses
+    pkgconfig
+    sqlite
+    zlib
+    libpulseaudio
+    libopus
+    libogg
   ];
 
   preConfigure = ''

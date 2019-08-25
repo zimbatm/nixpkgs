@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
   };
 
   inherit (sourceInfo) name version;
-  buildInputs = [libuuid libselinux];
+  buildInputs = [ libuuid libselinux ];
 
   preConfigure = ''
     sed -e '/sysconfdir=\/etc/d; ' -i configure
@@ -25,23 +25,29 @@ stdenv.mkDerivation rec {
 
   patches = [
     # Fix w/musl
-    (fetchpatch {
-      url = "https://github.com/nilfs-dev/nilfs-utils/commit/115fe4b976858c487cf83065f513d8626089579a.patch";
-      sha256 = "0h89jz9l5d4rqj647ljbnv451l4ncqpsvzj0v70mn5391hfwsjlv";
-    })
-    (fetchpatch {
-      url =  "https://github.com/nilfs-dev/nilfs-utils/commit/51b32c614be9e98c32de7f531ee600ca0740946f.patch";
-      sha256 = "1ycq83c6jjy74aif47v075k5y2szzwhq6mbcrpd1z4b4i1x6yhpn";
-    })
+    (
+      fetchpatch {
+        url = "https://github.com/nilfs-dev/nilfs-utils/commit/115fe4b976858c487cf83065f513d8626089579a.patch";
+        sha256 = "0h89jz9l5d4rqj647ljbnv451l4ncqpsvzj0v70mn5391hfwsjlv";
+      }
+    )
+    (
+      fetchpatch {
+        url = "https://github.com/nilfs-dev/nilfs-utils/commit/51b32c614be9e98c32de7f531ee600ca0740946f.patch";
+        sha256 = "1ycq83c6jjy74aif47v075k5y2szzwhq6mbcrpd1z4b4i1x6yhpn";
+      }
+    )
   ];
 
   configureFlags = [
     "--with-libmount"
-  ] ++ stdenv.lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
-    # AC_FUNC_MALLOC is broken on cross builds.
-    "ac_cv_func_malloc_0_nonnull=yes"
-    "ac_cv_func_realloc_0_nonnull=yes"
-  ];
+  ]
+  ++ stdenv.lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
+       # AC_FUNC_MALLOC is broken on cross builds.
+       "ac_cv_func_malloc_0_nonnull=yes"
+       "ac_cv_func_realloc_0_nonnull=yes"
+     ]
+  ;
 
   # FIXME: https://github.com/NixOS/patchelf/pull/98 is in, but stdenv
   # still doesn't use it
@@ -56,7 +62,7 @@ stdenv.mkDerivation rec {
     description = "NILFS utilities";
     maintainers = [ maintainers.raskin ];
     platforms = platforms.linux;
-    license =  with licenses; [ gpl2 lgpl21 ];
+    license = with licenses; [ gpl2 lgpl21 ];
     downloadPage = "http://nilfs.sourceforge.net/en/download.html";
     updateWalker = true;
   };

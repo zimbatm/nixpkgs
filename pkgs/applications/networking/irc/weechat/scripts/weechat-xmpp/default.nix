@@ -16,13 +16,15 @@ stdenv.mkDerivation {
   '';
 
   patches = [
-    (substituteAll {
-      src = ./libpath.patch;
-      env = "${buildEnv {
-        name = "weechat-xmpp-env";
-        paths = [ pydns xmpppy ];
-      }}/lib/python2.7/site-packages";
-    })
+    (
+      substituteAll {
+        src = ./libpath.patch;
+        env = "${buildEnv {
+          name = "weechat-xmpp-env";
+          paths = [ pydns xmpppy ];
+        }}/lib/python2.7/site-packages";
+      }
+    )
   ];
 
   passthru.scripts = [ "jabber.py" ];

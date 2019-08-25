@@ -2,7 +2,7 @@
 
 with stdenv.lib;
 stdenv.mkDerivation rec {
-  p_name  = "xfce4-netload-plugin";
+  p_name = "xfce4-netload-plugin";
   ver_maj = "1.2";
   ver_min = "4";
 

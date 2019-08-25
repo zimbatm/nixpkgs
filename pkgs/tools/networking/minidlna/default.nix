@@ -1,6 +1,8 @@
 { stdenv, fetchurl, ffmpeg, flac, libvorbis, libogg, libid3tag, libexif, libjpeg, sqlite, gettext }:
 
-let version = "1.2.1"; in
+let
+  version = "1.2.1";
+in
 
 stdenv.mkDerivation {
   name = "minidlna-${version}";

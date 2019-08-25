@@ -9,12 +9,20 @@ let
   fail2banConf = pkgs.writeText "fail2ban.conf" cfg.daemonConfig;
 
   jailConf = pkgs.writeText "jail.conf"
-    (concatStringsSep "\n" (attrValues (flip mapAttrs cfg.jails (name: def:
-      optionalString (def != "")
-        ''
-          [${name}]
-          ${def}
-        ''))));
+    (
+      concatStringsSep "\n" (
+        attrValues (
+          flip mapAttrs cfg.jails (
+            name: def:
+              optionalString (def != "")
+                ''
+                  [${name}]
+                  ${def}
+                ''
+          )
+        )
+      )
+    );
 
 in
 
@@ -49,7 +57,7 @@ in
       };
 
       jails = mkOption {
-        default = { };
+        default = {};
         example = literalExample ''
           { apache-nohome-iptables = '''
               # Block an IP address if it accesses a non-existent
@@ -95,7 +103,8 @@ in
     environment.etc."fail2ban/filter.d".source = "${pkgs.fail2ban}/etc/fail2ban/filter.d/*.conf";
 
     systemd.services.fail2ban =
-      { description = "Fail2ban Intrusion Prevention System";
+      {
+        description = "Fail2ban Intrusion Prevention System";
 
         wantedBy = [ "multi-user.target" ];
         after = [ "network.target" ];
@@ -112,7 +121,8 @@ in
         unitConfig.Documentation = "man:fail2ban(1)";
 
         serviceConfig =
-          { Type = "forking";
+          {
+            Type = "forking";
             ExecStart = "${pkgs.fail2ban}/bin/fail2ban-client -x start";
             ExecStop = "${pkgs.fail2ban}/bin/fail2ban-client stop";
             ExecReload = "${pkgs.fail2ban}/bin/fail2ban-client reload";
@@ -137,7 +147,7 @@ in
         maxretry = 3
         backend  = systemd
         enabled  = true
-       '';
+      '';
 
     # Block SSH if there are too many failing connection attempts.
     services.fail2ban.jails.ssh-iptables =

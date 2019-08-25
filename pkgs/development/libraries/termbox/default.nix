@@ -13,10 +13,12 @@ stdenv.mkDerivation rec {
   # patch which updates the `waf` version used to build
   # to make the package buildable on Python 3.7
   patches = [
-    (fetchpatch {
-      url = https://github.com/nsf/termbox/commit/6fe63ac3ad63dc2c3ac45b770541cc8b7a1d2db7.patch;
-      sha256 = "1s5747v51sdwvpsg6k9y1j60yn9f63qnylkgy8zrsifjzzd5fzl6";
-    })
+    (
+      fetchpatch {
+        url = https://github.com/nsf/termbox/commit/6fe63ac3ad63dc2c3ac45b770541cc8b7a1d2db7.patch;
+        sha256 = "1s5747v51sdwvpsg6k9y1j60yn9f63qnylkgy8zrsifjzzd5fzl6";
+      }
+    )
   ];
 
   nativeBuildInputs = [ python3 wafHook ];

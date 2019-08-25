@@ -2,7 +2,8 @@
 with lib;
 let
   cfg = config.services.sysstat;
-in {
+in
+{
   options = {
     services.sysstat = {
       enable = mkOption {

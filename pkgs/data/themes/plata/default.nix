@@ -1,15 +1,28 @@
-{ stdenv, fetchFromGitLab, autoreconfHook, pkgconfig, parallel
-, sassc, inkscape, libxml2, glib, gdk-pixbuf, librsvg, gtk-engine-murrine
+{ stdenv
+, fetchFromGitLab
+, autoreconfHook
+, pkgconfig
+, parallel
+, sassc
+, inkscape
+, libxml2
+, glib
+, gdk-pixbuf
+, librsvg
+, gtk-engine-murrine
 , cinnamonSupport ? true
 , gnomeFlashbackSupport ? true
 , gnomeShellSupport ? true
 , openboxSupport ? true
 , xfceSupport ? true
-, mateSupport ? true, gtk3, marco
+, mateSupport ? true
+, gtk3
+, marco
 , gtkNextSupport ? false
 , plankSupport ? false
 , steamSupport ? false
-, telegramSupport ? false, zip
+, telegramSupport ? false
+, zip
 , tweetdeckSupport ? false
 , selectionColor ? null # Primary color for 'selected-items' (Default: #3F51B5 = Indigo500)
 , accentColor ? null # Secondary color for notifications and OSDs (Default: #7986CB = Indigo300)
@@ -40,7 +53,8 @@ stdenv.mkDerivation rec {
     glib.dev
   ]
   ++ stdenv.lib.optionals mateSupport [ gtk3 marco ]
-  ++ stdenv.lib.optional telegramSupport zip;
+  ++ stdenv.lib.optional telegramSupport zip
+  ;
 
   buildInputs = [
     gdk-pixbuf
@@ -55,24 +69,25 @@ stdenv.mkDerivation rec {
     let
       inherit (stdenv.lib) enableFeature optional;
       withOptional = value: feat: optional (value != null) "--with-${feat}=${value}";
-    in [
-      "--enable-parallel"
-      (enableFeature cinnamonSupport "cinnamon")
-      (enableFeature gnomeFlashbackSupport "flashback")
-      (enableFeature gnomeShellSupport "gnome")
-      (enableFeature openboxSupport "openbox")
-      (enableFeature xfceSupport "xfce")
-      (enableFeature mateSupport "mate")
-      (enableFeature gtkNextSupport "gtk_next")
-      (enableFeature plankSupport "plank")
-      (enableFeature steamSupport "airforsteam")
-      (enableFeature telegramSupport "telegram")
-      (enableFeature tweetdeckSupport "tweetdeck")
-    ]
-    ++ (withOptional selectionColor "selection_color")
-    ++ (withOptional accentColor "accent_color")
-    ++ (withOptional suggestionColor "suggestion_color")
-    ++ (withOptional destructionColor "destruction_color");
+    in
+      [
+        "--enable-parallel"
+        (enableFeature cinnamonSupport "cinnamon")
+        (enableFeature gnomeFlashbackSupport "flashback")
+        (enableFeature gnomeShellSupport "gnome")
+        (enableFeature openboxSupport "openbox")
+        (enableFeature xfceSupport "xfce")
+        (enableFeature mateSupport "mate")
+        (enableFeature gtkNextSupport "gtk_next")
+        (enableFeature plankSupport "plank")
+        (enableFeature steamSupport "airforsteam")
+        (enableFeature telegramSupport "telegram")
+        (enableFeature tweetdeckSupport "tweetdeck")
+      ]
+      ++ (withOptional selectionColor "selection_color")
+      ++ (withOptional accentColor "accent_color")
+      ++ (withOptional suggestionColor "suggestion_color")
+      ++ (withOptional destructionColor "destruction_color");
 
   postInstall = ''
     for dest in $out/share/gtksourceview-{3.0,4}/styles; do

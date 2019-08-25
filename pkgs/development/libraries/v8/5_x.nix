@@ -1,5 +1,15 @@
-{ stdenv, lib, fetchgit, fetchFromGitHub, gyp, readline, python, which, icu
-, patchelf, coreutils, xcbuild
+{ stdenv
+, lib
+, fetchgit
+, fetchFromGitHub
+, gyp
+, readline
+, python
+, which
+, icu
+, patchelf
+, coreutils
+, xcbuild
 , doCheck ? false
 , static ? false
 }:
@@ -8,10 +18,10 @@ assert readline != null;
 
 let
   arch = if stdenv.isx86_64 then "x64"
-            else if stdenv.isi686 then "ia32"
-            else if stdenv.isAarch64 then "arm64"
-            else if stdenv.isAarch32 then "arm"
-            else throw "Unknown architecture for v8";
+  else if stdenv.isi686 then "ia32"
+  else if stdenv.isAarch64 then "arm64"
+  else if stdenv.isAarch32 then "arm"
+  else throw "Unknown architecture for v8";
   git_url = "https://chromium.googlesource.com";
   clangFlag = if stdenv.isDarwin then "1" else "0";
   sharedFlag = if static then "static_library" else "shared_library";
@@ -116,10 +126,13 @@ stdenv.mkDerivation rec {
 
   postUnpack = ''
     ${lib.concatStringsSep "\n" (
-      lib.mapAttrsToList (n: v: ''
+    lib.mapAttrsToList (
+      n: v: ''
         mkdir -p $sourceRoot/${n}
         cp -r ${v}/* $sourceRoot/${n}
-      '') deps)}
+      ''
+    ) deps
+  )}
   '';
 
   # Patch based off of:
@@ -152,10 +165,12 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ which ];
   buildInputs = [ readline python icu ]
     ++ stdenv.lib.optional stdenv.isDarwin xcbuild
-    ++ stdenv.lib.optional stdenv.isLinux patchelf;
+    ++ stdenv.lib.optional stdenv.isLinux patchelf
+    ;
 
   NIX_CFLAGS_COMPILE = "-Wno-error=strict-overflow -Wno-error=unused-function -Wno-error=attributes"
-    + stdenv.lib.optionalString stdenv.cc.isClang " -Wno-error=unused-lambda-capture";
+    + stdenv.lib.optionalString stdenv.cc.isClang " -Wno-error=unused-lambda-capture"
+    ;
 
   buildFlags = [
     "LINK=c++"
@@ -176,13 +191,13 @@ stdenv.mkDerivation rec {
     install -vD out/Release/d8 "$out/bin/d8"
     install -vD out/Release/mksnapshot "$out/bin/mksnapshot"
     ${if static then ""
-    else if stdenv.isDarwin then ''
+  else if stdenv.isDarwin then ''
     install -vD out/Release/libv8.dylib "$out/lib/libv8.dylib"
     install_name_tool -change /usr/local/lib/libv8.dylib $out/lib/libv8.dylib -change /usr/lib/libgcc_s.1.dylib ${stdenv.cc.cc.lib}/lib/libgcc_s.1.dylib $out/bin/d8
     install_name_tool -id $out/lib/libv8.dylib -change /usr/lib/libgcc_s.1.dylib ${stdenv.cc.cc.lib}/lib/libgcc_s.1.dylib $out/lib/libv8.dylib
-    '' else ''
+  '' else ''
     install -vD out/Release/lib.target/libv8.so "$out/lib/libv8.so"
-    ''}
+  ''}
     mkdir -p "$out/include"
     cp -vr include/*.h "$out/include"
     cp -vr include/libplatform "$out/include"

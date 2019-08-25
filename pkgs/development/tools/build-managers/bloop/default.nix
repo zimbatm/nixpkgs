@@ -33,7 +33,7 @@ let
     '';
     outputHashMode = "recursive";
     outputHashAlgo = "sha256";
-    outputHash     = "0k9zc9q793fkfwcssbkmzb0nxmgb99rwi0pjkqhvf719vmgvhc2a";
+    outputHash = "0k9zc9q793fkfwcssbkmzb0nxmgb99rwi0pjkqhvf719vmgvhc2a";
   };
 
   zsh = stdenv.mkDerivation {

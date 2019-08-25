@@ -1,6 +1,13 @@
-{ stdenv, buildPythonPackage, fetchFromGitHub, pythonOlder
-, pytest, mock, pytestcov, coverage
-, future, futures
+{ stdenv
+, buildPythonPackage
+, fetchFromGitHub
+, pythonOlder
+, pytest
+, mock
+, pytestcov
+, coverage
+, future
+, futures
 }:
 
 buildPythonPackage rec {
@@ -19,7 +26,10 @@ buildPythonPackage rec {
   '';
 
   checkInputs = [
-    pytest mock pytestcov coverage
+    pytest
+    mock
+    pytestcov
+    coverage
   ];
 
   checkPhase = ''
@@ -27,7 +37,8 @@ buildPythonPackage rec {
   '';
 
   propagatedBuildInputs = [ future ]
-    ++ stdenv.lib.optional (pythonOlder "3.2") futures;
+    ++ stdenv.lib.optional (pythonOlder "3.2") futures
+    ;
 
   meta = with stdenv.lib; {
     homepage = https://github.com/palantir/python-jsonrpc-server;

@@ -1,7 +1,19 @@
-{ fetchurl, stdenv, libxml2, freetype, libGLU_combined, glew, qt4
-, cmake, makeWrapper, libjpeg, python }:
+{ fetchurl
+, stdenv
+, libxml2
+, freetype
+, libGLU_combined
+, glew
+, qt4
+, cmake
+, makeWrapper
+, libjpeg
+, python
+}:
 
-let version = "5.2.1"; in
+let
+  version = "5.2.1";
+in
 stdenv.mkDerivation rec {
   name = "tulip-${version}";
 
@@ -32,7 +44,7 @@ stdenv.mkDerivation rec {
 
     license = stdenv.lib.licenses.gpl3Plus;
 
-    maintainers = [ ];
-    platforms = stdenv.lib.platforms.gnu ++ stdenv.lib.platforms.linux;  # arbitrary choice
+    maintainers = [];
+    platforms = stdenv.lib.platforms.gnu ++ stdenv.lib.platforms.linux; # arbitrary choice
   };
 }

@@ -1,7 +1,21 @@
-{ stdenv, fetchFromGitHub, pkgconfig, libX11, xorgproto, libXtst, libXi, libXext
-, libXinerama, libXrandr, glib, cairo, xdotool }:
+{ stdenv
+, fetchFromGitHub
+, pkgconfig
+, libX11
+, xorgproto
+, libXtst
+, libXi
+, libXext
+, libXinerama
+, libXrandr
+, glib
+, cairo
+, xdotool
+}:
 
-let release = "20180821"; in
+let
+  release = "20180821";
+in
 stdenv.mkDerivation rec {
   name = "keynav-0.${release}.0";
 
@@ -13,8 +27,18 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ pkgconfig ];
-  buildInputs = [ libX11 xorgproto libXtst libXi libXext libXinerama libXrandr
-                  glib cairo xdotool ];
+  buildInputs = [
+    libX11
+    xorgproto
+    libXtst
+    libXi
+    libXext
+    libXinerama
+    libXrandr
+    glib
+    cairo
+    xdotool
+  ];
 
   patchPhase = ''
     echo >>VERSION MAJOR=0

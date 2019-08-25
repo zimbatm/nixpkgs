@@ -1,30 +1,35 @@
-{stdenv, lib, dict}:
-({dictlist, allowList ? ["127.0.0.1"], denyList ? []}:
-/*
- dictlist is a list of form 
- [ { filename = /path/to/files/basename;
- name = "name"; } ]
- basename.dict.dz and basename.index should be 
- dict files. Or look below for other options.
- allowList is a list of IP/domain *-wildcarded strings
- denyList is the same..
-*/
+{ stdenv, lib, dict }:
+(
+  { dictlist, allowList ? [ "127.0.0.1" ], denyList ? [] }:
+  /*
+   dictlist is a list of form 
+   [ { filename = /path/to/files/basename;
+   name = "name"; } ]
+   basename.dict.dz and basename.index should be 
+   dict files. Or look below for other options.
+   allowList is a list of IP/domain *-wildcarded strings
+   denyList is the same..
+  */
 
-let
-	link_arguments = map 
-			(x: '' "${x.filename}" '')
-			dictlist; 
-	databases = lib.concatStrings (map (x : 
-		"${x.name}	${x.filename}\n") dictlist);
-	allow = lib.concatStrings (map (x: "allow ${x}\n") allowList);
-	deny = lib.concatStrings (map (x: "deny ${x}\n") denyList);
-	accessSection = "
+    let
+      link_arguments = map
+        (x: '' "${x.filename}" '')
+        dictlist;
+      databases = lib.concatStrings (
+        map (
+          x:
+            "${x.name}	${x.filename}\n"
+        ) dictlist
+      );
+      allow = lib.concatStrings (map (x: "allow ${x}\n") allowList);
+      deny = lib.concatStrings (map (x: "deny ${x}\n") denyList);
+      accessSection = "
 		access {
 			${allow}
 			${deny}
 		}
 	";
-	installPhase = ''  
+      installPhase = ''  
   	mkdir -p $out/share/dictd
 	cd $out/share/dictd
 	echo "${databases}" >databases.names 
@@ -68,13 +73,14 @@ let
 	done
   	'';
 
-in
+    in
 
-stdenv.mkDerivation {
-  name = "dictd-dbs";
+      stdenv.mkDerivation {
+        name = "dictd-dbs";
 
-  phases = ["installPhase"];
-  buildInputs = [dict];
+        phases = [ "installPhase" ];
+        buildInputs = [ dict ];
 
-  inherit installPhase;
-})
+        inherit installPhase;
+      }
+)

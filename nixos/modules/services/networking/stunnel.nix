@@ -9,8 +9,9 @@ let
 
   verifyChainPathAssert = n: c: {
     assertion = c.verifyHostname == null || (c.verifyChain || c.verifyPeer);
-    message =  "stunnel: \"${n}\" client configuration - hostname verification " +
-      "is not possible without either verifyChain or verifyPeer enabled";
+    message = "stunnel: \"${n}\" client configuration - hostname verification "
+      + "is not possible without either verifyChain or verifyPeer enabled"
+      ;
   };
 
   serverConfig = {
@@ -129,7 +130,7 @@ in
             cert = "/path/to/pem/file";
           };
         };
-        default = { };
+        default = {};
       };
 
       clients = mkOption {
@@ -142,7 +143,7 @@ in
             verifyChain = false;
           };
         };
-        default = { };
+        default = {};
       };
     };
   };
@@ -153,10 +154,12 @@ in
   config = mkIf cfg.enable {
 
     assertions = concatLists [
-      (singleton {
-        assertion = (length (attrValues cfg.servers) != 0) || ((length (attrValues cfg.clients)) != 0);
-        message = "stunnel: At least one server- or client-configuration has to be present.";
-      })
+      (
+        singleton {
+          assertion = (length (attrValues cfg.servers) != 0) || ((length (attrValues cfg.clients)) != 0);
+          message = "stunnel: At least one server- or client-configuration has to be present.";
+        }
+      )
 
       (mapAttrsToList verifyChainPathAssert cfg.clients)
     ];
@@ -174,34 +177,42 @@ in
 
       ; ----- SERVER CONFIGURATIONS -----
       ${ lib.concatStringsSep "\n"
-           (lib.mapAttrsToList
-             (n: v: ''
-               [${n}]
-               accept = ${toString v.accept}
-               connect = ${toString v.connect}
-               cert = ${v.cert}
+      (
+        lib.mapAttrsToList
+          (
+            n: v: ''
+              [${n}]
+              accept = ${toString v.accept}
+              connect = ${toString v.connect}
+              cert = ${v.cert}
 
-             '')
-           cfg.servers)
-      }
+            ''
+          )
+          cfg.servers
+      )
+    }
 
       ; ----- CLIENT CONFIGURATIONS -----
       ${ lib.concatStringsSep "\n"
-           (lib.mapAttrsToList
-             (n: v: ''
-               [${n}]
-               client = yes
-               accept = ${v.accept}
-               connect = ${v.connect}
-               verifyChain = ${yesNo v.verifyChain}
-               verifyPeer = ${yesNo v.verifyPeer}
-               ${optionalString (v.CAPath != null) "CApath = ${v.CAPath}"}
-               ${optionalString (v.verifyHostname != null) "checkHost = ${v.verifyHostname}"}
-               OCSPaia = yes
+      (
+        lib.mapAttrsToList
+          (
+            n: v: ''
+              [${n}]
+              client = yes
+              accept = ${v.accept}
+              connect = ${v.connect}
+              verifyChain = ${yesNo v.verifyChain}
+              verifyPeer = ${yesNo v.verifyPeer}
+              ${optionalString (v.CAPath != null) "CApath = ${v.CAPath}"}
+              ${optionalString (v.verifyHostname != null) "checkHost = ${v.verifyHostname}"}
+              OCSPaia = yes
 
-             '')
-           cfg.clients)
-      }
+            ''
+          )
+          cfg.clients
+      )
+    }
     '';
 
     systemd.services.stunnel = {

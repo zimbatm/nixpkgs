@@ -2,7 +2,7 @@
 
 stdenv.mkDerivation rec {
   name = "libquvi-${version}";
-  version="0.9.4";
+  version = "0.9.4";
 
   src = fetchurl {
     url = "mirror://sourceforge/quvi/libquvi-${version}.tar.xz";
@@ -17,6 +17,6 @@ stdenv.mkDerivation rec {
     homepage = http://quvi.sf.net;
     license = stdenv.lib.licenses.lgpl21Plus;
     platforms = stdenv.lib.platforms.linux;
-    maintainers = [ ];
+    maintainers = [];
   };
 }

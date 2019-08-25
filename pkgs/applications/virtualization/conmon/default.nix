@@ -19,8 +19,9 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ pkgconfig ];
-  buildInputs = [ glib systemd ] ++
-    stdenv.lib.optionals (!stdenv.hostPlatform.isMusl) [ glibc glibc.static ];
+  buildInputs = [ glib systemd ]
+    ++ stdenv.lib.optionals (!stdenv.hostPlatform.isMusl) [ glibc glibc.static ]
+    ;
 
   installPhase = "install -Dm755 bin/${project} $out/bin/${project}";
 

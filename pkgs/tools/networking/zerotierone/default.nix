@@ -12,16 +12,16 @@ stdenv.mkDerivation rec {
   };
 
   preConfigure = ''
-      substituteInPlace ./osdep/ManagedRoute.cpp \
-        --replace '/usr/sbin/ip' '${iproute}/bin/ip'
+    substituteInPlace ./osdep/ManagedRoute.cpp \
+      --replace '/usr/sbin/ip' '${iproute}/bin/ip'
 
-      substituteInPlace ./osdep/ManagedRoute.cpp \
-        --replace '/sbin/ip' '${iproute}/bin/ip'
+    substituteInPlace ./osdep/ManagedRoute.cpp \
+      --replace '/sbin/ip' '${iproute}/bin/ip'
 
-      patchShebangs ./doc/build.sh
-      substituteInPlace ./doc/build.sh \
-        --replace '/usr/bin/ronn' '${ronn}/bin/ronn' \
-        --replace 'ronn -r' '${ronn}/bin/ronn -r'
+    patchShebangs ./doc/build.sh
+    substituteInPlace ./doc/build.sh \
+      --replace '/usr/bin/ronn' '${ronn}/bin/ronn' \
+      --replace 'ronn -r' '${ronn}/bin/ronn -r'
   '';
 
   buildInputs = [ openssl lzo zlib iproute which ronn ];

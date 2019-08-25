@@ -8,12 +8,17 @@
 , six
 , nose
 , Mako
-, cudaSupport ? false, cudatoolkit , nvidia_x11
-, openclSupport ? true, ocl-icd, clblas
+, cudaSupport ? false
+, cudatoolkit
+, nvidia_x11
+, openclSupport ? true
+, ocl-icd
+, clblas
 }:
 
-assert cudaSupport -> nvidia_x11 != null
-                   && cudatoolkit != null;
+assert cudaSupport
+-> nvidia_x11 != null
+   && cudatoolkit != null;
 
 buildPythonPackage rec {
   pname = "libgpuarray";
@@ -49,14 +54,16 @@ buildPythonPackage rec {
 
   postFixup = ''
     rm $out/lib/libgpuarray-static.a
-  '' + stdenv.lib.optionalString (!stdenv.isDarwin) ''
-    function fixRunPath {
-      p=$(patchelf --print-rpath $1)
-      patchelf --set-rpath "$p:$libraryPath" $1
-    }
+  ''
+  + stdenv.lib.optionalString (!stdenv.isDarwin) ''
+      function fixRunPath {
+        p=$(patchelf --print-rpath $1)
+        patchelf --set-rpath "$p:$libraryPath" $1
+      }
 
-    fixRunPath $out/lib/libgpuarray.so
-  '';
+      fixRunPath $out/lib/libgpuarray.so
+    ''
+  ;
 
   propagatedBuildInputs = [
     numpy

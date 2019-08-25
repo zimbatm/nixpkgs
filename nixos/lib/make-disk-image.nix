@@ -49,24 +49,31 @@ assert partitionTableType != "none" -> fsType == "ext4";
 
 with lib;
 
-let format' = format; in let
+let
+  format' = format;
+in
+let
 
   format = if format' == "qcow2-compressed" then "qcow2" else format';
 
   compress = optionalString (format' == "qcow2-compressed") "-c";
 
-  filename = "nixos." + {
-    qcow2 = "qcow2";
-    vpc   = "vhd";
-    raw   = "img";
-  }.${format};
+  filename = "nixos."
+    + {
+        qcow2 = "qcow2";
+        vpc = "vhd";
+        raw = "img";
+      }.${format}
+    ;
 
-  rootPartition = { # switch-case
+  rootPartition = {
+    # switch-case
     legacy = "1";
     efi = "2";
   }.${partitionTableType};
 
-  partitionDiskScript = { # switch-case
+  partitionDiskScript = {
+    # switch-case
     legacy = ''
       parted --script $diskImage -- \
         mklabel msdos \
@@ -97,7 +104,8 @@ let format' = format; in let
   '';
 
   binPath = with pkgs; makeBinPath (
-    [ rsync
+    [
+      rsync
       utillinux
       parted
       e2fsprogs
@@ -105,7 +113,9 @@ let format' = format; in let
       config.system.build.nixos-install
       config.system.build.nixos-enter
       nix
-    ] ++ stdenv.initialPath);
+    ]
+    ++ stdenv.initialPath
+  );
 
   # I'm preserving the line below because I'm going to search for it across nixpkgs to consolidate
   # image building logic. The comment right below this now appears in 4 different places in nixpkgs :)
@@ -134,13 +144,13 @@ let format' = format; in let
     ${partitionDiskScript}
 
     ${if partitionTableType != "none" then ''
-      # Get start & length of the root partition in sectors to $START and $SECTORS.
-      eval $(partx $diskImage -o START,SECTORS --nr ${rootPartition} --pairs)
+    # Get start & length of the root partition in sectors to $START and $SECTORS.
+    eval $(partx $diskImage -o START,SECTORS --nr ${rootPartition} --pairs)
 
-      mkfs.${fsType} -F -L ${label} $diskImage -E offset=$(sectorsToBytes $START) $(sectorsToKilobytes $SECTORS)K
-    '' else ''
-      mkfs.${fsType} -F -L ${label} $diskImage
-    ''}
+    mkfs.${fsType} -F -L ${label} $diskImage -E offset=$(sectorsToBytes $START) $(sectorsToKilobytes $SECTORS)K
+  '' else ''
+    mkfs.${fsType} -F -L ${label} $diskImage
+  ''}
 
     root="$PWD/root"
     mkdir -p $root
@@ -187,61 +197,63 @@ let format' = format; in let
     echo "copying staging root to image..."
     cptofs -p ${optionalString (partitionTableType != "none") "-P ${rootPartition}"} -t ${fsType} -i $diskImage $root/* /
   '';
-in pkgs.vmTools.runInLinuxVM (
-  pkgs.runCommand name
-    { preVM = prepareImage;
-      buildInputs = with pkgs; [ utillinux e2fsprogs dosfstools ];
-      postVM = ''
-        ${if format == "raw" then ''
+in
+  pkgs.vmTools.runInLinuxVM (
+    pkgs.runCommand name
+      {
+        preVM = prepareImage;
+        buildInputs = with pkgs; [ utillinux e2fsprogs dosfstools ];
+        postVM = ''
+          ${if format == "raw" then ''
           mv $diskImage $out/${filename}
         '' else ''
           ${pkgs.qemu}/bin/qemu-img convert -f raw -O ${format} ${compress} $diskImage $out/${filename}
         ''}
-        diskImage=$out/${filename}
-        ${postVM}
-      '';
-      memSize = 1024;
-    }
-    ''
-      export PATH=${binPath}:$PATH
+          diskImage=$out/${filename}
+          ${postVM}
+        '';
+        memSize = 1024;
+      }
+      ''
+        export PATH=${binPath}:$PATH
 
-      rootDisk=${if partitionTableType != "none" then "/dev/vda${rootPartition}" else "/dev/vda"}
+        rootDisk=${if partitionTableType != "none" then "/dev/vda${rootPartition}" else "/dev/vda"}
 
-      # Some tools assume these exist
-      ln -s vda /dev/xvda
-      ln -s vda /dev/sda
+        # Some tools assume these exist
+        ln -s vda /dev/xvda
+        ln -s vda /dev/sda
 
-      mountPoint=/mnt
-      mkdir $mountPoint
-      mount $rootDisk $mountPoint
+        mountPoint=/mnt
+        mkdir $mountPoint
+        mount $rootDisk $mountPoint
 
-      # Create the ESP and mount it. Unlike e2fsprogs, mkfs.vfat doesn't support an
-      # '-E offset=X' option, so we can't do this outside the VM.
-      ${optionalString (partitionTableType == "efi") ''
+        # Create the ESP and mount it. Unlike e2fsprogs, mkfs.vfat doesn't support an
+        # '-E offset=X' option, so we can't do this outside the VM.
+        ${optionalString (partitionTableType == "efi") ''
         mkdir -p /mnt/boot
         mkfs.vfat -n ESP /dev/vda1
         mount /dev/vda1 /mnt/boot
       ''}
 
-      # Install a configuration.nix
-      mkdir -p /mnt/etc/nixos
-      ${optionalString (configFile != null) ''
+        # Install a configuration.nix
+        mkdir -p /mnt/etc/nixos
+        ${optionalString (configFile != null) ''
         cp ${configFile} /mnt/etc/nixos/configuration.nix
       ''}
 
-      # Set up core system link, GRUB, etc.
-      NIXOS_INSTALL_BOOTLOADER=1 nixos-enter --root $mountPoint -- /nix/var/nix/profiles/system/bin/switch-to-configuration boot
+        # Set up core system link, GRUB, etc.
+        NIXOS_INSTALL_BOOTLOADER=1 nixos-enter --root $mountPoint -- /nix/var/nix/profiles/system/bin/switch-to-configuration boot
 
-      # The above scripts will generate a random machine-id and we don't want to bake a single ID into all our images
-      rm -f $mountPoint/etc/machine-id
+        # The above scripts will generate a random machine-id and we don't want to bake a single ID into all our images
+        rm -f $mountPoint/etc/machine-id
 
-      umount -R /mnt
+        umount -R /mnt
 
-      # Make sure resize2fs works. Note that resize2fs has stricter criteria for resizing than a normal
-      # mount, so the `-c 0` and `-i 0` don't affect it. Setting it to `now` doesn't produce deterministic
-      # output, of course, but we can fix that when/if we start making images deterministic.
-      ${optionalString (fsType == "ext4") ''
+        # Make sure resize2fs works. Note that resize2fs has stricter criteria for resizing than a normal
+        # mount, so the `-c 0` and `-i 0` don't affect it. Setting it to `now` doesn't produce deterministic
+        # output, of course, but we can fix that when/if we start making images deterministic.
+        ${optionalString (fsType == "ext4") ''
         tune2fs -T now -c 0 -i 0 $rootDisk
       ''}
-    ''
-)
+      ''
+  )

@@ -9,7 +9,9 @@ let
 
   # Check if the path is from the NixOS repository
   isNixOSFile = path:
-    let s = toString path; in
+    let
+      s = toString path;
+    in
       removePrefix nixosPath s != s;
 
   # Copy modules given as extra configuration files.  Unfortunately, we
@@ -22,8 +24,10 @@ let
   # Partition module files because between NixOS and non-NixOS files.  NixOS
   # files may change if the repository is updated.
   partitionedModuleFiles =
-    let p = partition isNixOSFile moduleFiles; in
-    { nixos = p.right; others = p.wrong; };
+    let
+      p = partition isNixOSFile moduleFiles;
+    in
+      { nixos = p.right; others = p.wrong; };
 
   # Path transformed to be valid on the installation device.  Thus the
   # device configuration could be rebuild.
@@ -32,7 +36,8 @@ let
       relocateNixOS = path:
         "<nixpkgs/nixos" + removePrefix nixosPath (toString path) + ">";
     in
-      { nixos = map relocateNixOS partitionedModuleFiles.nixos;
+      {
+        nixos = map relocateNixOS partitionedModuleFiles.nixos;
         others = []; # TODO: copy the modules to the install-device repository.
       };
 
@@ -95,13 +100,13 @@ in
         mkdir -p /mnt
 
         ${optionalString config.installer.cloneConfig ''
-          # Provide a configuration for the CD/DVD itself, to allow users
-          # to run nixos-rebuild to change the configuration of the
-          # running system on the CD/DVD.
-          if ! [ -e /etc/nixos/configuration.nix ]; then
-            cp ${configClone} /etc/nixos/configuration.nix
-          fi
-       ''}
+        # Provide a configuration for the CD/DVD itself, to allow users
+        # to run nixos-rebuild to change the configuration of the
+        # running system on the CD/DVD.
+        if ! [ -e /etc/nixos/configuration.nix ]; then
+          cp ${configClone} /etc/nixos/configuration.nix
+        fi
+      ''}
       '';
 
   };

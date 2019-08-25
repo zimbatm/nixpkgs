@@ -15,6 +15,6 @@ buildPythonPackage rec {
     homepage = https://github.com/click-contrib/click-log/;
     description = "Logging integration for Click";
     license = licenses.mit;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
   };
 }

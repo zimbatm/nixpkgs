@@ -13,12 +13,14 @@
 , appstream-glib
 , desktop-file-utils
 , magic-wormhole
-, wrapGAppsHook }:
+, wrapGAppsHook
+}:
 
 let
   pname = "Transporter";
   version = "1.3.3";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "${pname}-${version}";
 
   src = fetchFromGitHub {
@@ -51,9 +53,9 @@ in stdenv.mkDerivation rec {
   ];
 
   prePatch = ''
-  # The paths were hardcoded
-  substituteInPlace ./src/WormholeInterface.vala \
-    --replace /bin/wormhole ${magic-wormhole}/bin/wormhole
+    # The paths were hardcoded
+    substituteInPlace ./src/WormholeInterface.vala \
+      --replace /bin/wormhole ${magic-wormhole}/bin/wormhole
   '';
 
   postPatch = ''
@@ -63,8 +65,8 @@ in stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "Simple magic-wormhole client";
-    homepage    = https://github.com/bleakgrey/Transporter;
-    license     = licenses.gpl3;
+    homepage = https://github.com/bleakgrey/Transporter;
+    license = licenses.gpl3;
     maintainers = with maintainers; [ worldofpeace ];
     platforms = platforms.linux;
   };

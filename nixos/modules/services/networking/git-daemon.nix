@@ -105,13 +105,15 @@ in
   config = mkIf cfg.enable {
 
     users.users = if cfg.user != "git" then {} else singleton
-      { name = "git";
+      {
+        name = "git";
         uid = config.ids.uids.git;
         description = "Git daemon user";
       };
 
     users.groups = if cfg.group != "git" then {} else singleton
-      { name = "git";
+      {
+        name = "git";
         gid = config.ids.gids.git;
       };
 
@@ -122,7 +124,10 @@ in
         + (optionalString (cfg.basePath != "") "--base-path=${cfg.basePath} ")
         + (optionalString (cfg.listenAddress != "") "--listen=${cfg.listenAddress} ")
         + "--port=${toString cfg.port} --user=${cfg.user} --group=${cfg.group} ${cfg.options} "
-        + "--verbose " + (optionalString cfg.exportAll "--export-all ")  + concatStringsSep " " cfg.repositories;
+        + "--verbose "
+        + (optionalString cfg.exportAll "--export-all ")
+        + concatStringsSep " " cfg.repositories
+        ;
     };
 
   };

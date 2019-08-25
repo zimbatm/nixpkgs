@@ -1,6 +1,8 @@
 { stdenv, fetchurl }:
 
-let version = "0.8"; in
+let
+  version = "0.8";
+in
 
 stdenv.mkDerivation rec {
   name = "buildtorrent-${version}";

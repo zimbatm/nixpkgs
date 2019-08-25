@@ -11,7 +11,7 @@ buildPythonPackage rec {
 
   format = "other";
   disabled = !isPy27;
-  
+
   src = fetchFromGitHub {
     owner = "travisb-ca";
     repo = pname;

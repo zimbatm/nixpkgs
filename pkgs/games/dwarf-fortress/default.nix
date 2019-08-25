@@ -43,7 +43,7 @@ let
   latestVersion = "0.44.12";
 
   # Converts a version to a package name.
-  versionToName = version: "dwarf-fortress_${lib.replaceStrings ["."] ["_"] version}";
+  versionToName = version: "dwarf-fortress_${lib.replaceStrings [ "." ] [ "_" ] version}";
 
   dwarf-therapist-original = pkgs.qt5.callPackage ./dwarf-therapist {
     texlive = pkgs.texlive.combine {
@@ -52,42 +52,46 @@ let
   };
 
   # A map of names to each Dwarf Fortress package we know about.
-  df-games = lib.listToAttrs (map (dfVersion: {
-    name = versionToName dfVersion;
-    value =
-      let
-        # I can't believe this syntax works. Spikes of Nix code indeed...
-        dwarf-fortress = callPackage ./game.nix {
-          inherit dfVersion;
-          inherit dwarf-fortress-unfuck;
-        };
+  df-games = lib.listToAttrs (
+    map (
+      dfVersion: {
+        name = versionToName dfVersion;
+        value =
+          let
+            # I can't believe this syntax works. Spikes of Nix code indeed...
+            dwarf-fortress = callPackage ./game.nix {
+              inherit dfVersion;
+              inherit dwarf-fortress-unfuck;
+            };
 
-        # unfuck is linux-only right now, we will only use it there.
-        dwarf-fortress-unfuck = if stdenv.isLinux then callPackage ./unfuck.nix { inherit dfVersion; }
-                                else null;
+            # unfuck is linux-only right now, we will only use it there.
+            dwarf-fortress-unfuck = if stdenv.isLinux then callPackage ./unfuck.nix { inherit dfVersion; }
+            else null;
 
-        twbt = callPackage ./twbt { inherit dfVersion; };
+            twbt = callPackage ./twbt { inherit dfVersion; };
 
-        dfhack = callPackage ./dfhack {
-          inherit (pkgs.perlPackages) XMLLibXML XMLLibXSLT;
-          inherit dfVersion twbt;
-          stdenv = gccStdenv;
-        };
+            dfhack = callPackage ./dfhack {
+              inherit (pkgs.perlPackages) XMLLibXML XMLLibXSLT;
+              inherit dfVersion twbt;
+              stdenv = gccStdenv;
+            };
 
-        dwarf-therapist = callPackage ./dwarf-therapist/wrapper.nix {
-          inherit dwarf-fortress;
-          dwarf-therapist = dwarf-therapist-original;
-        };
-      in
-      callPackage ./wrapper {
-        inherit (self) themes;
+            dwarf-therapist = callPackage ./dwarf-therapist/wrapper.nix {
+              inherit dwarf-fortress;
+              dwarf-therapist = dwarf-therapist-original;
+            };
+          in
+            callPackage ./wrapper {
+              inherit (self) themes;
 
-        dwarf-fortress = dwarf-fortress;
-        twbt = twbt;
-        dfhack = dfhack;
-        dwarf-therapist = dwarf-therapist;
-      };
-  }) (lib.attrNames self.df-hashes));
+              dwarf-fortress = dwarf-fortress;
+              twbt = twbt;
+              dfhack = dfhack;
+              dwarf-therapist = dwarf-therapist;
+            };
+      }
+    ) (lib.attrNames self.df-hashes)
+  );
 
   self = rec {
     df-hashes = builtins.fromJSON (builtins.readFile ./game.json);
@@ -101,18 +105,21 @@ let
     dwarf-fortress-full = callPackage ./lazy-pack.nix {
       inherit df-games versionToName latestVersion;
     };
-    
-    soundSense = callPackage ./soundsense.nix { };
+
+    soundSense = callPackage ./soundsense.nix {};
 
     legends-browser = callPackage ./legends-browser {};
 
-    themes = recurseIntoAttrs (callPackage ./themes {
-      stdenv = stdenvNoCC;
-    });
+    themes = recurseIntoAttrs (
+      callPackage ./themes {
+        stdenv = stdenvNoCC;
+      }
+    );
 
     # Theme aliases
     phoebus-theme = themes.phoebus;
     cla-theme = themes.cla;
   };
 
-in self // df-games
+in
+self // df-games

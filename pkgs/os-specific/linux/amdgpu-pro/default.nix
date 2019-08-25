@@ -1,8 +1,19 @@
-{ stdenv, fetchurl, elfutils
-, xorg, patchelf, openssl, libdrm, udev
-, libxcb, libxshmfence, epoxy, perl, zlib
+{ stdenv
+, fetchurl
+, elfutils
+, xorg
+, patchelf
+, openssl
+, libdrm
+, udev
+, libxcb
+, libxshmfence
+, epoxy
+, perl
+, zlib
 , ncurses
-, libsOnly ? false, kernel ? null
+, libsOnly ? false
+, kernel ? null
 }:
 
 assert (!libsOnly) -> kernel != null;
@@ -26,7 +37,8 @@ let
 
   ncurses5 = ncurses.override { abiVersion = "5"; };
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
 
   version = "17.40";
   pname = "amdgpu-pro";
@@ -38,7 +50,7 @@ in stdenv.mkDerivation rec {
 
   src = fetchurl {
     url =
-    "https://www2.ati.com/drivers/linux/ubuntu/amdgpu-pro-${build}.tar.xz";
+      "https://www2.ati.com/drivers/linux/ubuntu/amdgpu-pro-${build}.tar.xz";
     sha256 = "1c073lp9cq1rc2mddky2r0j2dv9dd167qj02visz37vwaxbm2r5h";
     curlOpts = "--referer http://support.amd.com/en-us/kb-articles/Pages/AMD-Radeon-GPU-PRO-Linux-Beta-Driver%e2%80%93Release-Notes.aspx";
   };
@@ -51,15 +63,20 @@ in stdenv.mkDerivation rec {
     cd $sourceRoot
     mkdir root
     cd root
-    for deb in ../*_all.deb ../*_i386.deb '' + optionalString stdenv.is64bit "../*_amd64.deb" + ''; do echo $deb; ar p $deb data.tar.xz | tar -xJ; done
+    for deb in ../*_all.deb ../*_i386.deb ''
+  + optionalString stdenv.is64bit "../*_amd64.deb"
+  + ''; do echo $deb; ar p $deb data.tar.xz | tar -xJ; done
     sourceRoot=.
-  '';
+  ''
+  ;
 
-  modulePatches = optionals (!libsOnly) ([
-    ./patches/0001-fix-warnings-for-Werror.patch
-    ./patches/0002-fix-sketchy-int-ptr-warning.patch
-    ./patches/0003-disable-firmware-copy.patch
-  ]);
+  modulePatches = optionals (!libsOnly) (
+    [
+      ./patches/0001-fix-warnings-for-Werror.patch
+      ./patches/0002-fix-sketchy-int-ptr-warning.patch
+      ./patches/0003-disable-firmware-copy.patch
+    ]
+  );
 
   patchPhase = optionalString (!libsOnly) ''
     pushd usr/src/amdgpu-${build}
@@ -100,8 +117,21 @@ in stdenv.mkDerivation rec {
     "-C ${kernel.dev}/lib/modules/${kernel.modDirVersion}/build modules";
 
   depLibPath = makeLibraryPath [
-    stdenv.cc.cc.lib xorg.libXext xorg.libX11 xorg.libXdamage xorg.libXfixes zlib
-    xorg.libXxf86vm libxcb libxshmfence epoxy openssl libdrm elfutils udev ncurses5
+    stdenv.cc.cc.lib
+    xorg.libXext
+    xorg.libX11
+    xorg.libXdamage
+    xorg.libXfixes
+    zlib
+    xorg.libXxf86vm
+    libxcb
+    libxshmfence
+    epoxy
+    openssl
+    libdrm
+    elfutils
+    udev
+    ncurses5
   ];
 
   installPhase = ''
@@ -112,38 +142,52 @@ in stdenv.mkDerivation rec {
 
     pushd usr
     cp -r lib/${libArch}/* $out/lib
-  '' + optionalString (!libsOnly) ''
-    cp -r src/amdgpu-${build}/firmware $out/lib/firmware
-  '' + ''
+  ''
+  + optionalString (!libsOnly) ''
+      cp -r src/amdgpu-${build}/firmware $out/lib/firmware
+    ''
+  + ''
     cp -r share $out/share
     popd
 
     pushd opt/amdgpu-pro
-  '' + optionalString (!libsOnly && stdenv.is64bit) ''
-    cp -r bin $out/bin
-  '' + ''
+  ''
+  + optionalString (!libsOnly && stdenv.is64bit) ''
+      cp -r bin $out/bin
+    ''
+  + ''
     cp -r include $out/include
     cp -r share/* $out/share
     cp -r lib/${libArch}/* $out/lib
-  '' + optionalString (!libsOnly) ''
-    mv lib/xorg $out/lib/xorg
-  '' + ''
+  ''
+  + optionalString (!libsOnly) ''
+      mv lib/xorg $out/lib/xorg
+    ''
+  + ''
     popd
 
-  '' + optionalString (!libsOnly)
-    (concatMapStrings (m:
-      "install -Dm444 usr/src/amdgpu-${build}/${m}.xz $out/lib/modules/${kernel.modDirVersion}/kernel/drivers/gpu/drm/${m}.xz\n") modules)
+  ''
+  + optionalString (!libsOnly)
+      (
+        concatMapStrings (
+          m:
+            "install -Dm444 usr/src/amdgpu-${build}/${m}.xz $out/lib/modules/${kernel.modDirVersion}/kernel/drivers/gpu/drm/${m}.xz\n"
+        ) modules
+      )
   + ''
     mv $out/etc/vulkan $out/share
     interpreter="$(cat $NIX_CC/nix-support/dynamic-linker)"
     libPath="$out/lib:$out/lib/gbm:$depLibPath"
-  '' + optionalString (!libsOnly && stdenv.is64bit) ''
-    for prog in clinfo modetest vbltest kms-universal-planes kms-steal-crtc modeprint amdgpu_test kmstest proptest; do
-      patchelf --interpreter "$interpreter" --set-rpath "$libPath" "$out/bin/$prog"
-    done
-  '' + ''
-    ln -s ${makeLibraryPath [ncurses5]}/libncursesw.so.5 $out/lib/libtinfo.so.5
-  '';
+  ''
+  + optionalString (!libsOnly && stdenv.is64bit) ''
+      for prog in clinfo modetest vbltest kms-universal-planes kms-steal-crtc modeprint amdgpu_test kmstest proptest; do
+        patchelf --interpreter "$interpreter" --set-rpath "$libPath" "$out/bin/$prog"
+      done
+    ''
+  + ''
+    ln -s ${makeLibraryPath [ ncurses5 ]}/libncursesw.so.5 $out/lib/libtinfo.so.5
+  ''
+  ;
 
   # we'll just set the full rpath on everything to avoid having to track down dlopen problems
   postFixup = assert (stringLength libReplaceDir == stringLength libCompatDir); ''
@@ -158,11 +202,12 @@ in stdenv.mkDerivation rec {
       perl -pi -e 's:/opt/amdgpu-pro/:/run/amdgpu-pro/:g' "$out/lib/$lib"
     done
     substituteInPlace "$out/share/vulkan/icd.d/amd_icd${bitness}.json" --replace "/opt/amdgpu-pro/lib/${libArch}" "$out/lib"
-  '' + optionalString (!libsOnly) ''
-    for lib in drivers/modesetting_drv.so libglamoregl.so; do
-      patchelf --add-needed $out/lib/libhack-xreallocarray.so $out/lib/xorg/modules/$lib
-    done
-  '';
+  ''
+    + optionalString (!libsOnly) ''
+        for lib in drivers/modesetting_drv.so libglamoregl.so; do
+          patchelf --add-needed $out/lib/libhack-xreallocarray.so $out/lib/xorg/modules/$lib
+        done
+      '';
 
   buildInputs = [
     patchelf
@@ -173,7 +218,7 @@ in stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "AMDGPU-PRO drivers";
-    homepage =  http://support.amd.com/en-us/kb-articles/Pages/AMDGPU-PRO-Beta-Driver-for-Vulkan-Release-Notes.aspx ;
+    homepage = http://support.amd.com/en-us/kb-articles/Pages/AMDGPU-PRO-Beta-Driver-for-Vulkan-Release-Notes.aspx;
     license = licenses.unfree;
     platforms = platforms.linux;
     maintainers = with maintainers; [ corngood ];

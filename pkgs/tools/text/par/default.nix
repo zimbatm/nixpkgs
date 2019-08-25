@@ -1,4 +1,4 @@
-{stdenv, fetchurl, fetchpatch}:
+{ stdenv, fetchurl, fetchpatch }:
 
 stdenv.mkDerivation {
   name = "par-1.52";
@@ -11,10 +11,12 @@ stdenv.mkDerivation {
   patches = [
     # A patch by Jérôme Pouiller that adds support for multibyte
     # charsets (like UTF-8), plus Debian packaging.
-    (fetchpatch {
-      url = "http://sysmic.org/dl/par/par-1.52-i18n.4.patch";
-      sha256 = "0alw44lf511jmr38jnh4j0mpp7vclgy0grkxzqf7q158vzdb6g23";
-    })
+    (
+      fetchpatch {
+        url = "http://sysmic.org/dl/par/par-1.52-i18n.4.patch";
+        sha256 = "0alw44lf511jmr38jnh4j0mpp7vclgy0grkxzqf7q158vzdb6g23";
+      }
+    )
   ];
 
   buildPhase = ''make -f protoMakefile'';

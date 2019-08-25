@@ -1,9 +1,40 @@
-{ stdenv, mkDerivation, fetchFromGitHub, pkgconfig, cmake, deepin, qttools, qtdeclarative,
- networkmanager, qtsvg, qtx11extras,  dtkcore, dtkwidget, geoip, gsettings-qt,
- dde-network-utils, networkmanager-qt, xorg, mtdev, fontconfig, freetype, dde-api,
- dde-daemon, qt5integration, deepin-desktop-base, deepin-desktop-schemas, dbus,
- systemd, dde-qt-dbus-factory, qtmultimedia, qtbase, glib, gnome3, which,
- substituteAll, tzdata, wrapGAppsHook
+{ stdenv
+, mkDerivation
+, fetchFromGitHub
+, pkgconfig
+, cmake
+, deepin
+, qttools
+, qtdeclarative
+, networkmanager
+, qtsvg
+, qtx11extras
+, dtkcore
+, dtkwidget
+, geoip
+, gsettings-qt
+, dde-network-utils
+, networkmanager-qt
+, xorg
+, mtdev
+, fontconfig
+, freetype
+, dde-api
+, dde-daemon
+, qt5integration
+, deepin-desktop-base
+, deepin-desktop-schemas
+, dbus
+, systemd
+, dde-qt-dbus-factory
+, qtmultimedia
+, qtbase
+, glib
+, gnome3
+, which
+, substituteAll
+, tzdata
+, wrapGAppsHook
 }:
 
 mkDerivation rec {
@@ -64,17 +95,19 @@ mkDerivation rec {
   ];
 
   patches = [
-    (substituteAll {
-      src = ./fix-paths.patch;
-      nmcli = "${networkmanager}/bin/nmcli";
-      which = "${which}/bin/which";
-      # not packaged
-      # dman = "${deepin-manual}/bin/dman";
-      inherit tzdata;
-      # exclusive to deepin linux?
-      # allows to synchronize configuration files to cloud networks
-      # deepin_sync = "${deepin-sync}";
-    })
+    (
+      substituteAll {
+        src = ./fix-paths.patch;
+        nmcli = "${networkmanager}/bin/nmcli";
+        which = "${which}/bin/which";
+        # not packaged
+        # dman = "${deepin-manual}/bin/dman";
+        inherit tzdata;
+        # exclusive to deepin linux?
+        # allows to synchronize configuration files to cloud networks
+        # deepin_sync = "${deepin-sync}";
+      }
+    )
   ];
 
   postPatch = ''

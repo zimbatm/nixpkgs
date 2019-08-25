@@ -1,4 +1,4 @@
-{callPackage, stdenv, fetchFromGitHub, ...}:
+{ callPackage, stdenv, fetchFromGitHub, ... }:
 
 stdenv.mkDerivation rec {
   pname = "gitstatus";

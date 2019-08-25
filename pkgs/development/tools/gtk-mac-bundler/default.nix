@@ -12,13 +12,13 @@ stdenv.mkDerivation rec {
   };
 
   installPhase = ''
-  	mkdir -p $out/bin
-    substitute gtk-mac-bundler.in $out/bin/gtk-mac-bundler \
-      --subst-var-by PATH $out/share
-    chmod a+x $out/bin/gtk-mac-bundler
+    	mkdir -p $out/bin
+      substitute gtk-mac-bundler.in $out/bin/gtk-mac-bundler \
+        --subst-var-by PATH $out/share
+      chmod a+x $out/bin/gtk-mac-bundler
 
-    mkdir -p $out/share
-    cp -r bundler $out/share
+      mkdir -p $out/share
+      cp -r bundler $out/share
   '';
 
   meta = with lib; {

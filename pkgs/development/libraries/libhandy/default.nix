@@ -1,14 +1,26 @@
-{ stdenv, fetchFromGitLab, meson, ninja, pkgconfig, gobject-introspection, vala
-, gtk-doc, docbook_xsl, docbook_xml_dtd_43
-, gtk3, gnome3
-, dbus, xvfb_run, libxml2
+{ stdenv
+, fetchFromGitLab
+, meson
+, ninja
+, pkgconfig
+, gobject-introspection
+, vala
+, gtk-doc
+, docbook_xsl
+, docbook_xml_dtd_43
+, gtk3
+, gnome3
+, dbus
+, xvfb_run
+, libxml2
 , hicolor-icon-theme
 }:
 
 let
   pname = "libhandy";
   version = "0.0.10";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "${pname}-${version}";
 
   outputs = [ "out" "dev" "devdoc" "glade" ];
@@ -23,8 +35,14 @@ in stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    meson ninja pkgconfig gobject-introspection vala
-    gtk-doc docbook_xsl docbook_xml_dtd_43
+    meson
+    ninja
+    pkgconfig
+    gobject-introspection
+    vala
+    gtk-doc
+    docbook_xsl
+    docbook_xml_dtd_43
   ];
   buildInputs = [ gnome3.gnome-desktop gtk3 gnome3.glade libxml2 ];
   checkInputs = [ dbus xvfb_run hicolor-icon-theme ];

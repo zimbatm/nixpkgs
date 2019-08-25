@@ -11,15 +11,15 @@ let
   sessionFile = "${homeDir}/aria2.session";
   downloadDir = "${homeDir}/Downloads";
 
-  rangesToStringList = map (x: builtins.toString x.from +"-"+ builtins.toString x.to);
+  rangesToStringList = map (x: builtins.toString x.from + "-" + builtins.toString x.to);
 
   settingsFile = pkgs.writeText "aria2.conf"
-  ''
-    dir=${cfg.downloadDir}
-    listen-port=${concatStringsSep "," (rangesToStringList cfg.listenPortRange)}
-    rpc-listen-port=${toString cfg.rpcListenPort}
-    rpc-secret=${cfg.rpcSecret}
-  '';
+    ''
+      dir=${cfg.downloadDir}
+      listen-port=${concatStringsSep "," (rangesToStringList cfg.listenPortRange)}
+      rpc-listen-port=${toString cfg.rpcListenPort}
+      rpc-secret=${cfg.rpcSecret}
+    '';
 
 in
 {

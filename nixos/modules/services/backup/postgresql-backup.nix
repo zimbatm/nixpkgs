@@ -33,7 +33,8 @@ let
       startAt = cfg.startAt;
     };
 
-in {
+in
+{
 
   options = {
     services.postgresqlBackup = {
@@ -96,29 +97,42 @@ in {
 
   config = mkMerge [
     {
-      assertions = [{
-        assertion = cfg.backupAll -> cfg.databases == [];
-        message = "config.services.postgresqlBackup.backupAll cannot be used together with config.services.postgresqlBackup.databases";
-      }];
-    }
-    (mkIf cfg.enable {
-      systemd.tmpfiles.rules = [
-        "d '${cfg.location}' 0700 postgres - - -"
+      assertions = [
+        {
+          assertion = cfg.backupAll -> cfg.databases == [];
+          message = "config.services.postgresqlBackup.backupAll cannot be used together with config.services.postgresqlBackup.databases";
+        }
       ];
-    })
-    (mkIf (cfg.enable && cfg.backupAll) {
-      systemd.services.postgresqlBackup =
-        postgresqlBackupService "all" "${config.services.postgresql.package}/bin/pg_dumpall";
-    })
-    (mkIf (cfg.enable && !cfg.backupAll) {
-      systemd.services = listToAttrs (map (db:
-        let
-          cmd = "${config.services.postgresql.package}/bin/pg_dump ${cfg.pgdumpOptions} ${db}";
-        in {
-          name = "postgresqlBackup-${db}";
-          value = postgresqlBackupService db cmd;
-        }) cfg.databases);
-    })
+    }
+    (
+      mkIf cfg.enable {
+        systemd.tmpfiles.rules = [
+          "d '${cfg.location}' 0700 postgres - - -"
+        ];
+      }
+    )
+    (
+      mkIf (cfg.enable && cfg.backupAll) {
+        systemd.services.postgresqlBackup =
+          postgresqlBackupService "all" "${config.services.postgresql.package}/bin/pg_dumpall";
+      }
+    )
+    (
+      mkIf (cfg.enable && !cfg.backupAll) {
+        systemd.services = listToAttrs (
+          map (
+            db:
+              let
+                cmd = "${config.services.postgresql.package}/bin/pg_dump ${cfg.pgdumpOptions} ${db}";
+              in
+                {
+                  name = "postgresqlBackup-${db}";
+                  value = postgresqlBackupService db cmd;
+                }
+          ) cfg.databases
+        );
+      }
+    )
   ];
 
 }

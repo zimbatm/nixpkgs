@@ -1,5 +1,8 @@
-{ stdenv, fetchFromGitHub, fetchpatch
-, SDL2, SDL2_image
+{ stdenv
+, fetchFromGitHub
+, fetchpatch
+, SDL2
+, SDL2_image
 , pkgconfig
 }:
 
@@ -16,15 +19,18 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [
-    SDL2 SDL2_image
+    SDL2
+    SDL2_image
   ];
   nativeBuildInputs = [ pkgconfig ];
 
   patches = [
-    (fetchpatch {
-      url = "https://github.com/kometbomb/klystrack/commit/bb537595d02140176831c4a1b8e9121978b32d22.patch";
-      sha256 = "06gl9q0jwg039kpxb13lg9x0k59s11968qn4lybgkadvzmhxkgmi";
-    })
+    (
+      fetchpatch {
+        url = "https://github.com/kometbomb/klystrack/commit/bb537595d02140176831c4a1b8e9121978b32d22.patch";
+        sha256 = "06gl9q0jwg039kpxb13lg9x0k59s11968qn4lybgkadvzmhxkgmi";
+      }
+    )
   ];
 
   buildFlags = [ "PREFIX=${placeholder "out"}" "CFG=release" ];

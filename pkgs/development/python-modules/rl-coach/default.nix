@@ -70,9 +70,9 @@ buildPythonPackage rec {
     escapedPaths = map lib.escapeShellArg fullTestPaths;
     pytestArgs = builtins.concatStringsSep " " escapedPaths;
   in
-  ''
-    pytest ${pytestArgs}
-  '';
+    ''
+      pytest ${pytestArgs}
+    '';
 
   postPatch = ''
     # pinned to 8.0.1 for unknown reason, at least basic functionallity seems to work without it

@@ -13,7 +13,7 @@ buildRustPackage rec {
   };
 
   # a nightly compiler is required unless we use this cheat code.
-  RUSTC_BOOTSTRAP=1;
+  RUSTC_BOOTSTRAP = 1;
 
   doCheck = false;
 

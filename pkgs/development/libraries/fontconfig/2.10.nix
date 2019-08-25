@@ -1,4 +1,8 @@
-{ stdenv, fetchurl, pkgconfig, freetype, expat
+{ stdenv
+, fetchurl
+, pkgconfig
+, freetype
+, expat
 }:
 
 stdenv.mkDerivation rec {
@@ -21,9 +25,11 @@ stdenv.mkDerivation rec {
     "--with-cache-dir=/var/cache/fontconfig"
     "--disable-docs"
     "--with-default-fonts="
-  ] ++ stdenv.lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
-    "--with-arch=${stdenv.hostPlatform.parsed.cpu.name}"
-  ];
+  ]
+  ++ stdenv.lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
+       "--with-arch=${stdenv.hostPlatform.parsed.cpu.name}"
+     ]
+  ;
 
   enableParallelBuilding = true;
 

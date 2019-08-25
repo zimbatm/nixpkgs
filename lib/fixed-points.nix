@@ -73,9 +73,11 @@ rec {
   # 'super' of the second
   composeExtensions =
     f: g: self: super:
-      let fApplied = f self super;
-          super' = super // fApplied;
-      in fApplied // g self super';
+      let
+        fApplied = f self super;
+        super' = super // fApplied;
+      in
+        fApplied // g self super';
 
   # Create an overridable, recursive attribute set. For example:
   #
@@ -98,7 +100,8 @@ rec {
   # Same as `makeExtensible` but the name of the extending attribute is
   # customized.
   makeExtensibleWithCustomName = extenderName: rattrs:
-    fix' rattrs // {
-      ${extenderName} = f: makeExtensibleWithCustomName extenderName (extends f rattrs);
-   };
+    fix' rattrs
+    // {
+         ${extenderName} = f: makeExtensibleWithCustomName extenderName (extends f rattrs);
+       };
 }

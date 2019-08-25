@@ -1,4 +1,4 @@
-{stdenv, fetchgit, cmake, libGLU_combined, xorg }:
+{ stdenv, fetchgit, cmake, libGLU_combined, xorg }:
 
 stdenv.mkDerivation rec {
   name = "${pname}-${version}";

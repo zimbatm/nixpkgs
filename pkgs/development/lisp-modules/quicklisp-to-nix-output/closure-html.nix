@@ -14,7 +14,7 @@ rec {
 
   packageName = "closure-html";
 
-  asdFilesToKeep = ["closure-html.asd"];
+  asdFilesToKeep = [ "closure-html.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM closure-html DESCRIPTION NIL SHA256

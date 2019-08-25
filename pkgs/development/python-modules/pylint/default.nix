@@ -1,5 +1,14 @@
-{ stdenv, lib, buildPythonPackage, fetchPypi, pythonOlder, astroid,
-  isort, mccabe, pytest, pytestrunner }:
+{ stdenv
+, lib
+, buildPythonPackage
+, fetchPypi
+, pythonOlder
+, astroid
+, isort
+, mccabe
+, pytest
+, pytestrunner
+}:
 
 buildPythonPackage rec {
   pname = "pylint";
@@ -25,14 +34,14 @@ buildPythonPackage rec {
 
   checkPhase = ''
     pytest pylint/test -k "not ${lib.concatStringsSep " and not " (
-      # Broken tests
-      [ "member_checks_py37" "iterable_context_py36" ] ++
-      # Disable broken darwin tests
-      lib.optionals stdenv.isDarwin [
-        "test_parallel_execution"
-        "test_py3k_jobs_option"
-      ]
-    )}"
+    # Broken tests
+    [ "member_checks_py37" "iterable_context_py36" ]
+    ++ # Disable broken darwin tests
+    lib.optionals stdenv.isDarwin [
+      "test_parallel_execution"
+      "test_py3k_jobs_option"
+    ]
+  )}"
   '';
 
   postInstall = ''

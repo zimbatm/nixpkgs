@@ -1,5 +1,10 @@
-{ stdenv, fetchFromGitHub, cmake
-, gfortran, openblas, eigen }:
+{ stdenv
+, fetchFromGitHub
+, cmake
+, gfortran
+, openblas
+, eigen
+}:
 
 with stdenv.lib;
 
@@ -32,7 +37,8 @@ stdenv.mkDerivation {
     export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:`pwd`/lib
   '' else ''
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:`pwd`/lib
-  '' + ''
+  ''
+    + ''
     # Prevent tests from using all cores
     export OMP_NUM_THREADS=2
   '';

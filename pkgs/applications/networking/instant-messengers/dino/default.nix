@@ -1,8 +1,23 @@
-{ stdenv, fetchFromGitHub
-, vala, cmake, ninja, wrapGAppsHook, pkgconfig, gettext
-, gobject-introspection, gnome3, glib, gdk-pixbuf, gtk3, glib-networking
-, xorg, libXdmcp, libxkbcommon
-, libnotify, libsoup, libgee
+{ stdenv
+, fetchFromGitHub
+, vala
+, cmake
+, ninja
+, wrapGAppsHook
+, pkgconfig
+, gettext
+, gobject-introspection
+, gnome3
+, glib
+, gdk-pixbuf
+, gtk3
+, glib-networking
+, xorg
+, libXdmcp
+, libxkbcommon
+, libnotify
+, libsoup
+, libgee
 , libgcrypt
 , epoxy
 , at-spi2-core
@@ -12,7 +27,7 @@
 , pcre
 , qrencode
 , icu
- }:
+}:
 
 stdenv.mkDerivation rec {
   name = "dino-unstable-2019-03-07";

@@ -1,4 +1,4 @@
-{ stdenv, libXScrnSaver, makeWrapper, fetchurl, wrapGAppsHook, gtk3, unzip, atomEnv, libuuid, at-spi2-atk, at-spi2-core}:
+{ stdenv, libXScrnSaver, makeWrapper, fetchurl, wrapGAppsHook, gtk3, unzip, atomEnv, libuuid, at-spi2-atk, at-spi2-core }:
 
 let
   version = "6.0.1";
@@ -83,4 +83,4 @@ let
   };
 in
 
-  stdenv.mkDerivation (if stdenv.isDarwin then darwin else linux)
+stdenv.mkDerivation (if stdenv.isDarwin then darwin else linux)

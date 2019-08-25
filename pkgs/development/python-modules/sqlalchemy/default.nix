@@ -20,19 +20,23 @@ buildPythonPackage rec {
   patches = [
     # fix for failing doc tests
     # https://bitbucket.org/zzzeek/sqlalchemy/issues/4370/sqlite-325x-docs-tutorialrst-doctests-fail
-    (fetchpatch {
-      name = "doc-test-fixes.patch";
-      url = https://bitbucket.org/zzzeek/sqlalchemy/commits/63279a69e2b9277df5e97ace161fa3a1bb4f29cd/raw;
-      sha256 = "1x25aj5hqmgjdak4hllya0rf0srr937k1hwaxb24i9ban607hjri";
-    })
+    (
+      fetchpatch {
+        name = "doc-test-fixes.patch";
+        url = https://bitbucket.org/zzzeek/sqlalchemy/commits/63279a69e2b9277df5e97ace161fa3a1bb4f29cd/raw;
+        sha256 = "1x25aj5hqmgjdak4hllya0rf0srr937k1hwaxb24i9ban607hjri";
+      }
+    )
   ];
 
   checkInputs = [
     pytest
     mock
-#     Disable pytest_xdist tests for now, because our version seems to be too new.
-#     pytest_xdist
-  ] ++ lib.optional (!isPy3k) pysqlite;
+    #     Disable pytest_xdist tests for now, because our version seems to be too new.
+    #     pytest_xdist
+  ]
+  ++ lib.optional (!isPy3k) pysqlite
+  ;
 
   checkPhase = ''
     py.test -k "not test_round_trip_direct_type_affinity"

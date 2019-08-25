@@ -1,9 +1,22 @@
-{ stdenv, fetchurl, fetchpatch, pkgconfig, bison, flex, intltool, gtk, libical, dbus-glib, tzdata
-, libnotify, popt, xfce }:
+{ stdenv
+, fetchurl
+, fetchpatch
+, pkgconfig
+, bison
+, flex
+, intltool
+, gtk
+, libical
+, dbus-glib
+, tzdata
+, libnotify
+, popt
+, xfce
+}:
 
 stdenv.mkDerivation rec {
   name = "${p_name}-${ver_maj}.${ver_min}";
-  p_name  = "orage";
+  p_name = "orage";
   ver_maj = "4.12";
   ver_min = "1";
 
@@ -14,11 +27,13 @@ stdenv.mkDerivation rec {
 
   patches = [
     # Fix build with libical 3.0
-    (fetchpatch {
-      name = "fix-libical3.patch";
-      url = https://git.archlinux.org/svntogit/packages.git/plain/trunk/libical3.patch?h=packages/orage&id=7b1b06c42dda034d538977b9f3550b28e370057f;
-      sha256 = "1l8s106mcidmbx2p8c2pi8v9ngbv2x3fsgv36j8qk8wyd4qd1jbf";
-    })
+    (
+      fetchpatch {
+        name = "fix-libical3.patch";
+        url = https://git.archlinux.org/svntogit/packages.git/plain/trunk/libical3.patch?h=packages/orage&id=7b1b06c42dda034d538977b9f3550b28e370057f;
+        sha256 = "1l8s106mcidmbx2p8c2pi8v9ngbv2x3fsgv36j8qk8wyd4qd1jbf";
+      }
+    )
   ];
 
   postPatch = ''
@@ -31,8 +46,15 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ pkgconfig intltool bison flex ];
 
-  buildInputs = [ gtk libical dbus-glib libnotify popt xfce.libxfce4util
-    xfce.xfce4-panel ];
+  buildInputs = [
+    gtk
+    libical
+    dbus-glib
+    libnotify
+    popt
+    xfce.libxfce4util
+    xfce.xfce4-panel
+  ];
 
   meta = {
     homepage = https://www.xfce.org/projects/;

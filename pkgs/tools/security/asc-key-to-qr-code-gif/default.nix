@@ -1,5 +1,9 @@
-{ stdenv, fetchFromGitHub, imagemagick, qrencode
-, testQR ? false, zbar ? null
+{ stdenv
+, fetchFromGitHub
+, imagemagick
+, qrencode
+, testQR ? false
+, zbar ? null
 }:
 
 assert testQR -> zbar != false;

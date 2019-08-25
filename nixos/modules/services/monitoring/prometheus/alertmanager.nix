@@ -13,20 +13,28 @@ let
 
   alertmanagerYml = let
     yml = if cfg.configText != null then
-        pkgs.writeText "alertmanager.yml" cfg.configText
-        else mkConfigFile;
-    in checkedConfig yml;
+      pkgs.writeText "alertmanager.yml" cfg.configText
+    else mkConfigFile;
+  in
+    checkedConfig yml;
 
-  cmdlineArgs = cfg.extraFlags ++ [
-    "--config.file ${alertmanagerYml}"
-    "--web.listen-address ${cfg.listenAddress}:${toString cfg.port}"
-    "--log.level ${cfg.logLevel}"
-    ] ++ (optional (cfg.webExternalUrl != null)
-      "--web.external-url ${cfg.webExternalUrl}"
-    ) ++ (optional (cfg.logFormat != null)
-      "--log.format ${cfg.logFormat}"
-  );
-in {
+  cmdlineArgs = cfg.extraFlags
+    ++ [
+         "--config.file ${alertmanagerYml}"
+         "--web.listen-address ${cfg.listenAddress}:${toString cfg.port}"
+         "--log.level ${cfg.logLevel}"
+       ]
+    ++ (
+         optional (cfg.webExternalUrl != null)
+           "--web.external-url ${cfg.webExternalUrl}"
+       )
+    ++ (
+         optional (cfg.logFormat != null)
+           "--log.format ${cfg.logFormat}"
+       )
+    ;
+in
+{
   options = {
     services.prometheus.alertmanager = {
       enable = mkEnableOption "Prometheus Alertmanager";
@@ -68,7 +76,7 @@ in {
       };
 
       logLevel = mkOption {
-        type = types.enum ["debug" "info" "warn" "error" "fatal"];
+        type = types.enum [ "debug" "info" "warn" "error" "fatal" ];
         default = "warn";
         description = ''
           Only log messages with the given severity or above.
@@ -122,29 +130,37 @@ in {
   };
 
   config = mkMerge [
-    (mkIf cfg.enable {
-      assertions = singleton {
-        assertion = cfg.configuration != null || cfg.configText != null;
-        message = "Can not enable alertmanager without a configuration. "
-         + "Set either the `configuration` or `configText` attribute.";
-      };
-    })
-    (mkIf cfg.enable {
-      networking.firewall.allowedTCPPorts = optional cfg.openFirewall cfg.port;
-
-      systemd.services.alertmanager = {
-        wantedBy = [ "multi-user.target" ];
-        after    = [ "network.target" ];
-        serviceConfig = {
-          Restart  = "always";
-          DynamicUser = true;
-          WorkingDirectory = "/tmp";
-          ExecStart = "${cfg.package}/bin/alertmanager" +
-            optionalString (length cmdlineArgs != 0) (" \\\n  " +
-              concatStringsSep " \\\n  " cmdlineArgs);
-          ExecReload = "${pkgs.coreutils}/bin/kill -HUP $MAINPID";
+    (
+      mkIf cfg.enable {
+        assertions = singleton {
+          assertion = cfg.configuration != null || cfg.configText != null;
+          message = "Can not enable alertmanager without a configuration. "
+            + "Set either the `configuration` or `configText` attribute."
+            ;
         };
-      };
-    })
+      }
+    )
+    (
+      mkIf cfg.enable {
+        networking.firewall.allowedTCPPorts = optional cfg.openFirewall cfg.port;
+
+        systemd.services.alertmanager = {
+          wantedBy = [ "multi-user.target" ];
+          after = [ "network.target" ];
+          serviceConfig = {
+            Restart = "always";
+            DynamicUser = true;
+            WorkingDirectory = "/tmp";
+            ExecStart = "${cfg.package}/bin/alertmanager"
+              + optionalString (length cmdlineArgs != 0) (
+                  " \\\n  "
+                  + concatStringsSep " \\\n  " cmdlineArgs
+                )
+              ;
+            ExecReload = "${pkgs.coreutils}/bin/kill -HUP $MAINPID";
+          };
+        };
+      }
+    )
   ];
 }

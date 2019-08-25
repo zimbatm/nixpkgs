@@ -1,4 +1,9 @@
-{ stdenv, buildPythonApplication, fetchFromGitHub, matplotlib, procps, pyqt5
+{ stdenv
+, buildPythonApplication
+, fetchFromGitHub
+, matplotlib
+, procps
+, pyqt5
 , sphinx
 }:
 

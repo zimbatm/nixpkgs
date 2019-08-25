@@ -1,6 +1,6 @@
 { stdenv, fetchgit, ocaml }:
 
-let 
+let
   version = "20170720";
 in
 

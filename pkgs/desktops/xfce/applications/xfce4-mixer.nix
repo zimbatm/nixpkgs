@@ -1,7 +1,19 @@
-{ stdenv, fetchurl, pkgconfig, intltool, makeWrapper
-, glib, gstreamer, gst-plugins-base, gtk
-, libxfce4util, libxfce4ui, xfce4-panel, xfconf, libunique ? null
-, pulseaudioSupport ? false, gst-plugins-good
+{ stdenv
+, fetchurl
+, pkgconfig
+, intltool
+, makeWrapper
+, glib
+, gstreamer
+, gst-plugins-base
+, gtk
+, libxfce4util
+, libxfce4ui
+, xfce4-panel
+, xfconf
+, libunique ? null
+, pulseaudioSupport ? false
+, gst-plugins-good
 }:
 
 let
@@ -18,7 +30,7 @@ let
 in
 
 stdenv.mkDerivation rec {
-  p_name  = "xfce4-mixer";
+  p_name = "xfce4-mixer";
   ver_maj = "4.10";
   ver_min = "0";
 
@@ -29,9 +41,21 @@ stdenv.mkDerivation rec {
   name = "${p_name}-${ver_maj}.${ver_min}";
 
   buildInputs =
-    [ pkgconfig intltool glib gstreamer gtk
-      libxfce4util libxfce4ui xfce4-panel xfconf libunique makeWrapper
-    ] ++ gst_plugins;
+    [
+      pkgconfig
+      intltool
+      glib
+      gstreamer
+      gtk
+      libxfce4util
+      libxfce4ui
+      xfce4-panel
+      xfconf
+      libunique
+      makeWrapper
+    ]
+    ++ gst_plugins
+  ;
 
   postInstall =
     ''

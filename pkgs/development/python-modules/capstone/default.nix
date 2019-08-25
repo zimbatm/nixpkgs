@@ -18,11 +18,13 @@ buildPythonPackage rec {
   };
 
   patches = [
-    (fetchpatch {
-      stripLen = 2;
-      url = "https://patch-diff.githubusercontent.com/raw/aquynh/capstone/pull/783/commits/23fe9f36622573c747e2bab6119ff245437bf276.patch";
-      sha256 = "0yizqrdlxqxn16873593kdx2vrr7gvvilhgcf9xy6hr0603d3m5r";
-    })
+    (
+      fetchpatch {
+        stripLen = 2;
+        url = "https://patch-diff.githubusercontent.com/raw/aquynh/capstone/pull/783/commits/23fe9f36622573c747e2bab6119ff245437bf276.patch";
+        sha256 = "0yizqrdlxqxn16873593kdx2vrr7gvvilhgcf9xy6hr0603d3m5r";
+      }
+    )
   ];
 
   postPatch = ''

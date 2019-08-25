@@ -8,7 +8,7 @@ stdenv.mkDerivation rec {
     sha256 = "1y6mwsvm75f5jzxsjjk0yhf8xnpmz6y8qvcxfandavx59lc3l57m";
   };
 
-  buildInputs = [ ];
+  buildInputs = [];
 
   meta = with stdenv.lib; {
     description = "An enhanced version of GNU dd";

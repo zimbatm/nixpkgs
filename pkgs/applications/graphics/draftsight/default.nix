@@ -1,10 +1,37 @@
-{ stdenv, fetchurl, dpkg, makeWrapper, gcc, libGLU_combined, xdg_utils,
-  dbus, alsaLib, cups, fontconfig, glib, icu, libpng12,
-  xkeyboard_config, zlib, libxslt, libxml2, sqlite, orc,
-  libX11, libXcursor, libXrandr, libxcb, libXi, libSM, libICE,
-  libXrender, libXcomposite }:
+{ stdenv
+, fetchurl
+, dpkg
+, makeWrapper
+, gcc
+, libGLU_combined
+, xdg_utils
+, dbus
+, alsaLib
+, cups
+, fontconfig
+, glib
+, icu
+, libpng12
+, xkeyboard_config
+, zlib
+, libxslt
+, libxml2
+, sqlite
+, orc
+, libX11
+, libXcursor
+, libXrandr
+, libxcb
+, libXi
+, libSM
+, libICE
+, libXrender
+, libXcomposite
+}:
 
-let version = "2018SP2"; in
+let
+  version = "2018SP2";
+in
 stdenv.mkDerivation {
   name = "draftsight-${version}";
 
@@ -70,11 +97,33 @@ stdenv.mkDerivation {
     sha256 = "05lrvml0zkzqg0sj6sj2h8h66hxdmsw5fg9fwz923r1y8j48qxdx";
   };
 
-  libPath = stdenv.lib.makeLibraryPath [ gcc.cc libGLU_combined xdg_utils
-    dbus alsaLib cups.lib fontconfig glib icu libpng12
-    xkeyboard_config zlib libxslt libxml2 sqlite orc libX11
-    libXcursor libXrandr libxcb libXi libSM libICE libXrender
-    libXcomposite ];
+  libPath = stdenv.lib.makeLibraryPath [
+    gcc.cc
+    libGLU_combined
+    xdg_utils
+    dbus
+    alsaLib
+    cups.lib
+    fontconfig
+    glib
+    icu
+    libpng12
+    xkeyboard_config
+    zlib
+    libxslt
+    libxml2
+    sqlite
+    orc
+    libX11
+    libXcursor
+    libXrandr
+    libxcb
+    libXi
+    libSM
+    libICE
+    libXrender
+    libXcomposite
+  ];
 
   meta = with stdenv.lib; {
     description = "2D design & drafting application, meant to be similar to AutoCAD";

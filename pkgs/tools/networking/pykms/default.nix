@@ -1,5 +1,11 @@
-{ stdenv, fetchFromGitHub, python3Packages, writeText, writeScript
-, coreutils, sqlite }:
+{ stdenv
+, fetchFromGitHub
+, python3Packages
+, writeText
+, writeScript
+, coreutils
+, sqlite
+}:
 
 with python3Packages;
 
@@ -17,26 +23,29 @@ let
     );
   '';
 
-  dbScript = writeScript "create_pykms_db.sh" (with stdenv.lib; ''
-    #!${stdenv.shell} -eu
+  dbScript = writeScript "create_pykms_db.sh" (
+    with stdenv.lib; ''
+      #!${stdenv.shell} -eu
 
-    db=$1
+      db=$1
 
-    ${getBin coreutils}/bin/install -d $(dirname $db)
+      ${getBin coreutils}/bin/install -d $(dirname $db)
 
-    if [ ! -e $db ] ; then
-      ${getBin sqlite}/bin/sqlite3 $db < ${dbSql}
-    fi
-  '');
+      if [ ! -e $db ] ; then
+        ${getBin sqlite}/bin/sqlite3 $db < ${dbSql}
+      fi
+    ''
+  );
 
-in buildPythonApplication rec {
+in
+buildPythonApplication rec {
   name = "pykms-${version}";
   version = "20180208";
 
   src = fetchFromGitHub {
-    owner  = "ThunderEX";
-    repo   = "py-kms";
-    rev    = "a1666a0ee5b404569a234afd05b164accc9a8845";
+    owner = "ThunderEX";
+    repo = "py-kms";
+    rev = "a1666a0ee5b404569a234afd05b164accc9a8845";
     sha256 = "17yj5n8byxp09l5zkap73hpphjy35px84wy68ps824w8l0l8kcd4";
   };
 
@@ -77,8 +86,8 @@ in buildPythonApplication rec {
 
   meta = with stdenv.lib; {
     description = "Windows KMS (Key Management Service) server written in Python";
-    homepage    = https://github.com/ThunderEX/py-kms;
-    license     = licenses.mit;
+    homepage = https://github.com/ThunderEX/py-kms;
+    license = licenses.mit;
     maintainers = with maintainers; [ peterhoeg ];
   };
 }

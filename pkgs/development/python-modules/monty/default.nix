@@ -24,7 +24,7 @@ buildPythonPackage rec {
     sha256 = "0vqaaz0dw0ypl6sfwbycpb0qs3ap04c4ghbggklxih66spdlggh6";
   };
 
-  checkInputs = [ lsof nose numpy msgpack-python coverage coveralls pymongo];
+  checkInputs = [ lsof nose numpy msgpack-python coverage coveralls pymongo ];
   propagatedBuildInputs = [ six ruamel_yaml ];
 
   preCheck = ''

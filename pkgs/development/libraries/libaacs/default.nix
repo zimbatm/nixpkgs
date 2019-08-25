@@ -9,7 +9,7 @@
 
 stdenv.mkDerivation rec {
   name = "libaacs-${version}";
-  version  = "0.9.0";
+  version = "0.9.0";
 
   src = fetchurl {
     url = "http://get.videolan.org/libaacs/${version}/${name}.tar.bz2";

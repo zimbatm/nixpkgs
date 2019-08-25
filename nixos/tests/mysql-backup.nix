@@ -1,27 +1,28 @@
 # Test whether mysqlBackup option works
-import ./make-test.nix ({ pkgs, ... } : {
-  name = "mysql-backup";
-  meta = with pkgs.stdenv.lib.maintainers; {
-    maintainers = [ rvl ];
-  };
+import ./make-test.nix (
+  { pkgs, ... }: {
+    name = "mysql-backup";
+    meta = with pkgs.stdenv.lib.maintainers; {
+      maintainers = [ rvl ];
+    };
 
-  nodes = {
-    master = { pkgs, ... }: {
-      services.mysql = {
-        enable = true;
-        initialDatabases = [ { name = "testdb"; schema = ./testdb.sql; } ];
-        package = pkgs.mysql;
-      };
+    nodes = {
+      master = { pkgs, ... }: {
+        services.mysql = {
+          enable = true;
+          initialDatabases = [ { name = "testdb"; schema = ./testdb.sql; } ];
+          package = pkgs.mysql;
+        };
 
-      services.mysqlBackup = {
-        enable = true;
-        databases = [ "doesnotexist" "testdb" ];
+        services.mysqlBackup = {
+          enable = true;
+          databases = [ "doesnotexist" "testdb" ];
+        };
       };
     };
-  };
 
-  testScript =
-    '' startAll;
+    testScript =
+      '' startAll;
 
        # Delete backup file that may be left over from a previous test run.
        # This is not needed on Hydra but useful for repeated local test runs.
@@ -47,4 +48,5 @@ import ./make-test.nix ({ pkgs, ... } : {
        # Check that a failed backup is logged
        $master->succeed("journalctl -u mysql-backup.service | grep 'fail.*doesnotexist' > /dev/null");
     '';
-})
+  }
+)

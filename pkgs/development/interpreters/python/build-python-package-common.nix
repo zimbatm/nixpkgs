@@ -4,28 +4,30 @@
 }:
 
 { buildInputs ? []
-# Additional flags to pass to "pip install".
+  # Additional flags to pass to "pip install".
 , installFlags ? []
-, ... } @ attrs:
+, ...
+} @ attrs:
 
-attrs // {
-  buildInputs = buildInputs ++ [ python.pythonForBuild.pkgs.bootstrapped-pip ];
+attrs
+// {
+     buildInputs = buildInputs ++ [ python.pythonForBuild.pkgs.bootstrapped-pip ];
 
-  configurePhase = attrs.configurePhase or ''
-    runHook preConfigure
-    runHook postConfigure
-  '';
+     configurePhase = attrs.configurePhase or ''
+       runHook preConfigure
+       runHook postConfigure
+     '';
 
-  installPhase = attrs.installPhase or ''
-    runHook preInstall
+     installPhase = attrs.installPhase or ''
+       runHook preInstall
 
-    mkdir -p "$out/${python.sitePackages}"
-    export PYTHONPATH="$out/${python.sitePackages}:$PYTHONPATH"
+       mkdir -p "$out/${python.sitePackages}"
+       export PYTHONPATH="$out/${python.sitePackages}:$PYTHONPATH"
 
-    pushd dist
-    ${python.pythonForBuild.pkgs.bootstrapped-pip}/bin/pip install *.whl --no-index --prefix=$out --no-cache ${toString installFlags} --build tmpbuild
-    popd
+       pushd dist
+       ${python.pythonForBuild.pkgs.bootstrapped-pip}/bin/pip install *.whl --no-index --prefix=$out --no-cache ${toString installFlags} --build tmpbuild
+       popd
 
-    runHook postInstall
-  '';
-}
+       runHook postInstall
+     '';
+   }

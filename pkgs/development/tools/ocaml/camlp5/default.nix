@@ -13,8 +13,9 @@ stdenv.mkDerivation {
 
   prefixKey = "-prefix ";
 
-  preConfigure = "configureFlagsArray=(--strict" +
-                  " --libdir $out/lib/ocaml/${ocaml.version}/site-lib)";
+  preConfigure = "configureFlagsArray=(--strict"
+    + " --libdir $out/lib/ocaml/${ocaml.version}/site-lib)"
+    ;
 
   buildFlags = "world.opt";
 
@@ -30,7 +31,8 @@ stdenv.mkDerivation {
     license = licenses.bsd3;
     platforms = ocaml.meta.platforms or [];
     maintainers = with maintainers; [
-      z77z vbgl
+      z77z
+      vbgl
     ];
   };
 }

@@ -16,19 +16,24 @@ let
 
   optionsDoc = buildPackages.nixosOptionsDoc {
     inherit options revision;
-    transformOptions = opt: opt // {
-      # Clean up declaration sites to not refer to the NixOS source tree.
-      declarations = map stripAnyPrefixes opt.declarations;
-    };
+    transformOptions = opt: opt
+      // {
+           # Clean up declaration sites to not refer to the NixOS source tree.
+           declarations = map stripAnyPrefixes opt.declarations;
+         };
   };
 
-  sources = lib.sourceFilesBySuffices ./. [".xml"];
+  sources = lib.sourceFilesBySuffices ./. [ ".xml" ];
 
   modulesDoc = builtins.toFile "modules.xml" ''
     <section xmlns:xi="http://www.w3.org/2001/XInclude" id="modules">
-    ${(lib.concatMapStrings (path: ''
-      <xi:include href="${path}" />
-    '') (lib.catAttrs "value" config.meta.doc))}
+    ${(
+    lib.concatMapStrings (
+      path: ''
+        <xi:include href="${path}" />
+      ''
+    ) (lib.catAttrs "value" config.meta.doc)
+  )}
     </section>
   '';
 
@@ -74,7 +79,8 @@ let
   ];
 
   manual-combined = runCommand "nixos-manual-combined"
-    { inherit sources;
+    {
+      inherit sources;
       nativeBuildInputs = [ buildPackages.libxml2.bin buildPackages.libxslt.bin ];
       meta.description = "The NixOS manual as plain docbook XML";
     }
@@ -129,7 +135,8 @@ let
     '';
 
   olinkDB = runCommand "manual-olinkdb"
-    { inherit sources;
+    {
+      inherit sources;
       nativeBuildInputs = [ buildPackages.libxml2.bin buildPackages.libxslt.bin ];
     }
     ''
@@ -158,17 +165,19 @@ let
       EOF
     '';
 
-in rec {
+in
+rec {
   inherit generatedSources;
 
   inherit (optionsDoc) optionsJSON optionsXML optionsDocBook;
 
   # Generate the NixOS manual.
   manualHTML = runCommand "nixos-manual-html"
-    { inherit sources;
+    {
+      inherit sources;
       nativeBuildInputs = [ buildPackages.libxml2.bin buildPackages.libxslt.bin ];
       meta.description = "The NixOS manual in HTML format";
-      allowedReferences = ["out"];
+      allowedReferences = [ "out" ];
     }
     ''
       # Generate the HTML manual.
@@ -204,7 +213,8 @@ in rec {
   manualHTMLIndex = "${manualHTML}/share/doc/nixos/index.html";
 
   manualEpub = runCommand "nixos-manual-epub"
-    { inherit sources;
+    {
+      inherit sources;
       buildInputs = [ libxml2.bin libxslt.bin zip ];
     }
     ''
@@ -234,9 +244,10 @@ in rec {
 
   # Generate the NixOS manpages.
   manpages = runCommand "nixos-manpages"
-    { inherit sources;
+    {
+      inherit sources;
       nativeBuildInputs = [ buildPackages.libxml2.bin buildPackages.libxslt.bin ];
-      allowedReferences = ["out"];
+      allowedReferences = [ "out" ];
     }
     ''
       # Generate manpages.

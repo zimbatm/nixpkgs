@@ -11,7 +11,8 @@
 , gobject-introspection
 , gsettings-desktop-schemas
 , pantheon
-, wrapGAppsHook }:
+, wrapGAppsHook
+}:
 
 stdenv.mkDerivation rec {
   name = "regextester-${version}";

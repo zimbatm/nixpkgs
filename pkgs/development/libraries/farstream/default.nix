@@ -1,11 +1,22 @@
-{ stdenv, fetchurl, libnice, pkgconfig, pythonPackages, gstreamer, gst-plugins-base
-, gst-python, gupnp-igd, gobject-introspection
-, gst-plugins-good, gst-plugins-bad, gst-libav
+{ stdenv
+, fetchurl
+, libnice
+, pkgconfig
+, pythonPackages
+, gstreamer
+, gst-plugins-base
+, gst-python
+, gupnp-igd
+, gobject-introspection
+, gst-plugins-good
+, gst-plugins-bad
+, gst-libav
 }:
 
 let
   inherit (pythonPackages) python pygobject2;
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "farstream-0.2.8";
 
   outputs = [ "out" "dev" ];
@@ -20,8 +31,12 @@ in stdenv.mkDerivation rec {
   nativeBuildInputs = [ pkgconfig gobject-introspection ];
 
   propagatedBuildInputs = [
-    gstreamer gst-plugins-base gst-python
-    gst-plugins-good gst-plugins-bad gst-libav
+    gstreamer
+    gst-plugins-base
+    gst-python
+    gst-plugins-good
+    gst-plugins-bad
+    gst-libav
   ];
 
   meta = with stdenv.lib; {

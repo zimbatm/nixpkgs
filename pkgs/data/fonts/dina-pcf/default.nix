@@ -1,4 +1,4 @@
-{stdenv, fetchurl, unzip, bdftopcf, mkfontdir, mkfontscale}:
+{ stdenv, fetchurl, unzip, bdftopcf, mkfontdir, mkfontscale }:
 
 stdenv.mkDerivation rec {
   version = "2.92";

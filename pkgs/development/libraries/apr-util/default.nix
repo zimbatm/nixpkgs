@@ -1,9 +1,18 @@
-{ stdenv, fetchurl, makeWrapper, apr, expat, gnused
-, sslSupport ? true, openssl
-, bdbSupport ? true, db
-, ldapSupport ? !stdenv.isCygwin, openldap
+{ stdenv
+, fetchurl
+, makeWrapper
+, apr
+, expat
+, gnused
+, sslSupport ? true
+, openssl
+, bdbSupport ? true
+, db
+, ldapSupport ? !stdenv.isCygwin
+, openldap
 , libiconv
-, cyrus_sasl, autoreconfHook
+, cyrus_sasl
+, autoreconfHook
 }:
 
 assert sslSupport -> openssl != null;
@@ -33,15 +42,22 @@ stdenv.mkDerivation rec {
     ++ optional bdbSupport "--with-berkeley-db=${db.dev}"
     ++ optional ldapSupport "--with-ldap=ldap"
     ++ optionals stdenv.isCygwin
-      [ "--without-pgsql" "--without-sqlite2" "--without-sqlite3"
-        "--without-freetds" "--without-berkeley-db" "--without-crypto" ]
+         [
+           "--without-pgsql"
+           "--without-sqlite2"
+           "--without-sqlite3"
+           "--without-freetds"
+           "--without-berkeley-db"
+           "--without-crypto"
+         ]
     ;
 
   propagatedBuildInputs = [ makeWrapper apr expat libiconv ]
     ++ optional sslSupport openssl
     ++ optional bdbSupport db
     ++ optional ldapSupport openldap
-    ++ optional stdenv.isFreeBSD cyrus_sasl;
+    ++ optional stdenv.isFreeBSD cyrus_sasl
+    ;
 
   postInstall = ''
     for f in $out/lib/*.la $out/lib/apr-util-1/*.la $dev/bin/apu-1-config; do

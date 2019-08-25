@@ -6,7 +6,8 @@ let
     gemdir = ./.;
     inherit ruby;
   };
-in buildGoPackage rec {
+in
+buildGoPackage rec {
   name = "ejson-${version}";
   version = "1.2.1";
   rev = "v${version}";

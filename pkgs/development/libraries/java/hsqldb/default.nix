@@ -1,4 +1,6 @@
-{ stdenv, fetchurl, unzip
+{ stdenv
+, fetchurl
+, unzip
 }:
 
 stdenv.mkDerivation {
@@ -10,7 +12,8 @@ stdenv.mkDerivation {
     sha256 = "1v5dslwsqb7csjmi5g78pghsay2pszidvlzhyi79y18mra5iv3g9";
   };
 
-  buildInputs = [ unzip
+  buildInputs = [
+    unzip
   ];
 
   meta = with stdenv.lib; {

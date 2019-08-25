@@ -13,13 +13,13 @@ let
     name = "mrrescue";
     exec = "${pname}";
     icon = "${icon}";
-    comment = "Arcade-style fire fighting game"; 
+    comment = "Arcade-style fire fighting game";
     desktopName = "Mr. Rescue";
     genericName = "mrrescue";
     categories = "Game;";
   };
 
-in 
+in
 
 stdenv.mkDerivation rec {
   name = "${pname}-${version}";
@@ -35,22 +35,22 @@ stdenv.mkDerivation rec {
   phases = "installPhase";
 
   installPhase =
-  ''
-    mkdir -p $out/bin
-    mkdir -p $out/share/games/lovegames
+    ''
+      mkdir -p $out/bin
+      mkdir -p $out/share/games/lovegames
 
-    cp -v $src $out/share/${pname}.love
+      cp -v $src $out/share/${pname}.love
 
-    makeWrapper ${love}/bin/love $out/bin/${pname} --add-flags $out/share/games/lovegames/${pname}.love
+      makeWrapper ${love}/bin/love $out/bin/${pname} --add-flags $out/share/games/lovegames/${pname}.love
 
-    chmod +x $out/bin/${pname}
-    mkdir -p $out/share/applications
-    ln -s ${desktopItem}/share/applications/* $out/share/applications/
-  '';
+      chmod +x $out/bin/${pname}
+      mkdir -p $out/share/applications
+      ln -s ${desktopItem}/share/applications/* $out/share/applications/
+    '';
 
   meta = with stdenv.lib; {
     description = "Arcade-style fire fighting game";
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
     platforms = platforms.linux;
     license = licenses.zlib;
     downloadPage = http://tangramgames.dk/games/mrrescue;

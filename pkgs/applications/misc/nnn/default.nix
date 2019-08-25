@@ -13,8 +13,8 @@ stdenv.mkDerivation rec {
     sha256 = "0hvb0q6jg2nmvb40q43jj7v45afkjgcq6q9ldmmrh5558d0n65cw";
   };
 
-  configFile = optionalString (conf!=null) (builtins.toFile "nnn.h" conf);
-  preBuild = optionalString (conf!=null) "cp ${configFile} nnn.h";
+  configFile = optionalString (conf != null) (builtins.toFile "nnn.h" conf);
+  preBuild = optionalString (conf != null) "cp ${configFile} nnn.h";
 
   nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ readline ncurses ];

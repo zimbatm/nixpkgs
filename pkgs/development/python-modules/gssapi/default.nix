@@ -38,10 +38,12 @@ buildPythonPackage rec {
     krb5Full
   ];
 
-  propagatedBuildInputs =  [
+  propagatedBuildInputs = [
     decorator
     six
-  ] ++ lib.optional isPy27 enum34;
+  ]
+  ++ lib.optional isPy27 enum34
+  ;
 
   buildInputs = lib.optionals stdenv.isDarwin [
     darwin.apple_sdk.frameworks.GSS

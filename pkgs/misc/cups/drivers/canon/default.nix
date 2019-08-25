@@ -1,9 +1,9 @@
-{stdenv, fetchurl, unzip, autoreconfHook, libtool, makeWrapper, cups, ghostscript, pkgsi686Linux }:
+{ stdenv, fetchurl, unzip, autoreconfHook, libtool, makeWrapper, cups, ghostscript, pkgsi686Linux }:
 
 let
 
-  i686_NIX_GCC = pkgsi686Linux.callPackage ({gcc}: gcc) {};
-  i686_libxml2 = pkgsi686Linux.callPackage ({libxml2}: libxml2) {};
+  i686_NIX_GCC = pkgsi686Linux.callPackage ({ gcc }: gcc) {};
+  i686_libxml2 = pkgsi686Linux.callPackage ({ libxml2 }: libxml2) {};
 
   src_canon = fetchurl {
     url = "https://files.canon-europe.com/files/soft45378/software/o147jen_linuxufrII_0290.zip";
@@ -209,7 +209,7 @@ stdenv.mkDerivation rec {
     makeWrapper "${ghostscript}/bin/gs" "$out/bin/gs" \
       --prefix LD_LIBRARY_PATH ":" "$out/lib" \
       --prefix PATH ":" "$out/bin"
-    '';
+  '';
 
   meta = {
     description = "CUPS Linux drivers for Canon printers";

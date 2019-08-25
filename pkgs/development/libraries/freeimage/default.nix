@@ -10,25 +10,32 @@ stdenv.mkDerivation {
 
   patches = let
     patchURL = https://anonscm.debian.org/cgit/debian-science/packages/freeimage.git/plain/debian/patches;
-  in [
-    (fetchurl {
-      url = patchURL + "/Fix-CVE-2015-0852.patch";
-      sha256 = "1vxdck4i5qi5j6i3cjja0gfy79mmbf0lq2qdrnqdsl4kclbvw2c8";
-    })
-    (fetchurl {
-      url = patchURL + "/Fix-CVE-2016-5684.patch";
-      sha256 = "14ffgqbnwg28r6sjvm3z89zbnnm9ghbc81hdhrzxlyk3vwvd6cw3";
-    })
-    (fetchurl {
-      url = https://raw.githubusercontent.com/buildroot/buildroot/2018.05/package/libfreeimage/0005-Manage-powf64-with-glibc.patch;
-      sha256 = "1lis479ad5cfkhqm044nk4x97wfwm3hry3bvij1w5xkndnlfppc2";
-    })
-  ];
+  in
+    [
+      (
+        fetchurl {
+          url = patchURL + "/Fix-CVE-2015-0852.patch";
+          sha256 = "1vxdck4i5qi5j6i3cjja0gfy79mmbf0lq2qdrnqdsl4kclbvw2c8";
+        }
+      )
+      (
+        fetchurl {
+          url = patchURL + "/Fix-CVE-2016-5684.patch";
+          sha256 = "14ffgqbnwg28r6sjvm3z89zbnnm9ghbc81hdhrzxlyk3vwvd6cw3";
+        }
+      )
+      (
+        fetchurl {
+          url = https://raw.githubusercontent.com/buildroot/buildroot/2018.05/package/libfreeimage/0005-Manage-powf64-with-glibc.patch;
+          sha256 = "1lis479ad5cfkhqm044nk4x97wfwm3hry3bvij1w5xkndnlfppc2";
+        }
+      )
+    ];
 
   buildInputs = [ unzip ] ++ stdenv.lib.optional stdenv.isDarwin darwin.cctools;
 
   prePatch = if stdenv.isDarwin
-             then ''
+  then ''
     sed -e 's/gcc-4.0/clang/g' \
         -e 's/g++-4.0/clang++/g' \
         -e 's/COMPILERFLAGS = -Os -fexceptions -fvisibility=hidden -DNO_LCMS/COMPILERFLAGS = -Os -fexceptions -fvisibility=hidden -DNO_LCMS -D__ANSI__/' \
@@ -45,7 +52,7 @@ stdenv.mkDerivation {
     # Fix LibJXR performance timers
     sed 's|^SRCS = \(.*\)$|SRCS = \1 Source/LibJXR/image/sys/perfTimerANSI.c|' -i ./Makefile.srcs
   ''
-             else ''
+  else ''
     sed -e s@/usr/@$out/@ \
         -e 's@-o root -g root@@' \
         -e 's@ldconfig@echo not running ldconfig@' \
@@ -67,7 +74,7 @@ stdenv.mkDerivation {
     description = "Open Source library for accessing popular graphics image file formats";
     homepage = http://freeimage.sourceforge.net/;
     license = "GPL";
-    maintainers = with stdenv.lib.maintainers; [viric];
+    maintainers = with stdenv.lib.maintainers; [ viric ];
     platforms = with stdenv.lib.platforms; unix;
   };
 }

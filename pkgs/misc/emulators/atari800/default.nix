@@ -1,5 +1,12 @@
-{ stdenv, fetchurl
-, unzip, zlib, SDL, readline, libGLU_combined, libX11 }:
+{ stdenv
+, fetchurl
+, unzip
+, zlib
+, SDL
+, readline
+, libGLU_combined
+, libX11
+}:
 
 with stdenv.lib;
 stdenv.mkDerivation rec{

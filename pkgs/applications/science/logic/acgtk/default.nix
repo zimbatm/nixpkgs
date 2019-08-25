@@ -9,9 +9,21 @@ stdenv.mkDerivation {
     sha256 = "14n003gxzw5w79hlpw1ja4nq97jqf9zqyg00ihvpxw4bv9jlm8jm";
   };
 
-  buildInputs = [ dune ] ++ (with ocamlPackages; [
-    ocaml findlib ansiterminal cairo2 fmt logs menhir mtime ocf
-  ]);
+  buildInputs = [ dune ]
+    ++ (
+         with ocamlPackages; [
+           ocaml
+           findlib
+           ansiterminal
+           cairo2
+           fmt
+           logs
+           menhir
+           mtime
+           ocf
+         ]
+       )
+    ;
 
   buildPhase = "dune build";
 

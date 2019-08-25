@@ -1,6 +1,22 @@
-{ stdenv, lib, fetchFromGitHub, pkgconfig, bazel, c-ares, backward-cpp
-, libevent, gtest, gperftools, http-parser, lightstep-tracer-cpp
-, nghttp2, protobuf, tclap, rapidjson, spdlog, boringssl, buildEnv
+{ stdenv
+, lib
+, fetchFromGitHub
+, pkgconfig
+, bazel
+, c-ares
+, backward-cpp
+, libevent
+, gtest
+, gperftools
+, http-parser
+, lightstep-tracer-cpp
+, nghttp2
+, protobuf
+, tclap
+, rapidjson
+, spdlog
+, boringssl
+, buildEnv
 }:
 
 let
@@ -126,27 +142,30 @@ let
 
   # Generate the BUILD file.
   buildFile =
-    let field = name: attrs:
-      if attrs ? "${name}" then "    ${name} = ${attrs.${name}},\n" else "";
+    let
+      field = name: attrs:
+        if attrs ? "${name}" then "    ${name} = ${attrs.${name}},\n" else "";
     in
-    ''
-    licenses(["notice"])  # Apache 2
+      ''
+        licenses(["notice"])  # Apache 2
 
-    package(default_visibility = ["//visibility:public"])
+        package(default_visibility = ["//visibility:public"])
 
-    '' +
-    lib.concatStringsSep "\n\n" (
-      lib.mapAttrsToList (name: value:
-          "cc_library(\n"
-        + "    name = \"${name}\",\n"
-        + field "srcs" value
-        + field "hdrs" value
-        + field "deps" value
-        + field "includes" value
-        + field "strip_include_prefix" value
-        + ")"
-      ) ccTargets
-    ) + ''
+      ''
+      + lib.concatStringsSep "\n\n" (
+          lib.mapAttrsToList (
+            name: value:
+              "cc_library(\n"
+              + "    name = \"${name}\",\n"
+              + field "srcs" value
+              + field "hdrs" value
+              + field "deps" value
+              + field "includes" value
+              + field "strip_include_prefix" value
+              + ")"
+          ) ccTargets
+        )
+      + ''
 
     filegroup(
         name = "protoc",
@@ -154,39 +173,40 @@ let
     )
     '';
 
-  workspaceFile = 
+  workspaceFile =
     ''
-    workspace(name = "nix")
+      workspace(name = "nix")
 
-    load("//bazel:repositories.bzl", "envoy_dependencies")
-    load("//bazel:cc_configure.bzl", "cc_configure")
+      load("//bazel:repositories.bzl", "envoy_dependencies")
+      load("//bazel:cc_configure.bzl", "cc_configure")
 
-    new_local_repository(
-        name = "nix_envoy_deps",
-        path = "${repoEnv}",
-        build_file = "nix_envoy_deps.BUILD"
-    )
+      new_local_repository(
+          name = "nix_envoy_deps",
+          path = "${repoEnv}",
+          build_file = "nix_envoy_deps.BUILD"
+      )
 
-    envoy_dependencies(
-        path = "@nix_envoy_deps//",
-        skip_protobuf_bzl = True,
-    )
+      envoy_dependencies(
+          path = "@nix_envoy_deps//",
+          skip_protobuf_bzl = True,
+      )
 
-    new_local_repository(
-        name = "protobuf_bzl",
-        path = "${protobuf_bzl}",
-        # We only want protobuf.bzl, so don't support building out of this repo.
-        build_file_content = "",
-    )
+      new_local_repository(
+          name = "protobuf_bzl",
+          path = "${protobuf_bzl}",
+          # We only want protobuf.bzl, so don't support building out of this repo.
+          build_file_content = "",
+      )
 
-    cc_configure()
+      cc_configure()
     '';
 
   # The tree we'll use for our new_local_repository in our generated WORKSPACE.
   repoEnv = buildEnv {
     name = "repo-env";
-    paths = lib.concatMap (p:
-      lib.unique [(lib.getBin p) (lib.getLib p) (lib.getDev p)]
+    paths = lib.concatMap (
+      p:
+        lib.unique [ (lib.getBin p) (lib.getLib p) (lib.getDev p) ]
     ) allDeps;
   };
 
@@ -226,7 +246,8 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    pkgconfig bazel
+    pkgconfig
+    bazel
   ];
 
   buildInputs = allDeps;

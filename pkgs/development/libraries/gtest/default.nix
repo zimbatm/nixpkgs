@@ -1,5 +1,9 @@
-{ stdenv, cmake, ninja, fetchFromGitHub
-, static ? false }:
+{ stdenv
+, cmake
+, ninja
+, fetchFromGitHub
+, static ? false
+}:
 
 stdenv.mkDerivation rec {
   name = "gtest-${version}";

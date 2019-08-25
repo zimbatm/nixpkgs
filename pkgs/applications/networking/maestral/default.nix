@@ -1,5 +1,9 @@
-{ lib, python3Packages, fetchFromGitHub
-, withGui ? false, wrapQtAppsHook ? null }:
+{ lib
+, python3Packages
+, fetchFromGitHub
+, withGui ? false
+, wrapQtAppsHook ? null
+}:
 
 python3Packages.buildPythonApplication rec {
   pname = "maestral${lib.optionalString withGui "-gui"}";
@@ -14,9 +18,19 @@ python3Packages.buildPythonApplication rec {
 
   disabled = python3Packages.pythonOlder "3.6";
 
-  propagatedBuildInputs = (with python3Packages; [
-    blinker click dropbox keyring keyrings-alt requests u-msgpack-python watchdog
-  ] ++ lib.optional withGui pyqt5);
+  propagatedBuildInputs = (
+    with python3Packages; [
+      blinker
+      click
+      dropbox
+      keyring
+      keyrings-alt
+      requests
+      u-msgpack-python
+      watchdog
+    ]
+    ++ lib.optional withGui pyqt5
+  );
 
   nativeBuildInputs = lib.optional withGui wrapQtAppsHook;
 

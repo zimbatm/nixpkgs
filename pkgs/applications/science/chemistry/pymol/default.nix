@@ -1,6 +1,16 @@
-{ stdenv, fetchurl, makeDesktopItem
-, python3, python3Packages
-, glew, freeglut, libpng, libxml2, tk, freetype, msgpack }:
+{ stdenv
+, fetchurl
+, makeDesktopItem
+, python3
+, python3Packages
+, glew
+, freeglut
+, libpng
+, libxml2
+, tk
+, freetype
+, msgpack
+}:
 
 
 with stdenv.lib;

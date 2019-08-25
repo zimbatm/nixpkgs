@@ -15,7 +15,8 @@ let
     };
   };
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "lemon-${version}";
   version = "1.69";
 

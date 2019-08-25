@@ -12,10 +12,12 @@ buildPythonPackage rec {
   };
 
   patches = [
-    (substituteAll {
-      src = ./hardcode-gnupg-path.patch;
-      inherit gnupg;
-    })
+    (
+      substituteAll {
+        src = ./hardcode-gnupg-path.patch;
+        inherit gnupg;
+      }
+    )
   ];
 
   propagatedBuildInputs = [ aiodns pyasn1 pyasn1-modules aiohttp ];

@@ -1,17 +1,22 @@
-{ stdenv, fetchurl, pkgconfig, gfortran, texinfo
+{ stdenv
+, fetchurl
+, pkgconfig
+, gfortran
+, texinfo
 
-# Select SIMD alignment width (in bytes) for vectorization.
+  # Select SIMD alignment width (in bytes) for vectorization.
 , simdWidth ? 1
 
-# Pad arrays to simdWidth by default?
-# Note: Only useful if simdWidth > 1
+  # Pad arrays to simdWidth by default?
+  # Note: Only useful if simdWidth > 1
 , enablePadding ? false
 
-# Activate serialization through Boost.Serialize?
-, enableSerialization ? true, boost ? null
+  # Activate serialization through Boost.Serialize?
+, enableSerialization ? true
+, boost ? null
 
-# Activate test-suite?
-# WARNING: Some of the tests require up to 1700MB of memory to compile.
+  # Activate test-suite?
+  # WARNING: Some of the tests require up to 1700MB of memory to compile.
 , doCheck ? true
 
 }:
@@ -33,10 +38,12 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ gfortran texinfo ]
-    ++ optional (boost != null) boost;
+    ++ optional (boost != null) boost
+    ;
 
   configureFlags =
-    [ "--enable-shared"
+    [
+      "--enable-shared"
       "--disable-static"
       "--enable-fortran"
       "--enable-optimize"
@@ -49,10 +56,12 @@ stdenv.mkDerivation rec {
     ]
     ++ optional enablePadding "--enable-array-length-padding"
     ++ optional enableSerialization "--enable-serialization"
-    ++ optionals (boost != null) [ "--with-boost=${boost.dev}"
-                                   "--with-boost-libdir=${boost.out}/lib" ]
+    ++ optionals (boost != null) [
+         "--with-boost=${boost.dev}"
+         "--with-boost-libdir=${boost.out}/lib"
+       ]
     ++ optional stdenv.is64bit "--enable-64bit"
-    ;
+  ;
 
   enableParallelBuilding = true;
 

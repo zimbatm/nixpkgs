@@ -5,7 +5,8 @@ with lib;
 let
   cfg = config.hardware.ksm;
 
-in {
+in
+{
   options.hardware.ksm = {
     enable = mkEnableOption "Kernel Same-Page Merging";
     sleep = mkOption {

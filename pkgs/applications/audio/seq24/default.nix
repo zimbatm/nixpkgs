@@ -1,6 +1,6 @@
 { stdenv, fetchurl, alsaLib, gtkmm2, libjack2, pkgconfig }:
 
-stdenv.mkDerivation  rec {
+stdenv.mkDerivation rec {
   name = "seq24-${version}";
   version = "0.9.3";
 

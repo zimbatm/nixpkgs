@@ -86,7 +86,8 @@ in
   config = mkIf cfg.enable {
 
     users.users = singleton
-      { name = "polipo";
+      {
+        name = "polipo";
         uid = config.ids.uids.polipo;
         description = "Polipo caching proxy user";
         home = "/var/cache/polipo";
@@ -94,7 +95,8 @@ in
       };
 
     users.groups = singleton
-      { name = "polipo";
+      {
+        name = "polipo";
         gid = config.ids.gids.polipo;
         members = [ "polipo" ];
       };
@@ -102,9 +104,9 @@ in
     systemd.services.polipo = {
       description = "caching web proxy";
       after = [ "network.target" "nss-lookup.target" ];
-      wantedBy = [ "multi-user.target"];
+      wantedBy = [ "multi-user.target" ];
       serviceConfig = {
-        ExecStart  = "${pkgs.polipo}/bin/polipo -c ${polipoConfig}";
+        ExecStart = "${pkgs.polipo}/bin/polipo -c ${polipoConfig}";
         User = "polipo";
       };
     };

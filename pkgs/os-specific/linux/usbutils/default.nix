@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, substituteAll, autoreconfHook, pkgconfig, libusb1, hwdata , python3 }:
+{ stdenv, fetchurl, substituteAll, autoreconfHook, pkgconfig, libusb1, hwdata, python3 }:
 
 stdenv.mkDerivation rec {
   name = "usbutils-012";
@@ -9,10 +9,12 @@ stdenv.mkDerivation rec {
   };
 
   patches = [
-    (substituteAll {
-      src = ./fix-paths.patch;
-      inherit hwdata;
-    })
+    (
+      substituteAll {
+        src = ./fix-paths.patch;
+        inherit hwdata;
+      }
+    )
   ];
 
   nativeBuildInputs = [ autoreconfHook pkgconfig ];

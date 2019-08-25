@@ -1,5 +1,11 @@
-{ stdenv, lib, edk2, utillinux, nasm, iasl
-, csmSupport ? false, seabios ? null
+{ stdenv
+, lib
+, edk2
+, utillinux
+, nasm
+, iasl
+, csmSupport ? false
+, seabios ? null
 , secureBoot ? false
 }:
 
@@ -30,7 +36,8 @@ edk2.mkDerivation projectDscPath {
 
   buildFlags =
     lib.optional secureBoot "-DSECURE_BOOT_ENABLE=TRUE"
-    ++ lib.optionals csmSupport [ "-D CSM_ENABLE" "-D FD_SIZE_2MB" ];
+    ++ lib.optionals csmSupport [ "-D CSM_ENABLE" "-D FD_SIZE_2MB" ]
+    ;
 
   postPatch = lib.optionalString csmSupport ''
     cp ${seabios}/Csm16.bin OvmfPkg/Csm/Csm16/Csm16.bin
@@ -57,6 +64,6 @@ edk2.mkDerivation projectDscPath {
     description = "Sample UEFI firmware for QEMU and KVM";
     homepage = https://github.com/tianocore/tianocore.github.io/wiki/OVMF;
     license = stdenv.lib.licenses.bsd2;
-    platforms = ["x86_64-linux" "i686-linux" "aarch64-linux"];
+    platforms = [ "x86_64-linux" "i686-linux" "aarch64-linux" ];
   };
 }

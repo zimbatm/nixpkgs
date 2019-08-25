@@ -7,16 +7,16 @@ let
   cfg = config.services.freeradius;
 
   freeradiusService = cfg:
-  {
-    description = "FreeRadius server";
-    wantedBy = ["multi-user.target"];
-    after = ["network-online.target"];
-    wants = ["network-online.target"];
-    preStart = ''
-      ${pkgs.freeradius}/bin/radiusd -C -d ${cfg.configDir} -l stdout
-    '';
+    {
+      description = "FreeRadius server";
+      wantedBy = [ "multi-user.target" ];
+      after = [ "network-online.target" ];
+      wants = [ "network-online.target" ];
+      preStart = ''
+        ${pkgs.freeradius}/bin/radiusd -C -d ${cfg.configDir} -l stdout
+      '';
 
-    serviceConfig = {
+      serviceConfig = {
         ExecStart = "${pkgs.freeradius}/bin/radiusd -f -d ${cfg.configDir} -l stdout -xx";
         ExecReload = [
           "${pkgs.freeradius}/bin/radiusd -C -d ${cfg.configDir} -l stdout"
@@ -27,8 +27,8 @@ let
         ProtectHome = "on";
         Restart = "on-failure";
         RestartSec = 2;
+      };
     };
-  };
 
   freeradiusConfig = {
     enable = mkEnableOption "the freeradius server";

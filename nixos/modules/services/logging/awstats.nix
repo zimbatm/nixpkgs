@@ -67,23 +67,25 @@ in
     */
     environment.etc."awstats/awstats.conf".source = pkgs.runCommand "awstats.conf"
       { preferLocalBuild = true; }
-      ( let
+      (
+        let
           logFormat =
             if httpd.logFormat == "combined" then "1" else
-            if httpd.logFormat == "common" then "4" else
-            throw "awstats service doesn't support Apache log format `${httpd.logFormat}`";
+              if httpd.logFormat == "common" then "4" else
+                throw "awstats service doesn't support Apache log format `${httpd.logFormat}`";
         in
-        ''
-          sed \
-            -e 's|^\(DirData\)=.*$|\1="${cfg.vardir}"|' \
-            -e 's|^\(DirIcons\)=.*$|\1="icons"|' \
-            -e 's|^\(CreateDirDataIfNotExists\)=.*$|\1=1|' \
-            -e 's|^\(SiteDomain\)=.*$|\1="${httpd.hostName}"|' \
-            -e 's|^\(LogFile\)=.*$|\1="${httpd.logDir}/access_log"|' \
-            -e 's|^\(LogFormat\)=.*$|\1=${logFormat}|' \
-            < '${package.out}/wwwroot/cgi-bin/awstats.model.conf' > "$out"
-          echo '${cfg.extraConfig}' >> "$out"
-        '');
+          ''
+            sed \
+              -e 's|^\(DirData\)=.*$|\1="${cfg.vardir}"|' \
+              -e 's|^\(DirIcons\)=.*$|\1="icons"|' \
+              -e 's|^\(CreateDirDataIfNotExists\)=.*$|\1=1|' \
+              -e 's|^\(SiteDomain\)=.*$|\1="${httpd.hostName}"|' \
+              -e 's|^\(LogFile\)=.*$|\1="${httpd.logDir}/access_log"|' \
+              -e 's|^\(LogFormat\)=.*$|\1=${logFormat}|' \
+              < '${package.out}/wwwroot/cgi-bin/awstats.model.conf' > "$out"
+            echo '${cfg.extraConfig}' >> "$out"
+          ''
+      );
 
     systemd.tmpfiles.rules = optionals cfg.service.enable [
       "d '${cfg.vardir}' - ${httpd.user} ${httpd.group} - -"
@@ -114,4 +116,3 @@ in
   };
 
 }
-

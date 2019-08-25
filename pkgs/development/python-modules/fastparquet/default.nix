@@ -1,5 +1,16 @@
-{ lib, buildPythonPackage, fetchPypi, fetchpatch, numba, numpy, pandas,
-pytestrunner, thrift, pytest, python-snappy, lz4 }:
+{ lib
+, buildPythonPackage
+, fetchPypi
+, fetchpatch
+, numba
+, numpy
+, pandas
+, pytestrunner
+, thrift
+, pytest
+, python-snappy
+, lz4
+}:
 
 buildPythonPackage rec {
   pname = "fastparquet";

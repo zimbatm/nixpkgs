@@ -1,7 +1,28 @@
-{ mkDerivation, lib, fetchFromGitHub, fetchsvn, fetchpatch
-, pkgconfig, pythonPackages, cmake, wrapGAppsHook, wrapQtAppsHook, gcc9
-, qtbase, qtimageformats, gtk3, libappindicator-gtk3, libnotify, xdg_utils
-, dee, ffmpeg, openalSoft, minizip, libopus, alsaLib, libpulseaudio, range-v3
+{ mkDerivation
+, lib
+, fetchFromGitHub
+, fetchsvn
+, fetchpatch
+, pkgconfig
+, pythonPackages
+, cmake
+, wrapGAppsHook
+, wrapQtAppsHook
+, gcc9
+, qtbase
+, qtimageformats
+, gtk3
+, libappindicator-gtk3
+, libnotify
+, xdg_utils
+, dee
+, ffmpeg
+, openalSoft
+, minizip
+, libopus
+, alsaLib
+, libpulseaudio
+, range-v3
 }:
 
 with lib;
@@ -56,8 +77,18 @@ mkDerivation rec {
   nativeBuildInputs = [ pkgconfig pythonPackages.gyp cmake wrapGAppsHook wrapQtAppsHook gcc9 ];
 
   buildInputs = [
-    qtbase qtimageformats gtk3 libappindicator-gtk3
-    dee ffmpeg openalSoft minizip libopus alsaLib libpulseaudio range-v3
+    qtbase
+    qtimageformats
+    gtk3
+    libappindicator-gtk3
+    dee
+    ffmpeg
+    openalSoft
+    minizip
+    libopus
+    alsaLib
+    libpulseaudio
+    range-v3
   ];
 
   enableParallelBuilding = true;
@@ -75,14 +106,18 @@ mkDerivation rec {
     "-I${minizip}/include/minizip"
     # See Telegram/gyp/qt.gypi
     "-I${getDev qtbase}/mkspecs/linux-g++"
-  ] ++ concatMap (x: [
-    "-I${getDev qtbase}/include/${x}"
-    "-I${getDev qtbase}/include/${x}/${qtbase.version}"
-    "-I${getDev qtbase}/include/${x}/${qtbase.version}/${x}"
-    "-I${getDev libopus}/include/opus"
-    "-I${getDev alsaLib}/include/alsa"
-    "-I${getDev libpulseaudio}/include/pulse"
-    ]) [ "QtCore" "QtGui" "QtDBus" ];
+  ]
+  ++ concatMap (
+       x: [
+         "-I${getDev qtbase}/include/${x}"
+         "-I${getDev qtbase}/include/${x}/${qtbase.version}"
+         "-I${getDev qtbase}/include/${x}/${qtbase.version}/${x}"
+         "-I${getDev libopus}/include/opus"
+         "-I${getDev alsaLib}/include/alsa"
+         "-I${getDev libpulseaudio}/include/pulse"
+       ]
+     ) [ "QtCore" "QtGui" "QtDBus" ]
+  ;
   CPPFLAGS = NIX_CFLAGS_COMPILE;
 
   preConfigure = ''

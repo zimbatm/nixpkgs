@@ -5,9 +5,9 @@ import ./make-test.nix {
     master =
       { ... }:
 
-      {
-        services.neo4j.enable = true;
-      };
+        {
+          services.neo4j.enable = true;
+        };
   };
 
   testScript = ''

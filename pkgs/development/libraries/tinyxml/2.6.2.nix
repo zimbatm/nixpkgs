@@ -3,7 +3,8 @@
 let
   version = "2.6.2";
   SHLIB_EXT = stdenv.hostPlatform.extensions.sharedLibrary;
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "tinyxml-${version}";
 
   src = fetchurl {
@@ -66,9 +67,11 @@ in stdenv.mkDerivation {
     cp -v tinyxml.pc $out/lib/pkgconfig/
 
     cp -v docs/* $out/share/doc/tinyxml/
-  '' + stdenv.lib.optionalString stdenv.isDarwin ''
-    install_name_tool -id $out/lib/libtinyxml.dylib $out/lib/libtinyxml.dylib
-  '';
+  ''
+  + stdenv.lib.optionalString stdenv.isDarwin ''
+      install_name_tool -id $out/lib/libtinyxml.dylib $out/lib/libtinyxml.dylib
+    ''
+  ;
 
   meta = {
     description = "Simple, small, C++ XML parser that can be easily integrating into other programs";

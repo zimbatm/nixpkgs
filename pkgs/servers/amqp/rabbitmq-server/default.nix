@@ -1,6 +1,21 @@
-{ stdenv, fetchurl, erlang, elixir, python, libxml2, libxslt, xmlto
-, docbook_xml_dtd_45, docbook_xsl, zip, unzip, rsync, getconf, socat
-, AppKit, Carbon, Cocoa
+{ stdenv
+, fetchurl
+, erlang
+, elixir
+, python
+, libxml2
+, libxslt
+, xmlto
+, docbook_xml_dtd_45
+, docbook_xsl
+, zip
+, unzip
+, rsync
+, getconf
+, socat
+, AppKit
+, Carbon
+, Cocoa
 }:
 
 stdenv.mkDerivation rec {
@@ -16,14 +31,15 @@ stdenv.mkDerivation rec {
 
   buildInputs =
     [ erlang elixir python libxml2 libxslt xmlto docbook_xml_dtd_45 docbook_xsl zip unzip rsync ]
-    ++ stdenv.lib.optionals stdenv.isDarwin [ AppKit Carbon Cocoa ];
+    ++ stdenv.lib.optionals stdenv.isDarwin [ AppKit Carbon Cocoa ]
+    ;
 
   outputs = [ "out" "man" "doc" ];
 
   installFlags = "PREFIX=$(out) RMQ_ERLAPP_DIR=$(out)";
   installTargets = "install install-man";
 
-  runtimePath = stdenv.lib.makeBinPath [getconf erlang socat];
+  runtimePath = stdenv.lib.makeBinPath [ getconf erlang socat ];
   postInstall = ''
     echo 'PATH=${runtimePath}:''${PATH:+:}$PATH' >> $out/sbin/rabbitmq-env
 

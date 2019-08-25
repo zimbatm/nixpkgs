@@ -20,18 +20,22 @@ stdenv.mkDerivation rec {
 
     # I think this is a typo and should be CXX? Either way let's kill it
     sed -i '/XX=\/usr/d' makefile.macosx_llvm_64bits
-  '' + stdenv.lib.optionalString (stdenv.buildPlatform != stdenv.hostPlatform) ''
-    substituteInPlace makefile.machine \
-      --replace 'CC=gcc'  'CC=${stdenv.cc.targetPrefix}gcc' \
-      --replace 'CXX=g++' 'CXX=${stdenv.cc.targetPrefix}g++'
-  '';
+  ''
+  + stdenv.lib.optionalString (stdenv.buildPlatform != stdenv.hostPlatform) ''
+      substituteInPlace makefile.machine \
+        --replace 'CC=gcc'  'CC=${stdenv.cc.targetPrefix}gcc' \
+        --replace 'CXX=g++' 'CXX=${stdenv.cc.targetPrefix}g++'
+    ''
+  ;
 
   preConfigure = ''
     makeFlagsArray=(DEST_HOME=$out)
     buildFlags=all3
-  '' + stdenv.lib.optionalString stdenv.isDarwin ''
-    cp makefile.macosx_llvm_64bits makefile.machine
-  '';
+  ''
+  + stdenv.lib.optionalString stdenv.isDarwin ''
+      cp makefile.macosx_llvm_64bits makefile.machine
+    ''
+  ;
 
   enableParallelBuilding = true;
 

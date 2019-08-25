@@ -1,5 +1,11 @@
-{ stdenv, buildPythonPackage, fetchPypi
-, google_api_core, grpcio, pytest, mock }:
+{ stdenv
+, buildPythonPackage
+, fetchPypi
+, google_api_core
+, grpcio
+, pytest
+, mock
+}:
 
 buildPythonPackage rec {
   pname = "google-cloud-core";

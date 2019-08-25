@@ -1,5 +1,17 @@
-{ stdenv, fetchFromGitHub, fetchurl, cgal, boost, gmp, mpfr, flex, bison, dxflib, readline
-, qtbase, qmake, libGLU
+{ stdenv
+, fetchFromGitHub
+, fetchurl
+, cgal
+, boost
+, gmp
+, mpfr
+, flex
+, bison
+, dxflib
+, readline
+, qtbase
+, qmake
+, libGLU
 }:
 
 stdenv.mkDerivation rec {
@@ -14,11 +26,13 @@ stdenv.mkDerivation rec {
   };
 
   patches = [
-    (fetchurl {
-      url = "https://github.com/GilesBathgate/RapCAD/commit/278a8d6c7b8fe08f867002528bbab4a6319a7bb6.patch";
-      sha256 = "1vvkyf0wg79zdzs5zlggfrr1lrp1x75dglzl0mspnycwldsdwznj";
-      name = "disable-QVector-qHash.patch";
-    })
+    (
+      fetchurl {
+        url = "https://github.com/GilesBathgate/RapCAD/commit/278a8d6c7b8fe08f867002528bbab4a6319a7bb6.patch";
+        sha256 = "1vvkyf0wg79zdzs5zlggfrr1lrp1x75dglzl0mspnycwldsdwznj";
+        name = "disable-QVector-qHash.patch";
+      }
+    )
   ];
 
   nativeBuildInputs = [ qmake ];

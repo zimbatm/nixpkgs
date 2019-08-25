@@ -1,6 +1,11 @@
-{ stdenv, fetchFromGitHub, fetchpatch
-, pkgconfig, wrapQtAppsHook
-, poppler, qt5, gnuplot
+{ stdenv
+, fetchFromGitHub
+, fetchpatch
+, pkgconfig
+, wrapQtAppsHook
+, poppler
+, qt5
+, gnuplot
 }:
 
 # This package only builds ktikz without KDE integration because KDE4 is
@@ -30,10 +35,12 @@ stdenv.mkDerivation rec {
   };
 
   patches = [
-    (fetchpatch {
-      url = "https://github.com/fhackenberger/ktikz/commit/972685a406517bb85eb561f2c8e26f029eacd7db.patch";
-      sha256 = "13z40rcd4m4n088v7z2ns17lnpn0z3rzp31lsamic3qdcwjwa5k8";
-    })
+    (
+      fetchpatch {
+        url = "https://github.com/fhackenberger/ktikz/commit/972685a406517bb85eb561f2c8e26f029eacd7db.patch";
+        sha256 = "13z40rcd4m4n088v7z2ns17lnpn0z3rzp31lsamic3qdcwjwa5k8";
+      }
+    )
   ];
 
   nativeBuildInputs = [ pkgconfig qt5.qttools qt5.qmake wrapQtAppsHook ];

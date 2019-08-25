@@ -1,5 +1,15 @@
-{ stdenv, fetchurl, qmake, poppler, pkgconfig, libunarr, libGLU
-, qtdeclarative, qtgraphicaleffects, qtmultimedia, qtquickcontrols, qtscript
+{ stdenv
+, fetchurl
+, qmake
+, poppler
+, pkgconfig
+, libunarr
+, libGLU
+, qtdeclarative
+, qtgraphicaleffects
+, qtmultimedia
+, qtquickcontrols
+, qtscript
 }:
 
 stdenv.mkDerivation rec {

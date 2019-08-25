@@ -15,7 +15,8 @@ rustPlatform.buildRustPackage rec {
 
   nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ openssl ]
-    ++ stdenv.lib.optionals stdenv.isDarwin [ CoreServices Security ];
+    ++ stdenv.lib.optionals stdenv.isDarwin [ CoreServices Security ]
+    ;
 
   cargoBuildFlags = [ "--all" ];
 

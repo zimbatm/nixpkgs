@@ -1,25 +1,66 @@
-{ stdenv, fetchurl, buildEnv, makeWrapper
-, xorg, alsaLib, dbus, glib, gtk2, atk, pango, freetype, fontconfig
-, gdk-pixbuf, cairo, nss, nspr, gconf, expat, systemd, libcap
-, libnotify}:
+{ stdenv
+, fetchurl
+, buildEnv
+, makeWrapper
+, xorg
+, alsaLib
+, dbus
+, glib
+, gtk2
+, atk
+, pango
+, freetype
+, fontconfig
+, gdk-pixbuf
+, cairo
+, nss
+, nspr
+, gconf
+, expat
+, systemd
+, libcap
+, libnotify
+}:
 let
   bits = if stdenv.hostPlatform.system == "x86_64-linux" then "x64"
-         else "ia32";
+  else "ia32";
 
   nwEnv = buildEnv {
     name = "nwjs-env";
     paths = [
-      xorg.libX11 xorg.libXrender glib gtk2 atk pango cairo gdk-pixbuf
-      freetype fontconfig xorg.libXcomposite alsaLib xorg.libXdamage
-      xorg.libXext xorg.libXfixes nss nspr gconf expat dbus
-      xorg.libXtst xorg.libXi xorg.libXcursor xorg.libXrandr libcap
+      xorg.libX11
+      xorg.libXrender
+      glib
+      gtk2
+      atk
+      pango
+      cairo
+      gdk-pixbuf
+      freetype
+      fontconfig
+      xorg.libXcomposite
+      alsaLib
+      xorg.libXdamage
+      xorg.libXext
+      xorg.libXfixes
+      nss
+      nspr
+      gconf
+      expat
+      dbus
+      xorg.libXtst
+      xorg.libXi
+      xorg.libXcursor
+      xorg.libXrandr
+      libcap
       libnotify
     ];
 
     extraOutputsToInstall = [ "lib" "out" ];
   };
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "nwjs-${version}";
   version = "0.12.3";
 
@@ -54,7 +95,7 @@ in stdenv.mkDerivation rec {
   meta = with stdenv.lib; {
     description = "An app runtime based on Chromium and node.js";
     homepage = https://nwjs.io/;
-    platforms = ["i686-linux" "x86_64-linux"];
+    platforms = [ "i686-linux" "x86_64-linux" ];
     maintainers = [ maintainers.offline ];
     license = licenses.bsd3;
   };

@@ -1,8 +1,30 @@
-{ stdenv, fetchgit, ghostscript, texinfo, imagemagick, texi2html, guile
-, python2, gettext, flex, perl, bison, pkgconfig, autoreconfHook, dblatex
-, fontconfig, freetype, pango, fontforge, help2man, zip, netpbm, groff
-, makeWrapper, t1utils
-, texlive, tex ? texlive.combine {
+{ stdenv
+, fetchgit
+, ghostscript
+, texinfo
+, imagemagick
+, texi2html
+, guile
+, python2
+, gettext
+, flex
+, perl
+, bison
+, pkgconfig
+, autoreconfHook
+, dblatex
+, fontconfig
+, freetype
+, pango
+, fontforge
+, help2man
+, zip
+, netpbm
+, groff
+, makeWrapper
+, t1utils
+, texlive
+, tex ? texlive.combine {
     inherit (texlive) scheme-small lh metafont epsf;
   }
 }:
@@ -48,9 +70,28 @@ stdenv.mkDerivation {
   autoreconfPhase = "NOCONFIGURE=1 sh autogen.sh";
 
   buildInputs =
-    [ ghostscript texinfo imagemagick texi2html guile dblatex tex zip netpbm
-      python2 gettext flex perl bison fontconfig freetype pango
-      fontforge help2man groff t1utils
+    [
+      ghostscript
+      texinfo
+      imagemagick
+      texi2html
+      guile
+      dblatex
+      tex
+      zip
+      netpbm
+      python2
+      gettext
+      flex
+      perl
+      bison
+      fontconfig
+      freetype
+      pango
+      fontforge
+      help2man
+      groff
+      t1utils
     ];
 
   enableParallelBuilding = true;

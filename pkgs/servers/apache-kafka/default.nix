@@ -1,5 +1,13 @@
-{ stdenv, fetchurl, jre, makeWrapper, bash, coreutils, gnugrep, gnused,
-  majorVersion ? "1.0" }:
+{ stdenv
+, fetchurl
+, jre
+, makeWrapper
+, bash
+, coreutils
+, gnugrep
+, gnused
+, majorVersion ? "1.0"
+}:
 
 let
   versionMap = {
@@ -46,46 +54,46 @@ let
   };
 in
 
-with versionMap.${majorVersion};
+  with versionMap.${majorVersion};
 
-stdenv.mkDerivation rec {
-  version = "${scalaVersion}-${kafkaVersion}";
-  name = "apache-kafka-${version}";
+  stdenv.mkDerivation rec {
+    version = "${scalaVersion}-${kafkaVersion}";
+    name = "apache-kafka-${version}";
 
-  src = fetchurl {
-    url = "mirror://apache/kafka/${kafkaVersion}/kafka_${version}.tgz";
-    inherit sha256;
-  };
+    src = fetchurl {
+      url = "mirror://apache/kafka/${kafkaVersion}/kafka_${version}.tgz";
+      inherit sha256;
+    };
 
-  buildInputs = [ jre makeWrapper bash gnugrep gnused coreutils ];
+    buildInputs = [ jre makeWrapper bash gnugrep gnused coreutils ];
 
-  installPhase = ''
-    mkdir -p $out
-    cp -R config libs $out
+    installPhase = ''
+      mkdir -p $out
+      cp -R config libs $out
 
-    mkdir -p $out/bin
-    cp bin/kafka* $out/bin
-    cp bin/connect* $out/bin
+      mkdir -p $out/bin
+      cp bin/kafka* $out/bin
+      cp bin/connect* $out/bin
 
-    # allow us the specify logging directory using env
-    substituteInPlace $out/bin/kafka-run-class.sh \
-      --replace 'LOG_DIR="$base_dir/logs"' 'LOG_DIR="$KAFKA_LOG_DIR"'
+      # allow us the specify logging directory using env
+      substituteInPlace $out/bin/kafka-run-class.sh \
+        --replace 'LOG_DIR="$base_dir/logs"' 'LOG_DIR="$KAFKA_LOG_DIR"'
 
-    for p in $out/bin\/*.sh; do
-      wrapProgram $p \
-        --set JAVA_HOME "${jre}" \
-        --set KAFKA_LOG_DIR "/tmp/apache-kafka-logs" \
-        --prefix PATH : "${bash}/bin:${coreutils}/bin:${gnugrep}/bin:${gnused}/bin"
-    done
-    chmod +x $out/bin\/*
-  '';
+      for p in $out/bin\/*.sh; do
+        wrapProgram $p \
+          --set JAVA_HOME "${jre}" \
+          --set KAFKA_LOG_DIR "/tmp/apache-kafka-logs" \
+          --prefix PATH : "${bash}/bin:${coreutils}/bin:${gnugrep}/bin:${gnused}/bin"
+      done
+      chmod +x $out/bin\/*
+    '';
 
-  meta = with stdenv.lib; {
-    homepage = http://kafka.apache.org;
-    description = "A high-throughput distributed messaging system";
-    license = licenses.asl20;
-    maintainers = [ maintainers.ragge ];
-    platforms = platforms.unix;
-  };
+    meta = with stdenv.lib; {
+      homepage = http://kafka.apache.org;
+      description = "A high-throughput distributed messaging system";
+      license = licenses.asl20;
+      maintainers = [ maintainers.ragge ];
+      platforms = platforms.unix;
+    };
 
-}
+  }

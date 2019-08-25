@@ -1,5 +1,15 @@
-{ stdenv, lib, fetchzip, autoconf, automake, cups, glib, libxml2, libusb, libtool
-, withDebug ? false }:
+{ stdenv
+, lib
+, fetchzip
+, autoconf
+, automake
+, cups
+, glib
+, libxml2
+, libusb
+, libtool
+, withDebug ? false
+}:
 
 stdenv.mkDerivation rec {
   name = "cnijfilter2-${version}";
@@ -12,7 +22,13 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [
-    cups automake autoconf glib libxml2 libusb libtool
+    cups
+    automake
+    autoconf
+    glib
+    libxml2
+    libusb
+    libtool
   ];
 
   # lgmon3's --enable-libdir flag is used soley for specifying in which
@@ -29,9 +45,11 @@ stdenv.mkDerivation rec {
     ln -s $out/lib/libcnbpcnclapicom2.so $out/lib/cups/filter
 
     export NIX_LDFLAGS="$NIX_LDFLAGS -L$out/lib"
-  '' + lib.optionalString withDebug ''
-    export NIX_CFLAGS_COMPILE="$NIX_CFLAGS_COMPILE -D__DEBUG__ -DDEBUG_LOG"
-  '' + ''
+  ''
+  + lib.optionalString withDebug ''
+      export NIX_CFLAGS_COMPILE="$NIX_CFLAGS_COMPILE -D__DEBUG__ -DDEBUG_LOG"
+    ''
+  + ''
 
     (
       cd lgmon3
@@ -76,7 +94,8 @@ stdenv.mkDerivation rec {
       ./autogen.sh --prefix=$out --enable-progpath=$out/bin
       make
     )
-  '';
+  ''
+  ;
 
   installPhase = ''
     (

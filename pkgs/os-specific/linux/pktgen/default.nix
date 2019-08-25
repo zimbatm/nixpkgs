@@ -1,6 +1,13 @@
-{ stdenv, lib, fetchurl, pkgconfig
-, dpdk, libpcap, numactl, utillinux
-, gtk2, withGtk ? false
+{ stdenv
+, lib
+, fetchurl
+, pkgconfig
+, dpdk
+, libpcap
+, numactl
+, utillinux
+, gtk2
+, withGtk ? false
 }:
 
 let
@@ -15,7 +22,8 @@ let
     };
   };
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "pktgen-${version}";
   version = "3.5.0";
 
@@ -28,7 +36,8 @@ in stdenv.mkDerivation rec {
 
   buildInputs =
     [ dpdk libpcap numactl ]
-    ++ stdenv.lib.optionals withGtk [gtk2];
+    ++ stdenv.lib.optionals withGtk [ gtk2 ]
+    ;
 
   RTE_SDK = "${dpdk}/share/dpdk";
   RTE_TARGET = "x86_64-native-linuxapp-gcc";
@@ -36,14 +45,17 @@ in stdenv.mkDerivation rec {
 
   NIX_CFLAGS_COMPILE = [ "-msse3" ];
 
-  postPatch = let dpdkMajor = lib.versions.major dpdk.version; in ''
-    substituteInPlace app/Makefile --replace 'yy :=' 'yy := ${dpdkMajor} #'
-    substituteInPlace lib/common/lscpu.h --replace /usr/bin/lscpu ${utillinux}/bin/lscpu
+  postPatch = let
+    dpdkMajor = lib.versions.major dpdk.version;
+  in
+    ''
+      substituteInPlace app/Makefile --replace 'yy :=' 'yy := ${dpdkMajor} #'
+      substituteInPlace lib/common/lscpu.h --replace /usr/bin/lscpu ${utillinux}/bin/lscpu
 
-    ln -s ${lua.src} lib/lua/${lua.basename}
-    make -C lib/lua get_tarball # unpack and patch
-    substituteInPlace lib/lua/${lua.name}/src/luaconf.h --replace /usr/local $out
-  '';
+      ln -s ${lua.src} lib/lua/${lua.basename}
+      make -C lib/lua get_tarball # unpack and patch
+      substituteInPlace lib/lua/${lua.name}/src/luaconf.h --replace /usr/local $out
+    '';
 
   installPhase = ''
     install -d $out/bin
@@ -58,7 +70,7 @@ in stdenv.mkDerivation rec {
     description = "Traffic generator powered by DPDK";
     homepage = http://dpdk.org/;
     license = licenses.bsdOriginal;
-    platforms =  [ "x86_64-linux" ];
+    platforms = [ "x86_64-linux" ];
     maintainers = [ maintainers.abuibrahim ];
   };
 }

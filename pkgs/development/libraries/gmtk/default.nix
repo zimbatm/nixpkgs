@@ -1,5 +1,15 @@
-{stdenv, substituteAll, fetchFromGitHub, libtool, pkgconfig, intltool, glib, gtk3
-, libpulseaudio, mplayer, gnome_mplayer }:
+{ stdenv
+, substituteAll
+, fetchFromGitHub
+, libtool
+, pkgconfig
+, intltool
+, glib
+, gtk3
+, libpulseaudio
+, mplayer
+, gnome_mplayer
+}:
 
 stdenv.mkDerivation rec {
   name = "gmtk-${version}";
@@ -16,10 +26,12 @@ stdenv.mkDerivation rec {
   buildInputs = [ glib gtk3 libpulseaudio ];
 
   patches = [
-    (substituteAll {
-      src = ./fix-paths.patch;
-      mplayer = "${mplayer}/bin/mplayer";
-    })
+    (
+      substituteAll {
+        src = ./fix-paths.patch;
+        mplayer = "${mplayer}/bin/mplayer";
+      }
+    )
   ];
 
   meta = with stdenv.lib; {

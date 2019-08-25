@@ -1,10 +1,19 @@
-{ stdenv, lib, fetchsvn, recordmydesktop, autoreconfHook, pkgconfig
-, pythonPackages, jack2, xwininfo }:
+{ stdenv
+, lib
+, fetchsvn
+, recordmydesktop
+, autoreconfHook
+, pkgconfig
+, pythonPackages
+, jack2
+, xwininfo
+}:
 
 let
   binPath = lib.makeBinPath [ recordmydesktop jack2 xwininfo ];
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "gtk-recordmydesktop-${version}";
   version = "0.3.8-svn${recordmydesktop.rev}";
 
@@ -17,7 +26,9 @@ in stdenv.mkDerivation rec {
   nativeBuildInputs = [ autoreconfHook pkgconfig ];
 
   buildInputs = with pythonPackages; [
-    python pygtk wrapPython
+    python
+    pygtk
+    wrapPython
   ];
 
   pythonPath = with pythonPackages; [ pygtk ];
@@ -32,6 +43,6 @@ in stdenv.mkDerivation rec {
     homepage = http://recordmydesktop.sourceforge.net/;
     license = licenses.gpl2;
     platforms = platforms.linux;
-    maintainers = [ ];
+    maintainers = [];
   };
 }

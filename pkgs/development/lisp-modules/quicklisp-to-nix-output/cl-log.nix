@@ -5,7 +5,7 @@ rec {
 
   description = ''CL-LOG - a general purpose logging utility'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/cl-log/2013-01-28/cl-log.1.0.1.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "cl-log";
 
-  asdFilesToKeep = ["cl-log.asd"];
+  asdFilesToKeep = [ "cl-log.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM cl-log DESCRIPTION CL-LOG - a general purpose logging utility SHA256

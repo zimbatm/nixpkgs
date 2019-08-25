@@ -4,7 +4,8 @@ with lib;
 
 let
   cfg = config.services.mailhog;
-in {
+in
+{
   ###### interface
 
   options = {

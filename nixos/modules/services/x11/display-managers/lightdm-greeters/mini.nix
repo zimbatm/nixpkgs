@@ -8,41 +8,43 @@ let
   ldmcfg = dmcfg.lightdm;
   cfg = ldmcfg.greeters.mini;
 
-  xgreeters = pkgs.linkFarm "lightdm-mini-greeter-xgreeters" [{
-    path = "${pkgs.lightdm-mini-greeter}/share/xgreeters/lightdm-mini-greeter.desktop";
-    name = "lightdm-mini-greeter.desktop";
-  }];
+  xgreeters = pkgs.linkFarm "lightdm-mini-greeter-xgreeters" [
+    {
+      path = "${pkgs.lightdm-mini-greeter}/share/xgreeters/lightdm-mini-greeter.desktop";
+      name = "lightdm-mini-greeter.desktop";
+    }
+  ];
 
   miniGreeterConf = pkgs.writeText "lightdm-mini-greeter.conf"
     ''
-    [greeter]
-    user = ${cfg.user}
-    show-password-label = true
-    password-label-text = Password:
-    show-input-cursor = true
+      [greeter]
+      user = ${cfg.user}
+      show-password-label = true
+      password-label-text = Password:
+      show-input-cursor = true
 
-    [greeter-hotkeys]
-    mod-key = meta
-    shutdown-key = s
-    restart-key = r
-    hibernate-key = h
-    suspend-key = u
+      [greeter-hotkeys]
+      mod-key = meta
+      shutdown-key = s
+      restart-key = r
+      hibernate-key = h
+      suspend-key = u
 
-    [greeter-theme]
-    font = Sans
-    font-size = 1em
-    text-color = "#080800"
-    error-color = "#F8F8F0"
-    background-image = "${ldmcfg.background}"
-    background-color = "#1B1D1E"
-    window-color = "#F92672"
-    border-color = "#080800"
-    border-width = 2px
-    layout-space = 15
-    password-color = "#F8F8F0"
-    password-background-color = "#1B1D1E"
+      [greeter-theme]
+      font = Sans
+      font-size = 1em
+      text-color = "#080800"
+      error-color = "#F8F8F0"
+      background-image = "${ldmcfg.background}"
+      background-color = "#1B1D1E"
+      window-color = "#F92672"
+      border-color = "#080800"
+      border-width = 2px
+      layout-space = 15
+      password-color = "#F8F8F0"
+      password-background-color = "#1B1D1E"
 
-    ${cfg.extraConfig}
+      ${cfg.extraConfig}
     '';
 
 in

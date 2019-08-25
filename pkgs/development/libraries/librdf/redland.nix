@@ -1,9 +1,22 @@
-{ stdenv, fetchurl, pkgconfig, openssl, libxslt, perl
-, curl, pcre, libxml2, librdf_rasqal, gmp
-, mysql, withMysql ? false
-, postgresql, withPostgresql ? false
-, sqlite, withSqlite ? true
-, db, withBdb ? false
+{ stdenv
+, fetchurl
+, pkgconfig
+, openssl
+, libxslt
+, perl
+, curl
+, pcre
+, libxml2
+, librdf_rasqal
+, gmp
+, mysql
+, withMysql ? false
+, postgresql
+, withPostgresql ? false
+, sqlite
+, withSqlite ? true
+, db
+, withBdb ? false
 }:
 
 stdenv.mkDerivation rec {
@@ -20,7 +33,8 @@ stdenv.mkDerivation rec {
     ++ stdenv.lib.optional withMysql mysql.connector-c
     ++ stdenv.lib.optional withSqlite sqlite
     ++ stdenv.lib.optional withPostgresql postgresql
-    ++ stdenv.lib.optional withBdb db;
+    ++ stdenv.lib.optional withBdb db
+    ;
 
   propagatedBuildInputs = [ librdf_rasqal ];
 
@@ -29,9 +43,10 @@ stdenv.mkDerivation rec {
   configureFlags =
     [ "--with-threads" ]
     ++ stdenv.lib.optionals withBdb [
-      "--with-bdb-include=${db.dev}/include"
-      "--with-bdb-lib=${db.out}/lib"
-    ];
+         "--with-bdb-include=${db.dev}/include"
+         "--with-bdb-lib=${db.out}/lib"
+       ]
+    ;
 
   # Fix broken DT_NEEDED in lib/redland/librdf_storage_sqlite.so.
   NIX_CFLAGS_LINK = "-lraptor2";

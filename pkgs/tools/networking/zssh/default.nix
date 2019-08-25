@@ -2,7 +2,8 @@
 
 let
   version = "1.5c";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "zssh-${version}";
 
   src = fetchurl {
@@ -14,11 +15,13 @@ in stdenv.mkDerivation rec {
 
   patches = [
     # Cargo-culted from Arch, returns “out of pty's” without it
-    (fetchurl {
-      name = "fix_use_ptmx_on_arch.patch";
-      url = https://git.archlinux.org/svntogit/community.git/plain/trunk/fix_use_ptmx_on_arch.patch?h=packages/zssh&id=0a7c92543f9309856d02e31196f06d7c3eaa8b67;
-      sha256 = "12daw9wpy58ql882zww945wk9cg2adwp8qsr5rvazx0xq0qawgbr";
-    })
+    (
+      fetchurl {
+        name = "fix_use_ptmx_on_arch.patch";
+        url = https://git.archlinux.org/svntogit/community.git/plain/trunk/fix_use_ptmx_on_arch.patch?h=packages/zssh&id=0a7c92543f9309856d02e31196f06d7c3eaa8b67;
+        sha256 = "12daw9wpy58ql882zww945wk9cg2adwp8qsr5rvazx0xq0qawgbr";
+      }
+    )
   ];
 
   patchFlags = [ "-p0" ];

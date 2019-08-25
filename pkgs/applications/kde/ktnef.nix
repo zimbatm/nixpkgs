@@ -1,7 +1,12 @@
-{
-  mkDerivation, lib, kdepimTeam,
-  extra-cmake-modules, kdoctools,
-  kcalcore, kcalutils, kcontacts, kdelibs4support
+{ mkDerivation
+, lib
+, kdepimTeam
+, extra-cmake-modules
+, kdoctools
+, kcalcore
+, kcalutils
+, kcontacts
+, kdelibs4support
 }:
 
 mkDerivation {
@@ -12,7 +17,10 @@ mkDerivation {
   };
   nativeBuildInputs = [ extra-cmake-modules kdoctools ];
   propagatedBuildInputs = [
-    kcalcore kcalutils kcontacts kdelibs4support
+    kcalcore
+    kcalutils
+    kcontacts
+    kdelibs4support
   ];
   outputs = [ "out" "dev" ];
 }

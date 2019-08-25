@@ -26,7 +26,8 @@ pythonPackages.buildPythonApplication rec {
 
   propagatedBuildInputs = (with pythonPackages; [ pygtk pyxdg dbus-python pillow xlib ])
     ++ (with gnome2; [ gnome_python gnome_python_desktop ])
-    ++ [ keybinder ];
+    ++ [ keybinder ]
+    ;
 
   meta = with stdenv.lib; {
     homepage = https://launchpad.net/dockbar/;

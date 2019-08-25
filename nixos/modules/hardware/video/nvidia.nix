@@ -13,9 +13,9 @@ let
   # driver.
   nvidiaForKernel = kernelPackages:
     if elem "nvidia" drivers then
-        kernelPackages.nvidia_x11
+      kernelPackages.nvidia_x11
     else if elem "nvidiaBeta" drivers then
-        kernelPackages.nvidia_x11_beta
+      kernelPackages.nvidia_x11_beta
     else if elem "nvidiaLegacy304" drivers then
       kernelPackages.nvidia_x11_legacy304
     else if elem "nvidiaLegacy340" drivers then
@@ -115,8 +115,9 @@ in
         message = "NVIDIA drivers don't support wayland, set services.xserver.displayManager.gdm.wayland=false";
       }
       {
-        assertion = !optimusCfg.enable ||
-          (optimusCfg.nvidiaBusId != "" && optimusCfg.intelBusId != "");
+        assertion = !optimusCfg.enable
+          || (optimusCfg.nvidiaBusId != "" && optimusCfg.intelBusId != "")
+          ;
         message = ''
           When NVIDIA Optimus via PRIME is enabled, the GPU bus IDs must configured.
         '';
@@ -178,18 +179,21 @@ in
     hardware.opengl.package32 = nvidia_libs32;
 
     environment.systemPackages = [ nvidia_x11.bin nvidia_x11.settings ]
-      ++ lib.filter (p: p != null) [ nvidia_x11.persistenced ];
+      ++ lib.filter (p: p != null) [ nvidia_x11.persistenced ]
+      ;
 
     systemd.tmpfiles.rules = optional config.virtualisation.docker.enableNvidia
-        "L+ /run/nvidia-docker/bin - - - - ${nvidia_x11.bin}/origBin"
-      ++ optional (nvidia_x11.persistenced != null && config.virtualisation.docker.enableNvidia)
-        "L+ /run/nvidia-docker/extras/bin/nvidia-persistenced - - - - ${nvidia_x11.persistenced}/origBin/nvidia-persistenced";
+      "L+ /run/nvidia-docker/bin - - - - ${nvidia_x11.bin}/origBin"
+    ++ optional (nvidia_x11.persistenced != null && config.virtualisation.docker.enableNvidia)
+         "L+ /run/nvidia-docker/extras/bin/nvidia-persistenced - - - - ${nvidia_x11.persistenced}/origBin/nvidia-persistenced"
+    ;
 
     boot.extraModulePackages = [ nvidia_x11.bin ];
 
     # nvidia-uvm is required by CUDA applications.
-    boot.kernelModules = [ "nvidia-uvm" ] ++
-      lib.optionals config.services.xserver.enable [ "nvidia" "nvidia_modeset" "nvidia_drm" ];
+    boot.kernelModules = [ "nvidia-uvm" ]
+      ++ lib.optionals config.services.xserver.enable [ "nvidia" "nvidia_modeset" "nvidia_drm" ]
+      ;
 
     # If requested enable modesetting via kernel parameter.
     boot.kernelParams = optional cfg.modesetting.enable "nvidia-drm.modeset=1";

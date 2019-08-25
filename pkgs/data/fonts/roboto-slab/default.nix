@@ -9,22 +9,30 @@ stdenv.mkDerivation rec {
   version = "2016-01-11";
 
   srcs = [
-    (fetchurl {
-      url = "https://raw.githubusercontent.com/google/fonts/${commit}/apache/robotoslab/RobotoSlab-Regular.ttf";
-      sha256 = "04180b5zk2nzll1rrgx8f1i1za66pk6pbrp0iww2xypjqra5zahk";
-    })
-    (fetchurl {
-      url = "https://raw.githubusercontent.com/google/fonts/${commit}/apache/robotoslab/RobotoSlab-Bold.ttf";
-      sha256 = "0ayl2hf5j33vixxfa7051hzjjxnx8zhag3rr0mmmnxpsn7md44ms";
-    })
-    (fetchurl {
-      url = "https://raw.githubusercontent.com/google/fonts/${commit}/apache/robotoslab/RobotoSlab-Light.ttf";
-      sha256 = "09riqgj9ixqjdb3mkzbs799cgmnp3ja3d6izlqkhpkfm52sgafqm";
-    })
-    (fetchurl {
-      url = "https://raw.githubusercontent.com/google/fonts/${commit}/apache/robotoslab/RobotoSlab-Thin.ttf";
-      sha256 = "1hd0m7lxhr261a4s2nb572ari6v53w2yd8yjr9i534iqfl4jcbsf";
-    })
+    (
+      fetchurl {
+        url = "https://raw.githubusercontent.com/google/fonts/${commit}/apache/robotoslab/RobotoSlab-Regular.ttf";
+        sha256 = "04180b5zk2nzll1rrgx8f1i1za66pk6pbrp0iww2xypjqra5zahk";
+      }
+    )
+    (
+      fetchurl {
+        url = "https://raw.githubusercontent.com/google/fonts/${commit}/apache/robotoslab/RobotoSlab-Bold.ttf";
+        sha256 = "0ayl2hf5j33vixxfa7051hzjjxnx8zhag3rr0mmmnxpsn7md44ms";
+      }
+    )
+    (
+      fetchurl {
+        url = "https://raw.githubusercontent.com/google/fonts/${commit}/apache/robotoslab/RobotoSlab-Light.ttf";
+        sha256 = "09riqgj9ixqjdb3mkzbs799cgmnp3ja3d6izlqkhpkfm52sgafqm";
+      }
+    )
+    (
+      fetchurl {
+        url = "https://raw.githubusercontent.com/google/fonts/${commit}/apache/robotoslab/RobotoSlab-Thin.ttf";
+        sha256 = "1hd0m7lxhr261a4s2nb572ari6v53w2yd8yjr9i534iqfl4jcbsf";
+      }
+    )
   ];
 
   sourceRoot = "./";

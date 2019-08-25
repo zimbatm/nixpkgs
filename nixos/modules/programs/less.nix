@@ -9,24 +9,24 @@ let
   configText = if (cfg.configFile != null) then (builtins.readFile cfg.configFile) else ''
     #command
     ${concatStringsSep "\n"
-      (mapAttrsToList (command: action: "${command} ${action}") cfg.commands)
-    }
+    (mapAttrsToList (command: action: "${command} ${action}") cfg.commands)
+  }
     ${if cfg.clearDefaultCommands then "#stop" else ""}
 
     #line-edit
     ${concatStringsSep "\n"
-      (mapAttrsToList (command: action: "${command} ${action}") cfg.lineEditingKeys)
-    }
+    (mapAttrsToList (command: action: "${command} ${action}") cfg.lineEditingKeys)
+  }
 
     #env
     ${concatStringsSep "\n"
-      (mapAttrsToList (variable: values: "${variable}=${values}") cfg.envVariables)
-    }
+    (mapAttrsToList (variable: values: "${variable}=${values}") cfg.envVariables)
+  }
   '';
 
   lessKey = pkgs.runCommand "lesskey"
-            { src = pkgs.writeText "lessconfig" configText; preferLocalBuild = true; }
-            "${pkgs.less}/bin/lesskey -o $out $src";
+    { src = pkgs.writeText "lessconfig" configText; preferLocalBuild = true; }
+    "${pkgs.less}/bin/lesskey -o $out $src";
 
 in
 
@@ -112,11 +112,14 @@ in
 
     environment.variables = {
       "LESSKEY_SYSTEM" = toString lessKey;
-    } // optionalAttrs (cfg.lessopen != null) {
-      "LESSOPEN" = cfg.lessopen;
-    } // optionalAttrs (cfg.lessclose != null) {
-      "LESSCLOSE" = cfg.lessclose;
-    };
+    }
+    // optionalAttrs (cfg.lessopen != null) {
+         "LESSOPEN" = cfg.lessopen;
+       }
+    // optionalAttrs (cfg.lessclose != null) {
+         "LESSCLOSE" = cfg.lessclose;
+       }
+    ;
 
     warnings = optional (
       cfg.clearDefaultCommands && (all (x: x != "quit") (attrValues cfg.commands))

@@ -1,5 +1,5 @@
 # Build Open Dylan from source using the binary builds to bootstrap.
-{stdenv, fetchgit, boehmgc, mps, gnused, opendylan-bootstrap, autoconf, automake, perl, makeWrapper, gcc }:
+{ stdenv, fetchgit, boehmgc, mps, gnused, opendylan-bootstrap, autoconf, automake, perl, makeWrapper, gcc }:
 
 stdenv.mkDerivation {
   name = "opendylan-2016.1pre";
@@ -11,9 +11,17 @@ stdenv.mkDerivation {
     fetchSubmodules = true;
   };
 
-  buildInputs = (if stdenv.hostPlatform.system == "i686-linux" then [ mps ] else [ boehmgc ]) ++ [
-    opendylan-bootstrap boehmgc gnused autoconf automake perl makeWrapper
-  ];
+  buildInputs = (if stdenv.hostPlatform.system == "i686-linux" then [ mps ] else [ boehmgc ])
+    ++ [
+         opendylan-bootstrap
+         boehmgc
+         gnused
+         autoconf
+         automake
+         perl
+         makeWrapper
+       ]
+    ;
 
   preConfigure = if stdenv.hostPlatform.system == "i686-linux" then ''
     mkdir -p $TMPDIR/mps

@@ -6,14 +6,15 @@ let
   sha256 = "0yyhkqis4j2cl6w2drrjxdy5j8x9zp4j89gsny6w4ql8gm5qgvvk";
 
 in
-buildGoPackage ({
+buildGoPackage (
+  {
     name = "gh-ost-${version}";
     inherit goPackagePath;
 
     src = fetchFromGitHub {
       owner = "github";
-      repo  = "gh-ost";
-      rev   = "v${version}";
+      repo = "gh-ost";
+      rev = "v${version}";
       inherit sha256;
     };
 
@@ -22,5 +23,5 @@ buildGoPackage ({
       homepage = https://github.com/github/gh-ost;
       license = licenses.mit;
     };
-})
-
+  }
+)

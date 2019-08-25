@@ -6,7 +6,8 @@ let
   cfg = config.services.locate;
   isMLocate = hasPrefix "mlocate" cfg.locate.name;
   isFindutils = hasPrefix "findutils" cfg.locate.name;
-in {
+in
+{
   options.services.locate = with types; {
     enable = mkOption {
       type = bool;
@@ -43,7 +44,7 @@ in {
 
     extraFlags = mkOption {
       type = listOf str;
-      default = [ ];
+      default = [];
       description = ''
         Extra flags to pass to <command>updatedb</command>.
       '';
@@ -68,7 +69,7 @@ in {
 
     pruneFS = mkOption {
       type = listOf str;
-      default = ["afs" "anon_inodefs" "auto" "autofs" "bdev" "binfmt" "binfmt_misc" "cgroup" "cifs" "coda" "configfs" "cramfs" "cpuset" "debugfs" "devfs" "devpts" "devtmpfs" "ecryptfs" "eventpollfs" "exofs" "futexfs" "ftpfs" "fuse" "fusectl" "gfs" "gfs2" "hostfs" "hugetlbfs" "inotifyfs" "iso9660" "jffs2" "lustre" "misc" "mqueue" "ncpfs" "nnpfs" "ocfs" "ocfs2" "pipefs" "proc" "ramfs" "rpc_pipefs" "securityfs" "selinuxfs" "sfs" "shfs" "smbfs" "sockfs" "spufs" "nfs" "NFS" "nfs4" "nfsd" "sshfs" "subfs" "supermount" "sysfs" "tmpfs" "ubifs" "udf" "usbfs" "vboxsf" "vperfctrfs" ];
+      default = [ "afs" "anon_inodefs" "auto" "autofs" "bdev" "binfmt" "binfmt_misc" "cgroup" "cifs" "coda" "configfs" "cramfs" "cpuset" "debugfs" "devfs" "devpts" "devtmpfs" "ecryptfs" "eventpollfs" "exofs" "futexfs" "ftpfs" "fuse" "fusectl" "gfs" "gfs2" "hostfs" "hugetlbfs" "inotifyfs" "iso9660" "jffs2" "lustre" "misc" "mqueue" "ncpfs" "nnpfs" "ocfs" "ocfs2" "pipefs" "proc" "ramfs" "rpc_pipefs" "securityfs" "selinuxfs" "sfs" "shfs" "smbfs" "sockfs" "spufs" "nfs" "NFS" "nfs4" "nfsd" "sshfs" "subfs" "supermount" "sysfs" "tmpfs" "ubifs" "udf" "usbfs" "vboxsf" "vperfctrfs" ];
       description = ''
         Which filesystem types to exclude from indexing
       '';
@@ -76,7 +77,7 @@ in {
 
     prunePaths = mkOption {
       type = listOf path;
-      default = ["/tmp" "/var/tmp" "/var/cache" "/var/lock" "/var/run" "/var/spool" "/nix/store"];
+      default = [ "/tmp" "/var/tmp" "/var/cache" "/var/lock" "/var/run" "/var/spool" "/nix/store" ];
       description = ''
         Which paths to exclude from indexing
       '';
@@ -119,34 +120,39 @@ in {
     environment.systemPackages = [ cfg.locate ];
 
     environment.variables = mkIf (!isMLocate)
-      { LOCATE_PATH = cfg.output;
+      {
+        LOCATE_PATH = cfg.output;
       };
 
     warnings = optional (isMLocate && cfg.localuser != null) "mlocate does not support searching as user other than root"
-            ++ optional (isFindutils && cfg.pruneNames != []) "findutils locate does not support pruning by directory component"
-            ++ optional (isFindutils && cfg.pruneBindMounts) "findutils locate does not support skipping bind mounts";
+      ++ optional (isFindutils && cfg.pruneNames != []) "findutils locate does not support pruning by directory component"
+      ++ optional (isFindutils && cfg.pruneBindMounts) "findutils locate does not support skipping bind mounts"
+      ;
 
     # directory creation needs to be separated from main service
     # because ReadWritePaths fails when the directory doesn't already exist
     systemd.tmpfiles.rules = [ "d ${dirOf cfg.output} 0755 root root -" ];
 
     systemd.services.update-locatedb =
-      { description = "Update Locate Database";
+      {
+        description = "Update Locate Database";
         path = mkIf (!isMLocate) [ pkgs.su ];
 
         # mlocate's updatedb takes flags via a configuration file or
         # on the command line, but not by environment variable.
         script =
           if isMLocate
-          then let toFlags = x: optional (cfg.${x} != [])
-                                         "--${lib.toLower x} '${concatStringsSep " " cfg.${x}}'";
-                   args = concatLists (map toFlags ["pruneFS" "pruneNames" "prunePaths"]);
-               in ''
-            exec ${cfg.locate}/bin/updatedb \
-              --output ${toString cfg.output} ${concatStringsSep " " args} \
-              --prune-bind-mounts ${if cfg.pruneBindMounts then "yes" else "no"} \
-              ${concatStringsSep " " cfg.extraFlags}
-          ''
+          then let
+            toFlags = x: optional (cfg.${x} != [])
+              "--${lib.toLower x} '${concatStringsSep " " cfg.${x}}'";
+            args = concatLists (map toFlags [ "pruneFS" "pruneNames" "prunePaths" ]);
+          in
+            ''
+              exec ${cfg.locate}/bin/updatedb \
+                --output ${toString cfg.output} ${concatStringsSep " " args} \
+                --prune-bind-mounts ${if cfg.pruneBindMounts then "yes" else "no"} \
+                ${concatStringsSep " " cfg.extraFlags}
+            ''
           else ''
             exec ${cfg.locate}/bin/updatedb \
               ${optionalString (cfg.localuser != null && ! isMLocate) ''--localuser=${cfg.localuser}''} \
@@ -173,9 +179,10 @@ in {
       };
 
     systemd.timers.update-locatedb =
-      { description = "Update timer for locate database";
-        partOf      = [ "update-locatedb.service" ];
-        wantedBy    = [ "timers.target" ];
+      {
+        description = "Update timer for locate database";
+        partOf = [ "update-locatedb.service" ];
+        wantedBy = [ "timers.target" ];
         timerConfig.OnCalendar = cfg.interval;
       };
   };

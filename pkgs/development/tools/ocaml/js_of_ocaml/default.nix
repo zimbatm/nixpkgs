@@ -1,8 +1,25 @@
-{ stdenv, fetchurl, ocaml, findlib, lwt, menhir, ocsigen_deriving, ppx_deriving, camlp4, ocamlbuild
-, cmdliner, tyxml, reactivedata, cppo, which, base64, uchar, yojson
+{ stdenv
+, fetchurl
+, ocaml
+, findlib
+, lwt
+, menhir
+, ocsigen_deriving
+, ppx_deriving
+, camlp4
+, ocamlbuild
+, cmdliner
+, tyxml
+, reactivedata
+, cppo
+, which
+, base64
+, uchar
+, yojson
 }:
 
-let version = if stdenv.lib.versionAtLeast ocaml.version "4.02"
+let
+  version = if stdenv.lib.versionAtLeast ocaml.version "4.02"
   then "2.8.4" else "2.7";
 in
 
@@ -16,11 +33,23 @@ stdenv.mkDerivation {
     }."${version}";
   };
 
-  buildInputs = [ ocaml findlib menhir ocsigen_deriving ocamlbuild
-                 cmdliner reactivedata cppo which base64 ]
-  ++ stdenv.lib.optionals (stdenv.lib.versionAtLeast ocaml.version "4.02") [ yojson tyxml ];
+  buildInputs = [
+    ocaml
+    findlib
+    menhir
+    ocsigen_deriving
+    ocamlbuild
+    cmdliner
+    reactivedata
+    cppo
+    which
+    base64
+  ]
+  ++ stdenv.lib.optionals (stdenv.lib.versionAtLeast ocaml.version "4.02") [ yojson tyxml ]
+  ;
   propagatedBuildInputs = [ lwt camlp4 ppx_deriving ]
-  ++ stdenv.lib.optional (version == "2.8.4") uchar;
+    ++ stdenv.lib.optional (version == "2.8.4") uchar
+    ;
 
   patches = [ ./Makefile.conf.diff ];
 

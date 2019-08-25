@@ -16,10 +16,12 @@ buildPythonPackage rec {
 
   patches = [
     # Fixes a bug with markdown>2.4
-    (fetchpatch {
-      url = "https://github.com/wnielson/markdown-macros/pull/1.patch";
-      sha256 = "17njbgq2srzkf03ar6yn92frnsbda3g45cdi529fdh0x8mmyxci0";
-    })
+    (
+      fetchpatch {
+        url = "https://github.com/wnielson/markdown-macros/pull/1.patch";
+        sha256 = "17njbgq2srzkf03ar6yn92frnsbda3g45cdi529fdh0x8mmyxci0";
+      }
+    )
   ];
 
   prePatch = ''

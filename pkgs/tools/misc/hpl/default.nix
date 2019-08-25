@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, openblasCompat, mpi } :
+{ stdenv, fetchurl, openblasCompat, mpi }:
 
 stdenv.mkDerivation rec {
   name = "hpl-${version}";
@@ -28,4 +28,3 @@ stdenv.mkDerivation rec {
     maintainers = [ maintainers.markuskowa ];
   };
 }
-

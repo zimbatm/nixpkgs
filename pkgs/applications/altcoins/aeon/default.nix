@@ -1,6 +1,19 @@
-{ stdenv, fetchFromGitHub, cmake, pkgconfig, git, doxygen, graphviz
-, boost, miniupnpc, openssl, unbound, cppzmq
-, zeromq, pcsclite, readline, libsodium
+{ stdenv
+, fetchFromGitHub
+, cmake
+, pkgconfig
+, git
+, doxygen
+, graphviz
+, boost
+, miniupnpc
+, openssl
+, unbound
+, cppzmq
+, zeromq
+, pcsclite
+, readline
+, libsodium
 }:
 
 let
@@ -20,8 +33,15 @@ stdenv.mkDerivation {
   nativeBuildInputs = [ cmake pkgconfig git doxygen graphviz ];
 
   buildInputs = [
-    boost miniupnpc openssl unbound
-    cppzmq zeromq pcsclite readline libsodium
+    boost
+    miniupnpc
+    openssl
+    unbound
+    cppzmq
+    zeromq
+    pcsclite
+    readline
+    libsodium
   ];
 
   cmakeFlags = [

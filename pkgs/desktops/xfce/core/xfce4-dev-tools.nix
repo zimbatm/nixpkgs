@@ -1,6 +1,6 @@
 { stdenv, fetchurl, pkgconfig, glib, autoconf, automake, libtool, intltool }:
 let
-  p_name  = "xfce4-dev-tools";
+  p_name = "xfce4-dev-tools";
   ver_maj = "4.12";
   ver_min = "0";
 in
@@ -25,4 +25,3 @@ stdenv.mkDerivation rec {
     platforms = stdenv.lib.platforms.linux;
   };
 }
-

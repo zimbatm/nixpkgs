@@ -1,6 +1,21 @@
-{ stdenv, fetchFromGitHub, fetchurl, pkgconfig, cmake, python3, mkDerivation
-, libX11, libXrandr, qtbase, qtwebchannel, qtwebengine, qtx11extras
-, libvdpau, SDL2, mpv, libGL }:
+{ stdenv
+, fetchFromGitHub
+, fetchurl
+, pkgconfig
+, cmake
+, python3
+, mkDerivation
+, libX11
+, libXrandr
+, qtbase
+, qtwebchannel
+, qtwebengine
+, qtx11extras
+, libvdpau
+, SDL2
+, mpv
+, libGL
+}:
 let
   # During compilation, a CMake bundle is downloaded from `artifacts.plex.tv`,
   # which then downloads a handful of web client-related files. To enable
@@ -34,7 +49,8 @@ let
       sha256 = "0yssii01nx6ixg3mikqjn8hz34dalma0rfr8spj115xwr7aq8ixk";
     };
   };
-in mkDerivation rec {
+in
+mkDerivation rec {
   name = "plex-media-player-${version}";
   version = "2.36.0.988";
   vsnHash = "0150ae52";
@@ -47,8 +63,18 @@ in mkDerivation rec {
   };
 
   nativeBuildInputs = [ pkgconfig cmake python3 ];
-  buildInputs = [ libX11 libXrandr qtbase qtwebchannel qtwebengine qtx11extras
-                  libvdpau SDL2 mpv libGL ];
+  buildInputs = [
+    libX11
+    libXrandr
+    qtbase
+    qtwebchannel
+    qtwebengine
+    qtx11extras
+    libvdpau
+    SDL2
+    mpv
+    libGL
+  ];
 
   preConfigure = with depSrcs; ''
     mkdir -p build/dependencies

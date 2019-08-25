@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ cmake lxqt-build-tools ];
 
-  buildInputs = [ qtbase qttools];
+  buildInputs = [ qtbase qttools ];
 
   meta = with stdenv.lib; {
     description = "A terminal emulator widget for Qt 5";

@@ -1,9 +1,21 @@
-{ buildPythonPackage, lib, fetchFromGitLab
+{ buildPythonPackage
+, lib
+, fetchFromGitLab
 
-, isPy3k, isPyPy
+, isPy3k
+, isPyPy
 
-, pyenchant, simplebayes, pillow, pycountry, whoosh, termcolor
-, python-Levenshtein, pyinsane2, pygobject3, pyocr, natsort
+, pyenchant
+, simplebayes
+, pillow
+, pycountry
+, whoosh
+, termcolor
+, python-Levenshtein
+, pyinsane2
+, pygobject3
+, pyocr
+, natsort
 
 , pkgs
 }:
@@ -33,9 +45,19 @@ buildPythonPackage rec {
   preCheck = "\"$out/bin/paperwork-shell\" chkdeps paperwork_backend";
 
   propagatedBuildInputs = [
-    pyenchant simplebayes pillow pycountry whoosh termcolor
-    python-Levenshtein pyinsane2 pygobject3 pyocr natsort
-    pkgs.poppler_gi pkgs.gtk3
+    pyenchant
+    simplebayes
+    pillow
+    pycountry
+    whoosh
+    termcolor
+    python-Levenshtein
+    pyinsane2
+    pygobject3
+    pyocr
+    natsort
+    pkgs.poppler_gi
+    pkgs.gtk3
   ];
 
   meta = {

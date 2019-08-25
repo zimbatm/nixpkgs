@@ -1,6 +1,6 @@
-{ system ? builtins.currentSystem,
-  config ? {},
-  pkgs ? import ../.. { inherit system config; }
+{ system ? builtins.currentSystem
+, config ? {}
+, pkgs ? import ../.. { inherit system config; }
 }:
 
 with import ../lib/testing.nix { inherit system pkgs; };
@@ -9,83 +9,101 @@ with pkgs.lib;
 let
 
   # The configuration to install.
-  makeConfig = { bootLoader, grubVersion, grubDevice, grubIdentifier, grubUseEfi
-               , extraConfig, forceGrubReinstallCount ? 0
-               }:
-    pkgs.writeText "configuration.nix" ''
-      { config, lib, pkgs, modulesPath, ... }:
+  makeConfig =
+    { bootLoader
+    , grubVersion
+    , grubDevice
+    , grubIdentifier
+    , grubUseEfi
+    , extraConfig
+    , forceGrubReinstallCount ? 0
+    }:
+      pkgs.writeText "configuration.nix" ''
+        { config, lib, pkgs, modulesPath, ... }:
 
-      { imports =
-          [ ./hardware-configuration.nix
-            <nixpkgs/nixos/modules/testing/test-instrumentation.nix>
-          ];
+        { imports =
+            [ ./hardware-configuration.nix
+              <nixpkgs/nixos/modules/testing/test-instrumentation.nix>
+            ];
 
-        # To ensure that we can rebuild the grub configuration on the nixos-rebuild
-        system.extraDependencies = with pkgs; [ stdenvNoCC ];
+          # To ensure that we can rebuild the grub configuration on the nixos-rebuild
+          system.extraDependencies = with pkgs; [ stdenvNoCC ];
 
-        ${optionalString (bootLoader == "grub") ''
-          boot.loader.grub.version = ${toString grubVersion};
-          ${optionalString (grubVersion == 1) ''
-            boot.loader.grub.splashImage = null;
-          ''}
+          ${optionalString (bootLoader == "grub") ''
+        boot.loader.grub.version = ${toString grubVersion};
+        ${optionalString (grubVersion == 1) ''
+        boot.loader.grub.splashImage = null;
+      ''}
 
-          boot.loader.grub.extraConfig = "serial; terminal_output.serial";
-          ${if grubUseEfi then ''
-            boot.loader.grub.device = "nodev";
-            boot.loader.grub.efiSupport = true;
-            boot.loader.grub.efiInstallAsRemovable = true; # XXX: needed for OVMF?
-          '' else ''
-            boot.loader.grub.device = "${grubDevice}";
-            boot.loader.grub.fsIdentifier = "${grubIdentifier}";
-          ''}
+        boot.loader.grub.extraConfig = "serial; terminal_output.serial";
+        ${if grubUseEfi then ''
+        boot.loader.grub.device = "nodev";
+        boot.loader.grub.efiSupport = true;
+        boot.loader.grub.efiInstallAsRemovable = true; # XXX: needed for OVMF?
+      '' else ''
+        boot.loader.grub.device = "${grubDevice}";
+        boot.loader.grub.fsIdentifier = "${grubIdentifier}";
+      ''}
 
-          boot.loader.grub.configurationLimit = 100 + ${toString forceGrubReinstallCount};
-        ''}
+        boot.loader.grub.configurationLimit = 100 + ${toString forceGrubReinstallCount};
+      ''}
 
-        ${optionalString (bootLoader == "systemd-boot") ''
-          boot.loader.systemd-boot.enable = true;
-        ''}
+          ${optionalString (bootLoader == "systemd-boot") ''
+        boot.loader.systemd-boot.enable = true;
+      ''}
 
-        users.users.alice = {
-          isNormalUser = true;
-          home = "/home/alice";
-          description = "Alice Foobar";
-        };
+          users.users.alice = {
+            isNormalUser = true;
+            home = "/home/alice";
+            description = "Alice Foobar";
+          };
 
-        hardware.enableAllFirmware = lib.mkForce false;
+          hardware.enableAllFirmware = lib.mkForce false;
 
-        services.udisks2.enable = lib.mkDefault false;
+          services.udisks2.enable = lib.mkDefault false;
 
-        ${replaceChars ["\n"] ["\n  "] extraConfig}
-      }
-    '';
+          ${replaceChars [ "\n" ] [ "\n  " ] extraConfig}
+        }
+      '';
 
 
   # The test script boots a NixOS VM, installs NixOS on an empty hard
   # disk, and then reboot from the hard disk.  It's parameterized with
   # a test script fragment `createPartitions', which must create
   # partitions and filesystems.
-  testScriptFun = { bootLoader, createPartitions, grubVersion, grubDevice, grubUseEfi
-                  , grubIdentifier, preBootCommands, extraConfig
-                  , testCloneConfig
-                  }:
-    let
-      iface = if grubVersion == 1 then "ide" else "virtio";
-      isEfi = bootLoader == "systemd-boot" || (bootLoader == "grub" && grubUseEfi);
+  testScriptFun =
+    { bootLoader
+    , createPartitions
+    , grubVersion
+    , grubDevice
+    , grubUseEfi
+    , grubIdentifier
+    , preBootCommands
+    , extraConfig
+    , testCloneConfig
+    }:
+      let
+        iface = if grubVersion == 1 then "ide" else "virtio";
+        isEfi = bootLoader == "systemd-boot" || (bootLoader == "grub" && grubUseEfi);
 
-      # FIXME don't duplicate the -enable-kvm etc. flags here yet again!
-      qemuFlags =
-        (if system == "x86_64-linux" then "-m 768 " else "-m 512 ") +
-        (optionalString (system == "x86_64-linux") "-cpu kvm64 ") +
-        (optionalString (system == "aarch64-linux") "-enable-kvm -machine virt,gic-version=host -cpu host ");
+        # FIXME don't duplicate the -enable-kvm etc. flags here yet again!
+        qemuFlags =
+          (if system == "x86_64-linux" then "-m 768 " else "-m 512 ")
+          + (optionalString (system == "x86_64-linux") "-cpu kvm64 ")
+          + (optionalString (system == "aarch64-linux") "-enable-kvm -machine virt,gic-version=host -cpu host ")
+          ;
 
-      hdFlags = ''hda => "vm-state-machine/machine.qcow2", hdaInterface => "${iface}", ''
-        + optionalString isEfi (if pkgs.stdenv.isAarch64
-            then ''bios => "${pkgs.OVMF.fd}/FV/QEMU_EFI.fd", ''
-            else ''bios => "${pkgs.OVMF.fd}/FV/OVMF.fd", '');
-    in if !isEfi && !(pkgs.stdenv.isi686 || pkgs.stdenv.isx86_64) then
-      throw "Non-EFI boot methods are only supported on i686 / x86_64"
-    else ''
+        hdFlags = ''hda => "vm-state-machine/machine.qcow2", hdaInterface => "${iface}", ''
+          + optionalString isEfi (
+              if pkgs.stdenv.isAarch64
+              then ''bios => "${pkgs.OVMF.fd}/FV/QEMU_EFI.fd", ''
+              else ''bios => "${pkgs.OVMF.fd}/FV/OVMF.fd", ''
+            )
+          ;
+      in
+        if !isEfi && !(pkgs.stdenv.isi686 || pkgs.stdenv.isx86_64) then
+          throw "Non-EFI boot methods are only supported on i686 / x86_64"
+        else ''
 
       $machine->start;
 
@@ -135,7 +153,7 @@ let
           ''$machine->succeed("test -e /boot/grub");''
         else
           ''$machine->succeed("test -e /boot/loader/loader.conf");''
-      }
+        }
 
       # Check whether /root has correct permissions.
       $machine->succeed("stat -c '%a' /root") =~ /700/ or die;
@@ -190,51 +208,57 @@ let
 
       # Tests for validating clone configuration entries in grub menu
       ${optionalString testCloneConfig ''
-        # Reboot Machine
-        $machine = createMachine({ ${hdFlags} qemuFlags => "${qemuFlags}", name => "clone-default-config" });
-        ${preBootCommands}
-        $machine->waitForUnit("multi-user.target");
+          # Reboot Machine
+          $machine = createMachine({ ${hdFlags} qemuFlags => "${qemuFlags}", name => "clone-default-config" });
+          ${preBootCommands}
+          $machine->waitForUnit("multi-user.target");
 
-        # Booted configuration name should be Home
-        # This is not the name that shows in the grub menu.
-        # The default configuration is always shown as "Default"
-        $machine->succeed("cat /run/booted-system/configuration-name >&2");
-        $machine->succeed("cat /run/booted-system/configuration-name | grep Home");
+          # Booted configuration name should be Home
+          # This is not the name that shows in the grub menu.
+          # The default configuration is always shown as "Default"
+          $machine->succeed("cat /run/booted-system/configuration-name >&2");
+          $machine->succeed("cat /run/booted-system/configuration-name | grep Home");
 
-        # We should find **not** a file named /etc/gitconfig
-        $machine->fail("test -e /etc/gitconfig");
+          # We should find **not** a file named /etc/gitconfig
+          $machine->fail("test -e /etc/gitconfig");
 
-        # Set grub to boot the second configuration
-        $machine->succeed("grub-reboot 1");
+          # Set grub to boot the second configuration
+          $machine->succeed("grub-reboot 1");
 
-        $machine->shutdown;
+          $machine->shutdown;
 
-        # Reboot Machine
-        $machine = createMachine({ ${hdFlags} qemuFlags => "${qemuFlags}", name => "clone-alternate-config" });
-        ${preBootCommands}
+          # Reboot Machine
+          $machine = createMachine({ ${hdFlags} qemuFlags => "${qemuFlags}", name => "clone-alternate-config" });
+          ${preBootCommands}
 
-        $machine->waitForUnit("multi-user.target");
-        # Booted configuration name should be Work
-        $machine->succeed("cat /run/booted-system/configuration-name >&2");
-        $machine->succeed("cat /run/booted-system/configuration-name | grep Work");
+          $machine->waitForUnit("multi-user.target");
+          # Booted configuration name should be Work
+          $machine->succeed("cat /run/booted-system/configuration-name >&2");
+          $machine->succeed("cat /run/booted-system/configuration-name | grep Work");
 
-        # We should find a file named /etc/gitconfig
-        $machine->succeed("test -e /etc/gitconfig");
+          # We should find a file named /etc/gitconfig
+          $machine->succeed("test -e /etc/gitconfig");
 
-        $machine->shutdown;
-      ''}
+          $machine->shutdown;
+        ''}
 
     '';
 
 
   makeInstallerTest = name:
-    { createPartitions, preBootCommands ? "", extraConfig ? ""
-    , extraInstallerConfig ? {}
-    , bootLoader ? "grub" # either "grub" or "systemd-boot"
-    , grubVersion ? 2, grubDevice ? "/dev/vda", grubIdentifier ? "uuid", grubUseEfi ? false
-    , enableOCR ? false, meta ? {}
-    , testCloneConfig ? false
-    }:
+  { createPartitions
+  , preBootCommands ? ""
+  , extraConfig ? ""
+  , extraInstallerConfig ? {}
+  , bootLoader ? "grub" # either "grub" or "systemd-boot"
+  , grubVersion ? 2
+  , grubDevice ? "/dev/vda"
+  , grubIdentifier ? "uuid"
+  , grubUseEfi ? false
+  , enableOCR ? false
+  , meta ? {}
+  , testCloneConfig ? false
+  }:
     makeTest {
       inherit enableOCR;
       name = "installer-" + name;
@@ -248,122 +272,129 @@ let
         machine =
           { pkgs, ... }:
 
-          { imports =
-              [ ../modules/profiles/installation-device.nix
-                ../modules/profiles/base.nix
-                extraInstallerConfig
-              ];
+            {
+              imports =
+                [
+                  ../modules/profiles/installation-device.nix
+                  ../modules/profiles/base.nix
+                  extraInstallerConfig
+                ];
 
-            virtualisation.diskSize = 8 * 1024;
-            virtualisation.memorySize = 1024;
+              virtualisation.diskSize = 8 * 1024;
+              virtualisation.memorySize = 1024;
 
-            # Use a small /dev/vdb as the root disk for the
-            # installer. This ensures the target disk (/dev/vda) is
-            # the same during and after installation.
-            virtualisation.emptyDiskImages = [ 512 ];
-            virtualisation.bootDevice =
-              if grubVersion == 1 then "/dev/sdb" else "/dev/vdb";
-            virtualisation.qemu.diskInterface =
-              if grubVersion == 1 then "scsi" else "virtio";
+              # Use a small /dev/vdb as the root disk for the
+              # installer. This ensures the target disk (/dev/vda) is
+              # the same during and after installation.
+              virtualisation.emptyDiskImages = [ 512 ];
+              virtualisation.bootDevice =
+                if grubVersion == 1 then "/dev/sdb" else "/dev/vdb";
+              virtualisation.qemu.diskInterface =
+                if grubVersion == 1 then "scsi" else "virtio";
 
-            boot.loader.systemd-boot.enable = mkIf (bootLoader == "systemd-boot") true;
+              boot.loader.systemd-boot.enable = mkIf (bootLoader == "systemd-boot") true;
 
-            hardware.enableAllFirmware = mkForce false;
+              hardware.enableAllFirmware = mkForce false;
 
-            # The test cannot access the network, so any packages we
-            # need must be included in the VM.
-            system.extraDependencies = with pkgs;
-              [ sudo
-                libxml2.bin
-                libxslt.bin
-                desktop-file-utils
-                docbook5
-                docbook_xsl_ns
-                unionfs-fuse
-                ntp
-                nixos-artwork.wallpapers.simple-dark-gray-bottom
-                perlPackages.XMLLibXML
-                perlPackages.ListCompare
-                shared-mime-info
-                texinfo
-                xorg.lndir
+              # The test cannot access the network, so any packages we
+              # need must be included in the VM.
+              system.extraDependencies = with pkgs;
+                [
+                  sudo
+                  libxml2.bin
+                  libxslt.bin
+                  desktop-file-utils
+                  docbook5
+                  docbook_xsl_ns
+                  unionfs-fuse
+                  ntp
+                  nixos-artwork.wallpapers.simple-dark-gray-bottom
+                  perlPackages.XMLLibXML
+                  perlPackages.ListCompare
+                  shared-mime-info
+                  texinfo
+                  xorg.lndir
 
-                # add curl so that rather than seeing the test attempt to download
-                # curl's tarball, we see what it's trying to download
-                curl
-              ]
-              ++ optional (bootLoader == "grub" && grubVersion == 1) pkgs.grub
-              ++ optionals (bootLoader == "grub" && grubVersion == 2) [ pkgs.grub2 pkgs.grub2_efi ];
+                  # add curl so that rather than seeing the test attempt to download
+                  # curl's tarball, we see what it's trying to download
+                  curl
+                ]
+                ++ optional (bootLoader == "grub" && grubVersion == 1) pkgs.grub
+                ++ optionals (bootLoader == "grub" && grubVersion == 2) [ pkgs.grub2 pkgs.grub2_efi ];
 
-            services.udisks2.enable = mkDefault false;
+              services.udisks2.enable = mkDefault false;
 
-            nix.binaryCaches = mkForce [ ];
-            nix.extraOptions =
-              ''
-                hashed-mirrors =
-                connect-timeout = 1
-              '';
-          };
+              nix.binaryCaches = mkForce [];
+              nix.extraOptions =
+                ''
+                  hashed-mirrors =
+                  connect-timeout = 1
+                '';
+            };
 
       };
 
       testScript = testScriptFun {
         inherit bootLoader createPartitions preBootCommands
-                grubVersion grubDevice grubIdentifier grubUseEfi extraConfig
-                testCloneConfig;
+          grubVersion grubDevice grubIdentifier grubUseEfi extraConfig
+          testCloneConfig
+          ;
       };
     };
 
-    makeLuksRootTest = name: luksFormatOpts: makeInstallerTest name
-      { createPartitions = ''
-          $machine->succeed(
-            "flock /dev/vda parted --script /dev/vda -- mklabel msdos"
-            . " mkpart primary ext2 1M 50MB" # /boot
-            . " mkpart primary linux-swap 50M 1024M"
-            . " mkpart primary 1024M -1s", # LUKS
-            "udevadm settle",
-            "mkswap /dev/vda2 -L swap",
-            "swapon -L swap",
-            "modprobe dm_mod dm_crypt",
-            "echo -n supersecret | cryptsetup luksFormat ${luksFormatOpts} -q /dev/vda3 -",
-            "echo -n supersecret | cryptsetup luksOpen --key-file - /dev/vda3 cryptroot",
-            "mkfs.ext3 -L nixos /dev/mapper/cryptroot",
-            "mount LABEL=nixos /mnt",
-            "mkfs.ext3 -L boot /dev/vda1",
-            "mkdir -p /mnt/boot",
-            "mount LABEL=boot /mnt/boot",
-          );
-        '';
-        extraConfig = ''
-          boot.kernelParams = lib.mkAfter [ "console=tty0" ];
-        '';
-        enableOCR = true;
-        preBootCommands = ''
-          $machine->start;
-          $machine->waitForText(qr/Passphrase for/);
-          $machine->sendChars("supersecret\n");
-        '';
-      };
+  makeLuksRootTest = name: luksFormatOpts: makeInstallerTest name
+    {
+      createPartitions = ''
+        $machine->succeed(
+          "flock /dev/vda parted --script /dev/vda -- mklabel msdos"
+          . " mkpart primary ext2 1M 50MB" # /boot
+          . " mkpart primary linux-swap 50M 1024M"
+          . " mkpart primary 1024M -1s", # LUKS
+          "udevadm settle",
+          "mkswap /dev/vda2 -L swap",
+          "swapon -L swap",
+          "modprobe dm_mod dm_crypt",
+          "echo -n supersecret | cryptsetup luksFormat ${luksFormatOpts} -q /dev/vda3 -",
+          "echo -n supersecret | cryptsetup luksOpen --key-file - /dev/vda3 cryptroot",
+          "mkfs.ext3 -L nixos /dev/mapper/cryptroot",
+          "mount LABEL=nixos /mnt",
+          "mkfs.ext3 -L boot /dev/vda1",
+          "mkdir -p /mnt/boot",
+          "mount LABEL=boot /mnt/boot",
+        );
+      '';
+      extraConfig = ''
+        boot.kernelParams = lib.mkAfter [ "console=tty0" ];
+      '';
+      enableOCR = true;
+      preBootCommands = ''
+        $machine->start;
+        $machine->waitForText(qr/Passphrase for/);
+        $machine->sendChars("supersecret\n");
+      '';
+    };
 
   # The (almost) simplest partitioning scheme: a swap partition and
   # one big filesystem partition.
-  simple-test-config = { createPartitions =
-       ''
-         $machine->succeed(
-             "flock /dev/vda parted --script /dev/vda -- mklabel msdos"
-             . " mkpart primary linux-swap 1M 1024M"
-             . " mkpart primary ext2 1024M -1s",
-             "udevadm settle",
-             "mkswap /dev/vda1 -L swap",
-             "swapon -L swap",
-             "mkfs.ext3 -L nixos /dev/vda2",
-             "mount LABEL=nixos /mnt",
-         );
-       '';
-   };
+  simple-test-config = {
+    createPartitions =
+      ''
+        $machine->succeed(
+            "flock /dev/vda parted --script /dev/vda -- mklabel msdos"
+            . " mkpart primary linux-swap 1M 1024M"
+            . " mkpart primary ext2 1024M -1s",
+            "udevadm settle",
+            "mkswap /dev/vda1 -L swap",
+            "swapon -L swap",
+            "mkfs.ext3 -L nixos /dev/vda2",
+            "mount LABEL=nixos /mnt",
+        );
+      '';
+  };
 
   simple-uefi-grub-config =
-    { createPartitions =
+    {
+      createPartitions =
         ''
           $machine->succeed(
               "flock /dev/vda parted --script /dev/vda -- mklabel gpt"
@@ -381,32 +412,34 @@ let
               "mount LABEL=BOOT /mnt/boot",
           );
         '';
-        bootLoader = "grub";
-        grubUseEfi = true;
+      bootLoader = "grub";
+      grubUseEfi = true;
     };
 
-  clone-test-extraconfig = { extraConfig =
-         ''
-         environment.systemPackages = [ pkgs.grub2 ];
-         boot.loader.grub.configurationName = "Home";
-         nesting.clone = [
-         {
-           boot.loader.grub.configurationName = lib.mkForce "Work";
+  clone-test-extraconfig = {
+    extraConfig =
+      ''
+        environment.systemPackages = [ pkgs.grub2 ];
+        boot.loader.grub.configurationName = "Home";
+        nesting.clone = [
+        {
+          boot.loader.grub.configurationName = lib.mkForce "Work";
 
-           environment.etc = {
-             "gitconfig".text = "
-               [core]
-                 gitproxy = none for work.com
-                 ";
-           };
-         }
-         ];
-         '';
-       testCloneConfig = true;
+          environment.etc = {
+            "gitconfig".text = "
+              [core]
+                gitproxy = none for work.com
+                ";
+          };
+        }
+        ];
+      '';
+    testCloneConfig = true;
   };
 
 
-in {
+in
+{
 
   # !!! `parted mkpart' seems to silently create overlapping partitions.
 
@@ -420,7 +453,8 @@ in {
 
   # Simple GPT/UEFI configuration using systemd-boot with 3 partitions: ESP, swap & root filesystem
   simpleUefiSystemdBoot = makeInstallerTest "simpleUefiSystemdBoot"
-    { createPartitions =
+    {
+      createPartitions =
         ''
           $machine->succeed(
               "flock /dev/vda parted --script /dev/vda -- mklabel gpt"
@@ -438,7 +472,7 @@ in {
               "mount LABEL=BOOT /mnt/boot",
           );
         '';
-        bootLoader = "systemd-boot";
+      bootLoader = "systemd-boot";
     };
 
   simpleUefiGrub = makeInstallerTest "simpleUefiGrub" simple-uefi-grub-config;
@@ -448,7 +482,8 @@ in {
 
   # Same as the previous, but now with a separate /boot partition.
   separateBoot = makeInstallerTest "separateBoot"
-    { createPartitions =
+    {
+      createPartitions =
         ''
           $machine->succeed(
               "flock /dev/vda parted --script /dev/vda -- mklabel msdos"
@@ -469,7 +504,8 @@ in {
 
   # Same as the previous, but with fat32 /boot.
   separateBootFat = makeInstallerTest "separateBootFat"
-    { createPartitions =
+    {
+      createPartitions =
         ''
           $machine->succeed(
               "flock /dev/vda parted --script /dev/vda -- mklabel msdos"
@@ -528,7 +564,8 @@ in {
   # Create two physical LVM partitions combined into one volume group
   # that contains the logical swap and root partitions.
   lvm = makeInstallerTest "lvm"
-    { createPartitions =
+    {
+      createPartitions =
         ''
           $machine->succeed(
               "flock /dev/vda parted --script /dev/vda -- mklabel msdos"
@@ -562,29 +599,30 @@ in {
   # Checks for regression of missing cryptsetup, when no luks device without
   # keyfile is configured
   encryptedFSWithKeyfile = makeInstallerTest "encryptedFSWithKeyfile"
-    { createPartitions = ''
-       $machine->succeed(
-          "flock /dev/vda parted --script /dev/vda -- mklabel msdos"
-          . " mkpart primary ext2 1M 50MB" # /boot
-          . " mkpart primary linux-swap 50M 1024M"
-          . " mkpart primary 1024M 1280M" # LUKS with keyfile
-          . " mkpart primary 1280M -1s",
-          "udevadm settle",
-          "mkswap /dev/vda2 -L swap",
-          "swapon -L swap",
-          "mkfs.ext3 -L nixos /dev/vda4",
-          "mount LABEL=nixos /mnt",
-          "mkfs.ext3 -L boot /dev/vda1",
-          "mkdir -p /mnt/boot",
-          "mount LABEL=boot /mnt/boot",
-          "modprobe dm_mod dm_crypt",
-          "echo -n supersecret > /mnt/keyfile",
-          "cryptsetup luksFormat -q /dev/vda3 --key-file /mnt/keyfile",
-          "cryptsetup luksOpen --key-file /mnt/keyfile /dev/vda3 crypt",
-          "mkfs.ext3 -L test /dev/mapper/crypt",
-          "cryptsetup luksClose crypt",
-          "mkdir -p /mnt/test"
-        );
+    {
+      createPartitions = ''
+        $machine->succeed(
+           "flock /dev/vda parted --script /dev/vda -- mklabel msdos"
+           . " mkpart primary ext2 1M 50MB" # /boot
+           . " mkpart primary linux-swap 50M 1024M"
+           . " mkpart primary 1024M 1280M" # LUKS with keyfile
+           . " mkpart primary 1280M -1s",
+           "udevadm settle",
+           "mkswap /dev/vda2 -L swap",
+           "swapon -L swap",
+           "mkfs.ext3 -L nixos /dev/vda4",
+           "mount LABEL=nixos /mnt",
+           "mkfs.ext3 -L boot /dev/vda1",
+           "mkdir -p /mnt/boot",
+           "mount LABEL=boot /mnt/boot",
+           "modprobe dm_mod dm_crypt",
+           "echo -n supersecret > /mnt/keyfile",
+           "cryptsetup luksFormat -q /dev/vda3 --key-file /mnt/keyfile",
+           "cryptsetup luksOpen --key-file /mnt/keyfile /dev/vda3 crypt",
+           "mkfs.ext3 -L test /dev/mapper/crypt",
+           "cryptsetup luksClose crypt",
+           "mkdir -p /mnt/test"
+         );
       '';
       extraConfig = ''
         fileSystems."/test" =
@@ -600,7 +638,8 @@ in {
 
 
   swraid = makeInstallerTest "swraid"
-    { createPartitions =
+    {
+      createPartitions =
         ''
           $machine->succeed(
               "flock /dev/vda parted --script /dev/vda --"
@@ -637,7 +676,8 @@ in {
 
   # Test a basic install using GRUB 1.
   grub1 = makeInstallerTest "grub1"
-    { createPartitions =
+    {
+      createPartitions =
         ''
           $machine->succeed(
               "flock /dev/sda parted --script /dev/sda -- mklabel msdos"

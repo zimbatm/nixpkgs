@@ -1,6 +1,16 @@
-{ stdenv, fetchurl, libjpeg, libtiff, giflib, libpng, bzip2, pkgconfig
-, freetype, libid3tag
-, x11Support ? true, xlibsWrapper ? null }:
+{ stdenv
+, fetchurl
+, libjpeg
+, libtiff
+, giflib
+, libpng
+, bzip2
+, pkgconfig
+, freetype
+, libid3tag
+, x11Support ? true
+, xlibsWrapper ? null
+}:
 
 with stdenv.lib;
 
@@ -13,7 +23,8 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [ libjpeg libtiff giflib libpng bzip2 freetype libid3tag ]
-    ++ optional x11Support xlibsWrapper;
+    ++ optional x11Support xlibsWrapper
+    ;
 
   nativeBuildInputs = [ pkgconfig ];
 
@@ -27,7 +38,8 @@ stdenv.mkDerivation rec {
   # Do not build amd64 assembly code on Darwin, because it fails to compile
   # with unknow directive errors
   configureFlags = optional stdenv.isDarwin "--enable-amd64=no"
-    ++ optional (!x11Support) "--without-x";
+    ++ optional (!x11Support) "--without-x"
+    ;
 
   outputs = [ "bin" "out" "dev" ];
 

@@ -1,17 +1,33 @@
-{ lib, stdenv, fetchurl, makeWrapper, pkgconfig, texinfo
-, cairo, gd, libcerf, pango, readline, zlib
-, withTeXLive ? false, texlive
-, withLua ? false, lua
+{ lib
+, stdenv
+, fetchurl
+, makeWrapper
+, pkgconfig
+, texinfo
+, cairo
+, gd
+, libcerf
+, pango
+, readline
+, zlib
+, withTeXLive ? false
+, texlive
+, withLua ? false
+, lua
 , libX11 ? null
 , libXt ? null
 , libXpm ? null
 , libXaw ? null
 , aquaterm ? false
-, withWxGTK ? false, wxGTK ? null
+, withWxGTK ? false
+, wxGTK ? null
 , fontconfig ? null
 , gnused ? null
 , coreutils ? null
-, withQt ? false, qttools, qtbase, qtsvg
+, withQt ? false
+, qttools
+, qtbase
+, qtsvg
 }:
 
 assert libX11 != null -> (fontconfig != null && gnused != null && coreutils != null);
@@ -34,7 +50,8 @@ stdenv.mkDerivation rec {
     ++ lib.optional withLua lua
     ++ lib.optionals withX [ libX11 libXpm libXt libXaw ]
     ++ lib.optionals withQt [ qtbase qtsvg ]
-    ++ lib.optional withWxGTK wxGTK;
+    ++ lib.optional withWxGTK wxGTK
+    ;
 
   postPatch = ''
     # lrelease is in qttools, not in qtbase.

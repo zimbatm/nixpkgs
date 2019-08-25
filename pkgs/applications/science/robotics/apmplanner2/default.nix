@@ -1,6 +1,21 @@
-{ lib, mkDerivation, fetchFromGitHub, fetchpatch, qmake
-, qtbase, qtscript, qtwebkit, qtserialport, qtsvg, qtdeclarative, qtquickcontrols2
-, alsaLib, libsndfile, flite, openssl, udev, SDL2
+{ lib
+, mkDerivation
+, fetchFromGitHub
+, fetchpatch
+, qmake
+, qtbase
+, qtscript
+, qtwebkit
+, qtserialport
+, qtsvg
+, qtdeclarative
+, qtquickcontrols2
+, alsaLib
+, libsndfile
+, flite
+, openssl
+, udev
+, SDL2
 }:
 
 mkDerivation rec {
@@ -16,15 +31,28 @@ mkDerivation rec {
 
   patches = [
     # can be dropped after 2.0.27-rc1
-    (fetchpatch {
-      url = "https://github.com/ArduPilot/apm_planner/commit/299ff23b5e9910de04edfc06b6893bb06b47a57b.patch";
-      sha256 = "16rc81iwqp2i46g6bm9lbvcjfsk83999r9h8w1pz0mys7rsilvqy";
-    })
+    (
+      fetchpatch {
+        url = "https://github.com/ArduPilot/apm_planner/commit/299ff23b5e9910de04edfc06b6893bb06b47a57b.patch";
+        sha256 = "16rc81iwqp2i46g6bm9lbvcjfsk83999r9h8w1pz0mys7rsilvqy";
+      }
+    )
   ];
 
   buildInputs = [
-    alsaLib libsndfile flite openssl udev SDL2
-    qtbase qtscript qtwebkit qtserialport qtsvg qtdeclarative qtquickcontrols2
+    alsaLib
+    libsndfile
+    flite
+    openssl
+    udev
+    SDL2
+    qtbase
+    qtscript
+    qtwebkit
+    qtserialport
+    qtsvg
+    qtdeclarative
+    qtquickcontrols2
   ];
 
   nativeBuildInputs = [ qmake ];

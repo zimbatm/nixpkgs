@@ -63,7 +63,8 @@ buildPythonPackage rec {
     psutil
   ]
   ++ lib.optionals isPy3k [ antlr4-python3-runtime ]
-  ++ lib.optionals (!isPy3k) [ enum34 futures antlr4-python2-runtime ndg-httpsclient ];
+  ++ lib.optionals (!isPy3k) [ enum34 futures antlr4-python2-runtime ndg-httpsclient ]
+  ;
 
   # Remove overly restrictive version contraints and obsolete namespace setup
   prePatch = ''

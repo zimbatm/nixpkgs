@@ -1,7 +1,9 @@
 { stdenv, fetchurl, makeWrapper, perlPackages }:
 
-let version = "1.1";
-in stdenv.mkDerivation {
+let
+  version = "1.1";
+in
+stdenv.mkDerivation {
   name = "asciiquarium-${version}";
   src = fetchurl {
     url = "https://robobunny.com/projects/asciiquarium/asciiquarium_${version}.tar.gz";

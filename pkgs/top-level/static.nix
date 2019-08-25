@@ -12,47 +12,63 @@
 
 self: super: let
   inherit (super.stdenvAdapters) makeStaticBinaries
-                                 makeStaticLibraries
-                                 propagateBuildInputs;
+    makeStaticLibraries
+    propagateBuildInputs
+    ;
   inherit (super.lib) foldl optional flip id composeExtensions;
   inherit (super) makeSetupHook;
 
   # Best effort static binaries. Will still be linked to libSystem,
   # but more portable than Nix store binaries.
-  makeStaticDarwin = stdenv: stdenv // {
-    mkDerivation = args: stdenv.mkDerivation (args // {
-      NIX_CFLAGS_LINK = toString (args.NIX_CFLAGS_LINK or "")
-                      + " -static-libgcc";
-      nativeBuildInputs = (args.nativeBuildInputs or []) ++ [ (makeSetupHook {
-        substitutions = {
-          libsystem = "${stdenv.cc.libc}/lib/libSystem.B.dylib";
-        };
-      } ../stdenv/darwin/portable-libsystem.sh) ];
-    });
-  };
+  makeStaticDarwin = stdenv: stdenv
+    // {
+         mkDerivation = args: stdenv.mkDerivation (
+           args
+           // {
+                NIX_CFLAGS_LINK = toString (args.NIX_CFLAGS_LINK or "")
+                  + " -static-libgcc"
+                  ;
+                nativeBuildInputs = (args.nativeBuildInputs or [])
+                  ++ [
+                       (
+                         makeSetupHook {
+                           substitutions = {
+                             libsystem = "${stdenv.cc.libc}/lib/libSystem.B.dylib";
+                           };
+                         } ../stdenv/darwin/portable-libsystem.sh
+                       )
+                     ]
+                  ;
+              }
+         );
+       };
 
   staticAdapters = [ makeStaticLibraries propagateBuildInputs ]
 
-    # Apple does not provide a static version of libSystem or crt0.o
-    # So we can’t build static binaries without extensive hacks.
+  # Apple does not provide a static version of libSystem or crt0.o
+  # So we can’t build static binaries without extensive hacks.
     ++ optional (!super.stdenv.hostPlatform.isDarwin) makeStaticBinaries
 
     ++ optional super.stdenv.hostPlatform.isDarwin makeStaticDarwin
 
     # Glibc doesn’t come with static runtimes by default.
     # ++ optional (super.stdenv.hostPlatform.libc == "glibc") ((flip overrideInStdenv) [ self.stdenv.glibc.static ])
-  ;
+    ;
 
   # Force everything to link statically.
   haskellStaticAdapter = self: super: {
-    mkDerivation = attrs: super.mkDerivation (attrs // {
-      enableSharedLibraries = false;
-      enableSharedExecutables = false;
-      enableStaticLibraries = true;
-    });
+    mkDerivation = attrs: super.mkDerivation (
+      attrs
+      // {
+           enableSharedLibraries = false;
+           enableSharedExecutables = false;
+           enableStaticLibraries = true;
+         }
+    );
   };
 
-in {
+in
+{
   stdenv = foldl (flip id) super.stdenv staticAdapters;
   gcc49Stdenv = foldl (flip id) super.gcc49Stdenv staticAdapters;
   gcc5Stdenv = foldl (flip id) super.gcc5Stdenv staticAdapters;
@@ -63,11 +79,13 @@ in {
   clangStdenv = foldl (flip id) super.clangStdenv staticAdapters;
   libcxxStdenv = foldl (flip id) super.libcxxStdenv staticAdapters;
 
-  haskell = super.haskell // {
-    packageOverrides = composeExtensions
-      (super.haskell.packageOverrides or (_: _: {}))
-      haskellStaticAdapter;
-  };
+  haskell = super.haskell
+    // {
+         packageOverrides = composeExtensions
+           (super.haskell.packageOverrides or (_: _: {}))
+           haskellStaticAdapter;
+       }
+    ;
 
   ncurses = super.ncurses.override {
     enableStatic = true;
@@ -147,27 +165,33 @@ in {
     enableStatic = true;
   };
 
-  darwin = super.darwin // {
-    libiconv = super.darwin.libiconv.override {
-      enableShared = false;
-      enableStatic = true;
-    };
-  };
+  darwin = super.darwin
+    // {
+         libiconv = super.darwin.libiconv.override {
+           enableShared = false;
+           enableStatic = true;
+         };
+       }
+    ;
 
-  llvmPackages_8 = super.llvmPackages_8 // {
-    libraries = super.llvmPackages_8.libraries // rec {
-      libcxxabi = super.llvmPackages_8.libraries.libcxxabi.override {
-        enableShared = false;
-      };
-      libcxx = super.llvmPackages_8.libraries.libcxx.override {
-        enableShared = false;
-        inherit libcxxabi;
-      };
-      libunwind = super.llvmPackages_8.libraries.libunwind.override {
-        enableShared = false;
-      };
-    };
-  };
+  llvmPackages_8 = super.llvmPackages_8
+    // {
+         libraries = super.llvmPackages_8.libraries
+           // rec {
+                libcxxabi = super.llvmPackages_8.libraries.libcxxabi.override {
+                  enableShared = false;
+                };
+                libcxx = super.llvmPackages_8.libraries.libcxx.override {
+                  enableShared = false;
+                  inherit libcxxabi;
+                };
+                libunwind = super.llvmPackages_8.libraries.libunwind.override {
+                  enableShared = false;
+                };
+              }
+           ;
+       }
+    ;
 
   python27 = super.python27.override { static = true; };
 }

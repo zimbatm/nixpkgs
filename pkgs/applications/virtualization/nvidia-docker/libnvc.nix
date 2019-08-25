@@ -11,7 +11,8 @@ with lib; let
     sha256 = "1fw2qwc84k64agw6fx2v0mjf88aggph9c6qhs4cv7l3gmflv8qbk";
   };
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "libnvidia-container-${version}";
   version = "1.0.0";
 

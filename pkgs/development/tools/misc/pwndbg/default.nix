@@ -12,7 +12,8 @@
 , six
 , unicorn
 , pygments
-, }:
+,
+}:
 
 stdenv.mkDerivation rec {
   name = "pwndbg-${version}";

@@ -1,4 +1,10 @@
-{ lib, buildPythonPackage, fetchFromGitHub, python, pkgs, pythonOlder, substituteAll
+{ lib
+, buildPythonPackage
+, fetchFromGitHub
+, python
+, pkgs
+, pythonOlder
+, substituteAll
 , aenum
 , cython
 , pytest
@@ -19,17 +25,21 @@ buildPythonPackage rec {
 
   # force pyproj to use ${pkgs.proj}
   patches = [
-    (substituteAll {
-      src = ./001.proj.patch;
-      proj = pkgs.proj;
-    })
+    (
+      substituteAll {
+        src = ./001.proj.patch;
+        proj = pkgs.proj;
+      }
+    )
   ];
 
   buildInputs = [ cython pkgs.proj ];
 
   propagatedBuildInputs = [
     numpy
-  ] ++ lib.optional (pythonOlder "3.6") aenum;
+  ]
+  ++ lib.optional (pythonOlder "3.6") aenum
+  ;
 
   checkInputs = [ pytest mock ];
 

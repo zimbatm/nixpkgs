@@ -2,7 +2,8 @@
 
 let
   version = "3.0.0";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "easyrsa-${version}";
 
   src = fetchFromGitHub {

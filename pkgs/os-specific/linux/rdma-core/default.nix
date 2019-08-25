@@ -1,12 +1,23 @@
-{ stdenv, fetchFromGitHub, cmake, pkgconfig, docutils
-, pandoc, ethtool, iproute, libnl, udev, python, perl
+{ stdenv
+, fetchFromGitHub
+, cmake
+, pkgconfig
+, docutils
+, pandoc
+, ethtool
+, iproute
+, libnl
+, udev
+, python
+, perl
 , makeWrapper
-} :
+}:
 
 let
   version = "25.0";
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "rdma-core-${version}";
 
   src = fetchFromGitHub {

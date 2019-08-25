@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ cmake pkgconfig ];
   buildInputs = [ libdrm python ];
 
-  pythonPath = [ ];
+  pythonPath = [];
   passthru.python = python;
 
   meta = with stdenv.lib; {

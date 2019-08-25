@@ -50,10 +50,12 @@ in
     services.udev.packages = [ cfg.package ];
 
     systemd.services.upower =
-      { description = "Power Management Daemon";
+      {
+        description = "Power Management Daemon";
         path = [ pkgs.glib.out ]; # needed for gdbus
         serviceConfig =
-          { Type = "dbus";
+          {
+            Type = "dbus";
             BusName = "org.freedesktop.UPower";
             ExecStart = "@${cfg.package}/libexec/upowerd upowerd";
             Restart = "on-failure";

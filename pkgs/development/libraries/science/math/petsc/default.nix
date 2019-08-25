@@ -3,7 +3,8 @@
 , blas
 , gfortran
 , liblapack
-, python }:
+, python
+}:
 
 stdenv.mkDerivation rec {
   name = "petsc-${version}";

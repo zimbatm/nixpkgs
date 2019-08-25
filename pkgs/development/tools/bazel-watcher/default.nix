@@ -12,14 +12,18 @@ let
     ./use-go-in-path.patch
 
     # update rules_go to fix the build. Remove these when updating past 0.10.3
-    (fetchpatch {
-      url = "https://github.com/bazelbuild/bazel-watcher/commit/686130f50cea274f7453f6abc8c5249654047462.patch";
-      sha256 = "0rzs01sfiinl5d3dq9sx1bhl8kkzppdwh964fr7bzafqcxv5llmb";
-    })
-    (fetchpatch {
-      url = "https://github.com/bazelbuild/bazel-watcher/commit/18bdb44832ccc533e0ab3923ef80060eeb24582d.patch";
-      sha256 = "0k5hvlxlg4n092d53cbfxqqhzc6f1jv4licdhhi1dhckkhb4sdk6";
-    })
+    (
+      fetchpatch {
+        url = "https://github.com/bazelbuild/bazel-watcher/commit/686130f50cea274f7453f6abc8c5249654047462.patch";
+        sha256 = "0rzs01sfiinl5d3dq9sx1bhl8kkzppdwh964fr7bzafqcxv5llmb";
+      }
+    )
+    (
+      fetchpatch {
+        url = "https://github.com/bazelbuild/bazel-watcher/commit/18bdb44832ccc533e0ab3923ef80060eeb24582d.patch";
+        sha256 = "0k5hvlxlg4n092d53cbfxqqhzc6f1jv4licdhhi1dhckkhb4sdk6";
+      }
+    )
   ];
 in
 buildBazelPackage rec {

@@ -28,8 +28,8 @@ let
     name="${nd.name}" \
     model="${nd.model}" \
     ${if (hasAttr "nodename" nd && nd.nodename != null) then
-      ''nodename="${nd.nodename}"'' else
-      ''ip="${nd.ip}"''}'';
+    ''nodename="${nd.nodename}"'' else
+    ''ip="${nd.ip}"''}'';
   addAllNetDev = xs: concatStringsSep "\n" (map addNetDev xs);
 in
 

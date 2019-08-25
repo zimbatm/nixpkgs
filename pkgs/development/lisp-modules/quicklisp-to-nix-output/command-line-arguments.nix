@@ -5,7 +5,7 @@ rec {
 
   description = ''small library to deal with command-line arguments'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/command-line-arguments/2015-12-18/command-line-arguments-20151218-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "command-line-arguments";
 
-  asdFilesToKeep = ["command-line-arguments.asd"];
+  asdFilesToKeep = [ "command-line-arguments.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM command-line-arguments DESCRIPTION

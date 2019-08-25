@@ -1,13 +1,31 @@
-{ config, stdenv, lib, fetchurl, intltool, pkgconfig, python3Packages, bluez, gtk3
-, obex_data_server, xdg_utils, libnotify, dnsmasq, dhcp
-, hicolor-icon-theme, librsvg, wrapGAppsHook, gobject-introspection
-, withPulseAudio ? config.pulseaudio or stdenv.isLinux, libpulseaudio }:
+{ config
+, stdenv
+, lib
+, fetchurl
+, intltool
+, pkgconfig
+, python3Packages
+, bluez
+, gtk3
+, obex_data_server
+, xdg_utils
+, libnotify
+, dnsmasq
+, dhcp
+, hicolor-icon-theme
+, librsvg
+, wrapGAppsHook
+, gobject-introspection
+, withPulseAudio ? config.pulseaudio or stdenv.isLinux
+, libpulseaudio
+}:
 
 let
   pythonPackages = python3Packages;
   binPath = lib.makeBinPath [ xdg_utils dnsmasq dhcp ];
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "blueman-${version}";
   version = "2.0.8";
 
@@ -17,13 +35,18 @@ in stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    gobject-introspection intltool pkgconfig pythonPackages.cython
-    pythonPackages.wrapPython wrapGAppsHook
+    gobject-introspection
+    intltool
+    pkgconfig
+    pythonPackages.cython
+    pythonPackages.wrapPython
+    wrapGAppsHook
   ];
 
   buildInputs = [ bluez gtk3 pythonPackages.python libnotify librsvg hicolor-icon-theme ]
-                ++ pythonPath
-                ++ lib.optional withPulseAudio libpulseaudio;
+    ++ pythonPath
+    ++ lib.optional withPulseAudio libpulseaudio
+    ;
 
   postPatch = lib.optionalString withPulseAudio ''
     sed -i 's,CDLL(",CDLL("${libpulseaudio.out}/lib/,g' blueman/main/PulseAudioUtils.py

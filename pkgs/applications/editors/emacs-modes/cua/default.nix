@@ -1,4 +1,4 @@
-{stdenv, fetchurl}: stdenv.mkDerivation {
+{ stdenv, fetchurl }: stdenv.mkDerivation {
   name = "cua-mode-2.10";
   builder = ./builder.sh;
   src = fetchurl {

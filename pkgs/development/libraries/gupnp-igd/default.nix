@@ -26,10 +26,12 @@ stdenv.mkDerivation rec {
 
   patches = [
     # Add gupnp-1.2 compatibility
-    (fetchpatch {
-      url = https://gitlab.gnome.org/GNOME/gupnp-igd/commit/63531558a16ac2334a59f627b2fca5576dcfbb2e.patch;
-      sha256 = "0s8lkyy9fnnnnkkqwbk6gxb7795bb1kl1swk5ldjnlrzhfcy1ab2";
-    })
+    (
+      fetchpatch {
+        url = https://gitlab.gnome.org/GNOME/gupnp-igd/commit/63531558a16ac2334a59f627b2fca5576dcfbb2e.patch;
+        sha256 = "0s8lkyy9fnnnnkkqwbk6gxb7795bb1kl1swk5ldjnlrzhfcy1ab2";
+      }
+    )
   ];
 
   nativeBuildInputs = [

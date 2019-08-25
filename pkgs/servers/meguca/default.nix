@@ -1,6 +1,19 @@
-{ stdenv, buildGoPackage, fetchFromGitHub, pkgconfig, cmake, ffmpeg-full
-, ghostscript, graphicsmagick, quicktemplate, go-bindata, easyjson
-, nodePackages, emscripten, opencv, statik }:
+{ stdenv
+, buildGoPackage
+, fetchFromGitHub
+, pkgconfig
+, cmake
+, ffmpeg-full
+, ghostscript
+, graphicsmagick
+, quicktemplate
+, go-bindata
+, easyjson
+, nodePackages
+, emscripten
+, opencv
+, statik
+}:
 
 buildGoPackage rec {
   name = "meguca-unstable-${version}";
@@ -20,8 +33,15 @@ buildGoPackage rec {
   nativeBuildInputs = [ pkgconfig cmake ];
 
   buildInputs = [
-    ffmpeg-full graphicsmagick ghostscript quicktemplate go-bindata
-    easyjson emscripten opencv statik
+    ffmpeg-full
+    graphicsmagick
+    ghostscript
+    quicktemplate
+    go-bindata
+    easyjson
+    emscripten
+    opencv
+    statik
   ];
 
   buildPhase = ''
@@ -30,9 +50,11 @@ buildGoPackage rec {
     ln -sf ${nodePackages.meguca}/lib/node_modules/meguca/node_modules
     sed -i "/npm install --progress false --depth 0/d" Makefile
     make -j $NIX_BUILD_CORES generate all
-  '' + stdenv.lib.optionalString (!stdenv.isDarwin) ''
-    make -j $NIX_BUILD_CORES wasm
-  '';
+  ''
+  + stdenv.lib.optionalString (!stdenv.isDarwin) ''
+      make -j $NIX_BUILD_CORES wasm
+    ''
+  ;
 
   installPhase = ''
     mkdir -p $bin/bin $bin/share/meguca

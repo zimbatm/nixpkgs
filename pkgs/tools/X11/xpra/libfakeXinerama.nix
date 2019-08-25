@@ -1,6 +1,6 @@
 { stdenv, fetchurl, libX11, libXinerama }:
 
-stdenv.mkDerivation  rec {
+stdenv.mkDerivation rec {
   name = "libfakeXinerama-${version}";
   version = "0.1.0";
 

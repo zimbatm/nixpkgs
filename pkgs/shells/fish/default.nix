@@ -1,12 +1,23 @@
-{ stdenv, fetchurl, coreutils, utillinux,
-  which, gnused, gnugrep,
-  groff, man-db, getent, libiconv, pcre2,
-  gettext, ncurses, python3,
-  cmake
+{ stdenv
+, fetchurl
+, coreutils
+, utillinux
+, which
+, gnused
+, gnugrep
+, groff
+, man-db
+, getent
+, libiconv
+, pcre2
+, gettext
+, ncurses
+, python3
+, cmake
 
-  , writeText
+, writeText
 
-  , useOperatingSystemEtc ? true
+, useOperatingSystemEtc ? true
 
 }:
 
@@ -110,9 +121,15 @@ let
     # Required binaries during execution
     # Python: Autocompletion generated from manpages and config editing
     propagatedBuildInputs = [
-      coreutils gnugrep gnused
-      python3 groff gettext
-    ] ++ optional (!stdenv.isDarwin) man-db;
+      coreutils
+      gnugrep
+      gnused
+      python3
+      groff
+      gettext
+    ]
+    ++ optional (!stdenv.isDarwin) man-db
+    ;
 
     postInstall = ''
       sed -r "s|command grep|command ${gnugrep}/bin/grep|" \
@@ -139,24 +156,29 @@ let
       sed -e "s|python3|${getBin python3}/bin/python3|" \
           -i $out/share/fish/functions/{__fish_config_interactive.fish,fish_config.fish,fish_update_completions.fish}
 
-    '' + optionalString stdenv.isLinux ''
-      sed -e "s| ul| ${utillinux}/bin/ul|" \
-          -i "$out/share/fish/functions/__fish_print_help.fish"
-      for cur in $out/share/fish/functions/*.fish; do
-        sed -e "s|/usr/bin/getent|${getent}/bin/getent|" \
-            -i "$cur"
-      done
+    ''
+    + optionalString stdenv.isLinux ''
+        sed -e "s| ul| ${utillinux}/bin/ul|" \
+            -i "$out/share/fish/functions/__fish_print_help.fish"
+        for cur in $out/share/fish/functions/*.fish; do
+          sed -e "s|/usr/bin/getent|${getent}/bin/getent|" \
+              -i "$cur"
+        done
 
-    '' + optionalString (!stdenv.isDarwin) ''
-      sed -i "s|Popen(\['manpath'|Popen(\['${man-db}/bin/manpath'|" \
-              "$out/share/fish/tools/create_manpage_completions.py"
-      sed -i "s|command manpath|command ${man-db}/bin/manpath|"     \
-              "$out/share/fish/functions/man.fish"
-    '' + optionalString useOperatingSystemEtc ''
-      tee -a $out/etc/fish/config.fish < ${(writeText "config.fish.appendix" etcConfigAppendixText)}
-    '' + ''
+      ''
+    + optionalString (!stdenv.isDarwin) ''
+        sed -i "s|Popen(\['manpath'|Popen(\['${man-db}/bin/manpath'|" \
+                "$out/share/fish/tools/create_manpage_completions.py"
+        sed -i "s|command manpath|command ${man-db}/bin/manpath|"     \
+                "$out/share/fish/functions/man.fish"
+      ''
+    + optionalString useOperatingSystemEtc ''
+        tee -a $out/etc/fish/config.fish < ${(writeText "config.fish.appendix" etcConfigAppendixText)}
+      ''
+    + ''
       tee -a $out/share/fish/__fish_build_paths.fish < ${(writeText "__fish_build_paths_suffix.fish" fishPreInitHooks)}
-    '';
+    ''
+    ;
 
     enableParallelBuilding = true;
 
@@ -178,28 +200,31 @@ let
     # Test the fish_config tool by checking the generated splash page.
     # Since the webserver requires a port to run, it is not started.
     fishConfig =
-      let fishScript = writeText "test.fish" ''
-        set -x __fish_bin_dir ${fish}/bin
-        echo $__fish_bin_dir
-        cp -r ${fish}/share/fish/tools/web_config/* .
-        chmod -R +w *
-        # we delete everything after the fileurl is assigned
-        sed -e '/fileurl =/q' -i webconfig.py
-        echo "print(fileurl)" >> webconfig.py
-        # and check whether the message appears on the page
-        cat (${python3}/bin/python ./webconfig.py \
-          | tail -n1 | sed -ne 's|.*\(/tmp/.*\)|\1|p' \
-        ) | grep 'a href="http://localhost.*Start the Fish Web config'
+      let
+        fishScript = writeText "test.fish" ''
+          set -x __fish_bin_dir ${fish}/bin
+          echo $__fish_bin_dir
+          cp -r ${fish}/share/fish/tools/web_config/* .
+          chmod -R +w *
+          # we delete everything after the fileurl is assigned
+          sed -e '/fileurl =/q' -i webconfig.py
+          echo "print(fileurl)" >> webconfig.py
+          # and check whether the message appears on the page
+          cat (${python3}/bin/python ./webconfig.py \
+            | tail -n1 | sed -ne 's|.*\(/tmp/.*\)|\1|p' \
+          ) | grep 'a href="http://localhost.*Start the Fish Web config'
 
-        # cannot test the http server because it needs a localhost port
-      '';
-      in ''
-        HOME=$(mktemp -d)
-        ${fish}/bin/fish ${fishScript}
-      '';
+          # cannot test the http server because it needs a localhost port
+        '';
+      in
+        ''
+          HOME=$(mktemp -d)
+          ${fish}/bin/fish ${fishScript}
+        '';
   };
 
   # FIXME(Profpatsch) replace withTests stub
   withTests = flip const;
 
-in withTests tests fish
+in
+withTests tests fish

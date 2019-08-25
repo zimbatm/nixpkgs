@@ -12,8 +12,9 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ autoconf automake libtool ];
 
   buildInputs = [ boost fastjet gfortran gsl thepeg zlib ]
-    # There is a bug that requires for MMHT PDF's to be presend during the build
-    ++ (with lhapdf.pdf_sets; [ MMHT2014lo68cl MMHT2014nlo68cl ]);
+  # There is a bug that requires for MMHT PDF's to be presend during the build
+    ++ (with lhapdf.pdf_sets; [ MMHT2014lo68cl MMHT2014nlo68cl ])
+    ;
 
   postPatch = ''
     patchShebangs ./
@@ -27,10 +28,10 @@ stdenv.mkDerivation rec {
 
   meta = {
     description = "A multi-purpose particle physics event generator";
-    license     = stdenv.lib.licenses.gpl2;
-    homepage    = https://herwig.hepforge.org/;
-    platforms   = stdenv.lib.platforms.unix;
+    license = stdenv.lib.licenses.gpl2;
+    homepage = https://herwig.hepforge.org/;
+    platforms = stdenv.lib.platforms.unix;
     maintainers = with stdenv.lib.maintainers; [ veprbl ];
-    broken      = stdenv.isAarch64; # doesn't compile: ignoring return value of 'FILE* freopen...
+    broken = stdenv.isAarch64; # doesn't compile: ignoring return value of 'FILE* freopen...
   };
 }

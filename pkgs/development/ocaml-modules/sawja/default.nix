@@ -1,4 +1,4 @@
-{stdenv, fetchurl, which, perl, ocaml, findlib, javalib, camlp4 }:
+{ stdenv, fetchurl, which, perl, ocaml, findlib, javalib, camlp4 }:
 
 assert stdenv.lib.versionAtLeast (stdenv.lib.getVersion ocaml) "3.12";
 

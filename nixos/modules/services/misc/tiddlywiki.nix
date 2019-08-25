@@ -10,7 +10,8 @@ let
   name = "tiddlywiki";
   dataDir = "/var/lib/" + name;
 
-in {
+in
+{
 
   options.services.tiddlywiki = {
 
@@ -21,7 +22,7 @@ in {
       default = {};
       example = {
         credentials = "../credentials.csv";
-        readers="(authenticated)";
+        readers = "(authenticated)";
         port = 3456;
       };
       description = ''

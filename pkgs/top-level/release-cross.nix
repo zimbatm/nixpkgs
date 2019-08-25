@@ -1,7 +1,8 @@
 /* This file defines some basic smoke tests for cross compilation.
 */
 
-{ # The platforms *from* which we cross compile.
+{
+  # The platforms *from* which we cross compile.
   supportedSystems ? [ "x86_64-linux" "x86_64-darwin" "aarch64-linux" ]
 , # Strip most of attributes when evaluating to spare memory usage
   scrubJobs ? true
@@ -66,15 +67,17 @@ let
     buildPackages.binutils = darwin;
   };
 
-  rpiCommon = linuxCommon // {
-    vim = nativePlatforms;
-    unzip = nativePlatforms;
-    ddrescue = nativePlatforms;
-    lynx = nativePlatforms;
-    patchelf = nativePlatforms;
-    buildPackages.binutils = nativePlatforms;
-    mpg123 = nativePlatforms;
-  };
+  rpiCommon = linuxCommon
+    // {
+         vim = nativePlatforms;
+         unzip = nativePlatforms;
+         ddrescue = nativePlatforms;
+         lynx = nativePlatforms;
+         patchelf = nativePlatforms;
+         buildPackages.binutils = nativePlatforms;
+         mpg123 = nativePlatforms;
+       }
+    ;
 in
 
 {
@@ -96,35 +99,39 @@ in
     # cause false negatives.
     testEqualOne = path: system: let
       f = path: crossSystem: system: builtins.toString (lib.getAttrFromPath path (pkgsForCross crossSystem system));
-    in assertTrue (
+    in
+      assertTrue (
         f path null system
-        ==
-        f (["buildPackages"] ++ path) crossSystem system
+        == f ([ "buildPackages" ] ++ path) crossSystem system
       );
 
     testEqual = path: systems: forMatchingSystems systems (testEqualOne path);
 
     mapTestEqual = lib.mapAttrsRecursive testEqual;
 
-  in mapTestEqual {
-    boehmgc = nativePlatforms;
-    libffi = nativePlatforms;
-    libiconv = nativePlatforms;
-    libtool = nativePlatforms;
-    zlib = nativePlatforms;
-    readline = nativePlatforms;
-    libxml2 = nativePlatforms;
-    guile = nativePlatforms;
-  };
+  in
+    mapTestEqual {
+      boehmgc = nativePlatforms;
+      libffi = nativePlatforms;
+      libiconv = nativePlatforms;
+      libtool = nativePlatforms;
+      zlib = nativePlatforms;
+      readline = nativePlatforms;
+      libxml2 = nativePlatforms;
+      guile = nativePlatforms;
+    };
 
   crossIphone64 = mapTestOnCross lib.systems.examples.iphone64 darwinCommon;
 
   crossIphone32 = mapTestOnCross lib.systems.examples.iphone32 darwinCommon;
 
   /* Test some cross builds to the Sheevaplug */
-  crossSheevaplugLinux = mapTestOnCross lib.systems.examples.sheevaplug (linuxCommon // {
-    ubootSheevaplug = nativePlatforms;
-  });
+  crossSheevaplugLinux = mapTestOnCross lib.systems.examples.sheevaplug (
+    linuxCommon
+    // {
+         ubootSheevaplug = nativePlatforms;
+       }
+  );
 
   /* Test some cross builds on 32 bit mingw-w64 */
   crossMingw32 = mapTestOnCross lib.systems.examples.mingw32 windowsCommon;
@@ -144,8 +151,10 @@ in
   x86_64-musl = mapTestOnCross lib.systems.examples.musl64 linuxCommon;
 
   /* Linux on Aarch64 */
-  android64 = mapTestOnCross lib.systems.examples.aarch64-android-prebuilt (linuxCommon // {
-  });
+  android64 = mapTestOnCross lib.systems.examples.aarch64-android-prebuilt (
+    linuxCommon
+    // {}
+  );
 
   wasi32 = mapTestOnCross lib.systems.examples.wasi32 wasiCommon;
 
@@ -164,5 +173,6 @@ in
     mkBootstrapToolsJob = drv:
       assert lib.elem drv.system supportedSystems;
       hydraJob' (lib.addMetaAttrs { inherit maintainers; } drv);
-  in lib.mapAttrsRecursiveCond (as: !lib.isDerivation as) (name: mkBootstrapToolsJob) tools;
+  in
+    lib.mapAttrsRecursiveCond (as: !lib.isDerivation as) (name: mkBootstrapToolsJob) tools;
 }

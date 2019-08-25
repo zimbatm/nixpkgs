@@ -2,7 +2,8 @@
 
 let
   version = "2.010";
-in fetchzip {
+in
+fetchzip {
   name = "source-serif-pro-${version}";
 
   url = "https://github.com/adobe-fonts/source-serif-pro/releases/download/${version}R-ro%2F1.010R-it/source-serif-pro-${version}R-ro-1.010R-it.zip";
@@ -24,4 +25,3 @@ in fetchzip {
     maintainers = with maintainers; [ ttuegel ];
   };
 }
-

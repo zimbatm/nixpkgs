@@ -10,8 +10,13 @@ buildPythonPackage rec {
   };
 
   propagatedBuildInputs = [
-    colorama coverage termstyle unidecode
-  ] ++ lib.optionals (!isPy3k) [ mock backports_shutil_get_terminal_size ];
+    colorama
+    coverage
+    termstyle
+    unidecode
+  ]
+  ++ lib.optionals (!isPy3k) [ mock backports_shutil_get_terminal_size ]
+  ;
 
   meta = with lib; {
     description = "Python test runner";

@@ -15,10 +15,10 @@ let
 
     # RPC server options
     ${optionalString (cfg.rpc.port != null) "rpcport=${toString cfg.rpc.port}"}
-    ${concatMapStringsSep  "\n"
-      (rpcUser: "rpcauth=${rpcUser.name}:${rpcUser.passwordHMAC}")
-      (attrValues cfg.rpc.users)
-    }
+    ${concatMapStringsSep "\n"
+    (rpcUser: "rpcauth=${rpcUser.name}:${rpcUser.passwordHMAC}")
+    (attrValues cfg.rpc.users)
+  }
 
     # Extra config options (from bitcoind nixos service)
     ${cfg.extraConfig}
@@ -51,7 +51,8 @@ let
       name = mkDefault name;
     };
   };
-in {
+in
+{
   options = {
 
     services.bitcoind = {
@@ -134,10 +135,11 @@ in {
         description = "Override the default database cache size in megabytes.";
       };
       prune = mkOption {
-        type = types.nullOr (types.coercedTo
-          (types.enum [ "disable" "manual" ])
-          (x: if x == "disable" then 0 else 1)
-          types.ints.unsigned
+        type = types.nullOr (
+          types.coercedTo
+            (types.enum [ "disable" "manual" ])
+            (x: if x == "disable" then 0 else 1)
+            types.ints.unsigned
         );
         default = null;
         example = 10000;

@@ -12,11 +12,15 @@ pythonPackages.buildPythonApplication rec {
   propagatedBuildInputs = [
     mopidy
     mopidy-local-images
-  ] ++ (with pythonPackages; [
-    configobj
-    requests
-    tornado_4
-  ]);
+  ]
+  ++ (
+       with pythonPackages; [
+         configobj
+         requests
+         tornado_4
+       ]
+     )
+  ;
 
   # no tests implemented
   doCheck = false;

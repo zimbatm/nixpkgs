@@ -11,8 +11,16 @@ stdenv.mkDerivation rec {
   };
 
   propagatedBuildInputs = with python2Packages;
-    [ python2 makeWrapper tornado requests dateutil
-      vobject gdata caldavclientlibrary-asynk ];
+    [
+      python2
+      makeWrapper
+      tornado
+      requests
+      dateutil
+      vobject
+      gdata
+      caldavclientlibrary-asynk
+    ];
 
   installPhase = ''
     mkdir -p $out/bin $out/lib
@@ -41,7 +49,7 @@ stdenv.mkDerivation rec {
     homepage = http://asynk.io/;
     description = "Flexible contacts synchronization program";
     license = licenses.agpl3;
-    maintainers = [ ];
+    maintainers = [];
     platforms = platforms.unix;
   };
 }

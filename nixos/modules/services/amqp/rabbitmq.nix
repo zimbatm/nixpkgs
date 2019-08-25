@@ -12,7 +12,8 @@ let
 
   advanced_config_file = pkgs.writeText "advanced.config" cfg.config;
 
-in {
+in
+{
   ###### interface
   options = {
     services.rabbitmq = {
@@ -176,7 +177,9 @@ in {
         RABBITMQ_ENABLED_PLUGINS_FILE = pkgs.writeText "enabled_plugins" ''
           [ ${concatStringsSep "," cfg.plugins} ].
         '';
-      } //  optionalAttrs (cfg.config != "") { RABBITMQ_ADVANCED_CONFIG_FILE = advanced_config_file; };
+      }
+      // optionalAttrs (cfg.config != "") { RABBITMQ_ADVANCED_CONFIG_FILE = advanced_config_file; }
+      ;
 
       serviceConfig = {
         ExecStart = "${cfg.package}/sbin/rabbitmq-server";
@@ -196,9 +199,9 @@ in {
 
       preStart = ''
         ${optionalString (cfg.cookie != "") ''
-            echo -n ${cfg.cookie} > ${cfg.dataDir}/.erlang.cookie
-            chmod 600 ${cfg.dataDir}/.erlang.cookie
-        ''}
+        echo -n ${cfg.cookie} > ${cfg.dataDir}/.erlang.cookie
+        chmod 600 ${cfg.dataDir}/.erlang.cookie
+      ''}
       '';
     };
 

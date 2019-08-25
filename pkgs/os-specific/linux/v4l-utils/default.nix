@@ -1,7 +1,17 @@
-{ stdenv, lib, fetchurl, pkgconfig, perl, mkDerivation
-, libjpeg, udev
+{ stdenv
+, lib
+, fetchurl
+, pkgconfig
+, perl
+, mkDerivation
+, libjpeg
+, udev
 , withUtils ? true
-, withGUI ? true, alsaLib, libX11, qtbase, libGLU
+, withGUI ? true
+, alsaLib
+, libX11
+, qtbase
+, libGLU
 }:
 
 # See libv4l in all-packages.nix for the libs only (overrides alsa, libX11 & QT)

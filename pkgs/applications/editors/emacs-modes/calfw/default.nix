@@ -16,11 +16,11 @@ stdenv.mkDerivation rec {
 
   installPhase =
     ''
-       mkdir -p "$out/share/doc/${name}"
-       cp -v readme.md "$out/share/doc/${name}"
+      mkdir -p "$out/share/doc/${name}"
+      cp -v readme.md "$out/share/doc/${name}"
 
-       mkdir -p "$out/share/emacs/site-lisp/"
-       cp *.el "$out/share/emacs/site-lisp/"
+      mkdir -p "$out/share/emacs/site-lisp/"
+      cp *.el "$out/share/emacs/site-lisp/"
     '';
 
   meta = {
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
 
     license = stdenv.lib.licenses.gpl3Plus;
 
-    maintainers = with stdenv.lib.maintainers; [ ];
+    maintainers = with stdenv.lib.maintainers; [];
     platforms = stdenv.lib.platforms.unix;
   };
 }

@@ -55,17 +55,19 @@ in
   };
 
   config = mkIf anyEncrypted {
-    assertions = map (dev: {
-      assertion = dev.encrypted.label != null;
-      message = ''
-        The filesystem for ${dev.mountPoint} has encrypted.enable set to true, but no encrypted.label set
-      '';
-    }) encDevs;
+    assertions = map (
+      dev: {
+        assertion = dev.encrypted.label != null;
+        message = ''
+          The filesystem for ${dev.mountPoint} has encrypted.enable set to true, but no encrypted.label set
+        '';
+      }
+    ) encDevs;
 
     boot.initrd = {
       luks = {
         devices =
-          map (dev: { name = dev.encrypted.label; device = dev.encrypted.blkDev; } ) keylessEncDevs;
+          map (dev: { name = dev.encrypted.label; device = dev.encrypted.blkDev; }) keylessEncDevs;
         forceLuksSupportInInitrd = true;
       };
       postMountCommands =
@@ -73,4 +75,3 @@ in
     };
   };
 }
-

@@ -1,18 +1,28 @@
-{ stdenv, lib, fetchurl, clojure,
-  nodejs, jre, unzip,  nodePackages,
-  python, openssl, pkgs }:
+{ stdenv
+, lib
+, fetchurl
+, clojure
+, nodejs
+, jre
+, unzip
+, nodePackages
+, python
+, openssl
+, pkgs
+}:
 
-let # packageJSON=./package.json;
-    version = "1.9.0";
-    nodeVersion = "10.9.0";
-    nodeSources = fetchurl {
-      url="https://nodejs.org/dist/v${nodeVersion}/node-v${nodeVersion}.tar.gz";
-      sha256="0wgawq3wzw07pir73bxz13dggcc1fj0538y7y69n3cc0a2kiplqy";
-    };
-    lumo-internal-classpath = "LUMO__INTERNAL__CLASSPATH";
+let
+  # packageJSON=./package.json;
+  version = "1.9.0";
+  nodeVersion = "10.9.0";
+  nodeSources = fetchurl {
+    url = "https://nodejs.org/dist/v${nodeVersion}/node-v${nodeVersion}.tar.gz";
+    sha256 = "0wgawq3wzw07pir73bxz13dggcc1fj0538y7y69n3cc0a2kiplqy";
+  };
+  lumo-internal-classpath = "LUMO__INTERNAL__CLASSPATH";
 
-    # as found in cljs/snapshot/lumo/repl.cljs
-    requireDeps = '' \
+  # as found in cljs/snapshot/lumo/repl.cljs
+  requireDeps = '' \
       cljs.analyzer \
       cljs.compiler \
       cljs.env \
@@ -50,7 +60,8 @@ let # packageJSON=./package.json;
       lumo.js-deps \
       lumo.common '';
 
-    compileClojurescript = (simple: ''
+  compileClojurescript = (
+    simple: ''
       (require '[cljs.build.api :as cljs])
       (cljs/build \"src/cljs/snapshot\"
         {:optimizations      ${if simple then ":simple" else ":none"}
@@ -73,71 +84,80 @@ let # packageJSON=./package.json;
          :hashbang           false
          ;; :libs               [ \"src/cljs/bundled\" \"src/js\" ]
          :output-dir         ${if simple
-                                    then ''\"cljstmp\"''
-                                  else ''\"target\"''}
+    then ''\"cljstmp\"''
+    else ''\"target\"''}
          :output-to          ${if simple
-                                    then ''\"cljstmp/main.js\"''
-                                  else ''\"target/deleteme.js\"'' }})
-    '');
+    then ''\"cljstmp/main.js\"''
+    else ''\"target/deleteme.js\"'' }})
+    ''
+  );
 
 
-    cacheToJsons = ''
-      (import [java.io ByteArrayOutputStream FileInputStream])
-      (require '[cognitect.transit :as transit]
-               '[clojure.edn :as edn]
-               '[clojure.string :as str])
+  cacheToJsons = ''
+    (import [java.io ByteArrayOutputStream FileInputStream])
+    (require '[cognitect.transit :as transit]
+             '[clojure.edn :as edn]
+             '[clojure.string :as str])
 
-      (defn write-transit-json [cache]
-        (let [out (ByteArrayOutputStream. 1000000)
-              writer (transit/writer out :json)]
-          (transit/write writer cache)
-          (.toString out)))
+    (defn write-transit-json [cache]
+      (let [out (ByteArrayOutputStream. 1000000)
+            writer (transit/writer out :json)]
+        (transit/write writer cache)
+        (.toString out)))
 
-      (defn process-caches []
-        (let [cache-aot-path      \"target/cljs/core.cljs.cache.aot.edn\"
-              cache-aot-edn       (edn/read-string (slurp cache-aot-path))
-              cache-macros-path   \"target/cljs/core\$macros.cljc.cache.json\"
-              cache-macros-stream (FileInputStream. cache-macros-path)
-              cache-macros-edn    (transit/read (transit/reader cache-macros-stream :json))
-              caches              [[cache-aot-path cache-aot-edn]
-                                   [cache-macros-path cache-macros-edn]]]
-          (doseq [[path cache-edn] caches]
-            (doseq [key (keys cache-edn)]
-              (let [out-path (str/replace path #\"(\.json|\.edn)\$\"
-                               (str \".\" (munge key) \".json\"))
-                    tr-json  (write-transit-json (key cache-edn))]
-                (spit out-path tr-json))))))
+    (defn process-caches []
+      (let [cache-aot-path      \"target/cljs/core.cljs.cache.aot.edn\"
+            cache-aot-edn       (edn/read-string (slurp cache-aot-path))
+            cache-macros-path   \"target/cljs/core\$macros.cljc.cache.json\"
+            cache-macros-stream (FileInputStream. cache-macros-path)
+            cache-macros-edn    (transit/read (transit/reader cache-macros-stream :json))
+            caches              [[cache-aot-path cache-aot-edn]
+                                 [cache-macros-path cache-macros-edn]]]
+        (doseq [[path cache-edn] caches]
+          (doseq [key (keys cache-edn)]
+            (let [out-path (str/replace path #\"(\.json|\.edn)\$\"
+                             (str \".\" (munge key) \".json\"))
+                  tr-json  (write-transit-json (key cache-edn))]
+              (spit out-path tr-json))))))
 
-      (process-caches)
-    '';
+    (process-caches)
+  '';
 
-    trimMainJsEnd = ''
-      (let [string (slurp \"target/main.js\")]
-        (spit \"target/main.js\"
-          (subs string  0 (.indexOf string \"cljs.nodejs={};\"))))
-    '';
+  trimMainJsEnd = ''
+    (let [string (slurp \"target/main.js\")]
+      (spit \"target/main.js\"
+        (subs string  0 (.indexOf string \"cljs.nodejs={};\"))))
+  '';
 
 
-    cljdeps   = import ./deps.nix { inherit pkgs; };
-    classp    = cljdeps.makeClasspaths {
-                  extraClasspaths=["src/js" "src/cljs/bundled" "src/cljs/snapshot"];
-                };
-    
+  cljdeps = import ./deps.nix { inherit pkgs; };
+  classp = cljdeps.makeClasspaths {
+    extraClasspaths = [ "src/js" "src/cljs/bundled" "src/cljs/snapshot" ];
+  };
 
-    getJarPath = jarName: (lib.findFirst (p: p.name == jarName) null cljdeps.packages).path.jar;
 
-in stdenv.mkDerivation rec {
+  getJarPath = jarName: (lib.findFirst (p: p.name == jarName) null cljdeps.packages).path.jar;
+
+in
+stdenv.mkDerivation rec {
   inherit version;
   name = "lumo-${version}";
 
   src = fetchurl {
-    url    = "https://github.com/anmonteiro/lumo/archive/${version}.tar.gz";
+    url = "https://github.com/anmonteiro/lumo/archive/${version}.tar.gz";
     sha256 = "1mr3zjslznhv7y3mzvg1pmmvzn10d6di26izz4x8p4nfnshacwgw";
   };
 
 
-  buildInputs = [ nodejs clojure jre unzip python openssl
-                  nodePackages."lumo-build-deps-../interpreters/clojurescript/lumo" ];
+  buildInputs = [
+    nodejs
+    clojure
+    jre
+    unzip
+    python
+    openssl
+    nodePackages."lumo-build-deps-../interpreters/clojurescript/lumo"
+  ];
 
   buildPhase = ''
     # Copy over lumo-build-deps environment
@@ -253,4 +273,3 @@ in stdenv.mkDerivation rec {
     platforms = stdenv.lib.platforms.linux;
   };
 }
-

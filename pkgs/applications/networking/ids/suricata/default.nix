@@ -21,8 +21,12 @@
 , pcre
 , python
 , zlib
-, redisSupport ? true, redis, hiredis
-, rustSupport ? true, rustc, cargo
+, redisSupport ? true
+, redis
+, hiredis
+, rustSupport ? true
+, rustc
+, cargo
 }: let
   libmagic = file;
   hyperscanSupport = stdenv.system == "x86_64-linux" || stdenv.system == "i686-linux";
@@ -86,14 +90,15 @@ stdenv.mkDerivation rec {
     "--with-libnet-libraries=${libnet}/lib"
   ]
   ++ lib.optional hyperscanSupport [
-    "--with-libhs-includes=${hyperscan}/include"
-    "--with-libhs-libraries=${hyperscan}/lib"
-  ]
+       "--with-libhs-includes=${hyperscan}/include"
+       "--with-libhs-libraries=${hyperscan}/lib"
+     ]
   ++ lib.optional redisSupport [ "--enable-hiredis" ]
   ++ lib.optional rustSupport [
-    "--enable-rust"
-    "--enable-rust-experimental"
-  ];
+       "--enable-rust"
+       "--enable-rust-experimental"
+     ]
+  ;
 
   installFlags = [
     "e_localstatedir=\${TMPDIR}"

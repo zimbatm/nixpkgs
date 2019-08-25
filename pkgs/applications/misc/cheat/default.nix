@@ -25,7 +25,10 @@ buildPythonApplication rec {
   '';
 
   makeWrapperArgs = [
-    "--suffix" "CHEAT_PATH" ":" "$out/share/cheat"
+    "--suffix"
+    "CHEAT_PATH"
+    ":"
+    "$out/share/cheat"
   ];
 
   meta = with stdenv.lib; {

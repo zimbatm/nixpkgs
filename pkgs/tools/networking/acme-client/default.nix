@@ -20,7 +20,8 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [ libbsd libressl pkgconfig ]
-    ++ optional stdenv.isDarwin apple_sdk.sdk;
+    ++ optional stdenv.isDarwin apple_sdk.sdk
+    ;
 
   CFLAGS = "-DDEFAULT_CA_FILE='\"${defaultCaFile}\"'";
 

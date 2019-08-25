@@ -1,7 +1,25 @@
-{ lib, stdenv, fetchurl, pkgconfig, glib, gdk-pixbuf, pango, cairo, libxml2, libgsf
-, bzip2, libcroco, libintl, darwin, rustc, cargo, gnome3
-, withGTK ? false, gtk3 ? null
-, vala, gobject-introspection }:
+{ lib
+, stdenv
+, fetchurl
+, pkgconfig
+, glib
+, gdk-pixbuf
+, pango
+, cairo
+, libxml2
+, libgsf
+, bzip2
+, libcroco
+, libintl
+, darwin
+, rustc
+, cargo
+, gnome3
+, withGTK ? false
+, gtk3 ? null
+, vala
+, gobject-introspection
+}:
 
 let
   pname = "librsvg";
@@ -22,24 +40,28 @@ stdenv.mkDerivation rec {
   propagatedBuildInputs = [ glib gdk-pixbuf cairo ] ++ lib.optional withGTK gtk3;
 
   nativeBuildInputs = [ pkgconfig rustc cargo vala gobject-introspection ]
-    ++ lib.optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
-      ApplicationServices
-    ]);
+    ++ lib.optionals stdenv.isDarwin (
+         with darwin.apple_sdk.frameworks; [
+           ApplicationServices
+         ]
+       )
+    ;
 
   configureFlags = [
     "--enable-introspection"
     "--enable-vala"
     "--enable-installed-tests"
     "--enable-always-build-tests"
-  ] ++ stdenv.lib.optional stdenv.isDarwin "--disable-Bsymbolic";
+  ]
+  ++ stdenv.lib.optional stdenv.isDarwin "--disable-Bsymbolic"
+  ;
 
   makeFlags = [
     "installed_test_metadir=$(installedTests)/share/installed-tests/RSVG"
     "installed_testdir=$(installedTests)/libexec/installed-tests/RSVG"
   ];
 
-  NIX_CFLAGS_COMPILE
-    = stdenv.lib.optionalString stdenv.isDarwin "-I${cairo.dev}/include/cairo";
+  NIX_CFLAGS_COMPILE = stdenv.lib.optionalString stdenv.isDarwin "-I${cairo.dev}/include/cairo";
 
   # It wants to add loaders and update the loaders.cache in gdk-pixbuf
   # Patching the Makefiles to it creates rsvg specific loaders and the

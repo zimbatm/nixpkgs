@@ -1,15 +1,55 @@
-{ stdenv, fetchurl, substituteAll, intltool, pkgconfig, dbus, dbus-glib
-, gnome3, systemd, libuuid, polkit, gnutls, ppp, dhcp, iptables, python3, vala
-, libgcrypt, dnsmasq, bluez5, readline, libselinux, audit
-, gobject-introspection, modemmanager, openresolv, libndp, newt, libsoup
-, ethtool, gnused, iputils, kmod, jansson, gtk-doc, libxslt
-, docbook_xsl, docbook_xml_dtd_412, docbook_xml_dtd_42, docbook_xml_dtd_43
-, openconnect, curl, meson, ninja, libpsl }:
+{ stdenv
+, fetchurl
+, substituteAll
+, intltool
+, pkgconfig
+, dbus
+, dbus-glib
+, gnome3
+, systemd
+, libuuid
+, polkit
+, gnutls
+, ppp
+, dhcp
+, iptables
+, python3
+, vala
+, libgcrypt
+, dnsmasq
+, bluez5
+, readline
+, libselinux
+, audit
+, gobject-introspection
+, modemmanager
+, openresolv
+, libndp
+, newt
+, libsoup
+, ethtool
+, gnused
+, iputils
+, kmod
+, jansson
+, gtk-doc
+, libxslt
+, docbook_xsl
+, docbook_xml_dtd_412
+, docbook_xml_dtd_42
+, docbook_xml_dtd_43
+, openconnect
+, curl
+, meson
+, ninja
+, libpsl
+}:
 
 let
   pname = "NetworkManager";
   pythonForDocs = python3.withPackages (pkgs: with pkgs; [ pygobject3 ]);
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "network-manager-${version}";
   version = "1.18.2";
 
@@ -54,11 +94,13 @@ in stdenv.mkDerivation rec {
   ];
 
   patches = [
-    (substituteAll {
-      src = ./fix-paths.patch;
-      inherit iputils kmod openconnect ethtool gnused dbus;
-      inherit (stdenv) shell;
-    })
+    (
+      substituteAll {
+        src = ./fix-paths.patch;
+        inherit iputils kmod openconnect ethtool gnused dbus;
+        inherit (stdenv) shell;
+      }
+    )
 
     # Meson does not support using different directories during build and
     # for installation like Autotools did with flags passed to make install.
@@ -66,18 +108,43 @@ in stdenv.mkDerivation rec {
   ];
 
   buildInputs = [
-    systemd libselinux audit libpsl libuuid polkit ppp libndp curl
-    bluez5 dnsmasq gobject-introspection modemmanager readline newt libsoup jansson
+    systemd
+    libselinux
+    audit
+    libpsl
+    libuuid
+    polkit
+    ppp
+    libndp
+    curl
+    bluez5
+    dnsmasq
+    gobject-introspection
+    modemmanager
+    readline
+    newt
+    libsoup
+    jansson
   ];
 
   propagatedBuildInputs = [ dbus-glib gnutls libgcrypt ];
 
   nativeBuildInputs = [
-    meson ninja intltool pkgconfig
-    vala gobject-introspection
+    meson
+    ninja
+    intltool
+    pkgconfig
+    vala
+    gobject-introspection
     dbus-glib # for dbus-binding-tool
     # Docs
-    gtk-doc libxslt docbook_xsl docbook_xml_dtd_412 docbook_xml_dtd_42 docbook_xml_dtd_43 pythonForDocs
+    gtk-doc
+    libxslt
+    docbook_xsl
+    docbook_xml_dtd_412
+    docbook_xml_dtd_42
+    docbook_xml_dtd_43
+    pythonForDocs
   ];
 
   doCheck = false; # requires /sys, the net

@@ -22,7 +22,8 @@ in
   config = {
 
     assertions = [
-      { assertion = cfg.hvm;
+      {
+        assertion = cfg.hvm;
         message = "Paravirtualized EC2 instances are no longer supported.";
       }
     ];

@@ -1,5 +1,13 @@
-{ stdenv, lib, fetchurl, fetchFromGitLab, bundlerEnv
-, ruby, tzdata, git, nettools, nixosTests
+{ stdenv
+, lib
+, fetchurl
+, fetchFromGitLab
+, bundlerEnv
+, ruby
+, tzdata
+, git
+, nettools
+, nixosTests
 , gitlabEnterprise ? false
 }:
 
@@ -9,17 +17,28 @@ let
     inherit ruby;
     gemdir = ./rubyEnv- + "${if gitlabEnterprise then "ee" else "ce"}";
     gemset =
-      let x = import (gemdir + "/gemset.nix");
-      in x // {
-        # grpc expects the AR environment variable to contain `ar rpc`. See the
-        # discussion in nixpkgs #63056.
-        grpc = x.grpc // {
-          patches = [ ./fix-grpc-ar.patch ];
-          dontBuild = false;
-        };
-      };
+      let
+        x = import (gemdir + "/gemset.nix");
+      in
+        x
+        // {
+             # grpc expects the AR environment variable to contain `ar rpc`. See the
+             # discussion in nixpkgs #63056.
+             grpc = x.grpc
+               // {
+                    patches = [ ./fix-grpc-ar.patch ];
+                    dontBuild = false;
+                  }
+               ;
+           };
     groups = [
-      "default" "unicorn" "ed25519" "metrics" "development" "puma" "test"
+      "default"
+      "unicorn"
+      "ed25519"
+      "metrics"
+      "development"
+      "puma"
+      "test"
     ];
     # N.B. omniauth_oauth2_generic and apollo_upload_server both provide a
     # `console` executable.
@@ -50,7 +69,12 @@ stdenv.mkDerivation rec {
   src = sources.gitlab;
 
   buildInputs = [
-    rubyEnv rubyEnv.wrappedRuby rubyEnv.bundler tzdata git nettools
+    rubyEnv
+    rubyEnv.wrappedRuby
+    rubyEnv.bundler
+    tzdata
+    git
+    nettools
   ];
 
   patches = [ ./remove-hardcoded-locations.patch ];
@@ -117,15 +141,18 @@ stdenv.mkDerivation rec {
     homepage = http://www.gitlab.com/;
     platforms = platforms.linux;
     maintainers = with maintainers; [ fpletz globin krav ];
-  } // (if gitlabEnterprise then
-    {
-      license = licenses.unfreeRedistributable; # https://gitlab.com/gitlab-org/gitlab-ee/raw/master/LICENSE
-      description = "GitLab Enterprise Edition";
-    }
-  else
-    {
-      license = licenses.mit;
-      description = "GitLab Community Edition";
-      longDescription = "GitLab Community Edition (CE) is an open source end-to-end software development platform with built-in version control, issue tracking, code review, CI/CD, and more. Self-host GitLab CE on your own servers, in a container, or on a cloud provider.";
-    });
+  }
+    // (
+         if gitlabEnterprise then
+           {
+             license = licenses.unfreeRedistributable; # https://gitlab.com/gitlab-org/gitlab-ee/raw/master/LICENSE
+             description = "GitLab Enterprise Edition";
+           }
+         else
+           {
+             license = licenses.mit;
+             description = "GitLab Community Edition";
+             longDescription = "GitLab Community Edition (CE) is an open source end-to-end software development platform with built-in version control, issue tracking, code review, CI/CD, and more. Self-host GitLab CE on your own servers, in a container, or on a cloud provider.";
+           }
+       );
 }

@@ -15,8 +15,9 @@ let
         mapAttrs (n: toList) cfg.variables;
 
       suffixedVariables =
-        flip mapAttrs cfg.profileRelativeEnvVars (envVar: listSuffixes:
-          concatMap (profile: map (suffix: "${profile}${suffix}") listSuffixes) cfg.profiles
+        flip mapAttrs cfg.profileRelativeEnvVars (
+          envVar: listSuffixes:
+            concatMap (profile: map (suffix: "${profile}${suffix}") listSuffixes) cfg.profiles
         );
 
       allVariables =
@@ -160,7 +161,7 @@ in
     environment.shellAliases = mapAttrs (name: mkDefault) {
       ls = "ls --color=tty";
       ll = "ls -l";
-      l  = "ls -alh";
+      l = "ls -alh";
     };
 
     environment.etc."shells".text =

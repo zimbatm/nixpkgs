@@ -1,12 +1,14 @@
-import ./make-test.nix ({ pkgs, ... }: {
-  name = "powerdns";
+import ./make-test.nix (
+  { pkgs, ... }: {
+    name = "powerdns";
 
-  nodes.server = { ... }: {
-    services.pdns-recursor.enable = true;
-  };
+    nodes.server = { ... }: {
+      services.pdns-recursor.enable = true;
+    };
 
-  testScript = ''
-    $server->waitForUnit("pdns-recursor");
-    $server->waitForOpenPort("53");
-  '';
-})
+    testScript = ''
+      $server->waitForUnit("pdns-recursor");
+      $server->waitForOpenPort("53");
+    '';
+  }
+)

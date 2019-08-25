@@ -29,7 +29,8 @@ stdenv.mkDerivation rec {
   buildInputs = optionals stdenv.isDarwin [ CF configd ];
 
   patches =
-    [ # Look in C_INCLUDE_PATH and LIBRARY_PATH for stuff.
+    [
+      # Look in C_INCLUDE_PATH and LIBRARY_PATH for stuff.
       ./search-path.patch
 
       # Python recompiles a Python if the mtime stored *in* the
@@ -55,23 +56,27 @@ stdenv.mkDerivation rec {
   DETERMINISTIC_BUILD = 1;
 
   preConfigure = ''
-      # Purity.
-      for i in /usr /sw /opt /pkg; do
-        substituteInPlace ./setup.py --replace $i /no-such-path
-      done
-    '' + optionalString (stdenv ? cc && stdenv.cc.libc != null) ''
+    # Purity.
+    for i in /usr /sw /opt /pkg; do
+      substituteInPlace ./setup.py --replace $i /no-such-path
+    done
+  ''
+  + optionalString (stdenv ? cc && stdenv.cc.libc != null) ''
       for i in Lib/plat-*/regen; do
         substituteInPlace $i --replace /usr/include/ ${stdenv.cc.libc}/include/
       done
-    '' + optionalString stdenv.isDarwin ''
+    ''
+  + optionalString stdenv.isDarwin ''
       substituteInPlace configure --replace '`/usr/bin/arch`' '"i386"'
       substituteInPlace Lib/multiprocessing/__init__.py \
         --replace 'os.popen(comm)' 'os.popen("${coreutils}/bin/nproc")'
-    '';
+    ''
+  ;
 
   configureFlags = [ "--enable-shared" "--with-threads" "--enable-unicode=ucs4" ]
     ++ optionals stdenv.isCygwin [ "ac_cv_func_bind_textdomain_codeset=yes" ]
-    ++ optionals stdenv.isDarwin [ "--disable-toolbox-glue" ];
+    ++ optionals stdenv.isDarwin [ "--disable-toolbox-glue" ]
+    ;
 
   postInstall =
     ''

@@ -2,7 +2,8 @@
 
 let
   inherit (python27Packages) pygtk python;
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   version = "0.4.8";
   name = "diffuse-${version}";
 

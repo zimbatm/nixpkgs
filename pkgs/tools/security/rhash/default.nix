@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ which ];
 
   # configure script is not autotools-based, doesn't support these options
-  configurePlatforms = [ ];
+  configurePlatforms = [];
 
   doCheck = true;
 

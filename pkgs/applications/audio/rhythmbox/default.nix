@@ -1,4 +1,6 @@
-{ stdenv, fetchurl, pkgconfig
+{ stdenv
+, fetchurl
+, pkgconfig
 , python3
 , perl
 , perlPackages
@@ -18,7 +20,8 @@
 let
   pname = "rhythmbox";
   version = "3.4.3";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "${pname}-${version}";
 
   src = fetchurl {
@@ -28,7 +31,9 @@ in stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     pkgconfig
-    intltool perl perlPackages.XMLParser
+    intltool
+    perl
+    perlPackages.XMLParser
     itstool
     wrapGAppsHook
   ];
@@ -46,7 +51,9 @@ in stdenv.mkDerivation rec {
 
     gst_all_1.gstreamer
     gst_all_1.gst-plugins-base
-  ] ++ gst_plugins;
+  ]
+  ++ gst_plugins
+  ;
 
   enableParallelBuilding = true;
 

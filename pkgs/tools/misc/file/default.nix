@@ -14,12 +14,13 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = stdenv.lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) file;
   buildInputs = [ zlib ]
-              ++ stdenv.lib.optional stdenv.hostPlatform.isWindows libgnurx;
+    ++ stdenv.lib.optional stdenv.hostPlatform.isWindows libgnurx
+    ;
 
   doCheck = true;
 
   makeFlags = if stdenv.hostPlatform.isWindows then "FILE_COMPILE=file"
-              else null;
+  else null;
 
   meta = with stdenv.lib; {
     homepage = https://darwinsys.com/file;

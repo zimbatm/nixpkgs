@@ -1,4 +1,4 @@
-{fetchurl, stdenv}:
+{ fetchurl, stdenv }:
 
 stdenv.mkDerivation rec {
   name = "dbacl-1.14";

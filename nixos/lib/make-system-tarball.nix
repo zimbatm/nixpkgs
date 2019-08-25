@@ -1,4 +1,6 @@
-{ stdenv, closureInfo, pixz
+{ stdenv
+, closureInfo
+, pixz
 
 , # The file name of the resulting tarball
   fileName ? "nixos-system-${stdenv.hostPlatform.system}"

@@ -29,8 +29,9 @@ stdenv.mkDerivation rec {
   outputs = [ "out" "dev" ];
 
   nativeBuildInputs = [ meson ninja pkgconfig gobject-introspection ]
-    # Fixup rpaths because of meson, remove with meson-0.47
-    ++ stdenv.lib.optional stdenv.isDarwin fixDarwinDylibNames;
+  # Fixup rpaths because of meson, remove with meson-0.47
+    ++ stdenv.lib.optional stdenv.isDarwin fixDarwinDylibNames
+    ;
   buildInputs = [ dbus glib libX11 libXtst libXi ];
 
   doCheck = false; # fails with "AT-SPI: Couldn't connect to accessibility bus. Is at-spi-bus-launcher running?"

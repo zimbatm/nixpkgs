@@ -38,7 +38,8 @@ let
     unconvert
   ];
 
-in buildGoPackage rec {
+in
+buildGoPackage rec {
   name = "gometalinter-${version}";
   version = "3.0.0";
 

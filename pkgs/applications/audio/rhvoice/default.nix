@@ -1,9 +1,18 @@
-{ stdenv, lib, pkgconfig, fetchFromGitHub, scons
-, python, glibmm, libpulseaudio, libao }:
+{ stdenv
+, lib
+, pkgconfig
+, fetchFromGitHub
+, scons
+, python
+, glibmm
+, libpulseaudio
+, libao
+}:
 
 let
   version = "unstable-2018-02-10";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "rhvoice-${version}";
 
   src = fetchFromGitHub {
@@ -14,11 +23,15 @@ in stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    scons pkgconfig
+    scons
+    pkgconfig
   ];
 
   buildInputs = [
-    python glibmm libpulseaudio libao
+    python
+    glibmm
+    libpulseaudio
+    libao
   ];
 
   # SConstruct patch

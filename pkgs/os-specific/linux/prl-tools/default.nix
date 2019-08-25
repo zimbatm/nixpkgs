@@ -1,18 +1,29 @@
-{ stdenv, lib, makeWrapper, p7zip
-, gawk, utillinux, xorg, glib, dbus-glib, zlib
-, kernel ? null, libsOnly ? false
-, undmg, fetchurl
+{ stdenv
+, lib
+, makeWrapper
+, p7zip
+, gawk
+, utillinux
+, xorg
+, glib
+, dbus-glib
+, zlib
+, kernel ? null
+, libsOnly ? false
+, undmg
+, fetchurl
 }:
 
 assert (!libsOnly) -> kernel != null;
 # Disable for kernels 4.15 and above due to compatibility issues
 assert kernel != null -> stdenv.lib.versionOlder kernel.version "4.15";
 
-let xorgFullVer = (builtins.parseDrvName xorg.xorgserver.name).version;
-    xorgVer = lib.concatStringsSep "." (lib.take 2 (lib.splitString "." xorgFullVer));
-    x64 = if stdenv.hostPlatform.system == "x86_64-linux" then true
-          else if stdenv.hostPlatform.system == "i686-linux" then false
-          else throw "Parallels Tools for Linux only support {x86-64,i686}-linux targets";
+let
+  xorgFullVer = (builtins.parseDrvName xorg.xorgserver.name).version;
+  xorgVer = lib.concatStringsSep "." (lib.take 2 (lib.splitString "." xorgFullVer));
+  x64 = if stdenv.hostPlatform.system == "x86_64-linux" then true
+  else if stdenv.hostPlatform.system == "i686-linux" then false
+  else throw "Parallels Tools for Linux only support {x86-64,i686}-linux targets";
 in
 stdenv.mkDerivation rec {
   version = "${prl_major}.2.1-41615";
@@ -22,7 +33,7 @@ stdenv.mkDerivation rec {
   # We download the full distribution to extract prl-tools-lin.iso from
   # => ${dmg}/Parallels\ Desktop.app/Contents/Resources/Tools/prl-tools-lin.iso
   src = fetchurl {
-    url =  "https://download.parallels.com/desktop/v${prl_major}/${version}/ParallelsDesktop-${version}.dmg";
+    url = "https://download.parallels.com/desktop/v${prl_major}/${version}/ParallelsDesktop-${version}.dmg";
     sha256 = "1jwzwif69qlhmfky9kigjaxpxfj0lyrl1iyrpqy4iwqvajdgbbym";
   };
 
@@ -66,8 +77,10 @@ stdenv.mkDerivation rec {
   '';
 
   libPath = with xorg;
-            stdenv.lib.makeLibraryPath ([ stdenv.cc.cc libXrandr libXext libX11 libXcomposite libXinerama ]
-            ++ lib.optionals (!libsOnly) [ libXi glib dbus-glib zlib ]);
+    stdenv.lib.makeLibraryPath (
+      [ stdenv.cc.cc libXrandr libXext libX11 libXcomposite libXinerama ]
+      ++ lib.optionals (!libsOnly) [ libXi glib dbus-glib zlib ]
+    );
 
 
   installPhase = ''

@@ -1,4 +1,6 @@
-{ stdenv, fetchurl, cmake
+{ stdenv
+, fetchurl
+, cmake
 , parallel ? true
 }:
 
@@ -31,7 +33,7 @@ stdenv.mkDerivation rec {
     description = "An implementation of the C++ standard template library STL for external memory (out-of-core) computations";
     homepage = https://github.com/stxxl/stxxl;
     license = licenses.boost;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
     platforms = platforms.all;
   };
 }

@@ -1,10 +1,20 @@
-{ stdenv, fetchurl, pkgconfig, intltool, libexif, gtk
-, exo, dbus-glib, libxfce4util, libxfce4ui, xfconf
-, hicolor-icon-theme, makeWrapper
+{ stdenv
+, fetchurl
+, pkgconfig
+, intltool
+, libexif
+, gtk
+, exo
+, dbus-glib
+, libxfce4util
+, libxfce4ui
+, xfconf
+, hicolor-icon-theme
+, makeWrapper
 }:
 
 stdenv.mkDerivation rec {
-  p_name  = "ristretto";
+  p_name = "ristretto";
   ver_maj = "0.6";
   ver_min = "3";
 
@@ -15,8 +25,18 @@ stdenv.mkDerivation rec {
   name = "${p_name}-${ver_maj}.${ver_min}";
 
   buildInputs =
-    [ pkgconfig intltool libexif gtk dbus-glib exo libxfce4util
-      libxfce4ui xfconf hicolor-icon-theme makeWrapper
+    [
+      pkgconfig
+      intltool
+      libexif
+      gtk
+      dbus-glib
+      exo
+      libxfce4util
+      libxfce4ui
+      xfconf
+      hicolor-icon-theme
+      makeWrapper
     ];
 
   postInstall = ''

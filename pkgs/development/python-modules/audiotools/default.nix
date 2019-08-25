@@ -9,11 +9,13 @@ buildPythonPackage rec {
   pname = "audiotools";
   version = "3.1.1";
 
-  buildInputs = lib.optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
-    AudioToolbox
-    AudioUnit
-    CoreServices
-  ]);
+  buildInputs = lib.optionals stdenv.isDarwin (
+    with darwin.apple_sdk.frameworks; [
+      AudioToolbox
+      AudioUnit
+      CoreServices
+    ]
+  );
 
   src = fetchurl {
     url = "https://github.com/tuffy/python-audio-tools/archive/v${version}.tar.gz";

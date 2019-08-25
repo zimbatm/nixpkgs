@@ -1,4 +1,7 @@
-{ buildPythonPackage, lib, fetchPypi, isPy27
+{ buildPythonPackage
+, lib
+, fetchPypi
+, isPy27
 , ipaddress
 , maxminddb
 , mock
@@ -16,7 +19,8 @@ buildPythonPackage rec {
   };
 
   propagatedBuildInputs = [ requests maxminddb ]
-    ++ lib.optionals isPy27 [ ipaddress ];
+    ++ lib.optionals isPy27 [ ipaddress ]
+    ;
 
   checkInputs = [ requests-mock ];
 
@@ -24,6 +28,6 @@ buildPythonPackage rec {
     description = "MaxMind GeoIP2 API";
     homepage = "https://www.maxmind.com/en/home";
     license = licenses.apsl20;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
   };
 }

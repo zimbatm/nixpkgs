@@ -1,11 +1,17 @@
-{ stdenv, fetchFromGitHub, autoreconfHook,
-  texinfo, bison, flex, expat, file
+{ stdenv
+, fetchFromGitHub
+, autoreconfHook
+, texinfo
+, bison
+, flex
+, expat
+, file
 }:
 
 stdenv.mkDerivation rec {
   name = "udunits-${version}";
   version = "2.2.27.6";
-  
+
   src = fetchFromGitHub {
     owner = "Unidata";
     repo = "UDUNITS-2";

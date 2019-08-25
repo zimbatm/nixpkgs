@@ -1,15 +1,33 @@
-{ stdenv, fetchurl, pkgconfig, yasm, bzip2, zlib, perl, bash
-, mp3Support    ? true,   lame      ? null
-, speexSupport  ? true,   speex     ? null
-, theoraSupport ? true,   libtheora ? null
-, vorbisSupport ? true,   libvorbis ? null
-, vpxSupport    ? true,   libvpx    ? null
-, x264Support   ? false,  x264      ? null
-, xvidSupport   ? true,   xvidcore  ? null
-, faacSupport   ? false,  faac      ? null
-, vaapiSupport  ? true,   libva     ? null
-, vdpauSupport  ? true,   libvdpau  ? null
-, freetypeSupport ? true, freetype  ? null # it's small and almost everywhere
+{ stdenv
+, fetchurl
+, pkgconfig
+, yasm
+, bzip2
+, zlib
+, perl
+, bash
+, mp3Support ? true
+, lame ? null
+, speexSupport ? true
+, speex ? null
+, theoraSupport ? true
+, libtheora ? null
+, vorbisSupport ? true
+, libvorbis ? null
+, vpxSupport ? true
+, libvpx ? null
+, x264Support ? false
+, x264 ? null
+, xvidSupport ? true
+, xvidcore ? null
+, faacSupport ? false
+, faac ? null
+, vaapiSupport ? true
+, libva ? null
+, vdpauSupport ? true
+, libvdpau ? null
+, freetypeSupport ? true
+, freetype ? null # it's small and almost everywhere
 , SDL # only for avplay in $bin, adds nontrivial closure to it
 , enableGPL ? true # ToDo: some additional default stuff may need GPL
 , enableUnfree ? faacSupport
@@ -17,22 +35,24 @@
 
 assert faacSupport -> enableUnfree;
 
-let inherit (stdenv.lib) optional hasPrefix enableFeature; in
+let
+  inherit (stdenv.lib) optional hasPrefix enableFeature;
+in
 
-/* ToDo:
-    - more deps, inspiration: https://packages.ubuntu.com/raring/libav-tools
-    - maybe do some more splitting into outputs
-*/
+  /* ToDo:
+      - more deps, inspiration: https://packages.ubuntu.com/raring/libav-tools
+      - maybe do some more splitting into outputs
+  */
 
 let
   result = {
     # e.g. https://libav.org/releases/libav-11.11.tar.xz.sha1
     libav_0_8 = libavFun "0.8.21" "d858f65128dad0bac1a8c3a51e5cbb27a7c79b3f";
-    libav_11  = libavFun "11.12"  "61d5dcab5fde349834af193a572b12a5fd6a4d42";
-    libav_12  = libavFun "12.3"   "386c18c8b857f23dfcf456ce40370716130211d9";
+    libav_11 = libavFun "11.12" "61d5dcab5fde349834af193a572b12a5fd6a4d42";
+    libav_12 = libavFun "12.3" "386c18c8b857f23dfcf456ce40370716130211d9";
   };
 
-  libavFun = version : sha1 : stdenv.mkDerivation rec {
+  libavFun = version: sha1: stdenv.mkDerivation rec {
     name = "libav-${version}";
 
     src = fetchurl {
@@ -51,7 +71,7 @@ let
     '';
 
     configurePlatforms = [];
-    configureFlags = assert stdenv.lib.all (x: x!=null) buildInputs; [
+    configureFlags = assert stdenv.lib.all (x: x != null) buildInputs; [
       "--arch=${stdenv.hostPlatform.parsed.cpu.name}"
       "--target_os=${stdenv.hostPlatform.parsed.kernel.name}"
       #"--enable-postproc" # it's now a separate package in upstream
@@ -75,12 +95,13 @@ let
       (enableFeature vaapiSupport "vaapi")
       (enableFeature vdpauSupport "vdpau")
       (enableFeature freetypeSupport "libfreetype")
-    ] ++ optional (stdenv.hostPlatform != stdenv.buildPlatform) [
-      "--cross-prefix=${stdenv.cc.targetPrefix}"
-      "--enable-cross-compile"
-    ];
+    ]
+      ++ optional (stdenv.hostPlatform != stdenv.buildPlatform) [
+           "--cross-prefix=${stdenv.cc.targetPrefix}"
+           "--enable-cross-compile"
+         ];
 
-  nativeBuildInputs = [ pkgconfig perl ];
+    nativeBuildInputs = [ pkgconfig perl ];
     buildInputs = [ lame yasm zlib bzip2 SDL bash ]
       ++ [ perl ] # for install-man target
       ++ optional mp3Support lame
@@ -123,9 +144,10 @@ let
       homepage = https://libav.org/;
       description = "A complete, cross-platform solution to record, convert and stream audio and video (fork of ffmpeg)";
       license = with licenses; if enableUnfree then unfree #ToDo: redistributable or not?
-        else if enableGPL then gpl2Plus else lgpl21Plus;
+      else if enableGPL then gpl2Plus else lgpl21Plus;
       platforms = with platforms; linux ++ darwin;
     };
   }; # libavFun
 
-in result
+in
+  result

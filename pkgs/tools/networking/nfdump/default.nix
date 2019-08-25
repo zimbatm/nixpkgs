@@ -1,8 +1,18 @@
-{ stdenv, fetchFromGitHub
-, autoconf, automake, libtool, pkg-config
-, bzip2, libpcap, flex, yacc }:
+{ stdenv
+, fetchFromGitHub
+, autoconf
+, automake
+, libtool
+, pkg-config
+, bzip2
+, libpcap
+, flex
+, yacc
+}:
 
-let version = "1.6.18"; in
+let
+  version = "1.6.18";
+in
 
 stdenv.mkDerivation {
   name = "nfdump-${version}";

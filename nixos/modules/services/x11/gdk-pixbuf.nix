@@ -6,7 +6,7 @@ let
   cfg = config.services.xserver.gdk-pixbuf;
 
   # Get packages to generate the cache for. We always include gdk-pixbuf.
-  effectivePackages = unique ([pkgs.gdk-pixbuf] ++ cfg.modulePackages);
+  effectivePackages = unique ([ pkgs.gdk-pixbuf ] ++ cfg.modulePackages);
 
   # Generate the cache file by running gdk-pixbuf-query-loaders for each
   # package and concatenating the results.
@@ -29,7 +29,7 @@ in
   options = {
     services.xserver.gdk-pixbuf.modulePackages = mkOption {
       type = types.listOf types.package;
-      default = [ ];
+      default = [];
       description = "Packages providing GDK-Pixbuf modules, for cache generation.";
     };
   };

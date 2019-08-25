@@ -2,7 +2,8 @@
 
 let
   dbfile = stdenv.lib.attrByPath [ "locate" "dbfile" ] "/var/cache/locatedb" config;
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "mlocate-${version}";
   version = "0.26";
 
@@ -11,7 +12,7 @@ in stdenv.mkDerivation rec {
     sha256 = "0gi6y52gkakhhlnzy0p6izc36nqhyfx5830qirhvk3qrzrwxyqrh";
   };
 
-  buildInputs = [ ];
+  buildInputs = [];
   makeFlags = [ "dbfile=${dbfile}" ];
 
   meta = with stdenv.lib; {
@@ -19,6 +20,6 @@ in stdenv.mkDerivation rec {
     homepage = https://pagure.io/mlocate;
     license = licenses.gpl2;
     platforms = platforms.linux;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
   };
 }

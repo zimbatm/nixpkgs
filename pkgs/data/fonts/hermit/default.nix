@@ -3,7 +3,8 @@
 let
   pname = "hermit";
   version = "2.0";
-in fetchzip rec {
+in
+fetchzip rec {
   name = "${pname}-${version}";
 
   url = "https://pcaro.es/d/otf-${name}.tar.gz";
@@ -22,4 +23,3 @@ in fetchzip rec {
     platforms = platforms.all;
   };
 }
-

@@ -50,7 +50,8 @@ let
     outputHash = "199a9rc1pp9jjwpy83743qhjczfz0d1mkbic6si9bh8l62nw8qc7";
   };
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   inherit name src postPatch;
   nativeBuildInputs = [ gradle_3_5 perl makeWrapper ];
 

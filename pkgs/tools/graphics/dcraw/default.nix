@@ -1,4 +1,4 @@
-{stdenv, fetchurl, libjpeg, lcms2, gettext, jasper, libiconv }:
+{ stdenv, fetchurl, libjpeg, lcms2, gettext, jasper, libiconv }:
 
 stdenv.mkDerivation rec {
   name = "dcraw-9.28.0";
@@ -27,6 +27,6 @@ stdenv.mkDerivation rec {
     description = "Decoder for many camera raw picture formats";
     license = stdenv.lib.licenses.free;
     platforms = stdenv.lib.platforms.unix; # Once had cygwin problems
-    maintainers = [ ];
+    maintainers = [];
   };
 }

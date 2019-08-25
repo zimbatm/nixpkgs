@@ -1,5 +1,9 @@
-{ stdenv, buildPythonPackage, fetchPypi
-, protobuf, pytest }:
+{ stdenv
+, buildPythonPackage
+, fetchPypi
+, protobuf
+, pytest
+}:
 
 buildPythonPackage rec {
   pname = "googleapis-common-protos";
@@ -13,7 +17,7 @@ buildPythonPackage rec {
   propagatedBuildInputs = [ protobuf ];
   checkInputs = [ pytest ];
 
-  doCheck = false;  # there are no tests
+  doCheck = false; # there are no tests
 
   meta = with stdenv.lib; {
     description = "Common protobufs used in Google APIs";

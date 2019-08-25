@@ -1,5 +1,23 @@
-{ stdenv, fetchurl, meson, ninja, pkgconfig, gnome3, glib, gtk3, wrapGAppsHook, desktop-file-utils
-, gettext, itstool, libxml2, libxslt, docbook_xsl, docbook_xml_dtd_43, systemd, python3, gsettings-desktop-schemas }:
+{ stdenv
+, fetchurl
+, meson
+, ninja
+, pkgconfig
+, gnome3
+, glib
+, gtk3
+, wrapGAppsHook
+, desktop-file-utils
+, gettext
+, itstool
+, libxml2
+, libxslt
+, docbook_xsl
+, docbook_xml_dtd_43
+, systemd
+, python3
+, gsettings-desktop-schemas
+}:
 
 stdenv.mkDerivation rec {
   name = "gnome-logs-${version}";
@@ -17,8 +35,17 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     python3
-    meson ninja pkgconfig wrapGAppsHook gettext itstool desktop-file-utils
-    libxml2 libxslt docbook_xsl docbook_xml_dtd_43
+    meson
+    ninja
+    pkgconfig
+    wrapGAppsHook
+    gettext
+    itstool
+    desktop-file-utils
+    libxml2
+    libxslt
+    docbook_xsl
+    docbook_xml_dtd_43
   ];
   buildInputs = [ glib gtk3 systemd gsettings-desktop-schemas gnome3.adwaita-icon-theme ];
 

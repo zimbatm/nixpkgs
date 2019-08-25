@@ -7,8 +7,12 @@ let
 
   # cfg.config != null can be assumed here
   configJSON = pkgs.writeText "configuration.json"
-    (builtins.toJSON (if cfg.applyDefaultConfig then
-    (recursiveUpdate defaultConfig cfg.config) else cfg.config));
+    (
+      builtins.toJSON (
+        if cfg.applyDefaultConfig then
+          (recursiveUpdate defaultConfig cfg.config) else cfg.config
+      )
+    );
   configFile = pkgs.runCommand "configuration.yaml" { preferLocalBuild = true; } ''
     ${pkgs.remarshal}/bin/json2yaml -i ${configJSON} -o $out
   '';
@@ -27,7 +31,7 @@ let
       ++ concatMap usedPlatforms (attrValues config)
     else if isList config then
       concatMap usedPlatforms config
-    else [ ];
+    else [];
 
   # Given a component "platform", looks up whether it is used in the config
   # as `platform = "platform";`.
@@ -48,18 +52,21 @@ let
   extraComponents = filter useComponent availableComponents;
 
   package = if (cfg.autoExtraComponents && cfg.config != null)
-    then (cfg.package.override { inherit extraComponents; })
-    else cfg.package;
+  then (cfg.package.override { inherit extraComponents; })
+  else cfg.package;
 
   # If you are changing this, please update the description in applyDefaultConfig
   defaultConfig = {
     homeassistant.time_zone = config.time.timeZone;
     http.server_port = cfg.port;
-  } // optionalAttrs (cfg.lovelaceConfig != null) {
-    lovelace.mode = "yaml";
-  };
+  }
+  // optionalAttrs (cfg.lovelaceConfig != null) {
+       lovelace.mode = "yaml";
+     }
+  ;
 
-in {
+in
+{
   meta.maintainers = with maintainers; [ dotlambda ];
 
   options.services.home-assistant = {
@@ -203,17 +210,23 @@ in {
     systemd.services.home-assistant = {
       description = "Home Assistant";
       after = [ "network.target" ];
-      preStart = optionalString (cfg.config != null) (if cfg.configWritable then ''
-        cp --no-preserve=mode ${configFile} "${cfg.configDir}/configuration.yaml"
-      '' else ''
-        rm -f "${cfg.configDir}/configuration.yaml"
-        ln -s ${configFile} "${cfg.configDir}/configuration.yaml"
-      '') + optionalString (cfg.lovelaceConfig != null) (if cfg.lovelaceConfigWritable then ''
-        cp --no-preserve=mode ${lovelaceConfigFile} "${cfg.configDir}/ui-lovelace.yaml"
-      '' else ''
-        rm -f "${cfg.configDir}/ui-lovelace.yaml"
-        ln -s ${lovelaceConfigFile} "${cfg.configDir}/ui-lovelace.yaml"
-      '');
+      preStart = optionalString (cfg.config != null) (
+        if cfg.configWritable then ''
+          cp --no-preserve=mode ${configFile} "${cfg.configDir}/configuration.yaml"
+        '' else ''
+          rm -f "${cfg.configDir}/configuration.yaml"
+          ln -s ${configFile} "${cfg.configDir}/configuration.yaml"
+        ''
+      )
+      + optionalString (cfg.lovelaceConfig != null) (
+          if cfg.lovelaceConfigWritable then ''
+            cp --no-preserve=mode ${lovelaceConfigFile} "${cfg.configDir}/ui-lovelace.yaml"
+          '' else ''
+            rm -f "${cfg.configDir}/ui-lovelace.yaml"
+            ln -s ${lovelaceConfigFile} "${cfg.configDir}/ui-lovelace.yaml"
+          ''
+        )
+      ;
       serviceConfig = {
         ExecStart = "${package}/bin/hass --config '${cfg.configDir}'";
         User = "hass";

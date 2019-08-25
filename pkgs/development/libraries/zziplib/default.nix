@@ -10,11 +10,13 @@ stdenv.mkDerivation rec {
   };
 
   patches = [
-    (fetchpatch {
-      name = "CVE-2018-17828.patch";
-      url = "https://github.com/gdraheim/zziplib/commit/f609ae8971f3c0ce6.diff";
-      sha256 = "0jhiz4fgr93wzh6q03avn95b2nsf6402jaki6hxirxyhs5v9ahry";
-    })
+    (
+      fetchpatch {
+        name = "CVE-2018-17828.patch";
+        url = "https://github.com/gdraheim/zziplib/commit/f609ae8971f3c0ce6.diff";
+        sha256 = "0jhiz4fgr93wzh6q03avn95b2nsf6402jaki6hxirxyhs5v9ahry";
+      }
+    )
   ];
   postPatch = ''
     sed -i -e s,--export-dynamic,, configure
@@ -43,7 +45,7 @@ stdenv.mkDerivation rec {
 
     homepage = http://zziplib.sourceforge.net/;
 
-    maintainers = [ ];
+    maintainers = [];
     platforms = python2.meta.platforms;
   };
 }

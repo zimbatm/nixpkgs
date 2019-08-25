@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, which}:
+{ stdenv, fetchurl, which }:
 
 stdenv.mkDerivation rec {
   name = "cntlm-${version}";

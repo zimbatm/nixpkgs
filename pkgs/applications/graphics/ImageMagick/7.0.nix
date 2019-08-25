@@ -1,6 +1,27 @@
-{ lib, stdenv, fetchFromGitHub, pkgconfig, libtool
-, bzip2, zlib, libX11, libXext, libXt, fontconfig, freetype, ghostscript, libjpeg, djvulibre
-, lcms2, openexr, libpng, librsvg, libtiff, libxml2, openjpeg, libwebp, libheif
+{ lib
+, stdenv
+, fetchFromGitHub
+, pkgconfig
+, libtool
+, bzip2
+, zlib
+, libX11
+, libXext
+, libXt
+, fontconfig
+, freetype
+, ghostscript
+, libjpeg
+, djvulibre
+, lcms2
+, openexr
+, libpng
+, librsvg
+, libtiff
+, libxml2
+, openjpeg
+, libwebp
+, libheif
 , ApplicationServices
 }:
 
@@ -42,27 +63,37 @@ stdenv.mkDerivation rec {
     ++ [ "--with-gcc-arch=${arch}" ]
     ++ lib.optional (librsvg != null) "--with-rsvg"
     ++ lib.optionals (ghostscript != null)
-      [ "--with-gs-font-dir=${ghostscript}/share/ghostscript/fonts"
-        "--with-gslib"
-      ]
+         [
+           "--with-gs-font-dir=${ghostscript}/share/ghostscript/fonts"
+           "--with-gslib"
+         ]
     ++ lib.optionals stdenv.hostPlatform.isMinGW
-      [ "--enable-static" "--disable-shared" ] # due to libxml2 being without DLLs ATM
+         [ "--enable-static" "--disable-shared" ] # due to libxml2 being without DLLs ATM
     ;
 
   nativeBuildInputs = [ pkgconfig libtool ];
 
   buildInputs =
-    [ zlib fontconfig freetype ghostscript
-      libpng libtiff libxml2 libheif djvulibre
+    [
+      zlib
+      fontconfig
+      freetype
+      ghostscript
+      libpng
+      libtiff
+      libxml2
+      libheif
+      djvulibre
     ]
     ++ lib.optionals (!stdenv.hostPlatform.isMinGW)
-      [ openexr librsvg openjpeg ]
-    ++ lib.optional stdenv.isDarwin ApplicationServices;
+         [ openexr librsvg openjpeg ]
+    ++ lib.optional stdenv.isDarwin ApplicationServices
+  ;
 
   propagatedBuildInputs =
     [ bzip2 freetype libjpeg lcms2 ]
     ++ lib.optionals (!stdenv.hostPlatform.isMinGW)
-      [ libX11 libXext libXt libwebp ]
+         [ libX11 libXext libXt libwebp ]
     ;
 
   postInstall = ''
@@ -73,11 +104,13 @@ stdenv.mkDerivation rec {
       substituteInPlace "$file" --replace pkg-config \
         "PKG_CONFIG_PATH='$dev/lib/pkgconfig' '${pkgconfig}/bin/pkg-config'"
     done
-  '' + lib.optionalString (ghostscript != null) ''
-    for la in $out/lib/*.la; do
-      sed 's|-lgs|-L${lib.getLib ghostscript}/lib -lgs|' -i $la
-    done
-  '';
+  ''
+  + lib.optionalString (ghostscript != null) ''
+      for la in $out/lib/*.la; do
+        sed 's|-lgs|-L${lib.getLib ghostscript}/lib -lgs|' -i $la
+      done
+    ''
+  ;
 
   meta = with stdenv.lib; {
     homepage = http://www.imagemagick.org/;

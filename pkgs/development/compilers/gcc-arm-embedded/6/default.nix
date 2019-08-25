@@ -9,12 +9,12 @@ stdenv.mkDerivation rec {
     if stdenv.isLinux then
       fetchurl {
         url = "https://developer.arm.com/-/media/Files/downloads/gnu-rm/${subdir}/gcc-arm-none-eabi-${version}-linux.tar.bz2";
-        sha256="1hvwi02mx34al525sngnl0cm7dkmzxfkb1brq9kvbv28wcplp3p6";
+        sha256 = "1hvwi02mx34al525sngnl0cm7dkmzxfkb1brq9kvbv28wcplp3p6";
       }
     else if stdenv.isDarwin then
       fetchurl {
         url = "https://developer.arm.com/-/media/Files/downloads/gnu-rm/${subdir}/gcc-arm-none-eabi-${version}-mac.tar.bz2";
-        sha256="0019ylpq4inq7p5gydpmc9m8ni72fz2csrjlqmgx1698998q0c3x";
+        sha256 = "0019ylpq4inq7p5gydpmc9m8ni72fz2csrjlqmgx1698998q0c3x";
       }
     else throw "unsupported platform";
 

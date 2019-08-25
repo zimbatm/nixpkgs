@@ -1,5 +1,13 @@
-{ stdenv, buildPythonPackage, isPy3k, fetchFromGitHub, substituteAll
-, python, utillinux, pygit2, gitMinimal, git-annex
+{ stdenv
+, buildPythonPackage
+, isPy3k
+, fetchFromGitHub
+, substituteAll
+, python
+, utillinux
+, pygit2
+, gitMinimal
+, git-annex
 }:
 
 buildPythonPackage rec {
@@ -17,10 +25,12 @@ buildPythonPackage rec {
   };
 
   patches = [
-    (substituteAll {
-      src = ./git-annex-path.patch;
-      gitAnnex = "${git-annex}/bin/git-annex";
-    })
+    (
+      substituteAll {
+        src = ./git-annex-path.patch;
+        gitAnnex = "${git-annex}/bin/git-annex";
+      }
+    )
   ];
 
   checkInputs = [

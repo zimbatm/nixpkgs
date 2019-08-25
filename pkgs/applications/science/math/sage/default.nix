@@ -123,7 +123,9 @@ let
   pythonEnv = python.buildEnv.override {
     extraLibs = pythonRuntimeDeps;
     ignoreCollisions = true;
-  } // { extraLibs = pythonRuntimeDeps; }; # make the libs accessible
+  }
+  // { extraLibs = pythonRuntimeDeps; }
+  ; # make the libs accessible
 
   arb = pkgs.arb.override { inherit flint; };
 
@@ -165,7 +167,7 @@ let
   # https://trac.sagemath.org/ticket/22191
   ecl = pkgs.ecl_16_1_2;
 in
-# A wrapper around sage that makes sure sage finds its docs (if they were build).
+  # A wrapper around sage that makes sure sage finds its docs (if they were build).
 callPackage ./sage.nix {
   inherit sage-tests sage-with-env sagedoc jupyter-kernel-definition;
   inherit withDoc;

@@ -1,13 +1,26 @@
-{ lib, stdenv, fetchurl, pkgconfig, zlib, shadow
-, ncurses ? null, perl ? null, pam, systemd ? null, minimal ? false }:
+{ lib
+, stdenv
+, fetchurl
+, pkgconfig
+, zlib
+, shadow
+, ncurses ? null
+, perl ? null
+, pam
+, systemd ? null
+, minimal ? false
+}:
 
 let
-  version = lib.concatStringsSep "." ([ majorVersion ]
-    ++ lib.optional (patchVersion != "") patchVersion);
+  version = lib.concatStringsSep "." (
+    [ majorVersion ]
+    ++ lib.optional (patchVersion != "") patchVersion
+  );
   majorVersion = "2.33";
   patchVersion = "2";
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "util-linux-${version}";
 
   src = fetchurl {
@@ -40,13 +53,17 @@ in stdenv.mkDerivation rec {
     "--enable-mesg"
     "--disable-use-tty-group"
     "--enable-fs-paths-default=/run/wrappers/bin:/run/current-system/sw/bin:/sbin"
-    "--disable-makeinstall-setuid" "--disable-makeinstall-chown"
+    "--disable-makeinstall-setuid"
+    "--disable-makeinstall-chown"
     "--disable-su" # provided by shadow
     (lib.withFeature (ncurses != null) "ncursesw")
     (lib.withFeature (systemd != null) "systemd")
-    (lib.withFeatureAs (systemd != null)
-       "systemdsystemunitdir" "${placeholder "bin"}/lib/systemd/system/")
-  ] ++ lib.optional (stdenv.hostPlatform != stdenv.buildPlatform)
+    (
+      lib.withFeatureAs (systemd != null)
+        "systemdsystemunitdir" "${placeholder "bin"}/lib/systemd/system/"
+    )
+  ]
+  ++ lib.optional (stdenv.hostPlatform != stdenv.buildPlatform)
        "scanf_cv_type_modifier=ms"
   ;
 
@@ -58,7 +75,8 @@ in stdenv.mkDerivation rec {
   nativeBuildInputs = [ pkgconfig ];
   buildInputs =
     [ zlib pam ]
-    ++ lib.filter (p: p != null) [ ncurses systemd perl ];
+    ++ lib.filter (p: p != null) [ ncurses systemd perl ]
+    ;
 
   doCheck = false; # "For development purpose only. Don't execute on production system!"
 

@@ -14,7 +14,7 @@ stdenv.mkDerivation {
         if test -x "$(readlink -f "$file")"; then
             wrapProgram "$file" \
                 --prefix PYTHONPATH : ${stdenv.lib.concatStringsSep ":"
-                                         (map (path: "$(toPythonPath ${path})") extraPackages)} \
+    (map (path: "$(toPythonPath ${path})") extraPackages)} \
                 --prefix GRC_BLOCKS_PATH : ${makeSearchPath "share/gnuradio/grc/blocks" extraPackages}
         fi
     done

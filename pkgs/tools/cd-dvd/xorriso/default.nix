@@ -11,7 +11,8 @@ stdenv.mkDerivation rec {
   doCheck = true;
 
   buildInputs = [ libcdio zlib bzip2 readline libiconv ]
-    ++ stdenv.lib.optionals stdenv.isLinux [ acl attr ];
+    ++ stdenv.lib.optionals stdenv.isLinux [ acl attr ]
+    ;
 
   meta = with stdenv.lib; {
     description = "ISO 9660 Rock Ridge file system manipulator";

@@ -17,10 +17,12 @@ stdenv.mkDerivation rec {
   makeFlags = [ "PREFIX=$(out)" "VERSION=$(version)" ];
 
   patches = [
-    (fetchpatch {
-      url = https://github.com/jceb/dex/commit/107358ddf5e1ca4fa56ef1a7ab161dc3b6adc45a.patch;
-      sha256 = "06dfkfzxp8199by0jc5wim8g8qw38j09dq9p6n9w4zaasla60pjq";
-    })
+    (
+      fetchpatch {
+        url = https://github.com/jceb/dex/commit/107358ddf5e1ca4fa56ef1a7ab161dc3b6adc45a.patch;
+        sha256 = "06dfkfzxp8199by0jc5wim8g8qw38j09dq9p6n9w4zaasla60pjq";
+      }
+    )
   ];
 
   meta = with stdenv.lib; {

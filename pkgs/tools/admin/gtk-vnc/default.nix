@@ -33,10 +33,12 @@ stdenv.mkDerivation rec {
 
   patches = [
     # Fix undeclared gio-unix-2.0 in example program.
-    (fetchpatch {
-      url = "https://gitlab.gnome.org/GNOME/gtk-vnc/commit/8588bc1c8321152ddc5086ca9b2c03a7f511e0d0.patch";
-      sha256 = "0i1iapsbngl1mhnz22dd73mnzk68qc4n51pqdhnm18zqc8pawvh4";
-    })
+    (
+      fetchpatch {
+        url = "https://gitlab.gnome.org/GNOME/gtk-vnc/commit/8588bc1c8321152ddc5086ca9b2c03a7f511e0d0.patch";
+        sha256 = "0i1iapsbngl1mhnz22dd73mnzk68qc4n51pqdhnm18zqc8pawvh4";
+      }
+    )
   ];
 
   nativeBuildInputs = [

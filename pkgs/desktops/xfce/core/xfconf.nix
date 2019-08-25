@@ -1,6 +1,6 @@
 { stdenv, fetchurl, pkgconfig, intltool, glib, libxfce4util, dbus-glib }:
 let
-  p_name  = "xfconf";
+  p_name = "xfconf";
   ver_maj = "4.12";
   ver_min = "1";
 in

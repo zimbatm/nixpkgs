@@ -1,5 +1,12 @@
-{ stdenv, fetchurl, pkgconfig, python3, makeWrapper
-, webkitgtk, glib-networking, gsettings-desktop-schemas, python2Packages
+{ stdenv
+, fetchurl
+, pkgconfig
+, python3
+, makeWrapper
+, webkitgtk
+, glib-networking
+, gsettings-desktop-schemas
+, python2Packages
 }:
 # This package needs python3 during buildtime,
 # but Python 2 + packages during runtime.
@@ -10,9 +17,9 @@ stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "Tiny externally controllable webkit browser";
-    homepage    = "http://uzbl.org/";
-    license     = licenses.gpl3;
-    platforms   = platforms.linux;
+    homepage = "http://uzbl.org/";
+    license = licenses.gpl3;
+    platforms = platforms.linux;
     maintainers = with maintainers; [ raskin dgonyeo ];
   };
 

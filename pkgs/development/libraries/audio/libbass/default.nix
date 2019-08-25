@@ -46,14 +46,16 @@ let
     lpropagatedBuildInputs = [ unzip ];
     dontBuild = true;
     installPhase =
-      let so =
-            if bass.so ? ${stdenv.hostPlatform.system} then bass.so.${stdenv.hostPlatform.system}
-            else throw "${name} not packaged for ${stdenv.hostPlatform.system} (yet).";
-      in ''
-        mkdir -p $out/{lib,include}
-        install -m644 -t $out/lib/ ${so}
-        install -m644 -t $out/include/ ${bass.h}
-      '';
+      let
+        so =
+          if bass.so ? ${stdenv.hostPlatform.system} then bass.so.${stdenv.hostPlatform.system}
+          else throw "${name} not packaged for ${stdenv.hostPlatform.system} (yet).";
+      in
+        ''
+          mkdir -p $out/{lib,include}
+          install -m644 -t $out/lib/ ${so}
+          install -m644 -t $out/include/ ${bass.h}
+        '';
 
     meta = with stdenv.lib; {
       description = "Shareware audio library";
@@ -63,4 +65,5 @@ let
     };
   };
 
-in stdenv.lib.mapAttrs dropBass allBass
+in
+stdenv.lib.mapAttrs dropBass allBass

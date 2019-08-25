@@ -1,7 +1,19 @@
-{ stdenv, fetchurl, makeWrapper
-, haskellPackages, haskell
-, which, swiProlog, rlwrap, tk
-, curl, git, unzip, gnutar, coreutils, sqlite }:
+{ stdenv
+, fetchurl
+, makeWrapper
+, haskellPackages
+, haskell
+, which
+, swiProlog
+, rlwrap
+, tk
+, curl
+, git
+, unzip
+, gnutar
+, coreutils
+, sqlite
+}:
 
 let
   name = "pakcs-2.1.1";
@@ -13,19 +25,26 @@ let
     sha256 = "112v9ynqfbbm4x770mcfrai9v5bh7c3zn7jka80pv6v4y65r778c";
   };
 
-  curry-frontend = (haskellPackages.override {
-    overrides = self: super: {
-      curry-base = haskell.lib.overrideCabal (super.callPackage ./curry-base.nix {}) (drv: {
-        inherit src;
-        postUnpack = "sourceRoot+=/frontend/curry-base";
-      });
-      curry-frontend = haskell.lib.overrideCabal (super.callPackage ./curry-frontend.nix {}) (drv: {
-        inherit src;
-        postUnpack = "sourceRoot+=/frontend/curry-frontend";
-      });
-    };
-  }).curry-frontend;
-in stdenv.mkDerivation {
+  curry-frontend = (
+    haskellPackages.override {
+      overrides = self: super: {
+        curry-base = haskell.lib.overrideCabal (super.callPackage ./curry-base.nix {}) (
+          drv: {
+            inherit src;
+            postUnpack = "sourceRoot+=/frontend/curry-base";
+          }
+        );
+        curry-frontend = haskell.lib.overrideCabal (super.callPackage ./curry-frontend.nix {}) (
+          drv: {
+            inherit src;
+            postUnpack = "sourceRoot+=/frontend/curry-frontend";
+          }
+        );
+      };
+    }
+  ).curry-frontend;
+in
+stdenv.mkDerivation {
   inherit name src;
 
   buildInputs = [ swiProlog ];

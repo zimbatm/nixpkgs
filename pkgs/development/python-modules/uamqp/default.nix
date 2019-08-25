@@ -25,11 +25,15 @@ buildPythonPackage rec {
     openssl
     certifi
     six
-  ] ++ lib.optionals (!isPy3k) [
-    enum34
-  ] ++ lib.optionals stdenv.isDarwin [
-    CFNetwork Security
-  ];
+  ]
+  ++ lib.optionals (!isPy3k) [
+       enum34
+     ]
+  ++ lib.optionals stdenv.isDarwin [
+       CFNetwork
+       Security
+     ]
+  ;
 
   nativeBuildInputs = [
     cmake

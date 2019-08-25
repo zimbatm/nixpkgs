@@ -12,10 +12,12 @@ buildPythonApplication rec {
   };
 
   patches = [
-    (substituteAll {
-      src = ./dmenu-path.patch;
-      inherit dmenu;
-    })
+    (
+      substituteAll {
+        src = ./dmenu-path.patch;
+        inherit dmenu;
+      }
+    )
   ];
 
   propagatedBuildInputs = [

@@ -15,10 +15,14 @@ stdenv.mkDerivation {
     sha256 = "0xql1nv8dafnrcg54f3jsi3ny3cd2ca9iv73pxpgxd2gfczvvjkn";
   };
 
-  patches = [ (fetchpatch {
-    url = "https://github.com/Bumblebee-Project/bbswitch/pull/102.patch";
-    sha256 = "1lbr6pyyby4k9rn2ry5qc38kc738d0442jhhq57vmdjb6hxjya7m";
-  }) ];
+  patches = [
+    (
+      fetchpatch {
+        url = "https://github.com/Bumblebee-Project/bbswitch/pull/102.patch";
+        sha256 = "1lbr6pyyby4k9rn2ry5qc38kc738d0442jhhq57vmdjb6hxjya7m";
+      }
+    )
+  ];
 
   nativeBuildInputs = kernel.moduleBuildDependencies;
 

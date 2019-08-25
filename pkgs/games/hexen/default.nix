@@ -1,4 +1,4 @@
-{stdenv, fetchurl, SDL} :
+{ stdenv, fetchurl, SDL }:
 
 stdenv.mkDerivation {
   name = "hexen-0.2.3";

@@ -1,6 +1,11 @@
-{ stdenv, buildPythonPackage, fetchurl, substituteAll,
-  geos, gdal, pytz,
-  withGdal ? false
+{ stdenv
+, buildPythonPackage
+, fetchurl
+, substituteAll
+, geos
+, gdal
+, pytz
+, withGdal ? false
 }:
 
 buildPythonPackage rec {
@@ -13,12 +18,14 @@ buildPythonPackage rec {
   };
 
   patches = stdenv.lib.optionals withGdal [
-    (substituteAll {
-      src = ./1.10-gis-libs.template.patch;
-      geos = geos;
-      gdal = gdal;
-      extension = stdenv.hostPlatform.extensions.sharedLibrary;
-    })
+    (
+      substituteAll {
+        src = ./1.10-gis-libs.template.patch;
+        geos = geos;
+        gdal = gdal;
+        extension = stdenv.hostPlatform.extensions.sharedLibrary;
+      }
+    )
   ];
 
   # patch only $out/bin to avoid problems with starter templates (see #3134)

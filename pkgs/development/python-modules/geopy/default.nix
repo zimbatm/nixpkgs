@@ -17,7 +17,7 @@ buildPythonPackage rec {
     sha256 = "9419bc90ee6231590c4ae7acf1cf126cefbd0736942da7a6a1436946e80830e2";
   };
 
-  doCheck = false;  # too much
+  doCheck = false; # too much
 
   buildInputs = [ mock tox pylint ];
 

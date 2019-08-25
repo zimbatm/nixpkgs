@@ -5,7 +5,7 @@ rec {
 
   description = ''Closer to MOP is a compatibility layer that rectifies many of the absent or incorrect CLOS MOP features across a broad range of Common Lisp implementations.'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/closer-mop/2019-01-07/closer-mop-20190107-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "closer-mop";
 
-  asdFilesToKeep = ["closer-mop.asd"];
+  asdFilesToKeep = [ "closer-mop.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM closer-mop DESCRIPTION

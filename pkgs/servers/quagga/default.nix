@@ -1,5 +1,15 @@
-{ stdenv, fetchurl, libcap, libnl, readline, net_snmp, less, perl, texinfo,
-  pkgconfig, c-ares }:
+{ stdenv
+, fetchurl
+, libcap
+, libnl
+, readline
+, net_snmp
+, less
+, perl
+, texinfo
+, pkgconfig
+, c-ares
+}:
 
 stdenv.mkDerivation rec {
   name = "quagga-${version}";
@@ -12,7 +22,8 @@ stdenv.mkDerivation rec {
 
   buildInputs =
     [ readline net_snmp c-ares ]
-    ++ stdenv.lib.optionals stdenv.isLinux [ libcap libnl ];
+    ++ stdenv.lib.optionals stdenv.isLinux [ libcap libnl ]
+    ;
 
   nativeBuildInputs = [ pkgconfig perl texinfo ];
 

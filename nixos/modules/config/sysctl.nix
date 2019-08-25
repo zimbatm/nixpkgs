@@ -43,12 +43,16 @@ in
   config = {
 
     environment.etc."sysctl.d/60-nixos.conf".text =
-      concatStrings (mapAttrsToList (n: v:
-        optionalString (v != null) "${n}=${if v == false then "0" else toString v}\n"
-      ) config.boot.kernel.sysctl);
+      concatStrings (
+        mapAttrsToList (
+          n: v:
+            optionalString (v != null) "${n}=${if v == false then "0" else toString v}\n"
+        ) config.boot.kernel.sysctl
+      );
 
     systemd.services.systemd-sysctl =
-      { wantedBy = [ "multi-user.target" ];
+      {
+        wantedBy = [ "multi-user.target" ];
         restartTriggers = [ config.environment.etc."sysctl.d/60-nixos.conf".source ];
       };
 

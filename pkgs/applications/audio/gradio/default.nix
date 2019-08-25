@@ -1,4 +1,6 @@
-{ stdenv, fetchFromGitHub, pkgconfig
+{ stdenv
+, fetchFromGitHub
+, pkgconfig
 , python3
 , gsettings-desktop-schemas
 , desktop-file-utils
@@ -18,7 +20,8 @@
 let
   version = "7.2";
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "gradio-${version}";
 
   src = fetchFromGitHub {
@@ -52,7 +55,9 @@ in stdenv.mkDerivation rec {
     wrapGAppsHook
     desktop-file-utils
     gsettings-desktop-schemas
-  ] ++ gst_plugins;
+  ]
+  ++ gst_plugins
+  ;
 
   enableParallelBuilding = true;
   postInstall = ''

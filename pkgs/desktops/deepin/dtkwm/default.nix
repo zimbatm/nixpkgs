@@ -1,5 +1,12 @@
-{ stdenv, mkDerivation, fetchFromGitHub, pkgconfig, qmake, qtx11extras, dtkcore,
-  deepin }:
+{ stdenv
+, mkDerivation
+, fetchFromGitHub
+, pkgconfig
+, qmake
+, qtx11extras
+, dtkcore
+, deepin
+}:
 
 mkDerivation rec {
   name = "${pname}-${version}";

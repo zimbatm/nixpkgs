@@ -14,7 +14,7 @@ rustPlatform.buildRustPackage rec {
     repo = "substrate";
     rev = "19f4f4d4df3bb266086b4e488739f73d3d5e588c";
     sha256 = "0v7g03rbml2afw0splmyjh9nqpjg0ldjw09hyc0jqd3qlhgxiiyj";
-  }; 
+  };
 
   cargoSha256 = "19xcxpbkrbygghz9qi52vzviksxg28m7ibvl359vlhqv1cjxmpsq";
 

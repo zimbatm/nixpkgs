@@ -1,24 +1,26 @@
 # This test runs haka and probes it with hakactl
 
-import ./make-test.nix ({ pkgs, ...} : {
-  name = "haka";
-  meta = with pkgs.stdenv.lib.maintainers; {
-    maintainers = [ tvestelind ];
-  };
-
-  nodes = {
-    haka =
-      { ... }:
-        {
-          services.haka.enable = true;
-        };
+import ./make-test.nix (
+  { pkgs, ... }: {
+    name = "haka";
+    meta = with pkgs.stdenv.lib.maintainers; {
+      maintainers = [ tvestelind ];
     };
 
-  testScript = ''
-    startAll;
+    nodes = {
+      haka =
+        { ... }:
+          {
+            services.haka.enable = true;
+          };
+    };
 
-    $haka->waitForUnit("haka.service");
-    $haka->succeed("hakactl status");
-    $haka->succeed("hakactl stop");
-  '';
-})
+    testScript = ''
+      startAll;
+
+      $haka->waitForUnit("haka.service");
+      $haka->succeed("hakactl status");
+      $haka->succeed("hakactl stop");
+    '';
+  }
+)

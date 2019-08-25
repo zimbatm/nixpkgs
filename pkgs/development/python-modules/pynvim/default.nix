@@ -30,12 +30,13 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ msgpack ]
     ++ lib.optional (!isPyPy) greenlet
-    ++ lib.optional (pythonOlder "3.4") trollius;
+    ++ lib.optional (pythonOlder "3.4") trollius
+    ;
 
   meta = {
     description = "Python client for Neovim";
     homepage = "https://github.com/neovim/python-client";
     license = lib.licenses.asl20;
-    maintainers = with lib.maintainers; [ ];
+    maintainers = with lib.maintainers; [];
   };
 }

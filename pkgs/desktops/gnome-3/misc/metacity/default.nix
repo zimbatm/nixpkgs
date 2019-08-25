@@ -12,12 +12,14 @@
 , pkgconfig
 , substituteAll
 , wrapGAppsHook
-, zenity }:
+, zenity
+}:
 
 let
   pname = "metacity";
   version = "3.32.0";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "${pname}-${version}";
 
   src = fetchurl {
@@ -26,10 +28,12 @@ in stdenv.mkDerivation rec {
   };
 
   patches = [
-    (substituteAll {
-      src = ./fix-paths.patch;
-      inherit zenity;
-    })
+    (
+      substituteAll {
+        src = ./fix-paths.patch;
+        inherit zenity;
+      }
+    )
   ];
 
   nativeBuildInputs = [

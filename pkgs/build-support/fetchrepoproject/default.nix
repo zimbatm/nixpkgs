@@ -1,9 +1,16 @@
 { stdenvNoCC, gitRepo, cacert, copyPathsToStore }:
 
-{ name, manifest, rev ? "HEAD", sha256
-# Optional parameters:
-, repoRepoURL ? "", repoRepoRev ? "", referenceDir ? ""
-, localManifests ? [], createMirror ? false, useArchive ? false
+{ name
+, manifest
+, rev ? "HEAD"
+, sha256
+  # Optional parameters:
+, repoRepoURL ? ""
+, repoRepoRev ? ""
+, referenceDir ? ""
+, localManifests ? []
+, createMirror ? false
+, useArchive ? false
 }:
 
 assert repoRepoRev != "" -> repoRepoURL != "";
@@ -24,11 +31,14 @@ let
     "--depth=1"
     (optionalString createMirror "--mirror")
     (optionalString useArchive "--archive")
-  ] ++ extraRepoInitFlags;
+  ]
+  ++ extraRepoInitFlags
+  ;
 
   local_manifests = copyPathsToStore localManifests;
 
-in stdenvNoCC.mkDerivation {
+in
+stdenvNoCC.mkDerivation {
   inherit name;
 
   inherit cacert manifest rev repoRepoURL repoRepoRev referenceDir; # TODO
@@ -40,9 +50,12 @@ in stdenvNoCC.mkDerivation {
   preferLocalBuild = true;
   enableParallelBuilding = true;
 
-  impureEnvVars = fetchers.proxyImpureEnvVars ++ [
-    "GIT_PROXY_COMMAND" "SOCKS_SERVER"
-  ];
+  impureEnvVars = fetchers.proxyImpureEnvVars
+    ++ [
+         "GIT_PROXY_COMMAND"
+         "SOCKS_SERVER"
+       ]
+    ;
 
   nativeBuildInputs = [ gitRepo cacert ];
 
@@ -57,11 +70,11 @@ in stdenvNoCC.mkDerivation {
 
     mkdir .repo
     ${optionalString (local_manifests != []) ''
-      mkdir .repo/local_manifests
-      for local_manifest in ${concatMapStringsSep " " toString local_manifests}; do
-        cp $local_manifest .repo/local_manifests/$(stripHash $local_manifest; echo $strippedName)
-      done
-    ''}
+    mkdir .repo/local_manifests
+    for local_manifest in ${concatMapStringsSep " " toString local_manifests}; do
+      cp $local_manifest .repo/local_manifests/$(stripHash $local_manifest; echo $strippedName)
+    done
+  ''}
 
     repo init ${concatStringsSep " " repoInitFlags}
     repo sync --jobs=$NIX_BUILD_CORES --current-branch
@@ -70,8 +83,8 @@ in stdenvNoCC.mkDerivation {
     # different contents each time and will therefore change the final hash
     # (i.e. creating a mirror probably won't work).
     ${optionalString (!createMirror) ''
-      rm -rf .repo
-      find -type d -name '.git' -prune -exec rm -rf {} +
-    ''}
+    rm -rf .repo
+    find -type d -name '.git' -prune -exec rm -rf {} +
+  ''}
   '';
 }

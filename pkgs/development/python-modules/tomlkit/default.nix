@@ -1,5 +1,11 @@
-{ lib, buildPythonPackage, fetchPypi, isPy27, isPy34
-, enum34, functools32, typing
+{ lib
+, buildPythonPackage
+, fetchPypi
+, isPy27
+, isPy34
+, enum34
+, functools32
+, typing
 }:
 
 buildPythonPackage rec {
@@ -13,7 +19,8 @@ buildPythonPackage rec {
 
   propagatedBuildInputs =
     lib.optionals isPy27 [ enum34 functools32 ]
-    ++ lib.optional (isPy27 || isPy34) typing;
+    ++ lib.optional (isPy27 || isPy34) typing
+    ;
 
   # The Pypi tarball doesn't include tests, and the GitHub source isn't
   # buildable until we bootstrap poetry, see

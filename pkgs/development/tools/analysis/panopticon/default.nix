@@ -1,5 +1,12 @@
-{ stdenv, fetchFromGitHub, rustPlatform, qt5, git, cmake
-, pkgconfig, makeWrapper }:
+{ stdenv
+, fetchFromGitHub
+, rustPlatform
+, qt5
+, git
+, cmake
+, pkgconfig
+, makeWrapper
+}:
 
 rustPlatform.buildRustPackage rec {
   pname = "panopticon";
@@ -16,13 +23,13 @@ rustPlatform.buildRustPackage rec {
   nativeBuildInputs = [ cmake ];
   buildInputs = [ makeWrapper ];
   propagatedBuildInputs = with qt5; [
-     qt5.qtbase
-     qtdeclarative
-     qtsvg
-     qtquickcontrols2
-     qtgraphicaleffects
-     pkgconfig
-     git
+    qt5.qtbase
+    qtdeclarative
+    qtsvg
+    qtquickcontrols2
+    qtgraphicaleffects
+    pkgconfig
+    git
   ];
 
   cargoSha256 = "1fsxd7yzb38h1d52yyz7kj1v0riycjydb1b1bn1zkhgwm5sm2kbs";
@@ -34,7 +41,7 @@ rustPlatform.buildRustPackage rec {
     mv $out/bin/${pname} $out/share/${pname}
     chmod +x $out/share/${pname}
     makeWrapper $out/share/${pname}/${pname} $out/bin/${pname}
-     '';
+  '';
 
   meta = with stdenv.lib; {
     description = "A libre cross-platform disassembler";

@@ -1,8 +1,33 @@
-{ stdenv, fetchFromGitLab, substituteAll, meson, ninja, pkgconfig, vala_0_40, gettext
-, gnome3, libnotify, itstool, glib, gtk3, libxml2, gnome-online-accounts
-, coreutils, libpeas, libsecret, pcre, libxkbcommon, wrapGAppsHook
-, libpthreadstubs, libXdmcp, epoxy, at-spi2-core, dbus, libgpgerror
-, appstream-glib, desktop-file-utils, duplicity
+{ stdenv
+, fetchFromGitLab
+, substituteAll
+, meson
+, ninja
+, pkgconfig
+, vala_0_40
+, gettext
+, gnome3
+, libnotify
+, itstool
+, glib
+, gtk3
+, libxml2
+, gnome-online-accounts
+, coreutils
+, libpeas
+, libsecret
+, pcre
+, libxkbcommon
+, wrapGAppsHook
+, libpthreadstubs
+, libXdmcp
+, epoxy
+, at-spi2-core
+, dbus
+, libgpgerror
+, appstream-glib
+, desktop-file-utils
+, duplicity
 }:
 
 stdenv.mkDerivation rec {
@@ -18,10 +43,12 @@ stdenv.mkDerivation rec {
   };
 
   patches = [
-    (substituteAll {
-      src = ./fix-paths.patch;
-      inherit coreutils;
-    })
+    (
+      substituteAll {
+        src = ./fix-paths.patch;
+        inherit coreutils;
+      }
+    )
     ./hardcode-gsettings.patch
   ];
 
@@ -30,14 +57,34 @@ stdenv.mkDerivation rec {
   '';
 
   nativeBuildInputs = [
-    meson ninja pkgconfig vala_0_40 gettext itstool
-    appstream-glib desktop-file-utils libxml2 wrapGAppsHook
+    meson
+    ninja
+    pkgconfig
+    vala_0_40
+    gettext
+    itstool
+    appstream-glib
+    desktop-file-utils
+    libxml2
+    wrapGAppsHook
   ];
 
   buildInputs = [
-   libnotify libpeas glib gtk3 libsecret
-   pcre libxkbcommon libpthreadstubs libXdmcp epoxy gnome3.nautilus
-   at-spi2-core dbus gnome-online-accounts libgpgerror
+    libnotify
+    libpeas
+    glib
+    gtk3
+    libsecret
+    pcre
+    libxkbcommon
+    libpthreadstubs
+    libXdmcp
+    epoxy
+    gnome3.nautilus
+    at-spi2-core
+    dbus
+    gnome-online-accounts
+    libgpgerror
   ];
 
   propagatedUserEnvPkgs = [ duplicity ];

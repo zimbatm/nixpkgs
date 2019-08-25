@@ -5,7 +5,7 @@ rec {
 
   description = '''';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/cl-utilities/2010-10-06/cl-utilities-1.2.4.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "cl-utilities";
 
-  asdFilesToKeep = ["cl-utilities.asd"];
+  asdFilesToKeep = [ "cl-utilities.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM cl-utilities DESCRIPTION NIL SHA256

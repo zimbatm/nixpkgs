@@ -1,5 +1,10 @@
-{ stdenv, autoreconfHook, pkgconfig, mediastreamer, openh264
-, fetchgit, cmake
+{ stdenv
+, autoreconfHook
+, pkgconfig
+, mediastreamer
+, openh264
+, fetchgit
+, cmake
 }:
 
 stdenv.mkDerivation rec {

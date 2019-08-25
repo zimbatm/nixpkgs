@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, pcre } :
+{ stdenv, fetchFromGitHub, pcre }:
 
 stdenv.mkDerivation rec {
   name = "imatix_gsl-${version}";

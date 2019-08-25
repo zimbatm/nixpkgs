@@ -33,4 +33,5 @@ let
 
   versionFlag = { "release" = "-r"; "master" = "-m"; }.${versionPolicy} or throwFlag;
 
-in [ updateScript versionFlag repoName attrPath ]
+in
+[ updateScript versionFlag repoName attrPath ]

@@ -4,7 +4,8 @@
 
 with lib;
 
-let cfg = config.programs.atop;
+let
+  cfg = config.programs.atop;
 
 in
 {

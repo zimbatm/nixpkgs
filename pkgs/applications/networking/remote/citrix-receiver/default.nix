@@ -30,25 +30,27 @@
 let
   # In 56e1bdc7f9c (libidn: 1.34 -> 1.35), libidn.so.11 became libidn.so.12.
   # Citrix looks for the former so we build version 1.34 to please the binary
-  libidn_134 = libidn.overrideDerivation (_: rec {
-    name = "libidn-1.34";
-    src = fetchurl {
-      url = "mirror://gnu/libidn/${name}.tar.gz";
-      sha256 = "0g3fzypp0xjcgr90c5cyj57apx1cmy0c6y9lvw2qdcigbyby469p";
-    };
-  });
+  libidn_134 = libidn.overrideDerivation (
+    _: rec {
+      name = "libidn-1.34";
+      src = fetchurl {
+        url = "mirror://gnu/libidn/${name}.tar.gz";
+        sha256 = "0g3fzypp0xjcgr90c5cyj57apx1cmy0c6y9lvw2qdcigbyby469p";
+      };
+    }
+  );
 
   versionInfo = let
     supportedVersions = {
       "13.10.0" = {
-        major     = "13";
-        minor     = "10";
-        patch     = "0";
-        x64hash   = "7025688C7891374CDA11C92FC0BA2FA8151AEB4C4D31589AD18747FAE943F6EA";
-        x86hash   = "2DCA3C8EDED11C5D824D579BC3A6B7D531EAEDDCBFB16E91B5702C72CAE9DEE4";
+        major = "13";
+        minor = "10";
+        patch = "0";
+        x64hash = "7025688C7891374CDA11C92FC0BA2FA8151AEB4C4D31589AD18747FAE943F6EA";
+        x86hash = "2DCA3C8EDED11C5D824D579BC3A6B7D531EAEDDCBFB16E91B5702C72CAE9DEE4";
         x64suffix = "20";
         x86suffix = "20";
-        homepage  = https://www.citrix.com/downloads/citrix-receiver/linux/receiver-for-linux-latest.html;
+        homepage = https://www.citrix.com/downloads/citrix-receiver/linux/receiver-for-linux-latest.html;
       };
     };
 
@@ -58,22 +60,24 @@ let
       versions = [ "13.8.0" "13.9.0" "13.9.1" ];
     in
       lib.listToAttrs
-        (lib.forEach versions
-          (v: lib.nameValuePair v (throw "Unsupported citrix_receiver version: ${v}")));
+        (
+          lib.forEach versions
+            (v: lib.nameValuePair v (throw "Unsupported citrix_receiver version: ${v}"))
+        );
   in
     deprecatedVersions // supportedVersions;
 
   citrixReceiverForVersion = { major, minor, patch, x86hash, x64hash, x86suffix, x64suffix, homepage }:
     stdenv.mkDerivation rec {
-      name     = "citrix-receiver-${version}";
-      version  = "${major}.${minor}.${patch}";
+      name = "citrix-receiver-${version}";
+      version = "${major}.${minor}.${patch}";
       inherit homepage;
 
       prefixWithBitness = if stdenv.is64bit then "linuxx64" else "linuxx86";
 
       src = requireFile rec {
-        name    = if stdenv.is64bit then "${prefixWithBitness}-${version}.${x64suffix}.tar.gz" else "${prefixWithBitness}-${version}.${x86suffix}.tar.gz";
-        sha256  = if stdenv.is64bit then x64hash else x86hash;
+        name = if stdenv.is64bit then "${prefixWithBitness}-${version}.${x64suffix}.tar.gz" else "${prefixWithBitness}-${version}.${x86suffix}.tar.gz";
+        sha256 = if stdenv.is64bit then x64hash else x86hash;
         message = ''
           In order to use Citrix Receiver, you need to comply with the Citrix EULA and download
           the ${if stdenv.is64bit then "64-bit" else "32-bit"} binaries, .tar.gz from:
@@ -127,14 +131,14 @@ let
       ];
 
       desktopItem = makeDesktopItem {
-        name        = "wfica";
+        name = "wfica";
         desktopName = "Citrix Receiver";
         genericName = "Citrix Receiver";
-        exec        = "wfica";
-        icon        = "wfica";
-        comment     = "Connect to remote Citrix server";
-        categories  = "GTK;GNOME;X-GNOME-NetworkSettings;Network;";
-        mimeType    = "application/x-ica";
+        exec = "wfica";
+        icon = "wfica";
+        comment = "Connect to remote Citrix server";
+        categories = "GTK;GNOME;X-GNOME-NetworkSettings;Network;";
+        mimeType = "application/x-ica";
       };
 
       installPhase = ''
@@ -204,12 +208,13 @@ let
       '';
 
       meta = with stdenv.lib; {
-        license     = stdenv.lib.licenses.unfree;
+        license = stdenv.lib.licenses.unfree;
         inherit homepage;
         description = "Citrix Receiver";
         maintainers = with maintainers; [ obadz a1russell ma27 ];
-        platforms   = platforms.linux;
+        platforms = platforms.linux;
       };
     };
 
-in citrixReceiverForVersion (lib.getAttr version versionInfo)
+in
+citrixReceiverForVersion (lib.getAttr version versionInfo)

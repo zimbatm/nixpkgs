@@ -25,7 +25,8 @@ let
     name = "sway-joined";
     paths = [ swayWrapped swayPackage ];
   };
-in {
+in
+{
   options.programs.sway = {
     enable = mkEnableOption ''
       Sway, the i3-compatible tiling Wayland compositor. You can manually launch
@@ -55,8 +56,11 @@ in {
     extraPackages = mkOption {
       type = with types; listOf package;
       default = with pkgs; [
-        swaylock swayidle
-        xwayland rxvt_unicode dmenu
+        swaylock
+        swayidle
+        xwayland
+        rxvt_unicode
+        dmenu
       ];
       defaultText = literalExample ''
         with pkgs; [ swaylock swayidle xwayland rxvt_unicode dmenu ];

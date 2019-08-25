@@ -44,16 +44,18 @@ buildPythonPackage rec {
     boost
   ];
 
-  NIX_CFLAGS_COMPILE="-I ${python}/include/${python.libPrefix}";
+  NIX_CFLAGS_COMPILE = "-I ${python}/include/${python.libPrefix}";
 
   patches = [
     # Remove kwarg that was removed in upstream gym
     # https://github.com/openai/roboschool/pull/180
-    (fetchpatch {
-      name = "remove-close-kwarg.patch";
-      url = "https://github.com/openai/roboschool/pull/180/commits/334f489c8ce7af4887e376139ec676f89da5b16f.patch";
-      sha256 = "0bbz8b63m40a9lrwmh7c8d8gj9kpa8a7svdh08qhrddjkykvip6r";
-    })
+    (
+      fetchpatch {
+        name = "remove-close-kwarg.patch";
+        url = "https://github.com/openai/roboschool/pull/180/commits/334f489c8ce7af4887e376139ec676f89da5b16f.patch";
+        sha256 = "0bbz8b63m40a9lrwmh7c8d8gj9kpa8a7svdh08qhrddjkykvip6r";
+      }
+    )
   ];
 
   preBuild = ''

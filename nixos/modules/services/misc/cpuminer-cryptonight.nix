@@ -6,11 +6,12 @@ let
   cfg = config.services.cpuminer-cryptonight;
 
   json = builtins.toJSON (
-    cfg // {
-       enable = null;
-       threads =
-         if cfg.threads == 0 then null else toString cfg.threads;
-    }
+    cfg
+    // {
+         enable = null;
+         threads =
+           if cfg.threads == 0 then null else toString cfg.threads;
+       }
   );
 
   confFile = builtins.toFile "cpuminer.json" json;

@@ -5,7 +5,7 @@ rec {
 
   description = '''';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/misc-extensions/2015-06-08/misc-extensions-20150608-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "misc-extensions";
 
-  asdFilesToKeep = ["misc-extensions.asd"];
+  asdFilesToKeep = [ "misc-extensions.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM misc-extensions DESCRIPTION NIL SHA256

@@ -72,7 +72,7 @@ let
     ${cfg.osd.extraConfig}
   '';
 
-  optionalDir = optionals cfg.dir.enable ["xtreemfs-dir.service"];
+  optionalDir = optionals cfg.dir.enable [ "xtreemfs-dir.service" ];
 
   systemdOptionalDependencies = {
     after = [ "network.target" ] ++ optionalDir;
@@ -433,14 +433,16 @@ in
     environment.systemPackages = [ xtreemfs ];
 
     users.users.xtreemfs =
-      { uid = config.ids.uids.xtreemfs;
+      {
+        uid = config.ids.uids.xtreemfs;
         description = "XtreemFS user";
         createHome = true;
         home = home;
       };
 
     users.groups.xtreemfs =
-      { gid = config.ids.gids.xtreemfs;
+      {
+        gid = config.ids.gids.xtreemfs;
       };
 
     systemd.services.xtreemfs-dir = mkIf cfg.dir.enable {
@@ -453,21 +455,27 @@ in
       };
     };
 
-    systemd.services.xtreemfs-mrc = mkIf cfg.mrc.enable ({
-      description = "XtreemFS-MRC Server";
-      serviceConfig = {
-        User = "xtreemfs";
-        ExecStart = "${startupScript "org.xtreemfs.mrc.MRC" mrcConfig}";
-      };
-    } // systemdOptionalDependencies);
+    systemd.services.xtreemfs-mrc = mkIf cfg.mrc.enable (
+      {
+        description = "XtreemFS-MRC Server";
+        serviceConfig = {
+          User = "xtreemfs";
+          ExecStart = "${startupScript "org.xtreemfs.mrc.MRC" mrcConfig}";
+        };
+      }
+      // systemdOptionalDependencies
+    );
 
-    systemd.services.xtreemfs-osd = mkIf cfg.osd.enable ({
-      description = "XtreemFS-OSD Server";
-      serviceConfig = {
-        User = "xtreemfs";
-        ExecStart = "${startupScript "org.xtreemfs.osd.OSD" osdConfig}";
-      };
-    } // systemdOptionalDependencies);
+    systemd.services.xtreemfs-osd = mkIf cfg.osd.enable (
+      {
+        description = "XtreemFS-OSD Server";
+        serviceConfig = {
+          User = "xtreemfs";
+          ExecStart = "${startupScript "org.xtreemfs.osd.OSD" osdConfig}";
+        };
+      }
+      // systemdOptionalDependencies
+    );
 
   };
 

@@ -25,12 +25,13 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ ant jdk makeWrapper ];
   buildInputs = stdenv.lib.optionals stdenv.isLinux [ gtk2 glib xorg.libXtst ]
-                ++ stdenv.lib.optional stdenv.isDarwin Cocoa;
+    ++ stdenv.lib.optional stdenv.isDarwin Cocoa
+    ;
 
   src = fetchFromGitHub {
     owner = "willuhn";
     repo = "jameica";
-    rev = "V_${builtins.replaceStrings ["."] ["_"] _version}_BUILD_${_build}";
+    rev = "V_${builtins.replaceStrings [ "." ] [ "_" ] _version}_BUILD_${_build}";
     sha256 = "197n35lvx51k6cbp3fhndvfb38sikl4mjqcd42fgvn2khy2sij68";
   };
 
@@ -55,8 +56,8 @@ stdenv.mkDerivation rec {
 
     makeWrapper ${jre}/bin/java $out/bin/jameica \
       --add-flags "-cp $out/share/java/jameica.jar:$out/share/${name}/* ${
-        stdenv.lib.optionalString stdenv.isDarwin ''-Xdock:name="Jameica" -XstartOnFirstThread''
-      } de.willuhn.jameica.Main" \
+  stdenv.lib.optionalString stdenv.isDarwin ''-Xdock:name="Jameica" -XstartOnFirstThread''
+  } de.willuhn.jameica.Main" \
       --prefix LD_LIBRARY_PATH : ${stdenv.lib.makeLibraryPath buildInputs} \
       --run "cd $out/share/java/"
   '';

@@ -1,4 +1,4 @@
-{stdenv, fetchurl, emacs, texinfo, ctags}:
+{ stdenv, fetchurl, emacs, texinfo, ctags }:
 
 stdenv.mkDerivation rec {
   name = "bbdb-2.36";
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
 
   patches = [ ./install-infodir.patch ];
 
-  buildInputs = [emacs texinfo ctags];
+  buildInputs = [ emacs texinfo ctags ];
   configureFlags = [ "--with-package-dir=$$out/share/emacs/site-lisp" ];
   preInstall = "mkdir -p $out/info";
   installTargets = "install-pkg texinfo";

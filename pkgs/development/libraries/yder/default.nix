@@ -1,4 +1,11 @@
-{ stdenv, lib, fetchFromGitHub, cmake, orcania, systemd, check, subunit
+{ stdenv
+, lib
+, fetchFromGitHub
+, cmake
+, orcania
+, systemd
+, check
+, subunit
 , withSystemd ? stdenv.isLinux
 }:
 assert withSystemd -> systemd != null;
@@ -27,7 +34,9 @@ stdenv.mkDerivation rec {
 
   cmakeFlags = [
     "-DBUILD_YDER_TESTING=on"
-  ] ++ lib.optional (!withSystemd) "-DWITH_JOURNALD=off";
+  ]
+  ++ lib.optional (!withSystemd) "-DWITH_JOURNALD=off"
+  ;
 
   doCheck = true;
 

@@ -59,8 +59,9 @@ let
     };
   };
 
-# now use pip to install the package prepared by bazel
-in buildPythonPackage rec {
+  # now use pip to install the package prepared by bazel
+in
+buildPythonPackage rec {
   pname = "dm-sonnet";
   inherit version;
 

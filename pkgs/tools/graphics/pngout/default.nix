@@ -1,4 +1,4 @@
-{stdenv, fetchurl}:
+{ stdenv, fetchurl }:
 
 let
   folder = if stdenv.hostPlatform.system == "i686-linux" then "i686"
@@ -18,10 +18,10 @@ stdenv.mkDerivation {
     cp ${folder}/pngout $out/bin
     
     ${if stdenv.hostPlatform.system == "i686-linux" then ''
-        patchelf --set-interpreter ${stdenv.glibc.out}/lib/ld-linux.so.2 $out/bin/pngout
-      '' else if stdenv.hostPlatform.system == "x86_64-linux" then ''
-        patchelf --set-interpreter ${stdenv.glibc.out}/lib/ld-linux-x86-64.so.2 $out/bin/pngout
-      '' else ""}
+    patchelf --set-interpreter ${stdenv.glibc.out}/lib/ld-linux.so.2 $out/bin/pngout
+  '' else if stdenv.hostPlatform.system == "x86_64-linux" then ''
+    patchelf --set-interpreter ${stdenv.glibc.out}/lib/ld-linux-x86-64.so.2 $out/bin/pngout
+  '' else ""}
   '';
 
   meta = {

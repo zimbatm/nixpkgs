@@ -32,12 +32,13 @@ let
     else x;
 
   optionsListDesc = lib.flip map optionsListVisible
-   (opt: transformOptions opt
-    // lib.optionalAttrs (opt ? example) { example = substFunction opt.example; }
-    // lib.optionalAttrs (opt ? default) { default = substFunction opt.default; }
-    // lib.optionalAttrs (opt ? type) { type = substFunction opt.type; }
-    // lib.optionalAttrs (opt ? relatedPackages && opt.relatedPackages != []) { relatedPackages = genRelatedPackages opt.relatedPackages; }
-   );
+    (
+      opt: transformOptions opt
+      // lib.optionalAttrs (opt ? example) { example = substFunction opt.example; }
+      // lib.optionalAttrs (opt ? default) { default = substFunction opt.default; }
+      // lib.optionalAttrs (opt ? type) { type = substFunction opt.type; }
+      // lib.optionalAttrs (opt ? relatedPackages && opt.relatedPackages != []) { relatedPackages = genRelatedPackages opt.relatedPackages; }
+    );
 
   # Generate DocBook documentation for a list of packages. This is
   # what `relatedPackages` option of `mkOption` from
@@ -51,23 +52,25 @@ let
   genRelatedPackages = packages:
     let
       unpack = p: if lib.isString p then { name = p; }
-                  else if lib.isList p then { path = p; }
-                  else p;
+      else if lib.isList p then { path = p; }
+      else p;
       describe = args:
         let
           title = args.title or null;
           name = args.name or (lib.concatStringsSep "." args.path);
           path = args.path or [ args.name ];
           package = args.package or (lib.attrByPath path (throw "Invalid package attribute path `${toString path}'") pkgs);
-        in "<listitem>"
-        + "<para><literal>${lib.optionalString (title != null) "${title} aka "}pkgs.${name} (${package.meta.name})</literal>"
-        + lib.optionalString (!package.meta.available) " <emphasis>[UNAVAILABLE]</emphasis>"
-        + ": ${package.meta.description or "???"}.</para>"
-        + lib.optionalString (args ? comment) "\n<para>${args.comment}</para>"
-        # Lots of `longDescription's break DocBook, so we just wrap them into <programlisting>
-        + lib.optionalString (package.meta ? longDescription) "\n<programlisting>${package.meta.longDescription}</programlisting>"
-        + "</listitem>";
-    in "<itemizedlist>${lib.concatStringsSep "\n" (map (p: describe (unpack p)) packages)}</itemizedlist>";
+        in
+          "<listitem>"
+          + "<para><literal>${lib.optionalString (title != null) "${title} aka "}pkgs.${name} (${package.meta.name})</literal>"
+          + lib.optionalString (!package.meta.available) " <emphasis>[UNAVAILABLE]</emphasis>"
+          + ": ${package.meta.description or "???"}.</para>"
+          + lib.optionalString (args ? comment) "\n<para>${args.comment}</para>"
+          # Lots of `longDescription's break DocBook, so we just wrap them into <programlisting>
+          + lib.optionalString (package.meta ? longDescription) "\n<programlisting>${package.meta.longDescription}</programlisting>"
+          + "</listitem>";
+    in
+      "<itemizedlist>${lib.concatStringsSep "\n" (map (p: describe (unpack p)) packages)}</itemizedlist>";
 
   # Custom "less" that pushes up all the things ending in ".enable*"
   # and ".package*"
@@ -76,8 +79,9 @@ let
       ise = lib.hasPrefix "enable";
       isp = lib.hasPrefix "package";
       cmp = lib.splitByAndCompare ise lib.compare
-                                 (lib.splitByAndCompare isp lib.compare lib.compare);
-    in lib.compareLists cmp a.loc b.loc < 0;
+        (lib.splitByAndCompare isp lib.compare lib.compare);
+    in
+      lib.compareLists cmp a.loc b.loc < 0;
 
   # Remove invisible and internal options.
   optionsListVisible = lib.filter (opt: opt.visible && !opt.internal) (lib.optionAttrSetToDocList options);
@@ -88,7 +92,7 @@ let
   # Convert the list of options into an XML file.
   optionsXML = builtins.toFile "options.xml" (builtins.toXML optionsList);
 
-  optionsNix = builtins.listToAttrs (map (o: { name = o.name; value = removeAttrs o ["name" "visible" "internal"]; }) optionsList);
+  optionsNix = builtins.listToAttrs (map (o: { name = o.name; value = removeAttrs o [ "name" "visible" "internal" ]; }) optionsList);
 
   # TODO: declarations: link to github
   singleAsciiDoc = name: value: ''
@@ -101,38 +105,40 @@ let
 
     Type:: ${value.type}
     ${ if lib.hasAttr "default" value
-       then ''
-        Default::
-        +
-        ----
-        ${builtins.toJSON value.default}
-        ----
-      ''
-      else "No Default:: {blank}"
-    }
+  then ''
+    Default::
+    +
+    ----
+    ${builtins.toJSON value.default}
+    ----
+  ''
+  else "No Default:: {blank}"
+  }
     ${ if value.readOnly
-       then "Read Only:: {blank}"
-      else ""
-    }
+  then "Read Only:: {blank}"
+  else ""
+  }
     ${ if lib.hasAttr "example" value
-       then ''
-        Example::
-        +
-        ----
-        ${builtins.toJSON value.example}
-        ----
-      ''
-      else "No Example:: {blank}"
-    }
+  then ''
+    Example::
+    +
+    ----
+    ${builtins.toJSON value.example}
+    ----
+  ''
+  else "No Example:: {blank}"
+  }
   '';
 
-in rec {
+in
+rec {
   inherit optionsNix;
 
   optionsAsciiDoc = lib.concatStringsSep "\n" (lib.mapAttrsToList singleAsciiDoc optionsNix);
 
   optionsJSON = pkgs.runCommand "options.json"
-    { meta.description = "List of NixOS options in JSON format";
+    {
+      meta.description = "List of NixOS options in JSON format";
     }
     ''
       # Export list of options in different format.

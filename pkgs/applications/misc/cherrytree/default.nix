@@ -12,10 +12,10 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = with pythonPackages;
-  [ python gettext wrapPython pygtk dbus-python pygtksourceview ];
+    [ python gettext wrapPython pygtk dbus-python pygtksourceview ];
 
   pythonPath = with pythonPackages;
-  [ pygtk dbus-python pygtksourceview ];
+    [ pygtk dbus-python pygtksourceview ];
 
   patches = [ ./subprocess.patch ];
 

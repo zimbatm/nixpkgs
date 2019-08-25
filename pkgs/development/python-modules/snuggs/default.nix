@@ -1,5 +1,9 @@
-{ buildPythonPackage, lib, fetchFromGitHub
-, click, numpy, pyparsing
+{ buildPythonPackage
+, lib
+, fetchFromGitHub
+, click
+, numpy
+, pyparsing
 , pytest
 }:
 

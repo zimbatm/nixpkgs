@@ -1,8 +1,10 @@
 { pkgs, ... }:
 let
   inherit (import ./../ssh-keys.nix pkgs)
-    snakeOilPrivateKey snakeOilPublicKey;
-in {
+    snakeOilPrivateKey snakeOilPublicKey
+    ;
+in
+{
   networking.firewall.allowedTCPPorts = [ 80 ];
 
   systemd.services.mock-google-metadata = {

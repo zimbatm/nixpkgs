@@ -4,7 +4,7 @@ with lib;
 
 let
 
-  cfg  = config.services.salt.master;
+  cfg = config.services.salt.master;
 
   fullConfig = lib.recursiveUpdate {
     # Provide defaults for some directories to allow an immutable config dir
@@ -45,7 +45,7 @@ in
       wantedBy = [ "multi-user.target" ];
       after = [ "network.target" ];
       path = with pkgs; [
-        utillinux  # for dmesg
+        utillinux # for dmesg
       ];
       serviceConfig = {
         ExecStart = "${pkgs.salt}/bin/salt-master";

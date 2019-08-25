@@ -21,9 +21,9 @@ stdenv.mkDerivation rec {
 
   meta = {
     description = "Toolkit for High Energy Physics Event Generation";
-    license     = stdenv.lib.licenses.gpl2;
-    homepage    = https://herwig.hepforge.org/;
-    platforms   = stdenv.lib.platforms.unix;
+    license = stdenv.lib.licenses.gpl2;
+    homepage = https://herwig.hepforge.org/;
+    platforms = stdenv.lib.platforms.unix;
     maintainers = with stdenv.lib.maintainers; [ veprbl ];
   };
 }

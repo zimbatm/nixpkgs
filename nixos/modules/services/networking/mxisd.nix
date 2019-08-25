@@ -6,7 +6,8 @@ let
   cfg = config.services.mxisd;
 
   server = optionalAttrs (cfg.server.name != null) { inherit (cfg.server) name; }
-        // optionalAttrs (cfg.server.port != null) { inherit (cfg.server) port; };
+    // optionalAttrs (cfg.server.port != null) { inherit (cfg.server) port; }
+    ;
 
   baseConfig = {
     matrix.domain = cfg.matrix.domain;
@@ -14,14 +15,17 @@ let
     storage = {
       provider.sqlite.database = "${cfg.dataDir}/mxisd.db";
     };
-  } // optionalAttrs (server != {}) { inherit server; };
+  }
+  // optionalAttrs (server != {}) { inherit server; }
+  ;
 
   # merges baseConfig and extraConfig into a single file
   fullConfig = recursiveUpdate baseConfig cfg.extraConfig;
 
   configFile = pkgs.writeText "mxisd-config.yaml" (builtins.toJSON fullConfig);
 
-in {
+in
+{
   options = {
     services.mxisd = {
       enable = mkEnableOption "mxisd matrix federated identity server";

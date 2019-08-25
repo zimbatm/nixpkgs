@@ -1,9 +1,10 @@
-{ stdenv, fetchsvn, cmake } :
+{ stdenv, fetchsvn, cmake }:
 
 let
   version = "0.8";
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "codec2-${version}";
 
   src = fetchsvn {

@@ -5,7 +5,8 @@
 let
   pythonPackages = python3Packages;
 
-in pythonPackages.buildPythonPackage rec {
+in
+pythonPackages.buildPythonPackage rec {
   name = "${pname}-${version}";
   pname = "gns3-gui";
 
@@ -17,10 +18,14 @@ in pythonPackages.buildPythonPackage rec {
   };
 
   propagatedBuildInputs = with pythonPackages; [
-    raven psutil jsonschema # tox for check
+    raven
+    psutil
+    jsonschema # tox for check
     # Runtime dependencies
-    sip (pyqt5.override { withWebSockets = true; })
-  ] ++ stdenv.lib.optional (!stable) pythonPackages.distro;
+    sip
+    (pyqt5.override { withWebSockets = true; })
+  ]
+    ++ stdenv.lib.optional (!stable) pythonPackages.distro;
 
   doCheck = false; # Failing
 

@@ -15,7 +15,7 @@ buildRustPackage rec {
 
   cargoSha256 = "0zkdai31jf8f5syklaxq43ydjvp5xclr8pd6y1q6vkwjz6z49hzm";
 
-  cargoBuildFlags = ["--features cli"];
+  cargoBuildFlags = [ "--features cli" ];
 
   meta = with stdenv.lib; {
     description = "Ethereum function call encoding (ABI) utility";

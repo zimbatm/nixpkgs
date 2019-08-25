@@ -16,17 +16,21 @@ let
       patches = [
         # Prevent a potential stack overflow
         # https://github.com/docbook/xslt10-stylesheets/pull/37
-        (fetchpatch {
-          url = https://src.fedoraproject.org/rpms/docbook-style-xsl/raw/e3ae7a97ed1d185594dd35954e1a02196afb205a/f/docbook-style-xsl-non-recursive-string-subst.patch;
-          sha256 = "0lrjjg5kpwwmbhkxzz6i5zmimb6lsvrrdhzc2qgjmb3r6jnsmii3";
-          stripLen = "1";
-        })
+        (
+          fetchpatch {
+            url = https://src.fedoraproject.org/rpms/docbook-style-xsl/raw/e3ae7a97ed1d185594dd35954e1a02196afb205a/f/docbook-style-xsl-non-recursive-string-subst.patch;
+            sha256 = "0lrjjg5kpwwmbhkxzz6i5zmimb6lsvrrdhzc2qgjmb3r6jnsmii3";
+            stripLen = "1";
+          }
+        )
 
         # Add legacy sourceforge.net URIs to the catalog
-        (substituteAll {
-          src = ./catalog-legacy-uris.patch;
-          inherit legacySuffix suffix version;
-        })
+        (
+          substituteAll {
+            src = ./catalog-legacy-uris.patch;
+            inherit legacySuffix suffix version;
+          }
+        )
       ];
 
       propagatedBuildInputs = [ findXMLCatalogs ];
@@ -60,9 +64,11 @@ let
         platforms = lib.platforms.all;
       };
     };
-  in self;
+  in
+    self;
 
-in {
+in
+{
 
   docbook-xsl-nons = common {
     pname = "docbook-xsl-nons";

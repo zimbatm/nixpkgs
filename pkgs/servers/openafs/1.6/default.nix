@@ -1,5 +1,16 @@
-{ stdenv, fetchurl, which, autoconf, automake, flex, yacc
-, glibc, perl, kerberos, libxslt, docbook_xsl, docbook_xml_dtd_43
+{ stdenv
+, fetchurl
+, which
+, autoconf
+, automake
+, flex
+, yacc
+, glibc
+, perl
+, kerberos
+, libxslt
+, docbook_xsl
+, docbook_xml_dtd_43
 , ncurses # Extra ncurses utilities. Only needed for debugging.
 , tsmbac ? null # Tivoli Storage Manager Backup Client from IBM
 }:
@@ -36,7 +47,7 @@ stdenv.mkDerivation rec {
     ./regen.sh
 
     ${stdenv.lib.optionalString (kerberos != null)
-      "export KRB5_CONFIG=${kerberos.dev}/bin/krb5-config"}
+    "export KRB5_CONFIG=${kerberos.dev}/bin/krb5-config"}
 
     export AFS_SYSKVERS=26
 
@@ -51,10 +62,12 @@ stdenv.mkDerivation rec {
       ${stdenv.lib.optionalString (ncurses == null) "--disable-gtx"}
       "--disable-linux-d_splice-alias-extra-iput"
     )
-  '' + stdenv.lib.optionalString (tsmbac != null) ''
-    export XBSA_CFLAGS="-Dxbsa -DNEW_XBSA -I${tsmbac}/lib64/sample -DXBSA_TSMLIB=\\\"${tsmbac}/lib64/libApiTSM64.so\\\""
-    export XBSA_XLIBS="-ldl"
-  '';
+  ''
+  + stdenv.lib.optionalString (tsmbac != null) ''
+      export XBSA_CFLAGS="-Dxbsa -DNEW_XBSA -I${tsmbac}/lib64/sample -DXBSA_TSMLIB=\\\"${tsmbac}/lib64/libApiTSM64.so\\\""
+      export XBSA_XLIBS="-ldl"
+    ''
+  ;
 
   buildFlags = [ "all_nolibafs" ];
 

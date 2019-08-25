@@ -1,13 +1,13 @@
 let
-  pkgs = import <nixpkgs> { };
+  pkgs = import <nixpkgs> {};
 in
-with import <nixpkgs/nixos/lib/testing.nix> { inherit pkgs; system = builtins.currentSystem; };
-with pkgs.lib;
+  with import <nixpkgs/nixos/lib/testing.nix> { inherit pkgs; system = builtins.currentSystem; };
+  with pkgs.lib;
 
-makeTest {
+  makeTest {
     name = "pg-initdb";
 
-    machine = {...}:
+    machine = { ... }:
       {
         documentation.enable = false;
         services.postgresql.enable = true;

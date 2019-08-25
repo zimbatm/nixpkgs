@@ -1,6 +1,8 @@
 { stdenv, fetchurl, pkgconfig, libX11, guile }:
 
-let version = "1.8.6"; in
+let
+  version = "1.8.6";
+in
 stdenv.mkDerivation {
   name = "xbindkeys-${version}";
   src = fetchurl {
@@ -15,7 +17,7 @@ stdenv.mkDerivation {
     homepage = https://www.nongnu.org/xbindkeys/xbindkeys.html;
     description = "Launch shell commands with your keyboard or your mouse under X Window";
     license = stdenv.lib.licenses.gpl2Plus;
-    maintainers = with stdenv.lib.maintainers; [viric];
+    maintainers = with stdenv.lib.maintainers; [ viric ];
     platforms = with stdenv.lib.platforms; linux;
   };
 }

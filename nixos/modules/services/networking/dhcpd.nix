@@ -18,14 +18,16 @@ let
       ${cfg.extraConfig}
 
       ${lib.concatMapStrings
-          (machine: ''
-            host ${machine.hostName} {
-              hardware ethernet ${machine.ethernetAddress};
-              fixed-address ${machine.ipAddress};
-            }
-          '')
-          cfg.machines
-      }
+      (
+        machine: ''
+          host ${machine.hostName} {
+            hardware ethernet ${machine.ethernetAddress};
+            fixed-address ${machine.ipAddress};
+          }
+        ''
+      )
+      cfg.machines
+    }
     '';
 
   dhcpdService = postfix: cfg: optionalAttrs cfg.enable {
@@ -43,21 +45,33 @@ let
       serviceConfig =
         let
           configFile = if cfg.configFile != null then cfg.configFile else writeConfig cfg;
-          args = [ "@${pkgs.dhcp}/sbin/dhcpd" "dhcpd${postfix}" "-${postfix}"
-                   "-pf" "/run/dhcpd${postfix}/dhcpd.pid"
-                   "-cf" "${configFile}"
-                   "-lf" "${cfg.stateDir}/dhcpd.leases"
-                   "-user" "dhcpd" "-group" "nogroup"
-                 ] ++ cfg.extraFlags
-                   ++ cfg.interfaces;
+          args = [
+            "@${pkgs.dhcp}/sbin/dhcpd"
+            "dhcpd${postfix}"
+            "-${postfix}"
+            "-pf"
+            "/run/dhcpd${postfix}/dhcpd.pid"
+            "-cf"
+            "${configFile}"
+            "-lf"
+            "${cfg.stateDir}/dhcpd.leases"
+            "-user"
+            "dhcpd"
+            "-group"
+            "nogroup"
+          ]
+          ++ cfg.extraFlags
+          ++ cfg.interfaces
+          ;
 
-        in {
-          ExecStart = concatMapStringsSep " " escapeShellArg args;
-          Type = "forking";
-          Restart = "always";
-          RuntimeDirectory = [ "dhcpd${postfix}" ];
-          PIDFile = "/run/dhcpd${postfix}/dhcpd.pid";
-        };
+        in
+          {
+            ExecStart = concatMapStringsSep " " escapeShellArg args;
+            Type = "forking";
+            Restart = "always";
+            RuntimeDirectory = [ "dhcpd${postfix}" ];
+            PIDFile = "/run/dhcpd${postfix}/dhcpd.pid";
+          };
     };
   };
 
@@ -151,7 +165,7 @@ let
 
     interfaces = mkOption {
       type = types.listOf types.str;
-      default = ["eth0"];
+      default = [ "eth0" ];
       description = ''
         The interfaces on which the DHCP server should listen.
       '';
@@ -161,11 +175,13 @@ let
       type = with types; listOf (submodule machineOpts);
       default = [];
       example = [
-        { hostName = "foo";
+        {
+          hostName = "foo";
           ethernetAddress = "00:16:76:9a:32:1d";
           ipAddress = "192.168.1.10";
         }
-        { hostName = "bar";
+        {
+          hostName = "bar";
           ethernetAddress = "00:19:d1:1d:c4:9a";
           ipAddress = "192.168.1.11";
         }

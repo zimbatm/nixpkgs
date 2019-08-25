@@ -6,7 +6,8 @@ let
 
   cfg = config.services.marathon;
 
-in {
+in
+{
 
   ###### interface
 
@@ -15,7 +16,7 @@ in {
       type = types.bool;
       default = false;
       description = ''
-	Whether to enable the marathon mesos framework.
+        	Whether to enable the marathon mesos framework.
       '';
     };
 
@@ -24,7 +25,7 @@ in {
       default = "zk://${concatStringsSep "," cfg.zookeeperHosts}/mesos";
       example = "zk://1.2.3.4:2181,2.3.4.5:2181,3.4.5.6:2181/mesos";
       description = ''
-	Mesos master address. See <link xlink:href="https://mesosphere.github.io/marathon/docs/"/> for details.
+        	Mesos master address. See <link xlink:href="https://mesosphere.github.io/marathon/docs/"/> for details.
       '';
     };
 
@@ -33,7 +34,7 @@ in {
       default = [ "localhost:2181" ];
       example = [ "1.2.3.4:2181" "2.3.4.5:2181" "3.4.5.6:2181" ];
       description = ''
-	ZooKeeper hosts' addresses.
+        	ZooKeeper hosts' addresses.
       '';
     };
 
@@ -42,9 +43,9 @@ in {
       default = "marathon";
       example = "root";
       description = ''
-	The user that the Marathon framework will be launched as. If the user doesn't exist it will be created.
-	If you want to run apps that require root access or you want to launch apps using arbitrary users, that
-	is using the `--mesos_user` flag then you need to change this to `root`.
+        	The user that the Marathon framework will be launched as. If the user doesn't exist it will be created.
+        	If you want to run apps that require root access or you want to launch apps using arbitrary users, that
+        	is using the `--mesos_user` flag then you need to change this to `root`.
       '';
     };
 
@@ -52,26 +53,26 @@ in {
       type = types.int;
       default = 8080;
       description = ''
-	Marathon listening port for HTTP connections.
+        	Marathon listening port for HTTP connections.
       '';
     };
 
     extraCmdLineOptions = mkOption {
       type = types.listOf types.str;
-      default = [ ];
+      default = [];
       example = [ "--https_port=8443" "--zk_timeout=10000" "--marathon_store_timeout=2000" ];
       description = ''
-	Extra command line options to pass to Marathon.
-	See <link xlink:href="https://mesosphere.github.io/marathon/docs/command-line-flags.html"/> for all possible flags.
+        	Extra command line options to pass to Marathon.
+        	See <link xlink:href="https://mesosphere.github.io/marathon/docs/command-line-flags.html"/> for all possible flags.
       '';
     };
 
     environment = mkOption {
-      default = { };
+      default = {};
       type = types.attrs;
       example = { JAVA_OPTS = "-Xmx512m"; MESOSPHERE_HTTP_CREDENTIALS = "username:password"; };
       description = ''
-	Environment variables passed to Marathon.
+        	Environment variables passed to Marathon.
       '';
     };
   };
@@ -93,6 +94,6 @@ in {
       };
     };
 
-    users.users.${cfg.user} = { };
+    users.users.${cfg.user} = {};
   };
 }

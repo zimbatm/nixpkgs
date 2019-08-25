@@ -4,7 +4,7 @@ let
   # sadly needs to be exported because security_tool needs it
   sdk = stdenv.mkDerivation rec {
     version = "10.12";
-    name    = "MacOS_SDK-${version}";
+    name = "MacOS_SDK-${version}";
 
     # This URL comes from https://swscan.apple.com/content/catalogs/others/index-10.12.merged-1.sucatalog, which we found by:
     #  1. Google: site:swscan.apple.com and look for a name that seems appropriate for your version
@@ -12,7 +12,7 @@ let
     #  3. ???
     #  4. Profit
     src = fetchurl {
-      url    = "http://swcdn.apple.com/content/downloads/28/09/091-29862/pafhn2u002b9slnrxzy9p86rpedycnjhb5/DevSDK_OSX1012.pkg";
+      url = "http://swcdn.apple.com/content/downloads/28/09/091-29862/pafhn2u002b9slnrxzy9p86rpedycnjhb5/DevSDK_OSX1012.pkg";
       sha256 = "1sggc70rypqwcjwr7ciavw8sczwll16cwqxdxrbw7r2qvy3b0nhx";
     };
 
@@ -45,7 +45,7 @@ let
     meta = with stdenv.lib; {
       description = "Apple SDK ${version}";
       maintainers = with maintainers; [ copumpkin ];
-      platforms   = platforms.darwin;
+      platforms = platforms.darwin;
     };
   };
 
@@ -130,13 +130,14 @@ let
     meta = with stdenv.lib; {
       description = "Apple SDK framework ${name}";
       maintainers = with maintainers; [ copumpkin ];
-      platforms   = platforms.darwin;
+      platforms = platforms.darwin;
     };
   };
-in rec {
+in
+rec {
   libs = {
     xpc = stdenv.mkDerivation {
-      name   = "apple-lib-xpc";
+      name = "apple-lib-xpc";
       phases = [ "installPhase" "fixupPhase" ];
 
       installPhase = ''
@@ -149,14 +150,20 @@ in rec {
     };
 
     Xplugin = stdenv.mkDerivation {
-      name   = "apple-lib-Xplugin";
+      name = "apple-lib-Xplugin";
       phases = [ "installPhase" "fixupPhase" ];
 
       # Not enough
       __propagatedImpureHostDeps = [ "/usr/lib/libXplugin.1.dylib" ];
 
       propagatedBuildInputs = with frameworks; [
-        OpenGL ApplicationServices Carbon IOKit CoreGraphics CoreServices CoreText
+        OpenGL
+        ApplicationServices
+        Carbon
+        IOKit
+        CoreGraphics
+        CoreServices
+        CoreText
       ];
 
       installPhase = ''
@@ -167,7 +174,7 @@ in rec {
     };
 
     utmp = stdenv.mkDerivation {
-      name   = "apple-lib-utmp";
+      name = "apple-lib-utmp";
       phases = [ "installPhase" "fixupPhase" ];
 
       installPhase = ''
@@ -181,53 +188,79 @@ in rec {
   };
 
   overrides = super: {
-    AppKit = stdenv.lib.overrideDerivation super.AppKit (drv: {
-      __propagatedImpureHostDeps = drv.__propagatedImpureHostDeps ++ [
-        "/System/Library/PrivateFrameworks/"
-      ];
-    });
+    AppKit = stdenv.lib.overrideDerivation super.AppKit (
+      drv: {
+        __propagatedImpureHostDeps = drv.__propagatedImpureHostDeps
+          ++ [
+               "/System/Library/PrivateFrameworks/"
+             ]
+          ;
+      }
+    );
 
-    CoreFoundation = stdenv.lib.overrideDerivation super.CoreFoundation (drv: {
-      setupHook = ./cf-setup-hook.sh;
-    });
+    CoreFoundation = stdenv.lib.overrideDerivation super.CoreFoundation (
+      drv: {
+        setupHook = ./cf-setup-hook.sh;
+      }
+    );
 
-    CoreMedia = stdenv.lib.overrideDerivation super.CoreMedia (drv: {
-      __propagatedImpureHostDeps = drv.__propagatedImpureHostDeps ++ [
-        "/System/Library/Frameworks/CoreImage.framework"
-      ];
-    });
+    CoreMedia = stdenv.lib.overrideDerivation super.CoreMedia (
+      drv: {
+        __propagatedImpureHostDeps = drv.__propagatedImpureHostDeps
+          ++ [
+               "/System/Library/Frameworks/CoreImage.framework"
+             ]
+          ;
+      }
+    );
 
-    CoreMIDI = stdenv.lib.overrideDerivation super.CoreMIDI (drv: {
-      __propagatedImpureHostDeps = drv.__propagatedImpureHostDeps ++ [
-        "/System/Library/PrivateFrameworks/"
-      ];
-      setupHook = ./private-frameworks-setup-hook.sh;
-    });
+    CoreMIDI = stdenv.lib.overrideDerivation super.CoreMIDI (
+      drv: {
+        __propagatedImpureHostDeps = drv.__propagatedImpureHostDeps
+          ++ [
+               "/System/Library/PrivateFrameworks/"
+             ]
+          ;
+        setupHook = ./private-frameworks-setup-hook.sh;
+      }
+    );
 
-    Security = stdenv.lib.overrideDerivation super.Security (drv: {
-      setupHook = ./security-setup-hook.sh;
-    });
+    Security = stdenv.lib.overrideDerivation super.Security (
+      drv: {
+        setupHook = ./security-setup-hook.sh;
+      }
+    );
 
-    QuartzCore = stdenv.lib.overrideDerivation super.QuartzCore (drv: {
-      installPhase = drv.installPhase + ''
-        f="$out/Library/Frameworks/QuartzCore.framework/Headers/CoreImage.h"
-        substituteInPlace "$f" \
-          --replace "QuartzCore/../Frameworks/CoreImage.framework/Headers" "CoreImage"
-      '';
-    });
+    QuartzCore = stdenv.lib.overrideDerivation super.QuartzCore (
+      drv: {
+        installPhase = drv.installPhase
+          + ''
+          f="$out/Library/Frameworks/QuartzCore.framework/Headers/CoreImage.h"
+          substituteInPlace "$f" \
+            --replace "QuartzCore/../Frameworks/CoreImage.framework/Headers" "CoreImage"
+        ''
+          ;
+      }
+    );
 
-    MetalKit = stdenv.lib.overrideDerivation super.MetalKit (drv: {
-      installPhase = drv.installPhase + ''
-        mkdir -p $out/include/simd
-        cp ${lib.getDev sdk}/include/simd/*.h $out/include/simd/
-      '';
-    });
+    MetalKit = stdenv.lib.overrideDerivation super.MetalKit (
+      drv: {
+        installPhase = drv.installPhase
+          + ''
+          mkdir -p $out/include/simd
+          cp ${lib.getDev sdk}/include/simd/*.h $out/include/simd/
+        ''
+          ;
+      }
+    );
   };
 
-  bareFrameworks = stdenv.lib.mapAttrs framework (import ./frameworks.nix {
-    inherit frameworks libs;
-    inherit (pkgs.darwin) libobjc;
-  });
+  bareFrameworks = stdenv.lib.mapAttrs framework (
+    import ./frameworks.nix {
+      inherit frameworks libs;
+      inherit (pkgs.darwin) libobjc;
+    }
+  );
 
   frameworks = bareFrameworks // overrides bareFrameworks;
 

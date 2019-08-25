@@ -1,4 +1,4 @@
-  { config, lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 with lib;
 
@@ -8,9 +8,14 @@ let
 
   isRBACEnabled = elem "RBAC" cfg.authorizationMode;
 
-  apiserverServiceIP = (concatStringsSep "." (
-    take 3 (splitString "." cfg.serviceClusterIpRange
-  )) + ".1");
+  apiserverServiceIP = (
+    concatStringsSep "." (
+      take 3 (
+        splitString "." cfg.serviceClusterIpRange
+      )
+    )
+    + ".1"
+  );
 in
 {
   ###### interface
@@ -37,8 +42,8 @@ in
         Kubernetes apiserver authorization mode (AlwaysAllow/AlwaysDeny/ABAC/Webhook/RBAC/Node). See
         <link xlink:href="https://kubernetes.io/docs/reference/access-authn-authz/authorization/"/>
       '';
-      default = ["RBAC" "Node"]; # Enabling RBAC by default, although kubernetes default is AllowAllow
-      type = listOf (enum ["AlwaysAllow" "AlwaysDeny" "ABAC" "Webhook" "RBAC" "Node"]);
+      default = [ "RBAC" "Node" ]; # Enabling RBAC by default, although kubernetes default is AllowAllow
+      type = listOf (enum [ "AlwaysAllow" "AlwaysDeny" "ABAC" "Webhook" "RBAC" "Node" ]);
     };
 
     authorizationPolicy = mkOption {
@@ -92,14 +97,24 @@ in
         <link xlink:href="https://kubernetes.io/docs/admin/admission-controllers/"/>
       '';
       default = [
-        "NamespaceLifecycle" "LimitRanger" "ServiceAccount"
-        "ResourceQuota" "DefaultStorageClass" "DefaultTolerationSeconds"
+        "NamespaceLifecycle"
+        "LimitRanger"
+        "ServiceAccount"
+        "ResourceQuota"
+        "DefaultStorageClass"
+        "DefaultTolerationSeconds"
         "NodeRestriction"
       ];
       example = [
-        "NamespaceLifecycle" "NamespaceExists" "LimitRanger"
-        "SecurityContextDeny" "ServiceAccount" "ResourceQuota"
-        "PodSecurityPolicy" "NodeRestriction" "DefaultStorageClass"
+        "NamespaceLifecycle"
+        "NamespaceExists"
+        "LimitRanger"
+        "SecurityContextDeny"
+        "ServiceAccount"
+        "ResourceQuota"
+        "PodSecurityPolicy"
+        "NodeRestriction"
+        "DefaultStorageClass"
       ];
       type = listOf str;
     };
@@ -107,7 +122,7 @@ in
     etcd = {
       servers = mkOption {
         description = "List of etcd servers.";
-        default = ["http://127.0.0.1:2379"];
+        default = [ "http://127.0.0.1:2379" ];
         type = types.listOf types.str;
       };
 
@@ -217,7 +232,7 @@ in
         Kubernetes apiserver storage backend.
       '';
       default = "etcd3";
-      type = enum ["etcd2" "etcd3"];
+      type = enum [ "etcd2" "etcd3" ];
     };
 
     securePort = mkOption {
@@ -290,46 +305,48 @@ in
   ###### implementation
   config = mkMerge [
 
-    (let
+    (
+      let
 
-      apiserverPaths = filter (a: a != null) [
-        cfg.clientCaFile
-        cfg.etcd.caFile
-        cfg.etcd.certFile
-        cfg.etcd.keyFile
-        cfg.kubeletClientCaFile
-        cfg.kubeletClientCertFile
-        cfg.kubeletClientKeyFile
-        cfg.serviceAccountKeyFile
-        cfg.tlsCertFile
-        cfg.tlsKeyFile
-      ];
-      etcdPaths = filter (a: a != null) [
-        config.services.etcd.trustedCaFile
-        config.services.etcd.certFile
-        config.services.etcd.keyFile
-      ];
+        apiserverPaths = filter (a: a != null) [
+          cfg.clientCaFile
+          cfg.etcd.caFile
+          cfg.etcd.certFile
+          cfg.etcd.keyFile
+          cfg.kubeletClientCaFile
+          cfg.kubeletClientCertFile
+          cfg.kubeletClientKeyFile
+          cfg.serviceAccountKeyFile
+          cfg.tlsCertFile
+          cfg.tlsKeyFile
+        ];
+        etcdPaths = filter (a: a != null) [
+          config.services.etcd.trustedCaFile
+          config.services.etcd.certFile
+          config.services.etcd.keyFile
+        ];
 
-    in mkIf cfg.enable {
-        systemd.services.kube-apiserver = {
-          description = "Kubernetes APIServer Service";
-          wantedBy = [ "kube-control-plane-online.target" ];
-          after = [ "certmgr.service" ];
-          before = [ "kube-control-plane-online.target" ];
-          serviceConfig = {
-            Slice = "kubernetes.slice";
-            ExecStart = ''${top.package}/bin/kube-apiserver \
+      in
+        mkIf cfg.enable {
+          systemd.services.kube-apiserver = {
+            description = "Kubernetes APIServer Service";
+            wantedBy = [ "kube-control-plane-online.target" ];
+            after = [ "certmgr.service" ];
+            before = [ "kube-control-plane-online.target" ];
+            serviceConfig = {
+              Slice = "kubernetes.slice";
+              ExecStart = ''${top.package}/bin/kube-apiserver \
               --allow-privileged=${boolToString cfg.allowPrivileged} \
               --authorization-mode=${concatStringsSep "," cfg.authorizationMode} \
                 ${optionalString (elem "ABAC" cfg.authorizationMode)
-                  "--authorization-policy-file=${
-                    pkgs.writeText "kube-auth-policy.jsonl"
-                    (concatMapStringsSep "\n" (l: builtins.toJSON l) cfg.authorizationPolicy)
-                  }"
-                } \
+                "--authorization-policy-file=${
+                pkgs.writeText "kube-auth-policy.jsonl"
+                  (concatMapStringsSep "\n" (l: builtins.toJSON l) cfg.authorizationPolicy)
+                }"
+              } \
                 ${optionalString (elem "Webhook" cfg.authorizationMode)
-                  "--authorization-webhook-config-file=${cfg.webhookConfig}"
-                } \
+                "--authorization-webhook-config-file=${cfg.webhookConfig}"
+              } \
               --bind-address=${cfg.bindAddress} \
               ${optionalString (cfg.advertiseAddress != null)
                 "--advertise-address=${cfg.advertiseAddress}"} \
@@ -366,7 +383,7 @@ in
               ${optionalString (cfg.runtimeConfig != "")
                 "--runtime-config=${cfg.runtimeConfig}"} \
               --secure-port=${toString cfg.securePort} \
-              ${optionalString (cfg.serviceAccountKeyFile!=null)
+              ${optionalString (cfg.serviceAccountKeyFile != null)
                 "--service-account-key-file=${cfg.serviceAccountKeyFile}"} \
               --service-cluster-ip-range=${cfg.serviceClusterIpRange} \
               --storage-backend=${cfg.storageBackend} \
@@ -379,120 +396,125 @@ in
               ${optionalString (cfg.verbosity != null) "--v=${toString cfg.verbosity}"} \
               ${cfg.extraOpts}
             '';
-            WorkingDirectory = top.dataDir;
-            User = "kubernetes";
-            Group = "kubernetes";
-            AmbientCapabilities = "cap_net_bind_service";
-            Restart = "on-failure";
-            RestartSec = 5;
-          };
-          unitConfig.ConditionPathExists = apiserverPaths;
-        };
-
-        systemd.paths.kube-apiserver = mkIf top.apiserver.enable {
-          wantedBy = [ "kube-apiserver.service" ];
-          pathConfig = {
-            PathExists = apiserverPaths;
-            PathChanged = apiserverPaths;
-          };
-        };
-
-        services.etcd = {
-          clientCertAuth = mkDefault true;
-          peerClientCertAuth = mkDefault true;
-          listenClientUrls = mkDefault ["https://0.0.0.0:2379"];
-          listenPeerUrls = mkDefault ["https://0.0.0.0:2380"];
-          advertiseClientUrls = mkDefault ["https://${top.masterAddress}:2379"];
-          initialCluster = mkDefault ["${top.masterAddress}=https://${top.masterAddress}:2380"];
-          name = mkDefault top.masterAddress;
-          initialAdvertisePeerUrls = mkDefault ["https://${top.masterAddress}:2380"];
-        };
-
-        systemd.services.etcd = {
-          unitConfig.ConditionPathExists = etcdPaths;
-        };
-
-        systemd.paths.etcd = {
-          wantedBy = [ "etcd.service" ];
-          pathConfig = {
-            PathExists = etcdPaths;
-            PathChanged = etcdPaths;
-          };
-        };
-
-        services.kubernetes.addonManager.bootstrapAddons = mkIf isRBACEnabled {
-
-          apiserver-kubelet-api-admin-crb = {
-            apiVersion = "rbac.authorization.k8s.io/v1";
-            kind = "ClusterRoleBinding";
-            metadata = {
-              name = "system:kube-apiserver:kubelet-api-admin";
+              WorkingDirectory = top.dataDir;
+              User = "kubernetes";
+              Group = "kubernetes";
+              AmbientCapabilities = "cap_net_bind_service";
+              Restart = "on-failure";
+              RestartSec = 5;
             };
-            roleRef = {
-              apiGroup = "rbac.authorization.k8s.io";
-              kind = "ClusterRole";
-              name = "system:kubelet-api-admin";
+            unitConfig.ConditionPathExists = apiserverPaths;
+          };
+
+          systemd.paths.kube-apiserver = mkIf top.apiserver.enable {
+            wantedBy = [ "kube-apiserver.service" ];
+            pathConfig = {
+              PathExists = apiserverPaths;
+              PathChanged = apiserverPaths;
             };
-            subjects = [{
-              kind = "User";
-              name = "system:kube-apiserver";
-            }];
           };
 
-        };
-
-      services.kubernetes.pki.certs = with top.lib; {
-        apiServer = mkCert {
-          name = "kube-apiserver";
-          CN = "kubernetes";
-          hosts = [
-                    "kubernetes.default.svc"
-                    "kubernetes.default.svc.${top.addons.dns.clusterDomain}"
-                    cfg.advertiseAddress
-                    top.masterAddress
-                    apiserverServiceIP
-                    "127.0.0.1"
-                  ] ++ cfg.extraSANs;
-          action = "systemctl restart kube-apiserver.service";
-        };
-        apiserverProxyClient = mkCert {
-          name = "kube-apiserver-proxy-client";
-          CN = "front-proxy-client";
-          action = "systemctl restart kube-apiserver.service";
-        };
-        apiserverKubeletClient = mkCert {
-          name = "kube-apiserver-kubelet-client";
-          CN = "system:kube-apiserver";
-          action = "systemctl restart kube-apiserver.service";
-        };
-        apiserverEtcdClient = mkCert {
-          name = "kube-apiserver-etcd-client";
-          CN = "etcd-client";
-          action = "systemctl restart kube-apiserver.service";
-        };
-        clusterAdmin = mkCert {
-          name = "cluster-admin";
-          CN = "cluster-admin";
-          fields = {
-            O = "system:masters";
+          services.etcd = {
+            clientCertAuth = mkDefault true;
+            peerClientCertAuth = mkDefault true;
+            listenClientUrls = mkDefault [ "https://0.0.0.0:2379" ];
+            listenPeerUrls = mkDefault [ "https://0.0.0.0:2380" ];
+            advertiseClientUrls = mkDefault [ "https://${top.masterAddress}:2379" ];
+            initialCluster = mkDefault [ "${top.masterAddress}=https://${top.masterAddress}:2380" ];
+            name = mkDefault top.masterAddress;
+            initialAdvertisePeerUrls = mkDefault [ "https://${top.masterAddress}:2380" ];
           };
-          privateKeyOwner = "root";
-        };
-        etcd = mkCert {
-          name = "etcd";
-          CN = top.masterAddress;
-          hosts = [
-                    "etcd.local"
-                    "etcd.${top.addons.dns.clusterDomain}"
-                    top.masterAddress
-                    cfg.advertiseAddress
-                  ];
-          privateKeyOwner = "etcd";
-          action = "systemctl restart etcd.service";
-        };
-      };
 
-    })
+          systemd.services.etcd = {
+            unitConfig.ConditionPathExists = etcdPaths;
+          };
+
+          systemd.paths.etcd = {
+            wantedBy = [ "etcd.service" ];
+            pathConfig = {
+              PathExists = etcdPaths;
+              PathChanged = etcdPaths;
+            };
+          };
+
+          services.kubernetes.addonManager.bootstrapAddons = mkIf isRBACEnabled {
+
+            apiserver-kubelet-api-admin-crb = {
+              apiVersion = "rbac.authorization.k8s.io/v1";
+              kind = "ClusterRoleBinding";
+              metadata = {
+                name = "system:kube-apiserver:kubelet-api-admin";
+              };
+              roleRef = {
+                apiGroup = "rbac.authorization.k8s.io";
+                kind = "ClusterRole";
+                name = "system:kubelet-api-admin";
+              };
+              subjects = [
+                {
+                  kind = "User";
+                  name = "system:kube-apiserver";
+                }
+              ];
+            };
+
+          };
+
+          services.kubernetes.pki.certs = with top.lib; {
+            apiServer = mkCert {
+              name = "kube-apiserver";
+              CN = "kubernetes";
+              hosts = [
+                "kubernetes.default.svc"
+                "kubernetes.default.svc.${top.addons.dns.clusterDomain}"
+                cfg.advertiseAddress
+                top.masterAddress
+                apiserverServiceIP
+                "127.0.0.1"
+              ]
+              ++ cfg.extraSANs
+              ;
+              action = "systemctl restart kube-apiserver.service";
+            };
+            apiserverProxyClient = mkCert {
+              name = "kube-apiserver-proxy-client";
+              CN = "front-proxy-client";
+              action = "systemctl restart kube-apiserver.service";
+            };
+            apiserverKubeletClient = mkCert {
+              name = "kube-apiserver-kubelet-client";
+              CN = "system:kube-apiserver";
+              action = "systemctl restart kube-apiserver.service";
+            };
+            apiserverEtcdClient = mkCert {
+              name = "kube-apiserver-etcd-client";
+              CN = "etcd-client";
+              action = "systemctl restart kube-apiserver.service";
+            };
+            clusterAdmin = mkCert {
+              name = "cluster-admin";
+              CN = "cluster-admin";
+              fields = {
+                O = "system:masters";
+              };
+              privateKeyOwner = "root";
+            };
+            etcd = mkCert {
+              name = "etcd";
+              CN = top.masterAddress;
+              hosts = [
+                "etcd.local"
+                "etcd.${top.addons.dns.clusterDomain}"
+                top.masterAddress
+                cfg.advertiseAddress
+              ];
+              privateKeyOwner = "etcd";
+              action = "systemctl restart etcd.service";
+            };
+          };
+
+        }
+    )
 
   ];
 

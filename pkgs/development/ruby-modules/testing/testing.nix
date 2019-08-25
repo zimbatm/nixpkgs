@@ -42,9 +42,13 @@ let
   run = name: under: tests: if isList tests then
     (concatLists (map (run name under) tests))
   else if isAttrs tests then
-    (concatLists (map (
-    subName: run (name + "." + subName) (if hasAttr subName under then getAttr subName under else "<MISSING!>") (getAttr subName tests)
-    ) (attrNames tests)))
+    (
+      concatLists (
+        map (
+          subName: run (name + "." + subName) (if hasAttr subName under then getAttr subName under else "<MISSING!>") (getAttr subName tests)
+        ) (attrNames tests)
+      )
+    )
   else if isFunction tests then
     let
       res = tests under;
@@ -56,7 +60,8 @@ let
       else
         [ (prefixName name res) ]
   else [
-    failed (name ": not a function, list or set")
+    failed
+    (name ": not a function, list or set")
   ];
 in
-  { inherit run passed failed; }
+{ inherit run passed failed; }

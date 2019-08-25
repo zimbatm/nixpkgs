@@ -131,27 +131,29 @@ in
       };
 
       virtualHosts = mkOption {
-        type = types.listOf (types.submodule {
-          options = {
-            name = mkOption {
-              type = types.str;
-              description = "name of the virtualhost";
+        type = types.listOf (
+          types.submodule {
+            options = {
+              name = mkOption {
+                type = types.str;
+                description = "name of the virtualhost";
+              };
+              aliases = mkOption {
+                type = types.listOf types.str;
+                description = "aliases of the virtualhost";
+                default = [];
+              };
+              webapps = mkOption {
+                type = types.listOf types.path;
+                description = ''
+                  List containing web application WAR files and/or directories containing
+                  web applications and configuration files for the virtual host.
+                '';
+                default = [];
+              };
             };
-            aliases = mkOption {
-              type = types.listOf types.str;
-              description = "aliases of the virtualhost";
-              default = [];
-            };
-            webapps = mkOption {
-              type = types.listOf types.path;
-              description = ''
-                List containing web application WAR files and/or directories containing
-                web applications and configuration files for the virtual host.
-              '';
-              default = [];
-            };
-          };
-        });
+          }
+        );
         default = [];
         description = "List consisting of a virtual host name and a list of web applications to deploy on each virtual host";
       };
@@ -195,12 +197,14 @@ in
   config = mkIf config.services.tomcat.enable {
 
     users.groups = singleton
-      { name = "tomcat";
+      {
+        name = "tomcat";
         gid = config.ids.gids.tomcat;
       };
 
     users.users = singleton
-      { name = "tomcat";
+      {
+        name = "tomcat";
         uid = config.ids.uids.tomcat;
         description = "Tomcat user";
         home = "/homeless-shelter";
@@ -214,13 +218,13 @@ in
 
       preStart = ''
         ${lib.optionalString cfg.purifyOnStart ''
-          # Delete most directories/symlinks we create from the existing base directory,
-          # to get rid of remainders of an old configuration.
-          # The list of directories to delete is taken from the "mkdir" command below,
-          # excluding "logs" (because logs are valuable) and "work" (because normally
-          # session files are there), and additionally including "bin".
-          rm -rf ${cfg.baseDir}/{conf,virtualhosts,temp,lib,shared/lib,webapps,bin}
-        ''}
+        # Delete most directories/symlinks we create from the existing base directory,
+        # to get rid of remainders of an old configuration.
+        # The list of directories to delete is taken from the "mkdir" command below,
+        # excluding "logs" (because logs are valuable) and "work" (because normally
+        # session files are there), and additionally including "bin".
+        rm -rf ${cfg.baseDir}/{conf,virtualhosts,temp,lib,shared/lib,webapps,bin}
+      ''}
 
         # Create the base directory
         mkdir -p \
@@ -237,10 +241,10 @@ in
         done
 
         ${if cfg.extraConfigFiles != [] then ''
-          for i in ${toString cfg.extraConfigFiles}; do
-            ln -sfn $i ${cfg.baseDir}/conf/`basename $i`
-          done
-        '' else ""}
+        for i in ${toString cfg.extraConfigFiles}; do
+          ln -sfn $i ${cfg.baseDir}/conf/`basename $i`
+        done
+      '' else ""}
 
         # Create a modified catalina.properties file
         # Change all references from CATALINA_HOME to CATALINA_BASE and add support for shared libraries
@@ -249,41 +253,56 @@ in
           ${tomcat}/conf/catalina.properties > ${cfg.baseDir}/conf/catalina.properties
 
         ${if cfg.serverXml != "" then ''
-          cp -f ${pkgs.writeTextDir "server.xml" cfg.serverXml}/* ${cfg.baseDir}/conf/
-        '' else
-          let
-            hostElementForVirtualHost = virtualHost: ''
-              <Host name="${virtualHost.name}" appBase="virtualhosts/${virtualHost.name}/webapps"
-                    unpackWARs="true" autoDeploy="true" xmlValidation="false" xmlNamespaceAware="false">
-            '' + concatStrings (innerElementsForVirtualHost virtualHost) + ''
-              </Host>
-            '';
-            innerElementsForVirtualHost = virtualHost:
-              (map (alias: ''
-                <Alias>${alias}</Alias>
-              '') virtualHost.aliases)
-              ++ (optional cfg.logPerVirtualHost ''
-                <Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs/${virtualHost.name}"
-                       prefix="${virtualHost.name}_access_log." pattern="combined" resolveHosts="false"/>
-              '');
-            hostElementsString = concatMapStringsSep "\n" hostElementForVirtualHost cfg.virtualHosts;
-            hostElementsSedString = replaceStrings ["\n"] ["\\\n"] hostElementsString;
-          in ''
+        cp -f ${pkgs.writeTextDir "server.xml" cfg.serverXml}/* ${cfg.baseDir}/conf/
+      '' else
+        let
+          hostElementForVirtualHost = virtualHost: ''
+            <Host name="${virtualHost.name}" appBase="virtualhosts/${virtualHost.name}/webapps"
+                  unpackWARs="true" autoDeploy="true" xmlValidation="false" xmlNamespaceAware="false">
+          ''
+            + concatStrings (innerElementsForVirtualHost virtualHost)
+            + ''
+            </Host>
+          '';
+          innerElementsForVirtualHost = virtualHost:
+            (
+              map (
+                alias: ''
+                  <Alias>${alias}</Alias>
+                ''
+              ) virtualHost.aliases
+            )
+            ++ (
+                 optional cfg.logPerVirtualHost ''
+                   <Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs/${virtualHost.name}"
+                          prefix="${virtualHost.name}_access_log." pattern="combined" resolveHosts="false"/>
+                 ''
+               );
+          hostElementsString = concatMapStringsSep "\n" hostElementForVirtualHost cfg.virtualHosts;
+          hostElementsSedString = replaceStrings [ "\n" ] [ "\\\n" ] hostElementsString;
+        in
+          ''
             # Create a modified server.xml which also includes all virtual hosts
             sed -e "/<Engine name=\"Catalina\" defaultHost=\"localhost\">/a\\"${escapeShellArg hostElementsSedString} \
                   ${tomcat}/conf/server.xml > ${cfg.baseDir}/conf/server.xml
           ''
-        }
+      }
         ${optionalString (cfg.logDirs != []) ''
-          for i in ${toString cfg.logDirs}; do
-            mkdir -p ${cfg.baseDir}/logs/$i
-            chown ${cfg.user}:${cfg.group} ${cfg.baseDir}/logs/$i
-          done
-        ''}
-        ${optionalString cfg.logPerVirtualHost (toString (map (h: ''
-          mkdir -p ${cfg.baseDir}/logs/${h.name}
-          chown ${cfg.user}:${cfg.group} ${cfg.baseDir}/logs/${h.name}
-        '') cfg.virtualHosts))}
+        for i in ${toString cfg.logDirs}; do
+          mkdir -p ${cfg.baseDir}/logs/$i
+          chown ${cfg.user}:${cfg.group} ${cfg.baseDir}/logs/$i
+        done
+      ''}
+        ${optionalString cfg.logPerVirtualHost (
+        toString (
+          map (
+            h: ''
+              mkdir -p ${cfg.baseDir}/logs/${h.name}
+              chown ${cfg.user}:${cfg.group} ${cfg.baseDir}/logs/${h.name}
+            ''
+          ) cfg.virtualHosts
+        )
+      )}
 
         # Symlink all the given common libs files or paths into the lib/ directory
         for i in ${tomcat} ${toString cfg.commonLibs}; do
@@ -338,85 +357,91 @@ in
           fi
         done
 
-        ${toString (map (virtualHost: ''
-          # Create webapps directory for the virtual host
-          mkdir -p ${cfg.baseDir}/virtualhosts/${virtualHost.name}/webapps
+        ${toString (
+        map (
+          virtualHost: ''
+            # Create webapps directory for the virtual host
+            mkdir -p ${cfg.baseDir}/virtualhosts/${virtualHost.name}/webapps
 
-          # Modify ownership
-          chown ${cfg.user}:${cfg.group} ${cfg.baseDir}/virtualhosts/${virtualHost.name}/webapps
+            # Modify ownership
+            chown ${cfg.user}:${cfg.group} ${cfg.baseDir}/virtualhosts/${virtualHost.name}/webapps
 
-          # Symlink all the given web applications files or paths into the webapps/ directory
-          # of this virtual host
-          for i in "${if virtualHost ? webapps then toString virtualHost.webapps else ""}"; do
-            if [ -f $i ]; then
-              # If the given web application is a file, symlink it into the webapps/ directory
-              ln -sfn $i ${cfg.baseDir}/virtualhosts/${virtualHost.name}/webapps/`basename $i`
-            elif [ -d $i ]; then
-              # If the given web application is a directory, then iterate over the files
-              # in the special purpose directories and symlink them into the tomcat tree
+            # Symlink all the given web applications files or paths into the webapps/ directory
+            # of this virtual host
+            for i in "${if virtualHost ? webapps then toString virtualHost.webapps else ""}"; do
+              if [ -f $i ]; then
+                # If the given web application is a file, symlink it into the webapps/ directory
+                ln -sfn $i ${cfg.baseDir}/virtualhosts/${virtualHost.name}/webapps/`basename $i`
+              elif [ -d $i ]; then
+                # If the given web application is a directory, then iterate over the files
+                # in the special purpose directories and symlink them into the tomcat tree
 
-              for j in $i/webapps/*; do
-                ln -sfn $j ${cfg.baseDir}/virtualhosts/${virtualHost.name}/webapps/`basename $j`
-              done
-
-              # Also symlink the configuration files if they are included
-              if [ -d $i/conf/Catalina ]; then
-                for j in $i/conf/Catalina/*; do
-                  mkdir -p ${cfg.baseDir}/conf/Catalina/${virtualHost.name}
-                  ln -sfn $j ${cfg.baseDir}/conf/Catalina/${virtualHost.name}/`basename $j`
+                for j in $i/webapps/*; do
+                  ln -sfn $j ${cfg.baseDir}/virtualhosts/${virtualHost.name}/webapps/`basename $j`
                 done
+
+                # Also symlink the configuration files if they are included
+                if [ -d $i/conf/Catalina ]; then
+                  for j in $i/conf/Catalina/*; do
+                    mkdir -p ${cfg.baseDir}/conf/Catalina/${virtualHost.name}
+                    ln -sfn $j ${cfg.baseDir}/conf/Catalina/${virtualHost.name}/`basename $j`
+                  done
+                fi
               fi
-            fi
-          done
-        '') cfg.virtualHosts)}
+            done
+          ''
+        ) cfg.virtualHosts
+      )}
 
         ${optionalString cfg.axis2.enable ''
-          # Copy the Axis2 web application
-          cp -av ${pkgs.axis2}/webapps/axis2 ${cfg.baseDir}/webapps
+        # Copy the Axis2 web application
+        cp -av ${pkgs.axis2}/webapps/axis2 ${cfg.baseDir}/webapps
 
-          # Turn off addressing, which causes many errors
-          sed -i -e 's%<module ref="addressing"/>%<!-- <module ref="addressing"/> -->%' ${cfg.baseDir}/webapps/axis2/WEB-INF/conf/axis2.xml
+        # Turn off addressing, which causes many errors
+        sed -i -e 's%<module ref="addressing"/>%<!-- <module ref="addressing"/> -->%' ${cfg.baseDir}/webapps/axis2/WEB-INF/conf/axis2.xml
 
-          # Modify permissions on the Axis2 application
-          chown -R ${cfg.user}:${cfg.group} ${cfg.baseDir}/webapps/axis2
+        # Modify permissions on the Axis2 application
+        chown -R ${cfg.user}:${cfg.group} ${cfg.baseDir}/webapps/axis2
 
-          # Symlink all the given web service files or paths into the webapps/axis2/WEB-INF/services directory
-          for i in ${toString cfg.axis2.services}; do
-            if [ -f $i ]; then
-              # If the given web service is a file, symlink it into the webapps/axis2/WEB-INF/services
-              ln -sfn $i ${cfg.baseDir}/webapps/axis2/WEB-INF/services/`basename $i`
-            elif [ -d $i ]; then
-              # If the given web application is a directory, then iterate over the files
-              # in the special purpose directories and symlink them into the tomcat tree
+        # Symlink all the given web service files or paths into the webapps/axis2/WEB-INF/services directory
+        for i in ${toString cfg.axis2.services}; do
+          if [ -f $i ]; then
+            # If the given web service is a file, symlink it into the webapps/axis2/WEB-INF/services
+            ln -sfn $i ${cfg.baseDir}/webapps/axis2/WEB-INF/services/`basename $i`
+          elif [ -d $i ]; then
+            # If the given web application is a directory, then iterate over the files
+            # in the special purpose directories and symlink them into the tomcat tree
 
-              for j in $i/webapps/axis2/WEB-INF/services/*; do
-                ln -sfn $j ${cfg.baseDir}/webapps/axis2/WEB-INF/services/`basename $j`
+            for j in $i/webapps/axis2/WEB-INF/services/*; do
+              ln -sfn $j ${cfg.baseDir}/webapps/axis2/WEB-INF/services/`basename $j`
+            done
+
+            # Also symlink the configuration files if they are included
+            if [ -d $i/conf/Catalina ]; then
+              for j in $i/conf/Catalina/*; do
+                ln -sfn $j ${cfg.baseDir}/conf/Catalina/localhost/`basename $j`
               done
-
-              # Also symlink the configuration files if they are included
-              if [ -d $i/conf/Catalina ]; then
-                for j in $i/conf/Catalina/*; do
-                  ln -sfn $j ${cfg.baseDir}/conf/Catalina/localhost/`basename $j`
-                done
-              fi
             fi
-          done
-        ''}
+          fi
+        done
+      ''}
       '';
 
       serviceConfig = {
         Type = "forking";
         PermissionsStartOnly = true;
-        PIDFile="/run/tomcat/tomcat.pid";
+        PIDFile = "/run/tomcat/tomcat.pid";
         RuntimeDirectory = "tomcat";
         User = cfg.user;
-        Environment=[
+        Environment = [
           "CATALINA_BASE=${cfg.baseDir}"
           "CATALINA_PID=/run/tomcat/tomcat.pid"
           "JAVA_HOME='${cfg.jdk}'"
           "JAVA_OPTS='${builtins.toString cfg.javaOpts}'"
           "CATALINA_OPTS='${builtins.toString cfg.catalinaOpts}'"
-        ] ++ cfg.extraEnvironment;
+        ]
+        ++ cfg.extraEnvironment
+        ;
         ExecStart = "${tomcat}/bin/startup.sh";
         ExecStop = "${tomcat}/bin/shutdown.sh";
       };

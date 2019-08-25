@@ -11,7 +11,9 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ libgcrypt libnl ];
   nativeBuildInputs = [
-    pkgconfig python2Packages.m2crypto python2Packages.python
+    pkgconfig
+    python2Packages.m2crypto
+    python2Packages.python
   ];
 
   postPatch = ''

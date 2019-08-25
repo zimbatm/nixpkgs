@@ -73,7 +73,7 @@ in
       createHome = false;
     };
 
-    users.groups.gollum = { };
+    users.groups.gollum = {};
 
     systemd.tmpfiles.rules = [
       "d '${cfg.stateDir}' - ${config.users.users.gollum.name} ${config.users.groups.gollum.name} - -"

@@ -5,7 +5,7 @@ rec {
 
   description = ''Tiny library to detect mime types in files.'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/trivial-mimes/2018-08-31/trivial-mimes-20180831-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "trivial-mimes";
 
-  asdFilesToKeep = ["trivial-mimes.asd"];
+  asdFilesToKeep = [ "trivial-mimes.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM trivial-mimes DESCRIPTION

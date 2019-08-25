@@ -25,10 +25,12 @@ stdenv.mkDerivation rec {
        # @image{ProofGeneral-image} fails, so remove it.
        sed -i '91d' doc/PG-adapting.texi
        sed -i '96d' doc/ProofGeneral.texi
-    '' + stdenv.lib.optionalString enableDoc
-    # Copy `texinfo.tex' in the right place so that `texi2pdf' works.
-    '' cp -v "${automake}/share/"automake-*/texinfo.tex doc
-    '';
+    ''
+    + stdenv.lib.optionalString enableDoc
+        # Copy `texinfo.tex' in the right place so that `texi2pdf' works.
+        '' cp -v "${automake}/share/"automake-*/texinfo.tex doc
+    ''
+  ;
 
   patches = [ ./pg.patch ];
 
@@ -42,6 +44,6 @@ stdenv.mkDerivation rec {
     '';
     homepage = http://proofgeneral.inf.ed.ac.uk;
     license = stdenv.lib.licenses.gpl2Plus;
-    platforms = stdenv.lib.platforms.unix;  # arbitrary choice
+    platforms = stdenv.lib.platforms.unix; # arbitrary choice
   };
 }

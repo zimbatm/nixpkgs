@@ -1,5 +1,11 @@
-{ stdenv, fetchurl, perl, libiconv, zlib, popt
-, enableACLs ? !(stdenv.isDarwin || stdenv.isSunOS || stdenv.isFreeBSD), acl ? null
+{ stdenv
+, fetchurl
+, perl
+, libiconv
+, zlib
+, popt
+, enableACLs ? !(stdenv.isDarwin || stdenv.isSunOS || stdenv.isFreeBSD)
+, acl ? null
 , enableCopyDevicesPatch ? false
 }:
 
@@ -15,16 +21,18 @@ stdenv.mkDerivation rec {
 
   patchesSrc = base.upstreamPatchTarball;
 
-  srcs = [mainSrc] ++ stdenv.lib.optional enableCopyDevicesPatch patchesSrc;
+  srcs = [ mainSrc ] ++ stdenv.lib.optional enableCopyDevicesPatch patchesSrc;
   patches = stdenv.lib.optional enableCopyDevicesPatch "./patches/copy-devices.diff";
 
-  buildInputs = [libiconv zlib popt] ++ stdenv.lib.optional enableACLs acl;
-  nativeBuildInputs = [perl];
+  buildInputs = [ libiconv zlib popt ] ++ stdenv.lib.optional enableACLs acl;
+  nativeBuildInputs = [ perl ];
 
-  configureFlags = ["--with-nobody-group=nogroup"];
+  configureFlags = [ "--with-nobody-group=nogroup" ];
 
-  meta = base.meta // {
-    description = "A fast incremental file transfer utility";
-    maintainers = with stdenv.lib.maintainers; [ peti ehmry kampfschlaefer ];
-  };
+  meta = base.meta
+    // {
+         description = "A fast incremental file transfer utility";
+         maintainers = with stdenv.lib.maintainers; [ peti ehmry kampfschlaefer ];
+       }
+    ;
 }

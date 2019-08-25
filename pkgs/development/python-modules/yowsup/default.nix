@@ -1,4 +1,9 @@
-{ buildPythonPackage, stdenv, fetchFromGitHub, six, python-axolotl, pytest
+{ buildPythonPackage
+, stdenv
+, fetchFromGitHub
+, six
+, python-axolotl
+, pytest
 , isPy3k
 }:
 

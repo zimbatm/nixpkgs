@@ -9,18 +9,21 @@ stdenv.mkDerivation rec {
   };
 
   patches =
-    let fetchAlpinePatch = name: sha256: fetchpatch {
-      url = "https://git.alpinelinux.org/cgit/aports/plain/main/net-snmp/${name}?id=f25d3fb08341b60b6ccef424399f060dfcf3f1a5";
-      inherit name sha256;
-    };
-  in [
-    (fetchAlpinePatch "fix-includes.patch" "0zpkbb6k366qpq4dax5wknwprhwnhighcp402mlm7950d39zfa3m")
-    (fetchAlpinePatch "netsnmp-swinst-crash.patch" "0gh164wy6zfiwiszh58fsvr25k0ns14r3099664qykgpmickkqid")
-    ./0002-autoconf-version.patch
-  ];
+    let
+      fetchAlpinePatch = name: sha256: fetchpatch {
+        url = "https://git.alpinelinux.org/cgit/aports/plain/main/net-snmp/${name}?id=f25d3fb08341b60b6ccef424399f060dfcf3f1a5";
+        inherit name sha256;
+      };
+    in
+      [
+        (fetchAlpinePatch "fix-includes.patch" "0zpkbb6k366qpq4dax5wknwprhwnhighcp402mlm7950d39zfa3m")
+        (fetchAlpinePatch "netsnmp-swinst-crash.patch" "0gh164wy6zfiwiszh58fsvr25k0ns14r3099664qykgpmickkqid")
+        ./0002-autoconf-version.patch
+      ];
 
   configureFlags =
-    [ "--with-default-snmp-version=3"
+    [
+      "--with-default-snmp-version=3"
       "--with-sys-location=Unknown"
       "--with-sys-contact=root@unknown"
       "--with-logfile=/var/log/net-snmpd.log"
@@ -28,7 +31,9 @@ stdenv.mkDerivation rec {
       "--with-openssl=${openssl.dev}"
       "--disable-embedded-perl"
       "--without-perl-modules"
-    ] ++ stdenv.lib.optional stdenv.isLinux "--with-mnttab=/proc/mounts";
+    ]
+    ++ stdenv.lib.optional stdenv.isLinux "--with-mnttab=/proc/mounts"
+  ;
 
   postPatch = ''
     substituteInPlace testing/fulltests/support/simple_TESTCONF.sh --replace "/bin/netstat" "${nettools}/bin/netstat"
@@ -39,7 +44,7 @@ stdenv.mkDerivation rec {
   propagatedBuildInputs = with perlPackages; [ perl JSON Tk TermReadKey ];
 
   enableParallelBuilding = true;
-  doCheck = false;  # tries to use networking
+  doCheck = false; # tries to use networking
 
   postInstall = ''
     for f in "$out/lib/"*.la $out/bin/net-snmp-config $out/bin/net-snmp-create-v3-user; do

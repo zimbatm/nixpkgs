@@ -8,7 +8,8 @@
 , gettext
 , pkgconfig
 , libusb
-, gnutls }:
+, gnutls
+}:
 
 stdenv.mkDerivation rec {
   name = "neopg-${version}";

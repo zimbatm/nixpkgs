@@ -1,6 +1,13 @@
-{ lib, python2Packages, libxslt, docbook_xsl_ns, openssh, cacert, nixopsAzurePackages ? []
-# version args
-, src, version
+{ lib
+, python2Packages
+, libxslt
+, docbook_xsl_ns
+, openssh
+, cacert
+, nixopsAzurePackages ? []
+  # version args
+, src
+, version
 , meta ? {}
 }:
 
@@ -11,7 +18,8 @@ python2Packages.buildPythonApplication {
   buildInputs = [ libxslt ];
 
   pythonPath = with python2Packages;
-    [ prettytable
+    [
+      prettytable
       boto
       boto3
       hetzner
@@ -23,15 +31,16 @@ python2Packages.buildPythonApplication {
       digital-ocean
       libvirt
       typing
-    ] ++ nixopsAzurePackages;
+    ]
+    ++ nixopsAzurePackages;
 
   checkPhase =
-  # Ensure, that there are no (python) import errors
-  ''
-    SSL_CERT_FILE=${cacert}/etc/ssl/certs/ca-bundle.crt \
-    HOME=$(pwd) \
-      $out/bin/nixops --version
-  '';
+    # Ensure, that there are no (python) import errors
+    ''
+      SSL_CERT_FILE=${cacert}/etc/ssl/certs/ca-bundle.crt \
+      HOME=$(pwd) \
+        $out/bin/nixops --version
+    '';
 
   postInstall = ''
     make -C doc/manual install nixops.1 docbookxsl=${docbook_xsl_ns}/xml/xsl/docbook \
@@ -51,5 +60,7 @@ python2Packages.buildPythonApplication {
     maintainers = with lib.maintainers; [ aminechikhaoui eelco rob domenkozar ];
     platforms = lib.platforms.unix;
     license = lib.licenses.lgpl3;
-  } // meta;
+  }
+  // meta
+  ;
 }

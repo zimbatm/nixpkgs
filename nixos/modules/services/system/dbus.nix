@@ -37,7 +37,7 @@ in
 
       packages = mkOption {
         type = types.listOf types.path;
-        default = [ ];
+        default = [];
         description = ''
           Packages whose D-Bus configuration files should be included in
           the configuration of the D-Bus system-wide or session-wide
@@ -67,7 +67,8 @@ in
     environment.systemPackages = [ pkgs.dbus.daemon pkgs.dbus ];
 
     environment.etc = singleton
-      { source = configDir;
+      {
+        source = configDir;
         target = "dbus-1";
       };
 

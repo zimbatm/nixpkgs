@@ -2,7 +2,8 @@
 
 let
   inherit (python2Packages) buildPythonApplication boto m2crypto;
-in buildPythonApplication rec {
+in
+buildPythonApplication rec {
   name = "euca2ools-2.1.4";
   namePrefix = "";
 

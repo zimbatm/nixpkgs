@@ -2,7 +2,8 @@
 
 let
   version = "3.7";
-in fetchzip {
+in
+fetchzip {
   name = "inter-${version}";
 
   url = "https://github.com/rsms/inter/releases/download/v${version}/Inter-${version}.zip";
@@ -22,4 +23,3 @@ in fetchzip {
     maintainers = with maintainers; [ demize dtzWill ];
   };
 }
-

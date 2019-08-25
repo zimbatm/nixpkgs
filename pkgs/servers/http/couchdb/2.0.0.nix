@@ -1,5 +1,14 @@
-{ stdenv, fetchurl, erlang, icu, openssl, spidermonkey
-, coreutils, bash, makeWrapper, python3 }:
+{ stdenv
+, fetchurl
+, erlang
+, icu
+, openssl
+, spidermonkey
+, coreutils
+, bash
+, makeWrapper
+, python3
+}:
 
 stdenv.mkDerivation rec {
   name = "couchdb-${version}";
@@ -14,7 +23,7 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ erlang icu openssl spidermonkey (python3.withPackages(ps: with ps; [ requests ]))];
+  buildInputs = [ erlang icu openssl spidermonkey (python3.withPackages (ps: with ps; [ requests ])) ];
 
   patches = [ ./jsapi.patch ];
   postPatch = ''
@@ -52,6 +61,6 @@ stdenv.mkDerivation rec {
     homepage = http://couchdb.apache.org;
     license = licenses.asl20;
     platforms = platforms.all;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
   };
 }

@@ -41,7 +41,8 @@ with lib; let
     };
   };
 
-in {
+in
+{
 
   options = {
     services.postgrey = with types; {
@@ -155,18 +156,19 @@ in {
         ''--unix=${cfg.socket.path} --socketmode=${cfg.socket.mode}''
       else
         ''--inet=${optionalString (cfg.socket.addr != null) (cfg.socket.addr + ":")}${toString cfg.socket.port}'';
-    in {
-      description = "Postfix Greylisting Service";
-      wantedBy = [ "multi-user.target" ];
-      before = [ "postfix.service" ];
-      preStart = ''
-        mkdir -p /var/postgrey
-        chown postgrey:postgrey /var/postgrey
-        chmod 0770 /var/postgrey
-      '';
-      serviceConfig = {
-        Type = "simple";
-        ExecStart = ''${pkgs.postgrey}/bin/postgrey \
+    in
+      {
+        description = "Postfix Greylisting Service";
+        wantedBy = [ "multi-user.target" ];
+        before = [ "postfix.service" ];
+        preStart = ''
+          mkdir -p /var/postgrey
+          chown postgrey:postgrey /var/postgrey
+          chmod 0770 /var/postgrey
+        '';
+        serviceConfig = {
+          Type = "simple";
+          ExecStart = ''${pkgs.postgrey}/bin/postgrey \
           ${bind-flag} \
           --group=postgrey --user=postgrey \
           --dbdir=/var/postgrey \
@@ -183,11 +185,11 @@ in {
           ${concatMapStringsSep " " (x: "--whitelist-clients=" + x) cfg.whitelistClients} \
           ${concatMapStringsSep " " (x: "--whitelist-recipients=" + x) cfg.whitelistRecipients}
         '';
-        Restart = "always";
-        RestartSec = 5;
-        TimeoutSec = 10;
+          Restart = "always";
+          RestartSec = 5;
+          TimeoutSec = 10;
+        };
       };
-    };
 
   };
 

@@ -1,5 +1,16 @@
-{ stdenv, fetchurl, freeglut, gtk2, gtkglext, libjpeg_turbo, libtheora, libXmu
-, lua, libGLU_combined, pkgconfig, perl, autoreconfHook
+{ stdenv
+, fetchurl
+, freeglut
+, gtk2
+, gtkglext
+, libjpeg_turbo
+, libtheora
+, libXmu
+, lua
+, libGLU_combined
+, pkgconfig
+, perl
+, autoreconfHook
 }:
 
 let
@@ -44,8 +55,18 @@ stdenv.mkDerivation {
   };
 
   nativeBuildInputs = [ pkgconfig ];
-  buildInputs = [ freeglut gtk2 gtkglext libjpeg_turbo libtheora libXmu libGLU_combined lua
-    perl autoreconfHook ];
+  buildInputs = [
+    freeglut
+    gtk2
+    gtkglext
+    libjpeg_turbo
+    libtheora
+    libXmu
+    libGLU_combined
+    lua
+    perl
+    autoreconfHook
+  ];
 
   patchPhase = ''
     patch -Np0 -i "${gcc46Patch}"

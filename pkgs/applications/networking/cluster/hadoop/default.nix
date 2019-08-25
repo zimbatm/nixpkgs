@@ -1,5 +1,21 @@
-{ stdenv, fetchurl, makeWrapper, pkgconfig, which, maven, cmake, jre, bash
-, coreutils, glibc, protobuf2_5, fuse, snappy, zlib, bzip2, openssl, openssl_1_0_2
+{ stdenv
+, fetchurl
+, makeWrapper
+, pkgconfig
+, which
+, maven
+, cmake
+, jre
+, bash
+, coreutils
+, glibc
+, protobuf2_5
+, fuse
+, snappy
+, zlib
+, bzip2
+, openssl
+, openssl_1_0_2
 }:
 
 let
@@ -59,8 +75,8 @@ let
           # 'maven.repo.local' must be writable
           mvn package --offline -Dmaven.repo.local=$(cp -dpR ${fetched-maven-deps}/.m2 ./ && chmod +w -R .m2 && pwd)/.m2 ${mavenFlags}
           # remove runtime dependency on $jdk/jre/lib/amd64/server/libjvm.so
-          patchelf --set-rpath ${stdenv.lib.makeLibraryPath [glibc]} hadoop-dist/target/hadoop-${version}/lib/native/libhadoop.so.1.0.0
-          patchelf --set-rpath ${stdenv.lib.makeLibraryPath [glibc]} hadoop-dist/target/hadoop-${version}/lib/native/libhdfs.so.0.0.0
+          patchelf --set-rpath ${stdenv.lib.makeLibraryPath [ glibc ]} hadoop-dist/target/hadoop-${version}/lib/native/libhadoop.so.1.0.0
+          patchelf --set-rpath ${stdenv.lib.makeLibraryPath [ glibc ]} hadoop-dist/target/hadoop-${version}/lib/native/libhdfs.so.0.0.0
         '';
         installPhase = "mv hadoop-dist/target/hadoop-${version} $out";
       };
@@ -123,7 +139,8 @@ let
     };
   };
 
-in {
+in
+{
   hadoop_2_7 = common {
     version = "2.7.7";
     sha256 = "1ahv67f3lwak3kbjvnk1gncq56z6dksbajj872iqd0awdsj3p5rf";

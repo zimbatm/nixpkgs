@@ -1,4 +1,4 @@
-{lib, python2Packages, fetchFromGitHub, fetchurl, git, mercurial, coreutils}:
+{ lib, python2Packages, fetchFromGitHub, fetchurl, git, mercurial, coreutils }:
 
 with python2Packages;
 buildPythonApplication rec {

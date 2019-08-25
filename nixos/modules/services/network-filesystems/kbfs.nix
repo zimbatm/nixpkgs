@@ -3,7 +3,8 @@ with lib;
 let
   cfg = config.services.kbfs;
 
-in {
+in
+{
 
   ###### interface
 

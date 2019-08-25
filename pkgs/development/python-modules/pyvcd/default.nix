@@ -3,7 +3,8 @@
 , fetchPypi
 , setuptools_scm
 , six
-, pytest }:
+, pytest
+}:
 
 buildPythonPackage rec {
   version = "0.1.4";

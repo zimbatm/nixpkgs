@@ -35,7 +35,7 @@ stdenv.mkDerivation rec {
 
     homepage = https://www.gnu.org/software/ballandpaddle/;
 
-    maintainers = [ ];
+    maintainers = [];
 
     platforms = stdenv.lib.platforms.unix;
 

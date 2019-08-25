@@ -1,14 +1,31 @@
-{ buildPythonPackage, fetchFromGitHub, lib, isPyPy, isPy3k, pythonOlder
-, pycrypto, ecdsa # TODO
-, enum34, mock
-, withOptionalDeps ? true, tcpdump, ipython
-, withCryptography ? true, cryptography
-, withVoipSupport ? true, sox
-, withPlottingSupport ? true, matplotlib
-, withGraphicsSupport ? false, pyx, texlive, graphviz, imagemagick
-, withManufDb ? false, wireshark
-# 2D/3D graphics and graphs TODO: VPython
-# TODO: nmap, numpy
+{ buildPythonPackage
+, fetchFromGitHub
+, lib
+, isPyPy
+, isPy3k
+, pythonOlder
+, pycrypto
+, ecdsa # TODO
+, enum34
+, mock
+, withOptionalDeps ? true
+, tcpdump
+, ipython
+, withCryptography ? true
+, cryptography
+, withVoipSupport ? true
+, sox
+, withPlottingSupport ? true
+, matplotlib
+, withGraphicsSupport ? false
+, pyx
+, texlive
+, graphviz
+, imagemagick
+, withManufDb ? false
+, wireshark
+  # 2D/3D graphics and graphs TODO: VPython
+  # TODO: nmap, numpy
 }:
 
 buildPythonPackage rec {
@@ -29,9 +46,11 @@ buildPythonPackage rec {
 
   postPatch = ''
     sed -i "s/NIXPKGS_SCAPY_VERSION/${version}/" scapy/__init__.py
-  '' + lib.optionalString withManufDb ''
-    substituteInPlace scapy/data.py --replace "/opt/wireshark" "${wireshark}"
-  '';
+  ''
+  + lib.optionalString withManufDb ''
+      substituteInPlace scapy/data.py --replace "/opt/wireshark" "${wireshark}"
+    ''
+  ;
 
   propagatedBuildInputs = [ pycrypto ecdsa ]
     ++ lib.optional withOptionalDeps [ tcpdump ipython ]
@@ -40,7 +59,8 @@ buildPythonPackage rec {
     ++ lib.optional withPlottingSupport [ matplotlib ]
     ++ lib.optional withGraphicsSupport [ pyx texlive.combined.scheme-minimal graphviz imagemagick ]
     ++ lib.optional (isPy3k && pythonOlder "3.4") [ enum34 ]
-    ++ lib.optional doCheck [ mock ];
+    ++ lib.optional doCheck [ mock ]
+    ;
 
   # Tests fail with Python 3.6 (seems to be an upstream bug, I'll investigate)
   doCheck = if isPy3k then false else true;

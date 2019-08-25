@@ -1,12 +1,20 @@
-{ stdenv, fetchFromGitHub, pkgconfig, xfce4-dev-tools
+{ stdenv
+, fetchFromGitHub
+, pkgconfig
+, xfce4-dev-tools
 , gtk
 , thunar-bare
-, exo, libxfce4util, libxfce4ui
-, xfconf, udev, libnotify, hicolor-icon-theme
+, exo
+, libxfce4util
+, libxfce4ui
+, xfconf
+, udev
+, libnotify
+, hicolor-icon-theme
 }:
 
 stdenv.mkDerivation rec {
-  p_name  = "thunar-archive-plugin";
+  p_name = "thunar-archive-plugin";
   ver_maj = "0.3";
   ver_min = "1";
   name = "${p_name}-${ver_maj}.${ver_min}";
@@ -22,8 +30,14 @@ stdenv.mkDerivation rec {
   buildInputs = [
     xfce4-dev-tools
     thunar-bare
-    exo gtk libxfce4util libxfce4ui
-    xfconf udev libnotify hicolor-icon-theme
+    exo
+    gtk
+    libxfce4util
+    libxfce4ui
+    xfconf
+    udev
+    libnotify
+    hicolor-icon-theme
   ];
 
   preConfigure = ''

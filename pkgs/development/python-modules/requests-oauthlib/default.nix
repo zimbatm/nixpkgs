@@ -1,5 +1,9 @@
-{ stdenv, buildPythonPackage, fetchPypi
-, oauthlib, requests }:
+{ stdenv
+, buildPythonPackage
+, fetchPypi
+, oauthlib
+, requests
+}:
 
 buildPythonPackage rec {
   version = "1.2.0";
@@ -10,7 +14,7 @@ buildPythonPackage rec {
     sha256 = "bd6533330e8748e94bf0b214775fed487d309b8b8fe823dc45641ebcd9a32f57";
   };
 
-  doCheck = false;        # Internet tests fail when building in chroot
+  doCheck = false; # Internet tests fail when building in chroot
   propagatedBuildInputs = [ oauthlib requests ];
 
   meta = with stdenv.lib; {

@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
     homepage = http://herqq.org;
     description = "A software library for building UPnP devices and control points";
     platforms = platforms.linux;
-    maintainers = [ ];
+    maintainers = [];
     broken = true; # 2018-09-21, built with qt510 (which was removed) but neither qt59 nor qt511
   };
 }

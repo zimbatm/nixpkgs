@@ -1,8 +1,14 @@
-{ stdenv, fetchFromGitHub, makeWrapper
-, cmake, llvmPackages, rapidjson, runtimeShell }:
+{ stdenv
+, fetchFromGitHub
+, makeWrapper
+, cmake
+, llvmPackages
+, rapidjson
+, runtimeShell
+}:
 
 stdenv.mkDerivation rec {
-  name    = "ccls-${version}";
+  name = "ccls-${version}";
   version = "0.20190314.1";
 
   src = fetchFromGitHub {
@@ -42,9 +48,9 @@ stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "A c/c++ language server powered by clang";
-    homepage    = https://github.com/MaskRay/ccls;
-    license     = licenses.asl20;
-    platforms   = platforms.linux ++ platforms.darwin;
+    homepage = https://github.com/MaskRay/ccls;
+    license = licenses.asl20;
+    platforms = platforms.linux ++ platforms.darwin;
     maintainers = [ maintainers.mic92 ];
   };
 }

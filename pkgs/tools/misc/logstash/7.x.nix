@@ -20,13 +20,14 @@ stdenv.mkDerivation rec {
       else "1mpmfnc57vpjk8x3vibamz8lgq163msf20m1bail4hbwhwsmms9i";
   };
 
-  dontBuild         = true;
-  dontPatchELF      = true;
-  dontStrip         = true;
+  dontBuild = true;
+  dontPatchELF = true;
+  dontStrip = true;
   dontPatchShebangs = true;
 
   buildInputs = [
-    makeWrapper jre
+    makeWrapper
+    jre
   ];
 
   installPhase = ''
@@ -45,9 +46,9 @@ stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "Logstash is a data pipeline that helps you process logs and other event data from a variety of systems";
-    homepage    = https://www.elastic.co/products/logstash;
-    license     = if enableUnfree then licenses.elastic else licenses.asl20;
-    platforms   = platforms.unix;
+    homepage = https://www.elastic.co/products/logstash;
+    license = if enableUnfree then licenses.elastic else licenses.asl20;
+    platforms = platforms.unix;
     maintainers = with maintainers; [ wjlroe offline basvandijk ];
   };
 }

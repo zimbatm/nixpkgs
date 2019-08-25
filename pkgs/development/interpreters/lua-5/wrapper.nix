@@ -1,4 +1,7 @@
-{ stdenv, lua, buildEnv, makeWrapper
+{ stdenv
+, lua
+, buildEnv
+, makeWrapper
 , extraLibs ? []
 , extraOutputsToInstall ? []
 , postBuild ? ""
@@ -10,16 +13,17 @@
 # Create a lua executable that knows about additional packages.
 let
   env = let
-    paths =  requiredLuaModules (extraLibs ++ [ lua ] );
-  in buildEnv {
-    name = "${lua.name}-env";
+    paths = requiredLuaModules (extraLibs ++ [ lua ]);
+  in
+    buildEnv {
+      name = "${lua.name}-env";
 
-    inherit paths;
-    inherit ignoreCollisions;
-    extraOutputsToInstall = [ "out" ] ++ extraOutputsToInstall;
+      inherit paths;
+      inherit ignoreCollisions;
+      extraOutputsToInstall = [ "out" ] ++ extraOutputsToInstall;
 
-    # we create wrapper for the binaries in the different packages
-    postBuild = ''
+      # we create wrapper for the binaries in the different packages
+      postBuild = ''
 
       . "${makeWrapper}/nix-support/setup-hook"
 
@@ -49,24 +53,29 @@ let
           done
         fi
       done
-    '' + postBuild;
+    ''
+      + postBuild
+      ;
 
-    inherit (lua) meta;
+      inherit (lua) meta;
 
-    passthru = lua.passthru // {
-      interpreter = "${env}/bin/lua";
-      inherit lua;
-      env = stdenv.mkDerivation {
-        name = "interactive-${lua.name}-environment";
-        nativeBuildInputs = [ env ];
+      passthru = lua.passthru
+        // {
+             interpreter = "${env}/bin/lua";
+             inherit lua;
+             env = stdenv.mkDerivation {
+               name = "interactive-${lua.name}-environment";
+               nativeBuildInputs = [ env ];
 
-        buildCommand = ''
-          echo >&2 ""
-          echo >&2 "*** lua 'env' attributes are intended for interactive nix-shell sessions, not for building! ***"
-          echo >&2 ""
-          exit 1
-        '';
+               buildCommand = ''
+                 echo >&2 ""
+                 echo >&2 "*** lua 'env' attributes are intended for interactive nix-shell sessions, not for building! ***"
+                 echo >&2 ""
+                 exit 1
+               '';
+             };
+           }
+        ;
     };
-    };
-  };
-in env
+in
+env

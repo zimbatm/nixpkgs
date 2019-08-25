@@ -1,8 +1,24 @@
-{ config, stdenv, fetchurl, fetchpatch, pkgconfig, libiconv
-, libintl, expat, zlib, libpng, pixman, fontconfig, freetype
-, x11Support? !stdenv.isDarwin, libXext, libXrender
-, gobjectSupport ? true, glib
-, xcbSupport ? x11Support, libxcb, xcbutil # no longer experimental since 1.12
+{ config
+, stdenv
+, fetchurl
+, fetchpatch
+, pkgconfig
+, libiconv
+, libintl
+, expat
+, zlib
+, libpng
+, pixman
+, fontconfig
+, freetype
+, x11Support ? !stdenv.isDarwin
+, libXext
+, libXrender
+, gobjectSupport ? true
+, glib
+, xcbSupport ? x11Support
+, libxcb
+, xcbutil # no longer experimental since 1.12
 , libGLSupported ? stdenv.lib.elem stdenv.hostPlatform.system stdenv.lib.platforms.mesaPlatforms
 , glSupport ? config.cairo.gl or (libGLSupported && stdenv.isLinux && !stdenv.isAarch32 && !stdenv.isMips)
 , libGL ? null # libGLU_combined is no longer a big dependency
@@ -15,7 +31,8 @@ assert glSupport -> libGL != null;
 let
   version = "1.16.0";
   inherit (stdenv.lib) optional optionals;
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "cairo-${version}";
 
   src = fetchurl {
@@ -29,11 +46,13 @@ in stdenv.mkDerivation rec {
     # Upstream PR: https://gitlab.freedesktop.org/cairo/cairo/merge_requests/5
     #
     # This patch is the merged commit from the above PR.
-    (fetchpatch {
-      name   = "CVE-2018-19876.patch";
-      url    = "https://gitlab.freedesktop.org/cairo/cairo/commit/6edf572ebb27b00d3c371ba5ae267e39d27d5b6d.patch";
-      sha256 = "112hgrrsmcwxh1r52brhi5lksq4pvrz4xhkzcf2iqp55jl2pb7n1";
-    })
+    (
+      fetchpatch {
+        name = "CVE-2018-19876.patch";
+        url = "https://gitlab.freedesktop.org/cairo/cairo/commit/6edf572ebb27b00d3c371ba5ae267e39d27d5b6d.patch";
+        sha256 = "112hgrrsmcwxh1r52brhi5lksq4pvrz4xhkzcf2iqp55jl2pb7n1";
+      }
+    )
   ];
 
   outputs = [ "out" "dev" "devdoc" ];
@@ -46,12 +65,16 @@ in stdenv.mkDerivation rec {
   buildInputs = [
     libiconv
     libintl
-  ] ++ optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
-    CoreGraphics
-    CoreText
-    ApplicationServices
-    Carbon
-  ]);
+  ]
+  ++ optionals stdenv.isDarwin (
+       with darwin.apple_sdk.frameworks; [
+         CoreGraphics
+         CoreText
+         ApplicationServices
+         Carbon
+       ]
+     )
+  ;
 
   propagatedBuildInputs = [ fontconfig expat freetype pixman zlib libpng ]
     ++ optionals x11Support [ libXext libXrender ]
@@ -66,29 +89,30 @@ in stdenv.mkDerivation rec {
     "--enable-quartz-font"
     "--enable-quartz-image"
     "--enable-ft"
-  ] else ([ "--enable-tee" ]
+  ] else (
+    [ "--enable-tee" ]
     ++ optional xcbSupport "--enable-xcb"
     ++ optional glSupport "--enable-gl"
     ++ optional pdfSupport "--enable-pdf"
   );
 
   preConfigure =
-  # On FreeBSD, `-ldl' doesn't exist.
+    # On FreeBSD, `-ldl' doesn't exist.
     stdenv.lib.optionalString stdenv.isFreeBSD
-       '' for i in "util/"*"/Makefile.in" boilerplate/Makefile.in
+      '' for i in "util/"*"/Makefile.in" boilerplate/Makefile.in
           do
             cat "$i" | sed -es/-ldl//g > t
             mv t "$i"
           done
        ''
-    +
+    + ''
+      # Work around broken `Requires.private' that prevents Freetype
+      # `-I' flags to be propagated.
+      sed -i "src/cairo.pc.in" \
+          -es'|^Cflags:\(.*\)$|Cflags: \1 -I${freetype.dev}/include/freetype2 -I${freetype.dev}/include|g'
+      substituteInPlace configure --replace strings $STRINGS
     ''
-    # Work around broken `Requires.private' that prevents Freetype
-    # `-I' flags to be propagated.
-    sed -i "src/cairo.pc.in" \
-        -es'|^Cflags:\(.*\)$|Cflags: \1 -I${freetype.dev}/include/freetype2 -I${freetype.dev}/include|g'
-    substituteInPlace configure --replace strings $STRINGS
-    '';
+  ;
 
   enableParallelBuilding = true;
 

@@ -1,4 +1,7 @@
-{ stdenv, fetchurl, fetchpatch, darwin
+{ stdenv
+, fetchurl
+, fetchpatch
+, darwin
 , autoreconfHook
 , pkgconfig
 , curl
@@ -10,10 +13,12 @@
 , libcredis
 , libdbi
 , libgcrypt
-, libmemcached, cyrus_sasl
+, libmemcached
+, cyrus_sasl
 , libmicrohttpd
 , libmodbus
-, libnotify, gdk-pixbuf
+, libnotify
+, gdk-pixbuf
 , liboping
 , libpcap
 , libsigrok
@@ -50,30 +55,68 @@ stdenv.mkDerivation rec {
   };
 
   patches = [
-    (fetchpatch {
-      url = "https://github.com/rpv-tomsk/collectd/commit/d5a3c020d33cc33ee8049f54c7b4dffcd123bf83.patch";
-      sha256 = "1n65zw4d2k2bxapayaaw51ym7hy72a0cwi2abd8jgxcw3d0m5g15";
-    })
+    (
+      fetchpatch {
+        url = "https://github.com/rpv-tomsk/collectd/commit/d5a3c020d33cc33ee8049f54c7b4dffcd123bf83.patch";
+        sha256 = "1n65zw4d2k2bxapayaaw51ym7hy72a0cwi2abd8jgxcw3d0m5g15";
+      }
+    )
   ];
 
   nativeBuildInputs = [ pkgconfig autoreconfHook ];
   buildInputs = [
-    curl libdbi libgcrypt libmemcached
-    cyrus_sasl libnotify gdk-pixbuf liboping libpcap libvirt
-    libxml2 postgresql protobufc rrdtool
-    varnish yajl jdk libtool python hiredis libmicrohttpd
-    riemann_c_client mosquitto rdkafka mongoc
-  ] ++ stdenv.lib.optionals (mysql != null) [ mysql.connector-c
-  ] ++ stdenv.lib.optionals stdenv.isLinux [
-    iptables libatasmart libcredis libmodbus libsigrok
-    lm_sensors lvm2 rabbitmq-c udev net_snmp libmnl
-    # those might be no longer required when https://github.com/NixOS/nixpkgs/pull/51767
-    # is merged
-    libapparmor numactl libcap_ng
-  ] ++ stdenv.lib.optionals stdenv.isDarwin [
-    darwin.apple_sdk.frameworks.IOKit
-    darwin.apple_sdk.frameworks.ApplicationServices
-  ];
+    curl
+    libdbi
+    libgcrypt
+    libmemcached
+    cyrus_sasl
+    libnotify
+    gdk-pixbuf
+    liboping
+    libpcap
+    libvirt
+    libxml2
+    postgresql
+    protobufc
+    rrdtool
+    varnish
+    yajl
+    jdk
+    libtool
+    python
+    hiredis
+    libmicrohttpd
+    riemann_c_client
+    mosquitto
+    rdkafka
+    mongoc
+  ]
+  ++ stdenv.lib.optionals (mysql != null) [
+       mysql.connector-c
+     ]
+  ++ stdenv.lib.optionals stdenv.isLinux [
+       iptables
+       libatasmart
+       libcredis
+       libmodbus
+       libsigrok
+       lm_sensors
+       lvm2
+       rabbitmq-c
+       udev
+       net_snmp
+       libmnl
+       # those might be no longer required when https://github.com/NixOS/nixpkgs/pull/51767
+       # is merged
+       libapparmor
+       numactl
+       libcap_ng
+     ]
+  ++ stdenv.lib.optionals stdenv.isDarwin [
+       darwin.apple_sdk.frameworks.IOKit
+       darwin.apple_sdk.frameworks.ApplicationServices
+     ]
+  ;
 
   configureFlags = [
     "--localstatedir=/var"
@@ -82,7 +125,7 @@ stdenv.mkDerivation rec {
 
   # do not create directories in /var during installPhase
   postConfigure = ''
-     substituteInPlace Makefile --replace '$(mkinstalldirs) $(DESTDIR)$(localstatedir)/' '#'
+    substituteInPlace Makefile --replace '$(mkinstalldirs) $(DESTDIR)$(localstatedir)/' '#'
   '';
 
   postInstall = ''

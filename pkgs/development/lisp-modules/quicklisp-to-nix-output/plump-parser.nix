@@ -14,7 +14,7 @@ rec {
 
   packageName = "plump-parser";
 
-  asdFilesToKeep = ["plump-parser.asd"];
+  asdFilesToKeep = [ "plump-parser.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM plump-parser DESCRIPTION Plump's core parser component. SHA256

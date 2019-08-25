@@ -5,9 +5,10 @@ with lib;
 let
 
   tzdir = "${pkgs.tzdata}/share/zoneinfo";
-  nospace  = str: filter (c: c == " ") (stringToCharacters str) == [];
+  nospace = str: filter (c: c == " ") (stringToCharacters str) == [];
   timezone = types.nullOr (types.addCheck types.str nospace)
-    // { description = "null or string without spaces"; };
+    // { description = "null or string without spaces"; }
+    ;
 
   lcfg = config.location;
 
@@ -85,10 +86,12 @@ in
 
     environment.etc = {
       zoneinfo.source = tzdir;
-    } // lib.optionalAttrs (config.time.timeZone != null) {
-        localtime.source = "/etc/zoneinfo/${config.time.timeZone}";
-        localtime.mode = "direct-symlink";
-      };
+    }
+    // lib.optionalAttrs (config.time.timeZone != null) {
+         localtime.source = "/etc/zoneinfo/${config.time.timeZone}";
+         localtime.mode = "direct-symlink";
+       }
+    ;
   };
 
 }

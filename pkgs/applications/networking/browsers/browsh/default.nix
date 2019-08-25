@@ -11,7 +11,8 @@ let
     sha256 = "0b9aycyif0hfhfkivlnvinr13r9h4qyxx768286966p67napbd63";
   };
 
-in buildGoPackage rec {
+in
+buildGoPackage rec {
   inherit version;
 
   name = "browsh-${version}";

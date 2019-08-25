@@ -1,10 +1,21 @@
-{ stdenv, lib, fetchurl, makeWrapper, pkgconfig, udev, dbus, pcsclite
-, wget, coreutils, perlPackages
+{ stdenv
+, lib
+, fetchurl
+, makeWrapper
+, pkgconfig
+, udev
+, dbus
+, pcsclite
+, wget
+, coreutils
+, perlPackages
 }:
 
-let deps = lib.makeBinPath [ wget coreutils ];
+let
+  deps = lib.makeBinPath [ wget coreutils ];
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "pcsc-tools-1.5.4";
 
   src = fetchurl {
@@ -31,7 +42,7 @@ in stdenv.mkDerivation rec {
     description = "Tools used to test a PC/SC driver, card or reader";
     homepage = http://ludovic.rousseau.free.fr/softwares/pcsc-tools/;
     license = licenses.gpl2Plus;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
     platforms = platforms.linux;
   };
 }

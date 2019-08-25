@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ cmake ];
-  buildInputs = [ ];
+  buildInputs = [];
 
   meta = with stdenv.lib; {
     homepage = https://github.com/liuq/QuadProgpp;

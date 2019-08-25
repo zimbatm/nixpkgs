@@ -1,16 +1,34 @@
-{ config, stdenv, fetchurl
-, libX11, wxGTK
-, libiconv, fontconfig, freetype
+{ config
+, stdenv
+, fetchurl
+, libX11
+, wxGTK
+, libiconv
+, fontconfig
+, freetype
 , libGLU_combined
-, libass, fftw, ffms
-, ffmpeg, pkgconfig, zlib # Undocumented (?) dependencies
-, icu, boost, intltool # New dependencies
-, spellcheckSupport ? true, hunspell ? null
-, automationSupport ? true, lua ? null
-, openalSupport ? false, openal ? null
-, alsaSupport ? stdenv.isLinux, alsaLib ? null
-, pulseaudioSupport ? config.pulseaudio or stdenv.isLinux, libpulseaudio ? null
-, portaudioSupport ? false, portaudio ? null }:
+, libass
+, fftw
+, ffms
+, ffmpeg
+, pkgconfig
+, zlib # Undocumented (?) dependencies
+, icu
+, boost
+, intltool # New dependencies
+, spellcheckSupport ? true
+, hunspell ? null
+, automationSupport ? true
+, lua ? null
+, openalSupport ? false
+, openal ? null
+, alsaSupport ? stdenv.isLinux
+, alsaLib ? null
+, pulseaudioSupport ? config.pulseaudio or stdenv.isLinux
+, libpulseaudio ? null
+, portaudioSupport ? false
+, portaudio ? null
+}:
 
 assert spellcheckSupport -> (hunspell != null);
 assert automationSupport -> (lua != null);
@@ -33,9 +51,24 @@ stdenv.mkDerivation rec {
   postPatch = "sed '1i#include <unicode/unistr.h>' -i src/utils.cpp";
 
   buildInputs = with stdenv.lib;
-  [ pkgconfig intltool libX11 wxGTK fontconfig freetype libGLU_combined
-    libass fftw ffms ffmpeg zlib icu boost boost.out libiconv
-  ]
+    [
+      pkgconfig
+      intltool
+      libX11
+      wxGTK
+      fontconfig
+      freetype
+      libGLU_combined
+      libass
+      fftw
+      ffms
+      ffmpeg
+      zlib
+      icu
+      boost
+      boost.out
+      libiconv
+    ]
     ++ optional spellcheckSupport hunspell
     ++ optional automationSupport lua
     ++ optional openalSupport openal
@@ -69,9 +102,9 @@ stdenv.mkDerivation rec {
     '';
     homepage = http://www.aegisub.org/;
     license = licenses.bsd3;
-              # The Aegisub sources are itself BSD/ISC,
-              # but they are linked against GPL'd softwares
-              # - so the resulting program will be GPL
+    # The Aegisub sources are itself BSD/ISC,
+    # but they are linked against GPL'd softwares
+    # - so the resulting program will be GPL
     maintainers = [ maintainers.AndersonTorres ];
     platforms = [ "i686-linux" "x86_64-linux" ];
   };

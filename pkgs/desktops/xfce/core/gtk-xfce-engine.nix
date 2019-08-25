@@ -3,7 +3,7 @@
 assert withGtk3 -> (gtk3 != null);
 
 stdenv.mkDerivation rec {
-  p_name  = "gtk-xfce-engine";
+  p_name = "gtk-xfce-engine";
   ver_maj = "3.2";
   ver_min = "0";
 

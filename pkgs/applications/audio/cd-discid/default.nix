@@ -1,5 +1,7 @@
-{ fetchurl, stdenv
-, IOKit ? null }:
+{ fetchurl
+, stdenv
+, IOKit ? null
+}:
 
 stdenv.mkDerivation rec {
   name = "cd-discid-${version}";
@@ -13,7 +15,8 @@ stdenv.mkDerivation rec {
   installFlags = "PREFIX=$(out) INSTALL=install";
 
   buildInputs = []
-    ++ stdenv.lib.optional stdenv.isDarwin IOKit;
+    ++ stdenv.lib.optional stdenv.isDarwin IOKit
+    ;
 
   meta = with stdenv.lib; {
     homepage = http://linukz.org/cd-discid.shtml;

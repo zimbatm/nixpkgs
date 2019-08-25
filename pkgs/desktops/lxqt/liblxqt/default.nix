@@ -1,5 +1,15 @@
-{ stdenv, fetchFromGitHub, cmake, lxqt-build-tools, qtx11extras,
-  qttools, qtsvg, libqtxdg, polkit-qt, kwindowsystem, xorg }:
+{ stdenv
+, fetchFromGitHub
+, cmake
+, lxqt-build-tools
+, qtx11extras
+, qttools
+, qtsvg
+, libqtxdg
+, polkit-qt
+, kwindowsystem
+, xorg
+}:
 
 stdenv.mkDerivation rec {
   pname = "liblxqt";

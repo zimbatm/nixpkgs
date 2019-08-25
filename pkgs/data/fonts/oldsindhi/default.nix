@@ -2,7 +2,8 @@
 
 let
   version = "0.1";
-in fetchzip rec {
+in
+fetchzip rec {
   name = "oldsindhi-${version}";
 
   url = "https://github.com/MihailJP/oldsindhi/releases/download/0.1/OldSindhi-0.1.7z";

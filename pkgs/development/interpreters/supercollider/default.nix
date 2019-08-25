@@ -1,10 +1,25 @@
-{ stdenv, fetchurl, cmake, pkgconfig, alsaLib
-, libjack2, libsndfile, fftw, curl, gcc
-, libXt, qtbase, qttools, qtwebengine
-, readline, qtwebsockets, useSCEL ? false, emacs
+{ stdenv
+, fetchurl
+, cmake
+, pkgconfig
+, alsaLib
+, libjack2
+, libsndfile
+, fftw
+, curl
+, gcc
+, libXt
+, qtbase
+, qttools
+, qtwebengine
+, readline
+, qtwebsockets
+, useSCEL ? false
+, emacs
 }:
 
-let optional = stdenv.lib.optional;
+let
+  optional = stdenv.lib.optional;
 in
 
 stdenv.mkDerivation rec {
@@ -27,9 +42,20 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ cmake pkgconfig qttools ];
 
   buildInputs = [
-    gcc libjack2 libsndfile fftw curl libXt qtbase qtwebengine qtwebsockets readline ]
-      ++ optional (!stdenv.isDarwin) alsaLib
-      ++ optional useSCEL emacs;
+    gcc
+    libjack2
+    libsndfile
+    fftw
+    curl
+    libXt
+    qtbase
+    qtwebengine
+    qtwebsockets
+    readline
+  ]
+  ++ optional (!stdenv.isDarwin) alsaLib
+  ++ optional useSCEL emacs
+  ;
 
   meta = with stdenv.lib; {
     description = "Programming language for real time audio synthesis";

@@ -6,8 +6,10 @@ let
 
   makeColor = n: value: "COLOR_${toString n}=${value}";
   makeColorCS =
-    let positions = [ "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F" ];
-    in n: value: "\\033]P${elemAt positions (n - 1)}${value}";
+    let
+      positions = [ "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F" ];
+    in
+      n: value: "\\033]P${elemAt positions (n - 1)}${value}";
   colors = concatImapStringsSep "\n" makeColor config.i18n.consoleColors;
 
   isUnicode = hasSuffix "UTF-8" (toUpper config.i18n.defaultLocale);
@@ -47,7 +49,7 @@ in
     boot.extraTTYs = mkOption {
       default = [];
       type = types.listOf types.str;
-      example = ["tty8" "tty9"];
+      example = [ "tty8" "tty9" ];
       description = ''
         Tty (virtual console) devices, in addition to the consoles on
         which mingetty and syslogd run, that must be initialised.
@@ -72,56 +74,68 @@ in
   ###### implementation
 
   config = mkMerge [
-    (mkIf (!setVconsole) {
-      systemd.services."systemd-vconsole-setup".enable = false;
-    })
-
-    (mkIf setVconsole (mkMerge [
-      { environment.systemPackages = [ pkgs.kbd ];
-
-        # Let systemd-vconsole-setup.service do the work of setting up the
-        # virtual consoles.
-        environment.etc."vconsole.conf".source = vconsoleConf;
-        # Provide kbd with additional packages.
-        environment.etc."kbd".source = "${kbdEnv}/share";
-
-        boot.initrd.preLVMCommands = mkBefore ''
-          kbd_mode ${if isUnicode then "-u" else "-a"} -C /dev/console
-          printf "\033%%${if isUnicode then "G" else "@"}" >> /dev/console
-          loadkmap < ${optimizedKeymap}
-
-          ${optionalString config.boot.earlyVconsoleSetup ''
-            setfont -C /dev/console $extraUtils/share/consolefonts/font.psf
-          ''}
-
-          ${concatImapStringsSep "\n" (n: color: ''
-            printf "${makeColorCS n color}" >> /dev/console
-          '') config.i18n.consoleColors}
-        '';
-
-        systemd.services."systemd-vconsole-setup" =
-          { before = [ "display-manager.service" ];
-            after = [ "systemd-udev-settle.service" ];
-            restartTriggers = [ vconsoleConf kbdEnv ];
-          };
+    (
+      mkIf (!setVconsole) {
+        systemd.services."systemd-vconsole-setup".enable = false;
       }
+    )
 
-      (mkIf config.boot.earlyVconsoleSetup {
-        boot.initrd.extraUtilsCommands = ''
-          mkdir -p $out/share/consolefonts
-          ${if substring 0 1 config.i18n.consoleFont == "/" then ''
-            font="${config.i18n.consoleFont}"
-          '' else ''
-            font="$(echo ${kbdEnv}/share/consolefonts/${config.i18n.consoleFont}.*)"
-          ''}
-          if [[ $font == *.gz ]]; then
-            gzip -cd $font > $out/share/consolefonts/font.psf
-          else
-            cp -L $font $out/share/consolefonts/font.psf
-          fi
-        '';
-      })
-    ]))
+    (
+      mkIf setVconsole (
+        mkMerge [
+          {
+            environment.systemPackages = [ pkgs.kbd ];
+
+            # Let systemd-vconsole-setup.service do the work of setting up the
+            # virtual consoles.
+            environment.etc."vconsole.conf".source = vconsoleConf;
+            # Provide kbd with additional packages.
+            environment.etc."kbd".source = "${kbdEnv}/share";
+
+            boot.initrd.preLVMCommands = mkBefore ''
+              kbd_mode ${if isUnicode then "-u" else "-a"} -C /dev/console
+              printf "\033%%${if isUnicode then "G" else "@"}" >> /dev/console
+              loadkmap < ${optimizedKeymap}
+
+              ${optionalString config.boot.earlyVconsoleSetup ''
+              setfont -C /dev/console $extraUtils/share/consolefonts/font.psf
+            ''}
+
+              ${concatImapStringsSep "\n" (
+              n: color: ''
+                printf "${makeColorCS n color}" >> /dev/console
+              ''
+            ) config.i18n.consoleColors}
+            '';
+
+            systemd.services."systemd-vconsole-setup" =
+              {
+                before = [ "display-manager.service" ];
+                after = [ "systemd-udev-settle.service" ];
+                restartTriggers = [ vconsoleConf kbdEnv ];
+              };
+          }
+
+          (
+            mkIf config.boot.earlyVconsoleSetup {
+              boot.initrd.extraUtilsCommands = ''
+                mkdir -p $out/share/consolefonts
+                ${if substring 0 1 config.i18n.consoleFont == "/" then ''
+                font="${config.i18n.consoleFont}"
+              '' else ''
+                font="$(echo ${kbdEnv}/share/consolefonts/${config.i18n.consoleFont}.*)"
+              ''}
+                if [[ $font == *.gz ]]; then
+                  gzip -cd $font > $out/share/consolefonts/font.psf
+                else
+                  cp -L $font $out/share/consolefonts/font.psf
+                fi
+              '';
+            }
+          )
+        ]
+      )
+    )
   ];
 
 }

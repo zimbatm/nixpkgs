@@ -30,5 +30,5 @@ stdenv.mkDerivation rec {
       learning new assembly dialects in order improve or maintain application
       portability.
     '';
-   };
+  };
 }

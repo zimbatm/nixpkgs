@@ -1,4 +1,6 @@
-{ stdenv, fetchurl, buildPackages
+{ stdenv
+, fetchurl
+, buildPackages
 , name ? "luajit-${version}"
 , isStable
 , sha256
@@ -9,7 +11,7 @@
 , packageOverrides ? (self: super: {})
 }:
 let
-  luaPackages = callPackage ../../lua-modules {lua=self; overrides=packageOverrides;};
+  luaPackages = callPackage ../../lua-modules { lua = self; overrides = packageOverrides; };
 in
 stdenv.mkDerivation rec {
   inherit name version;
@@ -37,16 +39,19 @@ stdenv.mkDerivation rec {
   enableParallelBuilding = true;
 
   postInstall = ''
-      ( cd "$out/include"; ln -s luajit-*/* . )
-      ln -s "$out"/bin/luajit-* "$out"/bin/lua
-    ''
-    + stdenv.lib.optionalString (!isStable) ''
+    ( cd "$out/include"; ln -s luajit-*/* . )
+    ln -s "$out"/bin/luajit-* "$out"/bin/lua
+  ''
+  + stdenv.lib.optionalString (!isStable) ''
       ln -s "$out"/bin/luajit-* "$out"/bin/luajit
-    '';
+    ''
+  ;
 
   LuaPathSearchPaths = [
-    "lib/lua/${luaversion}/?.lua" "share/lua/${luaversion}/?.lua"
-    "share/lua/${luaversion}/?/init.lua" "lib/lua/${luaversion}/?/init.lua"
+    "lib/lua/${luaversion}/?.lua"
+    "share/lua/${luaversion}/?.lua"
+    "share/lua/${luaversion}/?/init.lua"
+    "lib/lua/${luaversion}/?/init.lua"
     "share/${name}/?.lua"
   ];
   LuaCPathSearchPaths = [ "lib/lua/${luaversion}/?.so" "share/lua/${luaversion}/?.so" ];
@@ -57,17 +62,17 @@ stdenv.mkDerivation rec {
       lua = self;
       inherit (luaPackages) requiredLuaModules;
     };
-    withPackages = import ../lua-5/with-packages.nix { inherit buildEnv luaPackages;};
+    withPackages = import ../lua-5/with-packages.nix { inherit buildEnv luaPackages; };
     pkgs = luaPackages;
     interpreter = "${self}/bin/lua";
   };
 
-  meta = with stdenv.lib; extraMeta // {
-    description = "High-performance JIT compiler for Lua 5.1";
-    homepage    = http://luajit.org;
-    license     = licenses.mit;
-    platforms   = platforms.linux ++ platforms.darwin;
-    maintainers = with maintainers; [ thoughtpolice smironov vcunat andir ];
-  };
+  meta = with stdenv.lib; extraMeta
+    // {
+         description = "High-performance JIT compiler for Lua 5.1";
+         homepage = http://luajit.org;
+         license = licenses.mit;
+         platforms = platforms.linux ++ platforms.darwin;
+         maintainers = with maintainers; [ thoughtpolice smironov vcunat andir ];
+       };
 }
-

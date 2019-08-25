@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ cmake ];
-  
+
   buildInputs = [ hdf5 zlib ];
 
   meta = with stdenv.lib; {

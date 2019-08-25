@@ -6,14 +6,18 @@ stdenv.mkDerivation rec {
   name = "libjpeg-drop-9b";
 
   srcs = [
-    (fetchurl {
-      url = http://www.ijg.org/files/jpegsrc.v9b.tar.gz;
-      sha256 = "0lnhpahgdwlrkd41lx6cr90r199f8mc6ydlh7jznj5klvacd63r4";
-    })
-    (fetchurl {
-      url = http://jpegclub.org/droppatch.v9b.tar.gz;
-      sha256 = "022bnvpird7w5pwbfqpq7j7pwja5kp6x9k3sdypcy3g2nwwy2wwk";
-    })
+    (
+      fetchurl {
+        url = http://www.ijg.org/files/jpegsrc.v9b.tar.gz;
+        sha256 = "0lnhpahgdwlrkd41lx6cr90r199f8mc6ydlh7jznj5klvacd63r4";
+      }
+    )
+    (
+      fetchurl {
+        url = http://jpegclub.org/droppatch.v9b.tar.gz;
+        sha256 = "022bnvpird7w5pwbfqpq7j7pwja5kp6x9k3sdypcy3g2nwwy2wwk";
+      }
+    )
   ];
 
   postUnpack = ''
@@ -24,7 +28,8 @@ stdenv.mkDerivation rec {
   '';
 
   configureFlags = []
-    ++ optional static [ "--enable-static" "--disable-shared" ];
+    ++ optional static [ "--enable-static" "--disable-shared" ]
+    ;
 
   outputs = [ "bin" "dev" "out" "man" ];
 

@@ -33,10 +33,12 @@ stdenv.mkDerivation rec{
 
   patches = [
     # https://gitlab.gnome.org/GNOME/libwnck/issues/139
-    (fetchpatch {
-      url = https://gitlab.gnome.org/GNOME/libwnck/commit/0d9ff7db63af568feef8e8c566e249058ccfcb4e.patch;
-      sha256 = "18f78aayq9jma54v2qz3rm2clmz1cfq5bngxw8p4zba7hplyqsl9";
-    })
+    (
+      fetchpatch {
+        url = https://gitlab.gnome.org/GNOME/libwnck/commit/0d9ff7db63af568feef8e8c566e249058ccfcb4e.patch;
+        sha256 = "18f78aayq9jma54v2qz3rm2clmz1cfq5bngxw8p4zba7hplyqsl9";
+      }
+    )
     # https://gitlab.gnome.org/GNOME/libwnck/merge_requests/12
     ./fix-pc-file.patch
   ];

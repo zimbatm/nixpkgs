@@ -10,9 +10,13 @@ let
     home = cfg.home;
     port = cfg.listenPort;
     openidPassword = cfg.openidPassword;
-  } // (optionalAttrs cfg.proxy.enable {
-    proxyUrl = "${cfg.proxy.scheme}://${cfg.proxy.name}:${toString cfg.proxy.port}";
-  });
+  }
+  // (
+       optionalAttrs cfg.proxy.enable {
+         proxyUrl = "${cfg.proxy.scheme}://${cfg.proxy.name}:${toString cfg.proxy.port}";
+       }
+     )
+  ;
 
 in
 
@@ -147,11 +151,16 @@ in
         mkdir -p ${cfg.home}/{logs,database,work}
 
         sed -e 's,port="8095",port="${toString cfg.listenPort}" address="${cfg.listenAddress}",' \
-        '' + (lib.optionalString cfg.proxy.enable ''
-          -e 's,compression="on",compression="off" protocol="HTTP/1.1" proxyName="${cfg.proxy.name}" proxyPort="${toString cfg.proxy.port}" scheme="${cfg.proxy.scheme}" secure="${boolToString cfg.proxy.secure}",' \
-        '') + ''
-          ${pkg}/apache-tomcat/conf/server.xml.dist > ${cfg.home}/server.xml
-      '';
+      ''
+      + (
+          lib.optionalString cfg.proxy.enable ''
+            -e 's,compression="on",compression="off" protocol="HTTP/1.1" proxyName="${cfg.proxy.name}" proxyPort="${toString cfg.proxy.port}" scheme="${cfg.proxy.scheme}" secure="${boolToString cfg.proxy.secure}",' \
+          ''
+        )
+      + ''
+        ${pkg}/apache-tomcat/conf/server.xml.dist > ${cfg.home}/server.xml
+      ''
+      ;
 
       serviceConfig = {
         User = cfg.user;

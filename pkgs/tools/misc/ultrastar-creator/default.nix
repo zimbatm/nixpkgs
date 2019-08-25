@@ -1,5 +1,12 @@
-{ stdenv, fetchFromGitHub
-, qmake, qtbase, pkgconfig, taglib, libbass, libbass_fx }:
+{ stdenv
+, fetchFromGitHub
+, qmake
+, qtbase
+, pkgconfig
+, taglib
+, libbass
+, libbass_fx
+}:
 
 # TODO: get rid of (unfree) libbass
 # issue:https://github.com/UltraStar-Deluxe/UltraStar-Creator/issues/3

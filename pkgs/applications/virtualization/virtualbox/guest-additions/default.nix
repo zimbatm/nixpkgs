@@ -1,5 +1,16 @@
-{ stdenv, fetchurl, lib, patchelf, cdrkit, kernel, which, makeWrapper
-, zlib, xorg, dbus, virtualbox }:
+{ stdenv
+, fetchurl
+, lib
+, patchelf
+, cdrkit
+, kernel
+, which
+, makeWrapper
+, zlib
+, xorg
+, dbus
+, virtualbox
+}:
 
 let
   version = virtualbox.version;
@@ -10,8 +21,10 @@ let
   # in case someone does just a standalone build
   # (not via videoDrivers = ["vboxvideo"]).
   # It's likely to work again in some future update.
-  xserverABI = let abi = xserverVListFunc 0 + xserverVListFunc 1;
-    in if abi == "119" || abi == "120" then "118" else abi;
+  xserverABI = let
+    abi = xserverVListFunc 0 + xserverVListFunc 1;
+  in
+    if abi == "119" || abi == "120" then "118" else abi;
 in
 
 stdenv.mkDerivation {
@@ -37,23 +50,23 @@ stdenv.mkDerivation {
 
   unpackPhase = ''
     ${if stdenv.hostPlatform.system == "i686-linux" || stdenv.hostPlatform.system == "x86_64-linux" then ''
-        isoinfo -J -i $src -x /VBoxLinuxAdditions.run > ./VBoxLinuxAdditions.run
-        chmod 755 ./VBoxLinuxAdditions.run
-        ./VBoxLinuxAdditions.run --noexec --keep
-      ''
-      else throw ("Architecture: "+stdenv.hostPlatform.system+" not supported for VirtualBox guest additions")
-    }
+    isoinfo -J -i $src -x /VBoxLinuxAdditions.run > ./VBoxLinuxAdditions.run
+    chmod 755 ./VBoxLinuxAdditions.run
+    ./VBoxLinuxAdditions.run --noexec --keep
+  ''
+  else throw ("Architecture: " + stdenv.hostPlatform.system + " not supported for VirtualBox guest additions")
+  }
 
     # Unpack files
     cd install
     ${if stdenv.hostPlatform.system == "i686-linux" then ''
-        tar xfvj VBoxGuestAdditions-x86.tar.bz2
-      ''
-      else if stdenv.hostPlatform.system == "x86_64-linux" then ''
-        tar xfvj VBoxGuestAdditions-amd64.tar.bz2
-      ''
-      else throw ("Architecture: "+stdenv.hostPlatform.system+" not supported for VirtualBox guest additions")
-    }
+    tar xfvj VBoxGuestAdditions-x86.tar.bz2
+  ''
+  else if stdenv.hostPlatform.system == "x86_64-linux" then ''
+    tar xfvj VBoxGuestAdditions-amd64.tar.bz2
+  ''
+  else throw ("Architecture: " + stdenv.hostPlatform.system + " not supported for VirtualBox guest additions")
+  }
   '';
 
   doConfigure = false;
@@ -70,14 +83,29 @@ stdenv.mkDerivation {
     # Change the interpreter for various binaries
     for i in sbin/VBoxService bin/{VBoxClient,VBoxControl} other/mount.vboxsf; do
         patchelf --set-interpreter ${stdenv.cc.bintools.dynamicLinker} $i
-        patchelf --set-rpath ${lib.makeLibraryPath [ stdenv.cc.cc stdenv.cc.libc zlib
-          xorg.libX11 xorg.libXt xorg.libXext xorg.libXmu xorg.libXfixes xorg.libXrandr xorg.libXcursor ]} $i
+        patchelf --set-rpath ${lib.makeLibraryPath [
+    stdenv.cc.cc
+    stdenv.cc.libc
+    zlib
+    xorg.libX11
+    xorg.libXt
+    xorg.libXext
+    xorg.libXmu
+    xorg.libXfixes
+    xorg.libXrandr
+    xorg.libXcursor
+  ]} $i
     done
 
     for i in lib/VBoxOGL*.so
     do
-        patchelf --set-rpath ${lib.makeLibraryPath [ "$out"
-          xorg.libXcomposite xorg.libXdamage xorg.libXext xorg.libXfixes ]} $i
+        patchelf --set-rpath ${lib.makeLibraryPath [
+    "$out"
+    xorg.libXcomposite
+    xorg.libXdamage
+    xorg.libXext
+    xorg.libXfixes
+  ]} $i
     done
 
     # FIXME: Virtualbox 4.3.22 moved VBoxClient-all (required by Guest Additions

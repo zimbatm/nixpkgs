@@ -9,18 +9,21 @@ buildGoPackage rec {
   goPackagePath = "github.com/digitalocean/doctl";
 
   excludedPackages = ''\(doctl-gen-doc\|install-doctl\|release-doctl\)'';
-  buildFlagsArray = let t = "${goPackagePath}"; in ''
-     -ldflags=
-        -X ${t}.Major=${major}
-        -X ${t}.Minor=${minor}
-        -X ${t}.Patch=${patch}
-        -X ${t}.Label=release
-   '';
+  buildFlagsArray = let
+    t = "${goPackagePath}";
+  in
+    ''
+      -ldflags=
+         -X ${t}.Major=${major}
+         -X ${t}.Minor=${minor}
+         -X ${t}.Patch=${patch}
+         -X ${t}.Label=release
+    '';
 
   src = fetchFromGitHub {
     owner = "digitalocean";
-    repo   = "doctl";
-    rev    = "v${version}";
+    repo = "doctl";
+    rev = "v${version}";
     sha256 = "1p43q1iyjj597gr47hn589fv7n26mny9niq7yb9hlmslkplsrb0a";
   };
 

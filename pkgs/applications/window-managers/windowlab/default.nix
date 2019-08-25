@@ -1,7 +1,14 @@
-{ stdenv, fetchurl, pkgconfig
-, libX11, libXext, libXft }:
+{ stdenv
+, fetchurl
+, pkgconfig
+, libX11
+, libXext
+, libXft
+}:
 
-let version = "1.40"; in
+let
+  version = "1.40";
+in
 stdenv.mkDerivation {
   name = "windowlab-${version}";
 
@@ -26,10 +33,11 @@ stdenv.mkDerivation {
     '';
 
   meta = with stdenv.lib;
-    { description = "Small and simple stacking window manager";
-      homepage    = "http://nickgravgaard.com/windowlab/";
-      license     = licenses.gpl2;
+    {
+      description = "Small and simple stacking window manager";
+      homepage = "http://nickgravgaard.com/windowlab/";
+      license = licenses.gpl2;
       maintainers = with maintainers; [ ehmry ];
-      platforms   = platforms.linux;
+      platforms = platforms.linux;
     };
 }

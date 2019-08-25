@@ -1,5 +1,10 @@
-{ lib, buildPythonPackage, fetchFromGitHub
-, pytest, pytest-django, django }:
+{ lib
+, buildPythonPackage
+, fetchFromGitHub
+, pytest
+, pytest-django
+, django
+}:
 
 buildPythonPackage rec {
   pname = "django-crispy-forms";

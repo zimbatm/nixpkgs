@@ -11,7 +11,9 @@ let
       PAPERLESS_CONSUMPTION_DIR = cfg.consumptionDir;
       PAPERLESS_INLINE_DOC = "true";
       PAPERLESS_DISABLE_LOGIN = "true";
-    } // cfg.extraConfig;
+    }
+    // cfg.extraConfig
+    ;
     inherit (cfg) dataDir ocrLanguages;
     paperlessPkg = cfg.package;
   };
@@ -124,11 +126,14 @@ in
 
     systemd.tmpfiles.rules = [
       "d '${cfg.dataDir}' - ${cfg.user} ${cfg.user} - -"
-    ] ++ (optional cfg.consumptionDirIsPublic
-      "d '${cfg.consumptionDir}' 777 ${cfg.user} ${cfg.user} - -"
-      # If the consumption dir is not created here, it's automatically created by
-      # 'manage' with the default permissions.
-    );
+    ]
+    ++ (
+         optional cfg.consumptionDirIsPublic
+           "d '${cfg.consumptionDir}' 777 ${cfg.user} ${cfg.user} - -"
+         # If the consumption dir is not created here, it's automatically created by
+         # 'manage' with the default permissions.
+       )
+    ;
 
     systemd.services.paperless-consumer = {
       description = "Paperless document consumer";
@@ -169,17 +174,21 @@ in
     };
 
     users = optionalAttrs (cfg.user == defaultUser) {
-      users = [{
-        name = defaultUser;
-        group = defaultUser;
-        uid = config.ids.uids.paperless;
-        home = cfg.dataDir;
-      }];
+      users = [
+        {
+          name = defaultUser;
+          group = defaultUser;
+          uid = config.ids.uids.paperless;
+          home = cfg.dataDir;
+        }
+      ];
 
-      groups = [{
-        name = defaultUser;
-        gid = config.ids.gids.paperless;
-      }];
+      groups = [
+        {
+          name = defaultUser;
+          gid = config.ids.gids.paperless;
+        }
+      ];
     };
   };
 }

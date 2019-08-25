@@ -21,20 +21,24 @@ stdenv.mkDerivation rec {
   };
 
   outputs = [ "out" "dev" "man" ]
-    ++ optional withDoc "info"; # it's dev-doc only
+    ++ optional withDoc "info"
+    ; # it's dev-doc only
   outputBin = "dev"; # fftw-wisdom
 
   configureFlags =
-    [ "--enable-shared" "--disable-static"
+    [
+      "--enable-shared"
+      "--disable-static"
       "--enable-threads"
     ]
     ++ optional (precision != "double") "--enable-${precision}"
     # all x86_64 have sse2
     # however, not all float sizes fit
-    ++ optional (stdenv.isx86_64 && (precision == "single" || precision == "double") )  "--enable-sse2"
+    ++ optional (stdenv.isx86_64 && (precision == "single" || precision == "double")) "--enable-sse2"
     ++ optional (stdenv.cc.isGNU && !stdenv.hostPlatform.isMusl) "--enable-openmp"
     # doc generation causes Fortran wrapper generation which hard-codes gcc
-    ++ optional (!withDoc) "--disable-doc";
+    ++ optional (!withDoc) "--disable-doc"
+  ;
 
   enableParallelBuilding = true;
 

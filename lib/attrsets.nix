@@ -22,7 +22,8 @@ rec {
        => 6
   */
   attrByPath = attrPath: default: e:
-    let attr = head attrPath;
+    let
+      attr = head attrPath;
     in
       if attrPath == [] then e
       else if e ? ${attr}
@@ -40,7 +41,8 @@ rec {
 
   */
   hasAttrByPath = attrPath: e:
-    let attr = head attrPath;
+    let
+      attr = head attrPath;
     in
       if attrPath == [] then true
       else if e ? ${attr}
@@ -71,8 +73,10 @@ rec {
        => error: cannot find attribute `z.z'
   */
   getAttrFromPath = attrPath: set:
-    let errorMsg = "cannot find attribute `" + concatStringsSep "." attrPath + "'";
-    in attrByPath attrPath (abort errorMsg) set;
+    let
+      errorMsg = "cannot find attribute `" + concatStringsSep "." attrPath + "'";
+    in
+      attrByPath attrPath (abort errorMsg) set;
 
 
   /* Return the specified attributes from a set.
@@ -111,7 +115,7 @@ rec {
        => [1 2]
   */
   catAttrs = builtins.catAttrs or
-    (attr: l: concatLists (map (s: if s ? ${attr} then [s.${attr}] else []) l));
+    (attr: l: concatLists (map (s: if s ? ${attr} then [ s.${attr} ] else []) l));
 
 
   /* Filter an attribute set by removing all attributes for which the
@@ -122,7 +126,7 @@ rec {
        => { foo = 1; }
   */
   filterAttrs = pred: set:
-    listToAttrs (concatMap (name: let v = set.${name}; in if pred name v then [(nameValuePair name v)] else []) (attrNames set));
+    listToAttrs (concatMap (name: let v = set.${name}; in if pred name v then [ (nameValuePair name v) ] else []) (attrNames set));
 
 
   /* Filter an attribute set recursively by removing all attributes for
@@ -134,14 +138,19 @@ rec {
   */
   filterAttrsRecursive = pred: set:
     listToAttrs (
-      concatMap (name:
-        let v = set.${name}; in
-        if pred name v then [
-          (nameValuePair name (
-            if isAttrs v then filterAttrsRecursive pred v
-            else v
-          ))
-        ] else []
+      concatMap (
+        name:
+          let
+            v = set.${name};
+          in
+            if pred name v then [
+              (
+                nameValuePair name (
+                  if isAttrs v then filterAttrsRecursive pred v
+                  else v
+                )
+              )
+            ] else []
       ) (attrNames set)
     );
 
@@ -152,9 +161,11 @@ rec {
        => { a = [ 2 3 ]; }
   */
   foldAttrs = op: nul: list_of_attrs:
-    fold (n: a:
-        fold (name: o:
-          o // { ${name} = op n.${name} (a.${name} or nul); }
+    fold (
+      n: a:
+        fold (
+          name: o:
+            o // { ${name} = op n.${name} (a.${name} or nul); }
         ) a (attrNames n)
     ) {} list_of_attrs;
 
@@ -205,8 +216,10 @@ rec {
        => { x = "x-foo"; y = "y-bar"; }
   */
   mapAttrs = builtins.mapAttrs or
-    (f: set:
-      listToAttrs (map (attr: { name = attr; value = f attr set.${attr}; }) (attrNames set)));
+    (
+      f: set:
+        listToAttrs (map (attr: { name = attr; value = f attr set.${attr}; }) (attrNames set))
+    );
 
 
   /* Like `mapAttrs', but allows the name of each attribute to be
@@ -274,11 +287,13 @@ rec {
         let
           g =
             name: value:
-            if isAttrs value && cond value
-              then recurse (path ++ [name]) value
-              else f (path ++ [name]) value;
-        in mapAttrs g set;
-    in recurse [] set;
+              if isAttrs value && cond value
+              then recurse (path ++ [ name ]) value
+              else f (path ++ [ name ]) value;
+        in
+          mapAttrs g set;
+    in
+      recurse [] set;
 
 
   /* Generate an attribute set by mapping a function over a list of
@@ -309,14 +324,16 @@ rec {
     let
       path' = builtins.storePath path;
       res =
-        { type = "derivation";
+        {
+          type = "derivation";
           name = builtins.unsafeDiscardStringContext (builtins.substring 33 (-1) (baseNameOf path'));
           outPath = path';
           outputs = [ "out" ];
           out = res;
           outputName = "out";
         };
-    in res;
+    in
+      res;
 
 
   /* If `cond' is true, return the attribute set `as',
@@ -339,10 +356,14 @@ rec {
        => { a = ["x" "y"]; }
   */
   zipAttrsWithNames = names: f: sets:
-    listToAttrs (map (name: {
-      inherit name;
-      value = f name (catAttrs name sets);
-    }) names);
+    listToAttrs (
+      map (
+        name: {
+          inherit name;
+          value = f name (catAttrs name sets);
+        }
+      ) names
+    );
 
   /* Implementation note: Common names  appear multiple times in the list of
      names, hopefully this does not affect the system because the maximal
@@ -391,16 +412,21 @@ rec {
 
      */
   recursiveUpdateUntil = pred: lhs: rhs:
-    let f = attrPath:
-      zipAttrsWith (n: values:
-        let here = attrPath ++ [n]; in
-        if tail values == []
-        || pred here (head (tail values)) (head values) then
-          head values
-        else
-          f here values
-      );
-    in f [] [rhs lhs];
+    let
+      f = attrPath:
+        zipAttrsWith (
+          n: values:
+            let
+              here = attrPath ++ [ n ];
+            in
+              if tail values == []
+              || pred here (head (tail values)) (head values) then
+                head values
+              else
+                f here values
+        );
+    in
+      f [] [ rhs lhs ];
 
   /* A recursive variant of the update operator ‘//’.  The recursion
      stops when one of the attribute values is not an attribute set,
@@ -422,8 +448,9 @@ rec {
 
      */
   recursiveUpdate = lhs: rhs:
-    recursiveUpdateUntil (path: lhs: rhs:
-      !(isAttrs lhs && isAttrs rhs)
+    recursiveUpdateUntil (
+      path: lhs: rhs:
+        !(isAttrs lhs && isAttrs rhs)
     ) lhs rhs;
 
   /* Returns true if the pattern is contained in the set. False otherwise.
@@ -433,12 +460,19 @@ rec {
        => true
    */
   matchAttrs = pattern: attrs: assert isAttrs pattern;
-    fold and true (attrValues (zipAttrsWithNames (attrNames pattern) (n: values:
-      let pat = head values; val = head (tail values); in
-      if length values == 1 then false
-      else if isAttrs pat then isAttrs val && matchAttrs pat val
-      else pat == val
-    ) [pattern attrs]));
+    fold and true (
+      attrValues (
+        zipAttrsWithNames (attrNames pattern) (
+          n: values:
+            let
+              pat = head values; val = head (tail values);
+            in
+              if length values == 1 then false
+              else if isAttrs pat then isAttrs val && matchAttrs pat val
+              else pat == val
+        ) [ pattern attrs ]
+      )
+    );
 
   /* Override only the attributes that are already present in the old set
     useful for deep-overriding.
@@ -463,8 +497,8 @@ rec {
   */
   getOutput = output: pkg:
     if pkg.outputUnspecified or false
-      then pkg.${output} or pkg.out or pkg
-      else pkg;
+    then pkg.${output} or pkg.out or pkg
+    else pkg;
 
   getBin = getOutput "bin";
   getLib = getOutput "lib";

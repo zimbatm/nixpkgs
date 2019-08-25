@@ -1,8 +1,26 @@
-{ stdenv, fetchFromGitHub, pkgconfig, intltool, libtool, gnome3, gtk3,
-  xorg, libcanberra-gtk3, upower, xkeyboard_config, libxkbcommon,
-  libstartup_notification, libinput, libgudev, cogl, clutter, systemd,
-  gsettings-desktop-schemas, deepin-desktop-schemas, wrapGAppsHook,
-  deepin }:
+{ stdenv
+, fetchFromGitHub
+, pkgconfig
+, intltool
+, libtool
+, gnome3
+, gtk3
+, xorg
+, libcanberra-gtk3
+, upower
+, xkeyboard_config
+, libxkbcommon
+, libstartup_notification
+, libinput
+, libgudev
+, cogl
+, clutter
+, systemd
+, gsettings-desktop-schemas
+, deepin-desktop-schemas
+, wrapGAppsHook
+, deepin
+}:
 
 stdenv.mkDerivation rec {
   name = "${pname}-${version}";

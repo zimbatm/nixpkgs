@@ -17,10 +17,12 @@ buildPythonPackage rec {
 
   # fix broken libboost_python3 detection
   patches = [
-    (substituteAll {
-      src = ./setup.patch;
-      version = "3${stdenv.lib.versions.minor python.version}";
-    })
+    (
+      substituteAll {
+        src = ./setup.patch;
+        version = "3${stdenv.lib.versions.minor python.version}";
+      }
+    )
   ];
 
   meta = {

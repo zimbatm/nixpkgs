@@ -13,7 +13,8 @@ let
       < ${pkgs.writeText "config.json" (builtins.toJSON cfg.extraConfig)} \
       > $out
   '';
-in {
+in
+{
   ###### interface
   options = {
     services.telegraf = {
@@ -33,7 +34,7 @@ in {
         example = {
           outputs = {
             influxdb = {
-              urls = ["http://localhost:8086"];
+              urls = [ "http://localhost:8086" ];
               database = "telegraf";
             };
           };
@@ -56,17 +57,19 @@ in {
       wantedBy = [ "multi-user.target" ];
       after = [ "network-online.target" ];
       serviceConfig = {
-        ExecStart=''${cfg.package}/bin/telegraf -config "${configFile}"'';
-        ExecReload="${pkgs.coreutils}/bin/kill -HUP $MAINPID";
+        ExecStart = ''${cfg.package}/bin/telegraf -config "${configFile}"'';
+        ExecReload = "${pkgs.coreutils}/bin/kill -HUP $MAINPID";
         User = "telegraf";
         Restart = "on-failure";
       };
     };
 
-    users.users = [{
-      name = "telegraf";
-      uid = config.ids.uids.telegraf;
-      description = "telegraf daemon user";
-    }];
+    users.users = [
+      {
+        name = "telegraf";
+        uid = config.ids.uids.telegraf;
+        description = "telegraf daemon user";
+      }
+    ];
   };
 }

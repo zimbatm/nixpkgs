@@ -1,6 +1,19 @@
-{ stdenv, fetchurl, cmake, pkgconfig
-, SDL2, libvorbis, libogg, libjpeg, libpng, freetype, glew, tinyxml, openal
-, freealut, readline, gcc-unwrapped
+{ stdenv
+, fetchurl
+, cmake
+, pkgconfig
+, SDL2
+, libvorbis
+, libogg
+, libjpeg
+, libpng
+, freetype
+, glew
+, tinyxml
+, openal
+, freealut
+, readline
+, gcc-unwrapped
 , enableSoundtrack ? false # Enable the "Open Clonk Soundtrack - Explorers Journey" by David Oerther
 }:
 
@@ -9,7 +22,8 @@ let
     url = "http://www.openclonk.org/download/Music.ocg";
     sha256 = "1ckj0dlpp5zsnkbb5qxxfxpkiq76jj2fgj91fyf3ll7n0gbwcgw5";
   };
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   version = "8.1";
   name = "openclonk-${version}";
 
@@ -20,16 +34,27 @@ in stdenv.mkDerivation rec {
 
   postInstall = ''
     mv -v $out/games/openclonk $out/bin/
-  '' + stdenv.lib.optionalString enableSoundtrack ''
-    ln -sv ${soundtrack_src} $out/share/games/openclonk/Music.ocg
-  '';
+  ''
+  + stdenv.lib.optionalString enableSoundtrack ''
+      ln -sv ${soundtrack_src} $out/share/games/openclonk/Music.ocg
+    ''
+  ;
 
   enableParallelBuilding = true;
 
   nativeBuildInputs = [ cmake pkgconfig ];
 
   buildInputs = [
-    SDL2 libvorbis libogg libjpeg libpng freetype glew tinyxml openal freealut
+    SDL2
+    libvorbis
+    libogg
+    libjpeg
+    libpng
+    freetype
+    glew
+    tinyxml
+    openal
+    freealut
     readline
   ];
 

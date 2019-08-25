@@ -1,14 +1,35 @@
-{ stdenv, fetchurl, cmake, pkgconfig, attica, boost, gnutls, libechonest
-, liblastfm, lucenepp, phonon, phonon-backend-vlc, qca2, qjson, qt4
-, qtkeychain, quazip, sparsehash, taglib, websocketpp, makeWrapper
+{ stdenv
+, fetchurl
+, cmake
+, pkgconfig
+, attica
+, boost
+, gnutls
+, libechonest
+, liblastfm
+, lucenepp
+, phonon
+, phonon-backend-vlc
+, qca2
+, qjson
+, qt4
+, qtkeychain
+, quazip
+, sparsehash
+, taglib
+, websocketpp
+, makeWrapper
 
-, enableXMPP      ? true,  libjreen     ? null
-, enableKDE       ? false, kdelibs4     ? null
-, enableTelepathy ? false, telepathy-qt ? null
+, enableXMPP ? true
+, libjreen ? null
+, enableKDE ? false
+, kdelibs4 ? null
+, enableTelepathy ? false
+, telepathy-qt ? null
 }:
 
-assert enableXMPP      -> libjreen     != null;
-assert enableKDE       -> kdelibs4     != null;
+assert enableXMPP -> libjreen != null;
+assert enableKDE -> kdelibs4 != null;
 assert enableTelepathy -> telepathy-qt != null;
 
 stdenv.mkDerivation rec {
@@ -27,22 +48,39 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ pkgconfig ];
   buildInputs = [
-    cmake attica boost gnutls libechonest liblastfm lucenepp phonon
-    qca2 qjson qt4 qtkeychain quazip sparsehash taglib websocketpp
+    cmake
+    attica
+    boost
+    gnutls
+    libechonest
+    liblastfm
+    lucenepp
+    phonon
+    qca2
+    qjson
+    qt4
+    qtkeychain
+    quazip
+    sparsehash
+    taglib
+    websocketpp
     makeWrapper
-  ] ++ stdenv.lib.optional enableXMPP      libjreen
-    ++ stdenv.lib.optional enableKDE       kdelibs4
-    ++ stdenv.lib.optional enableTelepathy telepathy-qt;
+  ]
+  ++ stdenv.lib.optional enableXMPP libjreen
+  ++ stdenv.lib.optional enableKDE kdelibs4
+  ++ stdenv.lib.optional enableTelepathy telepathy-qt
+  ;
 
   postInstall = let
     pluginPath = stdenv.lib.concatStringsSep ":" [
       "${phonon-backend-vlc}/lib/kde4/plugins"
     ];
-  in ''
-    for i in "$out"/bin/*; do
-      wrapProgram "$i" --prefix QT_PLUGIN_PATH : "${pluginPath}"
-    done
-  '';
+  in
+    ''
+      for i in "$out"/bin/*; do
+        wrapProgram "$i" --prefix QT_PLUGIN_PATH : "${pluginPath}"
+      done
+    '';
 
   enableParallelBuilding = true;
 

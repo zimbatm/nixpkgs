@@ -24,7 +24,8 @@ buildPythonPackage rec {
   buildInputs = [ setuptools_scm ];
   propagatedBuildInputs = [
     importlib-metadata
-  ] ++ lib.optional isPy27 backports_os
+  ]
+  ++ lib.optional isPy27 backports_os
   ;
 
   LC_ALL = "en_US.UTF-8";

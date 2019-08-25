@@ -5,9 +5,9 @@ buildPythonPackage rec {
   version = "1.2.1";
 
   src = fetchFromGitHub {
-    owner  = "slackapi";
-    repo   = pname;
-    rev    = "${version}";
+    owner = "slackapi";
+    repo = pname;
+    rev = "${version}";
     sha256 = "073fwf6fm2sqdp5ms3vm1v3ljh0pldi69k048404rp6iy3cfwkp0";
   };
 
@@ -26,4 +26,3 @@ buildPythonPackage rec {
     maintainers = with maintainers; [ psyanticy ];
   };
 }
-

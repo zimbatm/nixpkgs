@@ -1,6 +1,18 @@
-{ stdenv, buildPythonPackage, fetchPypi, isPy3k, pythonOlder
-, attrs, click, cligj, click-plugins, six, munch, enum34
-, pytest, boto3, mock
+{ stdenv
+, buildPythonPackage
+, fetchPypi
+, isPy3k
+, pythonOlder
+, attrs
+, click
+, cligj
+, click-plugins
+, six
+, munch
+, enum34
+, pytest
+, boto3
+, mock
 , gdal_2 # can't bump to 3 yet, https://github.com/Toblerity/Fiona/issues/745
 }:
 
@@ -30,12 +42,16 @@ buildPythonPackage rec {
     click-plugins
     six
     munch
-  ] ++ stdenv.lib.optional (!isPy3k) enum34;
+  ]
+  ++ stdenv.lib.optional (!isPy3k) enum34
+  ;
 
   checkInputs = [
     pytest
     boto3
-  ] ++ stdenv.lib.optional (pythonOlder "3.4") mock;
+  ]
+  ++ stdenv.lib.optional (pythonOlder "3.4") mock
+  ;
 
   checkPhase = ''
     rm -r fiona # prevent importing local fiona

@@ -15,12 +15,12 @@ stdenv.mkDerivation rec {
 
   buildPhase = ''
     make -C util/intelmetool
-    '';
+  '';
 
   installPhase = ''
     mkdir -p $out/bin
     cp util/intelmetool/intelmetool $out/bin
-    '';
+  '';
 
   meta = with stdenv.lib; {
     description = "Dump interesting things about Management Engine";

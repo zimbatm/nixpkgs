@@ -14,7 +14,8 @@ let
     else throwSystem;
   libraries = stdenv.lib.makeLibraryPath [ stdenv.cc.cc ];
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "logmein-hamachi-${version}";
   version = "2.1.0.198";
 

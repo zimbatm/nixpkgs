@@ -1,6 +1,21 @@
-{ stdenv, fetchurl, cmake, ninja, llvm_5, llvm_8, curl, tzdata
-, python, libconfig, lit, gdb, unzip, darwin, bash
-, callPackage, makeWrapper, targetPackages
+{ stdenv
+, fetchurl
+, cmake
+, ninja
+, llvm_5
+, llvm_8
+, curl
+, tzdata
+, python
+, libconfig
+, lit
+, gdb
+, unzip
+, darwin
+, bash
+, callPackage
+, makeWrapper
+, targetPackages
 , bootstrapVersion ? false
 , version ? "1.16.0"
 , ldcSha256 ? "00kk6pijn1ay2kkrp6b5ismawxr10azwij89k1rkszavqq6rsva2"
@@ -34,74 +49,82 @@ stdenv.mkDerivation rec {
   hardeningDisable = [ "fortify" ];
 
   postUnpack = ''
-      patchShebangs .
+    patchShebangs .
   ''
 
   + stdenv.lib.optionalString (!bootstrapVersion) ''
       rm ldc-${version}-src/tests/d2/dmd-testsuite/fail_compilation/mixin_gc.d
       rm ldc-${version}-src/tests/d2/dmd-testsuite/runnable/xtest46_gc.d
       rm ldc-${version}-src/tests/d2/dmd-testsuite/runnable/testptrref_gc.d
-  ''
+    ''
 
   + stdenv.lib.optionalString (!bootstrapVersion && stdenv.hostPlatform.isDarwin) ''
       # https://github.com/NixOS/nixpkgs/issues/34817
       rm -r ldc-${version}-src/tests/plugins/addFuncEntryCall
-  ''
+    ''
 
   + stdenv.lib.optionalString (!bootstrapVersion) ''
       echo ${tzdata}/share/zoneinfo/ > ldc-${version}-src/TZDatabaseDirFile
 
       echo ${curl.out}/lib/libcurl${stdenv.hostPlatform.extensions.sharedLibrary} > ldc-${version}-src/LibcurlPathFile
-  '';
+    ''
+  ;
 
   postPatch = ''
-      # Setting SHELL=$SHELL when dmd testsuite is run doesn't work on Linux somehow
-      substituteInPlace tests/d2/dmd-testsuite/Makefile --replace "SHELL=/bin/bash" "SHELL=${bash}/bin/bash"
-    ''
+    # Setting SHELL=$SHELL when dmd testsuite is run doesn't work on Linux somehow
+    substituteInPlace tests/d2/dmd-testsuite/Makefile --replace "SHELL=/bin/bash" "SHELL=${bash}/bin/bash"
+  ''
 
   + stdenv.lib.optionalString (!bootstrapVersion && stdenv.hostPlatform.isLinux) ''
       substituteInPlace runtime/phobos/std/socket.d --replace "assert(ih.addrList[0] == 0x7F_00_00_01);" ""
-  ''
+    ''
 
   + stdenv.lib.optionalString (!bootstrapVersion && stdenv.hostPlatform.isDarwin) ''
       substituteInPlace runtime/phobos/std/socket.d --replace "foreach (name; names)" "names = []; foreach (name; names)"
-  ''
+    ''
 
   + stdenv.lib.optionalString (bootstrapVersion && stdenv.hostPlatform.isDarwin) ''
       # Was not able to compile on darwin due to "__inline_isnanl"
       # being undefined.
       # TODO Remove with version > 0.17.6
       substituteInPlace dmd2/root/port.c --replace __inline_isnanl __inline_isnan
-  '';
+    ''
+  ;
 
   nativeBuildInputs = [ cmake ninja makeWrapper unzip ]
 
-  ++ stdenv.lib.optional (!bootstrapVersion) [
-    bootstrapLdc python lit
-  ]
+    ++ stdenv.lib.optional (!bootstrapVersion) [
+         bootstrapLdc
+         python
+         lit
+       ]
 
-  ++ stdenv.lib.optional (!bootstrapVersion && stdenv.hostPlatform.isDarwin) [
-    # https://github.com/NixOS/nixpkgs/issues/57120
-    # https://github.com/NixOS/nixpkgs/pull/59197#issuecomment-481972515
-    llvm_5
-  ]
+    ++ stdenv.lib.optional (!bootstrapVersion && stdenv.hostPlatform.isDarwin) [
+         # https://github.com/NixOS/nixpkgs/issues/57120
+         # https://github.com/NixOS/nixpkgs/pull/59197#issuecomment-481972515
+         llvm_5
+       ]
 
-  ++ stdenv.lib.optional (!bootstrapVersion && !stdenv.hostPlatform.isDarwin) [
-    llvm_8
-  ]
+    ++ stdenv.lib.optional (!bootstrapVersion && !stdenv.hostPlatform.isDarwin) [
+         llvm_8
+       ]
 
-  ++ stdenv.lib.optional (!bootstrapVersion && !stdenv.hostPlatform.isDarwin) [
-    # https://github.com/NixOS/nixpkgs/pull/36378#issuecomment-385034818
-    gdb
-  ]
+    ++ stdenv.lib.optional (!bootstrapVersion && !stdenv.hostPlatform.isDarwin) [
+         # https://github.com/NixOS/nixpkgs/pull/36378#issuecomment-385034818
+         gdb
+       ]
 
-  ++ stdenv.lib.optional (bootstrapVersion) [
-    libconfig llvm_5
-  ]
+    ++ stdenv.lib.optional (bootstrapVersion) [
+         libconfig
+         llvm_5
+       ]
 
-  ++ stdenv.lib.optional stdenv.hostPlatform.isDarwin (with darwin.apple_sdk.frameworks; [
-    Foundation
-  ]);
+    ++ stdenv.lib.optional stdenv.hostPlatform.isDarwin (
+         with darwin.apple_sdk.frameworks; [
+           Foundation
+         ]
+       )
+    ;
 
 
   buildInputs = [ curl tzdata ];
@@ -176,7 +199,7 @@ stdenv.mkDerivation rec {
     wrapProgram $out/bin/ldc2 \
         --prefix PATH ":" "${targetPackages.stdenv.cc}/bin" \
         --set-default CC "${targetPackages.stdenv.cc}/bin/cc"
-   '';
+  '';
 
   meta = with stdenv.lib; {
     description = "The LLVM-based D compiler";
@@ -187,4 +210,3 @@ stdenv.mkDerivation rec {
     platforms = [ "x86_64-linux" "i686-linux" "x86_64-darwin" ];
   };
 }
-

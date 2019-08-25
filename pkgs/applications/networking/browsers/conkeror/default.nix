@@ -4,7 +4,7 @@ stdenv.mkDerivation rec {
   pkgname = "conkeror";
   version = "1.0.4";
   name = "${pkgname}-${version}";
- 
+
   src = fetchgit {
     url = git://repo.or.cz/conkeror.git;
     rev = "refs/tags/${version}";

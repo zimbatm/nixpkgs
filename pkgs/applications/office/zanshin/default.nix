@@ -1,10 +1,17 @@
-{
-  mkDerivation, lib,
-  fetchFromGitHub,
-  extra-cmake-modules,
-  qtbase, boost,
-  akonadi-calendar, akonadi-notes, akonadi-search, kidentitymanagement, kontactinterface, kldap,
-  krunner, kwallet
+{ mkDerivation
+, lib
+, fetchFromGitHub
+, extra-cmake-modules
+, qtbase
+, boost
+, akonadi-calendar
+, akonadi-notes
+, akonadi-search
+, kidentitymanagement
+, kontactinterface
+, kldap
+, krunner
+, kwallet
 }:
 
 mkDerivation rec {
@@ -24,9 +31,16 @@ mkDerivation rec {
   ];
 
   buildInputs = [
-    qtbase boost
-    akonadi-calendar akonadi-notes akonadi-search kidentitymanagement kontactinterface kldap
-    krunner kwallet
+    qtbase
+    boost
+    akonadi-calendar
+    akonadi-notes
+    akonadi-search
+    kidentitymanagement
+    kontactinterface
+    kldap
+    krunner
+    kwallet
   ];
 
   meta = with lib; {

@@ -1,19 +1,53 @@
-{ stdenv, lib, fetchFromGitHub, perl, makeWrapper, file, systemd, iw, rfkill
-, hdparm, ethtool, inetutils , kmod, pciutils, smartmontools
-, x86_energy_perf_policy, gawk, gnugrep, coreutils, utillinux
-, checkbashisms, shellcheck
-, enableRDW ? false, networkmanager
+{ stdenv
+, lib
+, fetchFromGitHub
+, perl
+, makeWrapper
+, file
+, systemd
+, iw
+, rfkill
+, hdparm
+, ethtool
+, inetutils
+, kmod
+, pciutils
+, smartmontools
+, x86_energy_perf_policy
+, gawk
+, gnugrep
+, coreutils
+, utillinux
+, checkbashisms
+, shellcheck
+, enableRDW ? false
+, networkmanager
 }:
 
 let
   paths = lib.makeBinPath
-          ([ iw rfkill hdparm ethtool inetutils systemd kmod pciutils smartmontools
-             x86_energy_perf_policy gawk gnugrep coreutils utillinux
-           ]
-           ++ lib.optional enableRDW networkmanager
-          );
+    (
+      [
+        iw
+        rfkill
+        hdparm
+        ethtool
+        inetutils
+        systemd
+        kmod
+        pciutils
+        smartmontools
+        x86_energy_perf_policy
+        gawk
+        gnugrep
+        coreutils
+        utillinux
+      ]
+      ++ lib.optional enableRDW networkmanager
+    );
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "tlp-${version}";
   version = "1.2.2";
 

@@ -1,10 +1,21 @@
-{ stdenv, fetchFromGitHub, ocaml, findlib, ocamlbuild, cppo, gen, sequence, qtest, ounit, result
-, qcheck }:
+{ stdenv
+, fetchFromGitHub
+, ocaml
+, findlib
+, ocamlbuild
+, cppo
+, gen
+, sequence
+, qtest
+, ounit
+, result
+, qcheck
+}:
 
 let
 
   mkpath = p:
-      "${p}/lib/ocaml/${ocaml.version}/site-lib";
+    "${p}/lib/ocaml/${ocaml.version}/site-lib";
 
   version = "1.4";
 
@@ -25,15 +36,15 @@ stdenv.mkDerivation {
   propagatedBuildInputs = [ result ];
 
   preConfigure = ''
-    # The following is done so that the '#use "topfind"' directive works in the ocaml top-level
-    export HOME="$(mktemp -d)"
-    export OCAML_TOPLEVEL_PATH="${mkpath findlib}"
-    cat <<EOF > $HOME/.ocamlinit
-let () =
-  try Topdirs.dir_directory (Sys.getenv "OCAML_TOPLEVEL_PATH")
-  with Not_found -> ()
-;;
-EOF
+        # The following is done so that the '#use "topfind"' directive works in the ocaml top-level
+        export HOME="$(mktemp -d)"
+        export OCAML_TOPLEVEL_PATH="${mkpath findlib}"
+        cat <<EOF > $HOME/.ocamlinit
+    let () =
+      try Topdirs.dir_directory (Sys.getenv "OCAML_TOPLEVEL_PATH")
+      with Not_found -> ()
+    ;;
+    EOF
   '';
 
   configureFlags = [

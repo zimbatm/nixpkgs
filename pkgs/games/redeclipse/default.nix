@@ -1,6 +1,15 @@
-{ stdenv, fetchFromGitHub, fetchurl, fetchpatch
-, curl, ed, pkgconfig, zlib, libX11
-, SDL2, SDL2_image, SDL2_mixer
+{ stdenv
+, fetchFromGitHub
+, fetchurl
+, fetchpatch
+, curl
+, ed
+, pkgconfig
+, zlib
+, libX11
+, SDL2
+, SDL2_image
+, SDL2_mixer
 }:
 
 stdenv.mkDerivation rec {
@@ -13,12 +22,17 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [
-    libX11 zlib
-    SDL2 SDL2_image SDL2_mixer
+    libX11
+    zlib
+    SDL2
+    SDL2_image
+    SDL2_mixer
   ];
 
   nativeBuildInputs = [
-    curl ed pkgconfig
+    curl
+    ed
+    pkgconfig
   ];
 
   makeFlags = [ "-C" "src/" "prefix=$(out)" ];
@@ -26,10 +40,12 @@ stdenv.mkDerivation rec {
   patches = [
     # "remove gamma name hack" - Can't find `____gammaf128_r_finite` otherwise
     # Is likely to be included in next release
-    (fetchpatch {
-       url = "https://github.com/red-eclipse/base/commit/b16b4963c1ad81bb9ef784bc4913a4c8ab5f1bb4.diff";
-       sha256 = "1bm07qrq60bbmbf5k9255qq115mcyfphfy2f7xl1yx40mb9ns65p";
-    })
+    (
+      fetchpatch {
+        url = "https://github.com/red-eclipse/base/commit/b16b4963c1ad81bb9ef784bc4913a4c8ab5f1bb4.diff";
+        sha256 = "1bm07qrq60bbmbf5k9255qq115mcyfphfy2f7xl1yx40mb9ns65p";
+      }
+    )
   ];
 
   enableParallelBuilding = true;
@@ -37,7 +53,7 @@ stdenv.mkDerivation rec {
   installTargets = [ "system-install" ];
 
   postInstall = ''
-      cp -R -t $out/share/redeclipse/data/ data/*
+    cp -R -t $out/share/redeclipse/data/ data/*
   '';
 
   meta = with stdenv.lib; {

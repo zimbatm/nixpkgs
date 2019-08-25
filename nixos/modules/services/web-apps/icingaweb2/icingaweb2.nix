@@ -8,7 +8,8 @@
       module_path = "${pkgs.icingaweb2}/modules";
     };
   };
-in {
+in
+{
   meta.maintainers = with maintainers; [ das_j ];
 
   options.services.icingaweb2 = with types; {
@@ -18,8 +19,8 @@ in {
       type = str;
       default = poolName;
       description = ''
-         Name of existing PHP-FPM pool that is used to run Icingaweb2.
-         If not specified, a pool will automatically created with default values.
+        Name of existing PHP-FPM pool that is used to run Icingaweb2.
+        If not specified, a pool will automatically created with default values.
       '';
     };
 
@@ -217,7 +218,8 @@ in {
     # /etc/icingaweb2
     environment.etc = let
       doModule = name: optionalAttrs (cfg.modules."${name}".enable) { "icingaweb2/enabledModules/${name}".source = "${pkgs.icingaweb2}/modules/${name}"; };
-    in {}
+    in
+      {}
       # Module packages
       // (mapAttrs' (k: v: nameValuePair "icingaweb2/enabledModules/${k}" { source = v; }) cfg.modulePackages)
       # Built-in modules

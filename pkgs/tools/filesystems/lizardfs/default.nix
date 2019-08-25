@@ -27,7 +27,8 @@ let
     url = "https://github.com/gabime/spdlog/archive/v0.14.0.zip";
     sha256 = "13730429gwlabi432ilpnja3sfvy0nn2719vnhhmii34xcdyc57q";
   };
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "lizardfs-${version}";
   version = "3.12.0";
 
@@ -41,8 +42,18 @@ in stdenv.mkDerivation rec {
   nativeBuildInputs = [ cmake pkgconfig makeWrapper ];
 
   buildInputs =
-    [ db fuse asciidoc libxml2 libxslt docbook_xml_dtd_412 docbook_xsl
-      zlib boost judy pam
+    [
+      db
+      fuse
+      asciidoc
+      libxml2
+      libxslt
+      docbook_xml_dtd_412
+      docbook_xsl
+      zlib
+      boost
+      judy
+      pam
     ];
 
   patches = [

@@ -2,7 +2,8 @@
 
 let
   version = "1.44.55";
-in mkDerivation rec {
+in
+mkDerivation rec {
   name = "mytetra-${version}";
   src = fetchurl {
     url = "https://github.com/xintrea/mytetra_dev/archive/v.${version}.tar.gz";

@@ -1,4 +1,10 @@
-{ stdenv, fetchurl, intltool, pkgconfig, iconnamingutils, imagemagick, librsvg
+{ stdenv
+, fetchurl
+, intltool
+, pkgconfig
+, iconnamingutils
+, imagemagick
+, librsvg
 , gtk/*any version*/
 }:
 

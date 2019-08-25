@@ -1,9 +1,47 @@
-{ stdenv, fetchurl, libsoup, graphicsmagick, json-glib, wrapGAppsHook
-, cairo, cmake, ninja, curl, perl, llvm, desktop-file-utils, exiv2, glib
-, ilmbase, gtk3, intltool, lcms2, lensfun, libX11, libexif, libgphoto2, libjpeg
-, libpng, librsvg, libtiff, openexr, osm-gps-map, pkgconfig, sqlite, libxslt
-, openjpeg, lua, pugixml, colord, colord-gtk, libwebp, libsecret, gnome3
-, ocl-icd, pcre, gtk-mac-integration, isocodes
+{ stdenv
+, fetchurl
+, libsoup
+, graphicsmagick
+, json-glib
+, wrapGAppsHook
+, cairo
+, cmake
+, ninja
+, curl
+, perl
+, llvm
+, desktop-file-utils
+, exiv2
+, glib
+, ilmbase
+, gtk3
+, intltool
+, lcms2
+, lensfun
+, libX11
+, libexif
+, libgphoto2
+, libjpeg
+, libpng
+, librsvg
+, libtiff
+, openexr
+, osm-gps-map
+, pkgconfig
+, sqlite
+, libxslt
+, openjpeg
+, lua
+, pugixml
+, colord
+, colord-gtk
+, libwebp
+, libsecret
+, gnome3
+, ocl-icd
+, pcre
+, gtk-mac-integration
+, isocodes
 }:
 
 stdenv.mkDerivation rec {
@@ -18,20 +56,53 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ cmake ninja llvm pkgconfig intltool perl desktop-file-utils wrapGAppsHook ];
 
   buildInputs = [
-    cairo curl exiv2 glib gtk3 ilmbase lcms2 lensfun libexif
-    libgphoto2 libjpeg libpng librsvg libtiff openexr sqlite libxslt
-    libsoup graphicsmagick json-glib openjpeg lua pugixml
-    libwebp libsecret gnome3.adwaita-icon-theme osm-gps-map pcre isocodes
-  ] ++ stdenv.lib.optionals stdenv.isLinux [
-    colord colord-gtk libX11 ocl-icd
-  ] ++ stdenv.lib.optional stdenv.isDarwin gtk-mac-integration;
+    cairo
+    curl
+    exiv2
+    glib
+    gtk3
+    ilmbase
+    lcms2
+    lensfun
+    libexif
+    libgphoto2
+    libjpeg
+    libpng
+    librsvg
+    libtiff
+    openexr
+    sqlite
+    libxslt
+    libsoup
+    graphicsmagick
+    json-glib
+    openjpeg
+    lua
+    pugixml
+    libwebp
+    libsecret
+    gnome3.adwaita-icon-theme
+    osm-gps-map
+    pcre
+    isocodes
+  ]
+  ++ stdenv.lib.optionals stdenv.isLinux [
+       colord
+       colord-gtk
+       libX11
+       ocl-icd
+     ]
+  ++ stdenv.lib.optional stdenv.isDarwin gtk-mac-integration
+  ;
 
   cmakeFlags = [
     "-DBUILD_USERMANUAL=False"
-  ] ++ stdenv.lib.optionals stdenv.isDarwin [
-    "-DUSE_COLORD=OFF"
-    "-DUSE_KWALLET=OFF"
-  ];
+  ]
+  ++ stdenv.lib.optionals stdenv.isDarwin [
+       "-DUSE_COLORD=OFF"
+       "-DUSE_KWALLET=OFF"
+     ]
+  ;
 
 
   # darktable changed its rpath handling in commit
@@ -41,11 +112,12 @@ stdenv.mkDerivation rec {
   preFixup = let
     libPathEnvVar = if stdenv.isDarwin then "DYLD_LIBRARY_PATH" else "LD_LIBRARY_PATH";
     libPathPrefix = "$out/lib/darktable" + stdenv.lib.optionalString stdenv.isLinux ":${ocl-icd}/lib";
-  in ''
-    gappsWrapperArgs+=(
-      --prefix ${libPathEnvVar} ":" "${libPathPrefix}"
-    )
-  '';
+  in
+    ''
+      gappsWrapperArgs+=(
+        --prefix ${libPathEnvVar} ":" "${libPathPrefix}"
+      )
+    '';
 
   meta = with stdenv.lib; {
     description = "Virtual lighttable and darkroom for photographers";

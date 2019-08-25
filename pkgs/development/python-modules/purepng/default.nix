@@ -19,11 +19,13 @@ buildPythonPackage rec {
   };
 
   patches = [
-    (fetchpatch {
-      name = "fix-py37-stopiteration-in-generators.patch";
-      url = "https://github.com/Scondo/purepng/pull/28/commits/62d71dfc2be9ffdc4b3e5f642af0281a8ce8f946.patch";
-      sha256 = "1ag0pji3p012hmj8kadcd0vydv9702188c0isizsi964qcl4va6m";
-    })
+    (
+      fetchpatch {
+        name = "fix-py37-stopiteration-in-generators.patch";
+        url = "https://github.com/Scondo/purepng/pull/28/commits/62d71dfc2be9ffdc4b3e5f642af0281a8ce8f946.patch";
+        sha256 = "1ag0pji3p012hmj8kadcd0vydv9702188c0isizsi964qcl4va6m";
+      }
+    )
   ];
   patchFlags = "-p1 -d code";
 
@@ -40,8 +42,8 @@ buildPythonPackage rec {
 
   meta = with stdenv.lib; {
     description = "Pure Python library for PNG image encoding/decoding";
-    homepage    = https://github.com/scondo/purepng;
-    license     = licenses.mit;
+    homepage = https://github.com/scondo/purepng;
+    license = licenses.mit;
     maintainers = with maintainers; [ ris ];
   };
 

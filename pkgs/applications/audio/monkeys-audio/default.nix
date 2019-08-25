@@ -1,4 +1,4 @@
-{stdenv, fetchurl}:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   version = "3.99-u4-b5";
@@ -14,6 +14,6 @@ stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     platforms = platforms.linux;
-    maintainers = [ ];
+    maintainers = [];
   };
 }

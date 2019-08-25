@@ -33,10 +33,12 @@ buildPythonPackage rec {
     sqlalchemy
     pycrypto
     cryptography
-  ] ++ lib.optionals (isPy27) [
-    funcsigs
-    pycryptopp
-  ];
+  ]
+  ++ lib.optionals (isPy27) [
+       funcsigs
+       pycryptopp
+     ]
+  ;
 
   checkInputs = [
     nose
@@ -53,10 +55,12 @@ buildPythonPackage rec {
   postPatch = lib.optionalString isPy3k ''
     substituteInPlace setup.py \
       --replace "python-memcached" "python3-memcached"
-    '' + ''
+  ''
+  + ''
 
     rm tests/test_memcached.py
-  '';
+  ''
+  ;
 
   # Disable external tests because they need to connect to a live database.
   # Also disable a test in test_cache.py called "test_upgrade" because

@@ -27,8 +27,13 @@ rustPlatform.buildRustPackage rec {
   };
 
   buildInputs = [
-    pkgconfig cmake perl
-    systemd.lib systemd.dev openssl openssl.dev
+    pkgconfig
+    cmake
+    perl
+    systemd.lib
+    systemd.dev
+    openssl
+    openssl.dev
   ];
 
   cargoBuildFlags = [ "--features final" ];

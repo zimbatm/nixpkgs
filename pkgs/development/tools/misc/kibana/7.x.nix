@@ -18,15 +18,16 @@ let
   shas =
     if enableUnfree
     then {
-      "x86_64-linux"  = "1mzycd0ljnkslz9p9jhq279bkpk35r7svhngxjnmsh11ampsvxb8";
+      "x86_64-linux" = "1mzycd0ljnkslz9p9jhq279bkpk35r7svhngxjnmsh11ampsvxb8";
       "x86_64-darwin" = "1bz409njdpmsagh5dg062114wpa96w7pmxwfjsizwksqyyjdwdv7";
     }
     else {
-      "x86_64-linux"  = "1x3gjc9xa03m4jfnl5vjxigzcnb8ysnhxgd8618v85x4l0010v38";
+      "x86_64-linux" = "1x3gjc9xa03m4jfnl5vjxigzcnb8ysnhxgd8618v85x4l0010v38";
       "x86_64-darwin" = "1nsbmrswv2jv2z7686i2sf6rrmxysbqi5ih6jjrbrqnk64xi18j2";
     };
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "kibana-${optionalString (!enableUnfree) "oss-"}${version}";
   version = elk7Version;
 

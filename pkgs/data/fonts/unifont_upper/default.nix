@@ -2,7 +2,8 @@
 
 let
   version = "12.1.03";
-in fetchzip rec {
+in
+fetchzip rec {
   name = "unifont_upper-${version}";
 
   url = "mirror://gnu/unifont/unifont-${version}/${name}.ttf";

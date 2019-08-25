@@ -34,7 +34,9 @@ buildPythonPackage rec {
     nose
     pytz
     responses
-  ] ++ lib.optionals isPy27 [ mock ];
+  ]
+  ++ lib.optionals isPy27 [ mock ]
+  ;
 
   postPatch = ''
     substituteInPlace setup.py \

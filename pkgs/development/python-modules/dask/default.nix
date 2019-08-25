@@ -26,7 +26,15 @@ buildPythonPackage rec {
 
   checkInputs = [ pytest ];
   propagatedBuildInputs = [
-    bokeh cloudpickle dill fsspec numpy pandas partd toolz ];
+    bokeh
+    cloudpickle
+    dill
+    fsspec
+    numpy
+    pandas
+    partd
+    toolz
+  ];
 
   checkPhase = ''
     py.test dask

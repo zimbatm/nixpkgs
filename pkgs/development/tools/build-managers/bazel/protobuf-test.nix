@@ -1,5 +1,4 @@
-{
-  bazel
+{ bazel
 , bazelTest
 , fetchFromGitHub
 , fetchurl
@@ -119,19 +118,23 @@ let
     exec "$BAZEL_REAL" "$@"
   '';
 
-  workspaceDir = runLocal "our_workspace" {} (''
-    mkdir $out
-    cp ${WORKSPACE} $out/WORKSPACE
-    touch $out/BUILD.bazel
-    cp ${protoSupport} $out/proto-support.bzl
-    mkdir $out/person
-    cp ${personProto} $out/person/person.proto
-    cp ${personBUILD} $out/person/BUILD.bazel
-  ''
-  + (lib.optionalString gccStdenv.isDarwin ''
-    mkdir $out/tools
-    cp ${toolsBazel} $out/tools/bazel
-  ''));
+  workspaceDir = runLocal "our_workspace" {} (
+    ''
+      mkdir $out
+      cp ${WORKSPACE} $out/WORKSPACE
+      touch $out/BUILD.bazel
+      cp ${protoSupport} $out/proto-support.bzl
+      mkdir $out/person
+      cp ${personProto} $out/person/person.proto
+      cp ${personBUILD} $out/person/BUILD.bazel
+    ''
+    + (
+        lib.optionalString gccStdenv.isDarwin ''
+          mkdir $out/tools
+          cp ${toolsBazel} $out/tools/bazel
+        ''
+      )
+  );
 
   testBazel = bazelTest {
     name = "bazel-test-protocol-buffers";
@@ -149,4 +152,5 @@ let
     '';
   };
 
-in testBazel
+in
+testBazel

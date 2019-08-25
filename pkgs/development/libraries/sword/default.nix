@@ -18,10 +18,12 @@ stdenv.mkDerivation rec {
   '';
 
   patches = [
-    (fetchurl {
-      url = "https://gitweb.gentoo.org/repo/gentoo.git/plain/app-text/sword/files/sword-1.7.4-gcc6.patch";
-      sha256 = "0cvnya5swc7dxabir6bz6la2h1qxd32g3xi06m9b5l5ahb6g10y7";
-    })
+    (
+      fetchurl {
+        url = "https://gitweb.gentoo.org/repo/gentoo.git/plain/app-text/sword/files/sword-1.7.4-gcc6.patch";
+        sha256 = "0cvnya5swc7dxabir6bz6la2h1qxd32g3xi06m9b5l5ahb6g10y7";
+      }
+    )
   ];
 
   configureFlags = [ "--without-conf" "--enable-tests=no" ];

@@ -1,31 +1,55 @@
-{ stdenv, ensureNewerSourcesHook, cmake, pkgconfig
-, which, git
-, boost, python2Packages
-, libxml2, zlib
-, openldap, lttng-ust
-, babeltrace, gperf
-, cunit, snappy
-, rocksdb, makeWrapper
+{ stdenv
+, ensureNewerSourcesHook
+, cmake
+, pkgconfig
+, which
+, git
+, boost
+, python2Packages
+, libxml2
+, zlib
+, openldap
+, lttng-ust
+, babeltrace
+, gperf
+, cunit
+, snappy
+, rocksdb
+, makeWrapper
 
-# Optional Dependencies
-, yasm ? null, fcgi ? null, expat ? null
-, curl ? null, fuse ? null
-, libedit ? null, libatomic_ops ? null, kinetic-cpp-client ? null
+  # Optional Dependencies
+, yasm ? null
+, fcgi ? null
+, expat ? null
+, curl ? null
+, fuse ? null
+, libedit ? null
+, libatomic_ops ? null
+, kinetic-cpp-client ? null
 , libs3 ? null
 
-# Mallocs
-, jemalloc ? null, gperftools ? null
+  # Mallocs
+, jemalloc ? null
+, gperftools ? null
 
-# Crypto Dependencies
+  # Crypto Dependencies
 , cryptopp ? null
-, nss ? null, nspr ? null
+, nss ? null
+, nspr ? null
 
-# Linux Only Dependencies
-, linuxHeaders, libuuid, udev, keyutils, libaio ? null, libxfs ? null
+  # Linux Only Dependencies
+, linuxHeaders
+, libuuid
+, udev
+, keyutils
+, libaio ? null
+, libxfs ? null
 , zfs ? null
 
-# Version specific arguments
-, version, src ? [], buildInputs ? []
+  # Version specific arguments
+, version
+, src ? []
+, buildInputs ? []
 , ...
 }:
 
@@ -36,9 +60,11 @@ with stdenv;
 with stdenv.lib;
 let
 
-  shouldUsePkg = pkg_: let pkg = (builtins.tryEval pkg_).value;
-    in if lib.any (lib.meta.platformMatch stdenv.hostPlatform) pkg.meta.platforms
-      then pkg else null;
+  shouldUsePkg = pkg_: let
+    pkg = (builtins.tryEval pkg_).value;
+  in
+    if lib.any (lib.meta.platformMatch stdenv.hostPlatform) pkg.meta.platforms
+    then pkg else null;
 
   optYasm = shouldUsePkg yasm;
   optFcgi = shouldUsePkg fcgi;
@@ -77,65 +103,100 @@ let
   cryptoLibsMap = {
     nss = [ optNss optNspr ];
     cryptopp = [ optCryptopp ];
-    none = [ ];
+    none = [];
   };
 
-  ceph-python-env = python2Packages.python.withPackages (ps: [
-    ps.sphinx
-    ps.flask
-    ps.cython
-    ps.setuptools
-    ps.pip
-    # Libraries needed by the python tools
-    ps.Mako
-    ps.pecan
-    ps.prettytable
-    ps.webob
-    ps.cherrypy
-  ]);
+  ceph-python-env = python2Packages.python.withPackages (
+    ps: [
+      ps.sphinx
+      ps.flask
+      ps.cython
+      ps.setuptools
+      ps.pip
+      # Libraries needed by the python tools
+      ps.Mako
+      ps.pecan
+      ps.prettytable
+      ps.webob
+      ps.cherrypy
+    ]
+  );
 
 in
 stdenv.mkDerivation {
-  name="ceph-${version}";
+  name = "ceph-${version}";
 
   inherit src;
 
   patches = [
- #   ./ceph-patch-cmake-path.patch
+    #   ./ceph-patch-cmake-path.patch
     ./0001-kv-RocksDBStore-API-break-additional.patch
-  ] ++ optionals stdenv.isLinux [
-    ./0002-fix-absolute-include-path.patch
-  ];
+  ]
+  ++ optionals stdenv.isLinux [
+       ./0002-fix-absolute-include-path.patch
+     ]
+  ;
 
   nativeBuildInputs = [
     cmake
-    pkgconfig which git python2Packages.wrapPython makeWrapper
+    pkgconfig
+    which
+    git
+    python2Packages.wrapPython
+    makeWrapper
     (ensureNewerSourcesHook { year = "1980"; })
   ];
 
-  buildInputs = buildInputs ++ cryptoLibsMap.${cryptoStr} ++ [
-    boost ceph-python-env libxml2 optYasm optLibatomic_ops optLibs3
-    malloc zlib openldap lttng-ust babeltrace gperf cunit
-    snappy rocksdb
-  ] ++ optionals stdenv.isLinux [
-    linuxHeaders libuuid udev keyutils optLibaio optLibxfs optZfs
-  ] ++ optionals hasRadosgw [
-    optFcgi optExpat optCurl optFuse optLibedit
-  ] ++ optionals hasKinetic [
-    optKinetic-cpp-client
-  ];
+  buildInputs = buildInputs ++ cryptoLibsMap.${cryptoStr}
+    ++ [
+         boost
+         ceph-python-env
+         libxml2
+         optYasm
+         optLibatomic_ops
+         optLibs3
+         malloc
+         zlib
+         openldap
+         lttng-ust
+         babeltrace
+         gperf
+         cunit
+         snappy
+         rocksdb
+       ]
+    ++ optionals stdenv.isLinux [
+         linuxHeaders
+         libuuid
+         udev
+         keyutils
+         optLibaio
+         optLibxfs
+         optZfs
+       ]
+    ++ optionals hasRadosgw [
+         optFcgi
+         optExpat
+         optCurl
+         optFuse
+         optLibedit
+       ]
+    ++ optionals hasKinetic [
+         optKinetic-cpp-client
+       ]
+    ;
 
 
-  preConfigure =''
-    # rip off submodule that interfer with system libs
-	rm -rf src/boost
-	rm -rf src/rocksdb
+  preConfigure = ''
+        # rip off submodule that interfer with system libs
+    	rm -rf src/boost
+    	rm -rf src/rocksdb
 
-	# require LD_LIBRARY_PATH for cython to find internal dep
-	export LD_LIBRARY_PATH="$PWD/build/lib:$LD_LIBRARY_PATH"
+    	# require LD_LIBRARY_PATH for cython to find internal dep
+    	export LD_LIBRARY_PATH="$PWD/build/lib:$LD_LIBRARY_PATH"
 
-	# requires setuptools due to embedded in-cmake setup.py usage
-	export PYTHONPATH="${python2Packages.setuptools}/lib/python2.7/site-packages/:$PYTHONPATH"
+    	# requires setuptools due to embedded in-cmake setup.py usage
+    	export PYTHONPATH="${python2Packages.setuptools}/lib/python2.7/site-packages/:$PYTHONPATH"
   '';
 
   cmakeFlags = [

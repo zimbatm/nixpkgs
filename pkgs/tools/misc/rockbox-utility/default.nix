@@ -1,10 +1,20 @@
-{ stdenv, fetchurl, pkgconfig, libusb1
-, qtbase, qttools, makeWrapper, qmake
-, withEspeak ? false, espeak ? null }:
+{ stdenv
+, fetchurl
+, pkgconfig
+, libusb1
+, qtbase
+, qttools
+, makeWrapper
+, qmake
+, withEspeak ? false
+, espeak ? null
+}:
 
-let inherit (stdenv.lib) getDev; in
+let
+  inherit (stdenv.lib) getDev;
+in
 
-stdenv.mkDerivation  rec {
+stdenv.mkDerivation rec {
   name = "rockbox-utility-${version}";
   version = "1.4.0";
 
@@ -14,7 +24,8 @@ stdenv.mkDerivation  rec {
   };
 
   buildInputs = [ libusb1 qtbase qttools ]
-    ++ stdenv.lib.optional withEspeak espeak;
+    ++ stdenv.lib.optional withEspeak espeak
+    ;
   nativeBuildInputs = [ makeWrapper pkgconfig qmake ];
 
   postPatch = ''
@@ -33,8 +44,8 @@ stdenv.mkDerivation  rec {
     ln -s $out/bin/rockboxutility $out/bin/RockboxUtility
     wrapProgram $out/bin/rockboxutility \
     ${stdenv.lib.optionalString withEspeak ''
-      --prefix PATH : ${espeak}/bin
-    ''}
+    --prefix PATH : ${espeak}/bin
+  ''}
 
     runHook postInstall
   '';

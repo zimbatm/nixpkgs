@@ -23,8 +23,14 @@ buildPythonPackage rec {
   };
 
   propagatedBuildInputs = [
-    pyasn1 pyasn1-modules idna attrs cryptography
-  ] ++ lib.optionals (pythonOlder "3.3") [ ipaddress ];
+    pyasn1
+    pyasn1-modules
+    idna
+    attrs
+    cryptography
+  ]
+  ++ lib.optionals (pythonOlder "3.3") [ ipaddress ]
+  ;
 
   checkInputs = [ pytest ];
   checkPhase = "py.test";

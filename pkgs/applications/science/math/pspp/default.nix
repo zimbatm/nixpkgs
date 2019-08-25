@@ -1,6 +1,19 @@
-{ stdenv, fetchurl, libxml2, readline, zlib, perl, cairo, gtk3, gsl
-, pkgconfig, gtksourceview, pango, gettext
-, makeWrapper, gsettings-desktop-schemas, hicolor-icon-theme
+{ stdenv
+, fetchurl
+, libxml2
+, readline
+, zlib
+, perl
+, cairo
+, gtk3
+, gsl
+, pkgconfig
+, gtksourceview
+, pango
+, gettext
+, makeWrapper
+, gsettings-desktop-schemas
+, hicolor-icon-theme
 , gnome3
 }:
 
@@ -13,9 +26,21 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ pkgconfig ];
-  buildInputs = [ libxml2 readline zlib perl cairo gtk3 gsl
-    gtksourceview pango gettext
-    makeWrapper gsettings-desktop-schemas hicolor-icon-theme ];
+  buildInputs = [
+    libxml2
+    readline
+    zlib
+    perl
+    cairo
+    gtk3
+    gsl
+    gtksourceview
+    pango
+    gettext
+    makeWrapper
+    gsettings-desktop-schemas
+    hicolor-icon-theme
+  ];
 
   doCheck = false;
 

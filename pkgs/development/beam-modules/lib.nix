@@ -8,7 +8,8 @@ rec {
     let
       f = if pkgs.lib.isFunction fn then fn else import fn;
       auto = builtins.intersectAttrs (stdenv.lib.functionArgs f) autoArgs;
-    in f (auto // args);
+    in
+      f (auto // args);
 
   callPackage = callPackageWith pkgs;
 

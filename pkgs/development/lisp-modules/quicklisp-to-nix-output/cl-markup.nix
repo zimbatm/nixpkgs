@@ -5,7 +5,7 @@ rec {
 
   description = '''';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/cl-markup/2013-10-03/cl-markup-20131003-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "cl-markup";
 
-  asdFilesToKeep = ["cl-markup.asd"];
+  asdFilesToKeep = [ "cl-markup.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM cl-markup DESCRIPTION NIL SHA256

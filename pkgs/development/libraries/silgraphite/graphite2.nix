@@ -6,7 +6,8 @@ stdenv.mkDerivation rec {
 
   src = fetchurl {
     url = "https://github.com/silnrsi/graphite/releases/download/"
-      + "${version}/graphite-${version}.tgz";
+      + "${version}/graphite-${version}.tgz"
+      ;
     sha256 = "0xdg6bc02bl8yz39l5i2skczfg17q4lif0qqan0dhvk0mibpcpj7";
   };
 

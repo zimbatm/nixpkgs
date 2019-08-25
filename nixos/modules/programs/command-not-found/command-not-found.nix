@@ -16,8 +16,10 @@ let
     isExecutable = true;
     inherit (pkgs) perl;
     inherit (cfg) dbPath;
-    perlFlags = concatStrings (map (path: "-I ${path}/${pkgs.perl.libPrefix} ")
-      [ pkgs.perlPackages.DBI pkgs.perlPackages.DBDSQLite pkgs.perlPackages.StringShellQuote ]);
+    perlFlags = concatStrings (
+      map (path: "-I ${path}/${pkgs.perl.libPrefix} ")
+        [ pkgs.perlPackages.DBI pkgs.perlPackages.DBDSQLite pkgs.perlPackages.StringShellQuote ]
+    );
   };
 
 in
@@ -35,7 +37,7 @@ in
     };
 
     dbPath = mkOption {
-      default = "/nix/var/nix/profiles/per-user/root/channels/nixos/programs.sqlite" ;
+      default = "/nix/var/nix/profiles/per-user/root/channels/nixos/programs.sqlite";
       description = ''
         Absolute path to programs.sqlite.
 

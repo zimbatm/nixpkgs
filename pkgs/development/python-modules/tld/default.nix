@@ -1,7 +1,7 @@
 { stdenv, fetchPypi, python }:
 
 python.pkgs.buildPythonPackage rec {
-  pname   = "tld";
+  pname = "tld";
   version = "0.9.3";
 
   src = fetchPypi {
@@ -13,15 +13,17 @@ python.pkgs.buildPythonPackage rec {
   checkInputs = with python.pkgs; [ factory_boy faker pytest pytestcov tox ];
 
   # https://github.com/barseghyanartur/tld/issues/54
-  disabledTests = stdenv.lib.concatMapStringsSep " and " (s: "not " + s) ([
-    "test_1_update_tld_names"
-    "test_1_update_tld_names_command"
-    "test_2_update_tld_names_module"
-  ]);
+  disabledTests = stdenv.lib.concatMapStringsSep " and " (s: "not " + s) (
+    [
+      "test_1_update_tld_names"
+      "test_1_update_tld_names_command"
+      "test_2_update_tld_names_module"
+    ]
+  );
 
   checkPhase = ''
-      export PATH="$PATH:$out/bin"
-      py.test -k '${disabledTests}'
+    export PATH="$PATH:$out/bin"
+    py.test -k '${disabledTests}'
   '';
 
   meta = with stdenv.lib; {

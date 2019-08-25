@@ -34,23 +34,33 @@ rec {
          "https://github.com/bos/aeson#readme"
 
    */
-  overrideCabal = drv: f: (drv.override (args: args // {
-    mkDerivation = drv: (args.mkDerivation drv).override f;
-  })) // {
-    overrideScope = scope: overrideCabal (drv.overrideScope scope) f;
-  };
+  overrideCabal = drv: f: (
+    drv.override (
+      args: args
+      // {
+           mkDerivation = drv: (args.mkDerivation drv).override f;
+         }
+    )
+  )
+    // {
+         overrideScope = scope: overrideCabal (drv.overrideScope scope) f;
+       };
 
   # : Map Name (Either Path VersionNumber) -> HaskellPackageOverrideSet
   # Given a set whose values are either paths or version strings, produces
   # a package override set (i.e. (self: super: { etc. })) that sets
   # the packages named in the input set to the corresponding versions
   packageSourceOverrides =
-    overrides: self: super: pkgs.lib.mapAttrs (name: src:
-      let isPath = x: builtins.substring 0 1 (toString x) == "/";
+    overrides: self: super: pkgs.lib.mapAttrs (
+      name: src:
+        let
+          isPath = x: builtins.substring 0 1 (toString x) == "/";
           generateExprs = if isPath src
-                             then self.callCabal2nix
-                             else self.callHackage;
-      in generateExprs name src {}) overrides;
+          then self.callCabal2nix
+          else self.callHackage;
+        in
+          generateExprs name src {}
+    ) overrides;
 
   /* doCoverage modifies a haskell package to enable the generation
      and installation of a coverage report.
@@ -115,7 +125,7 @@ rec {
   /* doDistribute enables the distribution of binaries for the package
      via hydra.
    */
-  doDistribute = drv: overrideCabal drv (drv: { hydraPlatforms = drv.platforms or ["i686-linux" "x86_64-linux" "x86_64-darwin"]; });
+  doDistribute = drv: overrideCabal drv (drv: { hydraPlatforms = drv.platforms or [ "i686-linux" "x86_64-linux" "x86_64-darwin" ]; });
   /* dontDistribute disables the distribution of binaries for the package
      via hydra.
    */
@@ -129,10 +139,10 @@ rec {
 
          > haskell.lib.appendConfigureFlag haskellPackages.servant "--profiling-detail=all-functions"
    */
-  appendConfigureFlag = drv: x: appendConfigureFlags drv [x];
+  appendConfigureFlag = drv: x: appendConfigureFlags drv [ x ];
   appendConfigureFlags = drv: xs: overrideCabal drv (drv: { configureFlags = (drv.configureFlags or []) ++ xs; });
 
-  appendBuildFlag = drv: x: overrideCabal drv (drv: { buildFlags = (drv.buildFlags or []) ++ [x]; });
+  appendBuildFlag = drv: x: overrideCabal drv (drv: { buildFlags = (drv.buildFlags or []) ++ [ x ]; });
   appendBuildFlags = drv: xs: overrideCabal drv (drv: { buildFlags = (drv.buildFlags or []) ++ xs; });
 
   /* removeConfigureFlag drv x is a Haskell package like drv, but with
@@ -142,19 +152,19 @@ rec {
    */
   removeConfigureFlag = drv: x: overrideCabal drv (drv: { configureFlags = lib.remove x (drv.configureFlags or []); });
 
-  addBuildTool = drv: x: addBuildTools drv [x];
+  addBuildTool = drv: x: addBuildTools drv [ x ];
   addBuildTools = drv: xs: overrideCabal drv (drv: { buildTools = (drv.buildTools or []) ++ xs; });
 
-  addExtraLibrary = drv: x: addExtraLibraries drv [x];
+  addExtraLibrary = drv: x: addExtraLibraries drv [ x ];
   addExtraLibraries = drv: xs: overrideCabal drv (drv: { extraLibraries = (drv.extraLibraries or []) ++ xs; });
 
-  addBuildDepend = drv: x: addBuildDepends drv [x];
+  addBuildDepend = drv: x: addBuildDepends drv [ x ];
   addBuildDepends = drv: xs: overrideCabal drv (drv: { buildDepends = (drv.buildDepends or []) ++ xs; });
 
-  addPkgconfigDepend = drv: x: addPkgconfigDepends drv [x];
+  addPkgconfigDepend = drv: x: addPkgconfigDepends drv [ x ];
   addPkgconfigDepends = drv: xs: overrideCabal drv (drv: { pkgconfigDepends = (drv.pkgconfigDepends or []) ++ xs; });
 
-  addSetupDepend = drv: x: addSetupDepends drv [x];
+  addSetupDepend = drv: x: addSetupDepends drv [ x ];
   addSetupDepends = drv: xs: overrideCabal drv (drv: { setupHaskellDepends = (drv.setupHaskellDepends or []) ++ xs; });
 
   enableCabalFlag = drv: x: appendConfigureFlag (removeConfigureFlag drv "-f-${x}") "-f${x}";
@@ -185,7 +195,7 @@ rec {
 
   enableSeparateBinOutput = drv: overrideCabal drv (drv: { enableSeparateBinOutput = true; });
 
-  appendPatch = drv: x: appendPatches drv [x];
+  appendPatch = drv: x: appendPatches drv [ x ];
   appendPatches = drv: xs: overrideCabal drv (drv: { patches = (drv.patches or []) ++ xs; });
 
   doHyperlinkSource = drv: overrideCabal drv (drv: { hyperlinkSource = true; });
@@ -207,56 +217,62 @@ rec {
    * This includes dontStrip.
    */
   enableDWARFDebugging = drv:
-   # -g: enables debugging symbols
-   # --disable-*-stripping: tell GHC not to strip resulting binaries
-   # dontStrip: see above
-   appendConfigureFlag (dontStrip drv) "--ghc-options=-g --disable-executable-stripping --disable-library-stripping";
+  # -g: enables debugging symbols
+  # --disable-*-stripping: tell GHC not to strip resulting binaries
+  # dontStrip: see above
+    appendConfigureFlag (dontStrip drv) "--ghc-options=-g --disable-executable-stripping --disable-library-stripping";
 
   /* Create a source distribution tarball like those found on hackage,
      instead of building the package.
    */
-  sdistTarball = pkg: lib.overrideDerivation pkg (drv: {
-    name = "${drv.pname}-source-${drv.version}";
-    # Since we disable the haddock phase, we also need to override the
-    # outputs since the separate doc output will not be produced.
-    outputs = ["out"];
-    buildPhase = "./Setup sdist";
-    haddockPhase = ":";
-    checkPhase = ":";
-    installPhase = "install -D dist/${drv.pname}-*.tar.gz $out/${drv.pname}-${drv.version}.tar.gz";
-    fixupPhase = ":";
-  });
+  sdistTarball = pkg: lib.overrideDerivation pkg (
+    drv: {
+      name = "${drv.pname}-source-${drv.version}";
+      # Since we disable the haddock phase, we also need to override the
+      # outputs since the separate doc output will not be produced.
+      outputs = [ "out" ];
+      buildPhase = "./Setup sdist";
+      haddockPhase = ":";
+      checkPhase = ":";
+      installPhase = "install -D dist/${drv.pname}-*.tar.gz $out/${drv.pname}-${drv.version}.tar.gz";
+      fixupPhase = ":";
+    }
+  );
 
   /* Use the gold linker. It is a linker for ELF that is designed
      "to run as fast as possible on modern systems"
    */
-  linkWithGold = drv : appendConfigureFlag drv
+  linkWithGold = drv: appendConfigureFlag drv
     "--ghc-option=-optl-fuse-ld=gold --ld-option=-fuse-ld=gold --with-ld=ld.gold";
 
   /* link executables statically against haskell libs to reduce
      closure size
    */
-  justStaticExecutables = drv: overrideCabal drv (drv: {
-    enableSharedExecutables = false;
-    enableLibraryProfiling = false;
-    isLibrary = false;
-    doHaddock = false;
-    postFixup = "rm -rf $out/lib $out/nix-support $out/share/doc";
-  });
+  justStaticExecutables = drv: overrideCabal drv (
+    drv: {
+      enableSharedExecutables = false;
+      enableLibraryProfiling = false;
+      isLibrary = false;
+      doHaddock = false;
+      postFixup = "rm -rf $out/lib $out/nix-support $out/share/doc";
+    }
+  );
 
   /* Build a source distribution tarball instead of using the source files
      directly. The effect is that the package is built as if it were published
      on hackage. This can be used as a test for the source distribution,
      assuming the build fails when packaging mistakes are in the cabal file.
    */
-  buildFromSdist = pkg: overrideCabal pkg (drv: {
-    src = "${sdistTarball pkg}/${pkg.pname}-${pkg.version}.tar.gz";
+  buildFromSdist = pkg: overrideCabal pkg (
+    drv: {
+      src = "${sdistTarball pkg}/${pkg.pname}-${pkg.version}.tar.gz";
 
-    # Revising and jailbreaking the cabal file has been handled in sdistTarball
-    revision = null;
-    editedCabalFile = null;
-    jailbreak = false;
-  });
+      # Revising and jailbreaking the cabal file has been handled in sdistTarball
+      revision = null;
+      editedCabalFile = null;
+      jailbreak = false;
+    }
+  );
 
   /* Build the package in a strict way to uncover potential problems.
      This includes buildFromSdist and failOnAllWarnings.
@@ -279,21 +295,25 @@ rec {
    */
   checkUnusedPackages =
     { ignoreEmptyImports ? false
-    , ignoreMainModule   ? false
-    , ignorePackages     ? []
-    } : drv :
-      overrideCabal (appendConfigureFlag drv "--ghc-option=-ddump-minimal-imports") (_drv: {
-        postBuild = with lib;
-          let args = concatStringsSep " " (
-                       optional ignoreEmptyImports "--ignore-empty-imports" ++
-                       optional ignoreMainModule   "--ignore-main-module" ++
-                       map (pkg: "--ignore-package ${pkg}") ignorePackages
-                     );
-          in "${pkgs.haskellPackages.packunused}/bin/packunused" +
-             optionalString (args != "") " ${args}";
-      });
+    , ignoreMainModule ? false
+    , ignorePackages ? []
+    }: drv:
+      overrideCabal (appendConfigureFlag drv "--ghc-option=-ddump-minimal-imports") (
+        _drv: {
+          postBuild = with lib;
+            let
+              args = concatStringsSep " " (
+                optional ignoreEmptyImports "--ignore-empty-imports"
+                ++ optional ignoreMainModule "--ignore-main-module"
+                ++ map (pkg: "--ignore-package ${pkg}") ignorePackages
+              );
+            in
+              "${pkgs.haskellPackages.packunused}/bin/packunused"
+              + optionalString (args != "") " ${args}";
+        }
+      );
 
-  buildStackProject = pkgs.callPackage ./generic-stack-builder.nix { };
+  buildStackProject = pkgs.callPackage ./generic-stack-builder.nix {};
 
   /* Add a dummy command to trigger a build despite an equivalent
      earlier build that is present in the store or cache.
@@ -319,12 +339,13 @@ rec {
   shellAware = p: if lib.inNixShell then p.env else p;
 
   ghcInfo = ghc:
-    rec { isCross = (ghc.cross or null) != null;
-          isGhcjs = ghc.isGhcjs or false;
-          nativeGhc = if isCross || isGhcjs
-                        then ghc.bootPkgs.ghc
-                        else ghc;
-        };
+    rec {
+      isCross = (ghc.cross or null) != null;
+      isGhcjs = ghc.isGhcjs or false;
+      nativeGhc = if isCross || isGhcjs
+      then ghc.bootPkgs.ghc
+      else ghc;
+    };
 
   ### mkDerivation helpers
   # These allow external users of a haskell package to extract
@@ -336,11 +357,13 @@ rec {
   # an example of this.
 
   # Some information about which phases should be run.
-  controlPhases = ghc: let inherit (ghcInfo ghc) isCross; in
-                  { doCheck ? !isCross && (lib.versionOlder "7.4" ghc.version)
-                  , doBenchmark ? false
-                  , ...
-                  }: { inherit doCheck doBenchmark; };
+  controlPhases = ghc: let
+    inherit (ghcInfo ghc) isCross;
+  in
+    { doCheck ? !isCross && (lib.versionOlder "7.4" ghc.version)
+    , doBenchmark ? false
+    , ...
+    }: { inherit doCheck doBenchmark; };
 
   # Utility to convert a directory full of `cabal2nix`-generated files into a
   # package override set
@@ -354,9 +377,9 @@ rec {
         haskellPaths = builtins.attrNames (builtins.readDir directory);
 
         toKeyVal = file: {
-          name  = builtins.replaceStrings [ ".nix" ] [ "" ] file;
+          name = builtins.replaceStrings [ ".nix" ] [ "" ] file;
 
-          value = self.callPackage (directory + "/${file}") { };
+          value = self.callPackage (directory + "/${file}") {};
         };
 
       in
@@ -364,7 +387,7 @@ rec {
 
   addOptparseApplicativeCompletionScripts = exeName: pkg:
     builtins.trace "addOptparseApplicativeCompletionScripts is deprecated in favor of generateOptparseApplicativeCompletion. Please change ${pkg.name} to use the latter or its plural form."
-    (generateOptparseApplicativeCompletion exeName pkg);
+      (generateOptparseApplicativeCompletion exeName pkg);
 
   /*
     Modify a Haskell package to add shell completion scripts for the
@@ -379,23 +402,27 @@ rec {
       command: name of an executable
           pkg: Haskell package that builds the executables
   */
-  generateOptparseApplicativeCompletion = exeName: pkg: overrideCabal pkg (drv: {
-    postInstall = (drv.postInstall or "") + ''
-      bashCompDir="$out/share/bash-completion/completions"
-      zshCompDir="$out/share/zsh/vendor-completions"
-      fishCompDir="$out/share/fish/vendor_completions.d"
-      mkdir -p "$bashCompDir" "$zshCompDir" "$fishCompDir"
-      "$out/bin/${exeName}" --bash-completion-script "$out/bin/${exeName}" >"$bashCompDir/${exeName}"
-      "$out/bin/${exeName}" --zsh-completion-script "$out/bin/${exeName}" >"$zshCompDir/_${exeName}"
-      "$out/bin/${exeName}" --fish-completion-script "$out/bin/${exeName}" >"$fishCompDir/${exeName}.fish"
+  generateOptparseApplicativeCompletion = exeName: pkg: overrideCabal pkg (
+    drv: {
+      postInstall = (drv.postInstall or "")
+        + ''
+        bashCompDir="$out/share/bash-completion/completions"
+        zshCompDir="$out/share/zsh/vendor-completions"
+        fishCompDir="$out/share/fish/vendor_completions.d"
+        mkdir -p "$bashCompDir" "$zshCompDir" "$fishCompDir"
+        "$out/bin/${exeName}" --bash-completion-script "$out/bin/${exeName}" >"$bashCompDir/${exeName}"
+        "$out/bin/${exeName}" --zsh-completion-script "$out/bin/${exeName}" >"$zshCompDir/_${exeName}"
+        "$out/bin/${exeName}" --fish-completion-script "$out/bin/${exeName}" >"$fishCompDir/${exeName}.fish"
 
-      # Sanity check
-      grep -F ${exeName} <$bashCompDir/${exeName} >/dev/null || {
-        echo 'Could not find ${exeName} in completion script.'
-        exit 1
-      }
-    '';
-  });
+        # Sanity check
+        grep -F ${exeName} <$bashCompDir/${exeName} >/dev/null || {
+          echo 'Could not find ${exeName} in completion script.'
+          exit 1
+        }
+      ''
+        ;
+    }
+  );
 
   /*
     Modify a Haskell package to add shell completion scripts for the
@@ -416,7 +443,9 @@ rec {
   # Don't fail at configure time if there are multiple versions of the
   # same package in the (recursive) dependencies of the package being
   # built. Will delay failures, if any, to compile time.
-  allowInconsistentDependencies = drv: overrideCabal drv (drv: {
-    allowInconsistentDependencies = true;
-  });
+  allowInconsistentDependencies = drv: overrideCabal drv (
+    drv: {
+      allowInconsistentDependencies = true;
+    }
+  );
 }

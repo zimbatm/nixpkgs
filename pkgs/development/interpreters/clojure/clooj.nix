@@ -1,6 +1,8 @@
 { stdenv, fetchurl, jre, makeWrapper }:
 
-let version = "0.4.4"; in
+let
+  version = "0.4.4";
+in
 
 stdenv.mkDerivation {
   name = "clooj-${version}";

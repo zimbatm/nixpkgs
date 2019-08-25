@@ -56,7 +56,8 @@ in
     services.avahi.publish.userServices = true;
 
     users.users = singleton
-      { name = cfg.user;
+      {
+        name = cfg.user;
         description = "Shairport user";
         isSystemUser = true;
         createHome = true;

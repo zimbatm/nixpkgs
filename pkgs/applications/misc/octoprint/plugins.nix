@@ -1,13 +1,16 @@
 { stdenv, fetchFromGitHub, octoprint, python2Packages, marlin-calc }:
 
 let
-  buildPlugin = args: python2Packages.buildPythonPackage (args // {
-    pname = "OctoPrintPlugin-${args.pname}";
-    inherit (args) version;
-    propagatedBuildInputs = (args.propagatedBuildInputs or []) ++ [ octoprint ];
-    # none of the following have tests
-    doCheck = false;
-  });
+  buildPlugin = args: python2Packages.buildPythonPackage (
+    args
+    // {
+         pname = "OctoPrintPlugin-${args.pname}";
+         inherit (args) version;
+         propagatedBuildInputs = (args.propagatedBuildInputs or []) ++ [ octoprint ];
+         # none of the following have tests
+         doCheck = false;
+       }
+  );
 
   self = {
 
@@ -193,4 +196,5 @@ let
 
   };
 
-in self
+in
+self

@@ -2,7 +2,8 @@
 
 let
   version = "1.9.0";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "avro-c-${version}";
 
   src = fetchurl {

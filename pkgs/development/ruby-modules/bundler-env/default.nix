@@ -6,7 +6,7 @@
 , gemfile ? null
 , lockfile ? null
 , gemset ? null
-, groups ? ["default"]
+, groups ? [ "default" ]
 , ruby ? defs.ruby
 , gemConfig ? defaultGemConfig
 , postBuild ? null
@@ -18,7 +18,7 @@
 }@args:
 
 let
-  inherit (import ../bundled-common/functions.nix {inherit lib ruby gemConfig groups; }) genStubsScript;
+  inherit (import ../bundled-common/functions.nix { inherit lib ruby gemConfig groups; }) genStubsScript;
 
   basicEnv = (callPackage ../bundled-common {}) (args // { inherit pname name; mainGemName = pname; });
 
@@ -35,10 +35,11 @@ let
 
   # The basicEnv should be put into passthru so that e.g. nix-shell can use it.
 in
-  if pname == null then
-    basicEnv // { inherit name basicEnv; }
-  else
-    (buildEnv {
+if pname == null then
+  basicEnv // { inherit name basicEnv; }
+else
+  (
+    buildEnv {
       inherit ignoreCollisions;
 
       name = basicEnv.name;
@@ -50,11 +51,17 @@ in
         inherit lib ruby bundler groups;
         confFiles = basicEnv.confFiles;
         binPaths = [ basicEnv.gems."${pname}" ];
-      } + lib.optionalString (postBuild != null) postBuild;
+      }
+      + lib.optionalString (postBuild != null) postBuild
+      ;
 
       meta = { platforms = ruby.meta.platforms; } // meta;
-      passthru = basicEnv.passthru // {
-        inherit basicEnv;
-        inherit (basicEnv) env;
-      } // passthru;
-    })
+      passthru = basicEnv.passthru
+        // {
+             inherit basicEnv;
+             inherit (basicEnv) env;
+           }
+        // passthru
+        ;
+    }
+  )

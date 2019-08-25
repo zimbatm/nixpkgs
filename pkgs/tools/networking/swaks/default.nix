@@ -17,8 +17,11 @@ stdenv.mkDerivation rec {
 
     wrapProgram $out/bin/swaks --set PERL5LIB \
       "${with perlPackages; makePerlPath [
-        NetSSLeay AuthenSASL NetDNS IOSocketInet6
-      ]}"
+    NetSSLeay
+    AuthenSASL
+    NetDNS
+    IOSocketInet6
+  ]}"
   '';
 
   meta = with stdenv.lib; {

@@ -12,11 +12,13 @@ stdenv.mkDerivation rec {
   NIX_CFLAGS_COMPILE = stdenv.lib.optional stdenv.isx86_64 "-mno-fma";
 
   patches = [
-    (fetchpatch {
-      name = "bug-39055.patch";
-      url = "https://git.savannah.gnu.org/cgit/gsl.git/patch/?id=9cc12d";
-      sha256 = "1bmrmihi28cly9g9pq54kkix2jy59y7cd7h5fw4v1c7h5rc2qvs8";
-    })
+    (
+      fetchpatch {
+        name = "bug-39055.patch";
+        url = "https://git.savannah.gnu.org/cgit/gsl.git/patch/?id=9cc12d";
+        sha256 = "1bmrmihi28cly9g9pq54kkix2jy59y7cd7h5fw4v1c7h5rc2qvs8";
+      }
+    )
   ];
 
   doCheck = true;

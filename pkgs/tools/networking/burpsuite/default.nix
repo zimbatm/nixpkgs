@@ -11,7 +11,8 @@ let
     #!${runtimeShell}
     exec ${jre}/bin/java -jar ${jar} "$@"
   '';
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "burpsuite-${version}";
   buildCommand = ''
     mkdir -p $out/bin

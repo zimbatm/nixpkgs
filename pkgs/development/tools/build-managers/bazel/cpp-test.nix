@@ -1,5 +1,4 @@
-{
-  bazel
+{ bazel
 , bazelTest
 , bazel-examples
 , gccStdenv
@@ -26,14 +25,18 @@ let
     exec "$BAZEL_REAL" "$@"
   '';
 
-  workspaceDir = runLocal "our_workspace" {} (''
-    cp -r ${bazel-examples}/cpp-tutorial/stage3 $out
-    find $out -type d -exec chmod 755 {} \;
-  ''
-  + (lib.optionalString gccStdenv.isDarwin ''
-    mkdir $out/tools
-    cp ${toolsBazel} $out/tools/bazel
-  ''));
+  workspaceDir = runLocal "our_workspace" {} (
+    ''
+      cp -r ${bazel-examples}/cpp-tutorial/stage3 $out
+      find $out -type d -exec chmod 755 {} \;
+    ''
+    + (
+        lib.optionalString gccStdenv.isDarwin ''
+          mkdir $out/tools
+          cp ${toolsBazel} $out/tools/bazel
+        ''
+      )
+  );
 
   testBazel = bazelTest {
     name = "bazel-test-cpp";
@@ -46,4 +49,5 @@ let
     '';
   };
 
-in testBazel
+in
+testBazel

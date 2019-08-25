@@ -15,10 +15,12 @@ stdenv.mkDerivation rec {
 
   patches = [
     ./respect-path-env-var.patch
-    (substituteAll {
-      src = ./fix-paths.patch;
-      inherit flatpak;
-    })
+    (
+      substituteAll {
+        src = ./fix-paths.patch;
+        inherit flatpak;
+      }
+    )
   ];
 
   nativeBuildInputs = [ autoreconfHook pkgconfig libxml2 wrapGAppsHook ];

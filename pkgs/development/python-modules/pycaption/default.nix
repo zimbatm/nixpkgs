@@ -1,6 +1,14 @@
-{ lib, fetchpatch
-, buildPythonPackage, fetchPypi, isPy3k
-, beautifulsoup4, lxml, cssutils, future, enum34, six
+{ lib
+, fetchpatch
+, buildPythonPackage
+, fetchPypi
+, isPy3k
+, beautifulsoup4
+, lxml
+, cssutils
+, future
+, enum34
+, six
 }:
 
 buildPythonPackage rec {
@@ -22,10 +30,12 @@ buildPythonPackage rec {
 
   # don't require enum34 on python >= 3.4
   patches = [
-    (fetchpatch {
+    (
+      fetchpatch {
         url = "https://github.com/pbs/pycaption/pull/161.patch";
         sha256 = "0p58awpsqx1qc3x9zfl1gd85h1nk7204lzn4kglsgh1bka0j237j";
-    })
+      }
+    )
   ];
 
   propagatedBuildInputs = [ beautifulsoup4 lxml cssutils future enum34 six ];

@@ -5,7 +5,7 @@ rec {
 
   description = ''unit-testing framework for common lisp'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/unit-test/2012-05-20/unit-test-20120520-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "unit-test";
 
-  asdFilesToKeep = ["unit-test.asd"];
+  asdFilesToKeep = [ "unit-test.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM unit-test DESCRIPTION unit-testing framework for common lisp SHA256

@@ -11,7 +11,8 @@ stdenv.mkDerivation rec {
 
   patches =
     [ ./darwin.patch ]
-    ++ stdenv.lib.optionals stdenv.cc.isClang [ ./clang.diff ];
+    ++ stdenv.lib.optionals stdenv.cc.isClang [ ./clang.diff ]
+    ;
 
   buildInputs = [ zlib ];
 

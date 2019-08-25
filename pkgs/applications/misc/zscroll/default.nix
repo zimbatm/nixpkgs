@@ -1,6 +1,8 @@
 { stdenv, python3, python3Packages, fetchFromGitHub }:
 
-let version = "1.0"; in
+let
+  version = "1.0";
+in
 
 python3Packages.buildPythonApplication {
   name = "zscroll-${version}";

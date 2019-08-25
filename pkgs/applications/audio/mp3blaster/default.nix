@@ -15,7 +15,9 @@ stdenv.mkDerivation rec {
   buildInputs = [
     ncurses
     libvorbis
-  ] ++ stdenv.lib.optional stdenv.isDarwin SDL;
+  ]
+  ++ stdenv.lib.optional stdenv.isDarwin SDL
+  ;
 
   buildFlags = [ "CXXFLAGS=-Wno-narrowing" ];
 

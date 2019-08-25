@@ -33,12 +33,21 @@ buildPythonPackage rec {
   disabled = pythonOlder "3.5";
 
   checkInputs = [
-    pytestrunner pytest gunicorn pytest-timeout async_generator pytest_xdist
-    pytest-mock pytestcov trustme brotlipy
+    pytestrunner
+    pytest
+    gunicorn
+    pytest-timeout
+    async_generator
+    pytest_xdist
+    pytest-mock
+    pytestcov
+    trustme
+    brotlipy
   ];
 
   propagatedBuildInputs = [ attrs chardet multidict async-timeout yarl ]
-    ++ lib.optionals (pythonOlder "3.7") [ idna-ssl typing-extensions ];
+    ++ lib.optionals (pythonOlder "3.7") [ idna-ssl typing-extensions ]
+    ;
 
   # Don't error on cryptography deprecation warning
   postPatch = ''

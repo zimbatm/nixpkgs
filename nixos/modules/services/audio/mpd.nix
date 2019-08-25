@@ -14,8 +14,8 @@ let
     music_directory     "${cfg.musicDirectory}"
     playlist_directory  "${cfg.playlistDirectory}"
     ${lib.optionalString (cfg.dbFile != null) ''
-      db_file             "${cfg.dbFile}"
-    ''}
+    db_file             "${cfg.dbFile}"
+  ''}
     state_file          "${cfg.dataDir}/state"
     sticker_file        "${cfg.dataDir}/sticker.sql"
     log_file            "syslog"
@@ -23,12 +23,13 @@ let
     group               "${cfg.group}"
 
     ${optionalString (cfg.network.listenAddress != "any") ''bind_to_address "${cfg.network.listenAddress}"''}
-    ${optionalString (cfg.network.port != 6600)  ''port "${toString cfg.network.port}"''}
+    ${optionalString (cfg.network.port != 6600) ''port "${toString cfg.network.port}"''}
 
     ${cfg.extraConfig}
   '';
 
-in {
+in
+{
 
   ###### interface
 
@@ -184,19 +185,23 @@ in {
       };
     };
 
-    users.users = optionalAttrs (cfg.user == name) (singleton {
-      inherit uid;
-      inherit name;
-      group = cfg.group;
-      extraGroups = [ "audio" ];
-      description = "Music Player Daemon user";
-      home = "${cfg.dataDir}";
-    });
+    users.users = optionalAttrs (cfg.user == name) (
+      singleton {
+        inherit uid;
+        inherit name;
+        group = cfg.group;
+        extraGroups = [ "audio" ];
+        description = "Music Player Daemon user";
+        home = "${cfg.dataDir}";
+      }
+    );
 
-    users.groups = optionalAttrs (cfg.group == name) (singleton {
-      inherit name;
-      gid = gid;
-    });
+    users.groups = optionalAttrs (cfg.group == name) (
+      singleton {
+        inherit name;
+        gid = gid;
+      }
+    );
   };
 
 }

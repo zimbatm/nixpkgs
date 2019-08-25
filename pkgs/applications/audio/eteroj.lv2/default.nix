@@ -6,9 +6,9 @@ stdenv.mkDerivation rec {
   name = "${pname}-${version}";
 
   src = fetchFromGitHub {
-    owner  = "OpenMusicKontrollers";
-    repo   = pname;
-    rev    = version;
+    owner = "OpenMusicKontrollers";
+    repo = pname;
+    rev = version;
     sha256 = "0lzdk7hlz3vqgshrfpj0izjad1fmsnzk2vxqrry70xgz8xglvnmn";
   };
 

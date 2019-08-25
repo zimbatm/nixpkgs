@@ -5,7 +5,7 @@ rec {
 
   description = ''trivial-backtrace'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/trivial-backtrace/2016-05-31/trivial-backtrace-20160531-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "trivial-backtrace";
 
-  asdFilesToKeep = ["trivial-backtrace.asd"];
+  asdFilesToKeep = [ "trivial-backtrace.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM trivial-backtrace DESCRIPTION trivial-backtrace SHA256

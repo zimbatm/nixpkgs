@@ -1,6 +1,8 @@
 { stdenv, fetchurl, pcre, libiconv, perl }:
 
-let version = "3.3"; in
+let
+  version = "3.3";
+in
 
 stdenv.mkDerivation {
   name = "gnugrep-${version}";
@@ -56,5 +58,5 @@ stdenv.mkDerivation {
     platforms = platforms.all;
   };
 
-  passthru = {inherit pcre;};
+  passthru = { inherit pcre; };
 }

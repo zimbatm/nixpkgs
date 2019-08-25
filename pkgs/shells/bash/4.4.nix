@@ -1,9 +1,16 @@
-{ stdenv, buildPackages
-, fetchurl, binutils ? null, bison, autoconf, utillinux
+{ stdenv
+, buildPackages
+, fetchurl
+, binutils ? null
+, bison
+, autoconf
+, utillinux
 
-# patch for cygwin requires readline support
-, interactive ? stdenv.isCygwin, readline70 ? null
-, withDocs ? false, texinfo ? null
+  # patch for cygwin requires readline support
+, interactive ? stdenv.isCygwin
+, readline70 ? null
+, withDocs ? false
+, texinfo ? null
 }:
 
 with stdenv.lib;
@@ -13,10 +20,12 @@ assert withDocs -> texinfo != null;
 assert stdenv.hostPlatform.isDarwin -> binutils != null;
 
 let
-  upstreamPatches = import ./bash-4.4-patches.nix (nr: sha256: fetchurl {
-    url = "mirror://gnu/bash/bash-4.4-patches/bash44-${nr}";
-    inherit sha256;
-  });
+  upstreamPatches = import ./bash-4.4-patches.nix (
+    nr: sha256: fetchurl {
+      url = "mirror://gnu/bash/bash-4.4-patches/bash44-${nr}";
+      inherit sha256;
+    }
+  );
 in
 
 stdenv.mkDerivation rec {
@@ -45,36 +54,44 @@ stdenv.mkDerivation rec {
 
   patches = upstreamPatches
     ++ optional stdenv.hostPlatform.isCygwin ./cygwin-bash-4.4.11-2.src.patch
-    # https://lists.gnu.org/archive/html/bug-bash/2016-10/msg00006.html
-    ++ optional stdenv.hostPlatform.isMusl (fetchurl {
-      url = "https://lists.gnu.org/archive/html/bug-bash/2016-10/patchJxugOXrY2y.patch";
-      sha256 = "1m4v9imidb1cc1h91f2na0b8y9kc5c5fgmpvy9apcyv2kbdcghg1";
-    });
+  # https://lists.gnu.org/archive/html/bug-bash/2016-10/msg00006.html
+    ++ optional stdenv.hostPlatform.isMusl (
+         fetchurl {
+           url = "https://lists.gnu.org/archive/html/bug-bash/2016-10/patchJxugOXrY2y.patch";
+           sha256 = "1m4v9imidb1cc1h91f2na0b8y9kc5c5fgmpvy9apcyv2kbdcghg1";
+         }
+       )
+    ;
 
   configureFlags = [
     (if interactive then "--with-installed-readline" else "--disable-readline")
-  ] ++ optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
-    "bash_cv_job_control_missing=nomissing"
-    "bash_cv_sys_named_pipes=nomissing"
-    "bash_cv_getcwd_malloc=yes"
-  ] ++ optionals stdenv.hostPlatform.isCygwin [
-    "--without-libintl-prefix"
-    "--without-libiconv-prefix"
-    "--with-installed-readline"
-    "bash_cv_dev_stdin=present"
-    "bash_cv_dev_fd=standard"
-    "bash_cv_termcap_lib=libncurses"
-  ] ++ optionals (stdenv.hostPlatform.libc == "musl") [
-    "--without-bash-malloc"
-    "--disable-nls"
-  ];
+  ]
+  ++ optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
+       "bash_cv_job_control_missing=nomissing"
+       "bash_cv_sys_named_pipes=nomissing"
+       "bash_cv_getcwd_malloc=yes"
+     ]
+  ++ optionals stdenv.hostPlatform.isCygwin [
+       "--without-libintl-prefix"
+       "--without-libiconv-prefix"
+       "--with-installed-readline"
+       "bash_cv_dev_stdin=present"
+       "bash_cv_dev_fd=standard"
+       "bash_cv_termcap_lib=libncurses"
+     ]
+  ++ optionals (stdenv.hostPlatform.libc == "musl") [
+       "--without-bash-malloc"
+       "--disable-nls"
+     ]
+  ;
 
   # Note: Bison is needed because the patches above modify parse.y.
   depsBuildBuild = [ buildPackages.stdenv.cc ];
   nativeBuildInputs = [ bison ]
     ++ optional withDocs texinfo
     ++ optional stdenv.hostPlatform.isDarwin binutils
-    ++ optional (stdenv.hostPlatform.libc == "musl") autoconf;
+    ++ optional (stdenv.hostPlatform.libc == "musl") autoconf
+    ;
 
   buildInputs = optional interactive readline70;
 
@@ -96,20 +113,21 @@ stdenv.mkDerivation rec {
   '';
 
   postFixup = if interactive
-    then ''
-      substituteInPlace "$out/bin/bashbug" \
-        --replace '${stdenv.shell}' "$out/bin/bash"
-    ''
+  then ''
+    substituteInPlace "$out/bin/bashbug" \
+      --replace '${stdenv.shell}' "$out/bin/bash"
+  ''
     # most space is taken by locale data
-    else ''
-      rm -rf "$out/share" "$out/bin/bashbug"
-    '';
+  else ''
+    rm -rf "$out/share" "$out/bin/bashbug"
+  '';
 
   meta = with stdenv.lib; {
     homepage = https://www.gnu.org/software/bash/;
     description =
-      "GNU Bourne-Again Shell, the de facto standard shell on Linux" +
-        (if interactive then " (for interactive use)" else "");
+      "GNU Bourne-Again Shell, the de facto standard shell on Linux"
+      + (if interactive then " (for interactive use)" else "")
+      ;
 
     longDescription = ''
       Bash is the shell, or command language interpreter, that will

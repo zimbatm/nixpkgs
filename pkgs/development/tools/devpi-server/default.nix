@@ -1,4 +1,4 @@
- { stdenv, python3Packages, nginx }:
+{ stdenv, python3Packages, nginx }:
 
 python3Packages.buildPythonApplication rec {
   name = "${pname}-${version}";

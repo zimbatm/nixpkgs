@@ -1,15 +1,21 @@
-{ lib, buildPythonPackage, fetchPypi, pythonOlder,
-  # Build inputs
-  dateutil, six, text-unidecode, ipaddress ? null
+{ lib
+, buildPythonPackage
+, fetchPypi
+, pythonOlder
+, # Build inputs
+  dateutil
+, six
+, text-unidecode
+, ipaddress ? null
   # Test inputs
-  , email_validator
-  , freezegun
-  , mock
-  , more-itertools
-  , pytest
-  , pytestrunner
-  , random2
-  , ukpostcodeparser
+, email_validator
+, freezegun
+, mock
+, more-itertools
+, pytest
+, pytestrunner
+, random2
+, ukpostcodeparser
 }:
 
 assert pythonOlder "3.3" -> ipaddress != null;
@@ -32,13 +38,16 @@ buildPythonPackage rec {
     ukpostcodeparser
   ]
   ++ lib.optionals (pythonOlder "3.3") [ mock ]
-  ++ lib.optionals (pythonOlder "3.0") [ more-itertools ];
+  ++ lib.optionals (pythonOlder "3.0") [ more-itertools ]
+  ;
 
   propagatedBuildInputs = [
     dateutil
     six
     text-unidecode
-  ] ++ lib.optional (pythonOlder "3.3") ipaddress;
+  ]
+  ++ lib.optional (pythonOlder "3.3") ipaddress
+  ;
 
   postPatch = ''
     substituteInPlace setup.py --replace "pytest>=3.8.0,<3.9" "pytest"
@@ -54,9 +63,9 @@ buildPythonPackage rec {
 
   meta = with lib; {
     description = "A Python library for generating fake user data";
-    homepage    = http://faker.rtfd.org;
-    license     = licenses.mit;
+    homepage = http://faker.rtfd.org;
+    license = licenses.mit;
     maintainers = with maintainers; [ lovek323 ];
-    platforms   = platforms.unix;
+    platforms = platforms.unix;
   };
 }

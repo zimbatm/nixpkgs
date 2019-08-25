@@ -25,7 +25,7 @@ in
       type = types.bool;
       default = false;
       description = ''
-          Enable Radicale CalDAV and CardDAV server.
+        Enable Radicale CalDAV and CardDAV server.
       '';
     };
 
@@ -60,7 +60,8 @@ in
     environment.systemPackages = [ cfg.package ];
 
     users.users = singleton
-      { name = "radicale";
+      {
+        name = "radicale";
         uid = config.ids.uids.radicale;
         description = "radicale user";
         home = "/var/lib/radicale";
@@ -68,7 +69,8 @@ in
       };
 
     users.groups = singleton
-      { name = "radicale";
+      {
+        name = "radicale";
         gid = config.ids.gids.radicale;
       };
 
@@ -77,11 +79,16 @@ in
       after = [ "network.target" ];
       wantedBy = [ "multi-user.target" ];
       serviceConfig = {
-        ExecStart = concatStringsSep " " ([
-          "${cfg.package}/bin/radicale" "-C" confFile
-        ] ++ (
-          map escapeShellArg cfg.extraArgs
-        ));
+        ExecStart = concatStringsSep " " (
+          [
+            "${cfg.package}/bin/radicale"
+            "-C"
+            confFile
+          ]
+          ++ (
+               map escapeShellArg cfg.extraArgs
+             )
+        );
         User = "radicale";
         Group = "radicale";
       };

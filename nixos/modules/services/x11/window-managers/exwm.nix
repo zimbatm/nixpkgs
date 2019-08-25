@@ -7,9 +7,9 @@ let
   loadScript = pkgs.writeText "emacs-exwm-load" ''
     (require 'exwm)
     ${optionalString cfg.enableDefaultConfig ''
-      (require 'exwm-config)
-      (exwm-config-default)
-    ''}
+    (require 'exwm-config)
+    (exwm-config-default)
+  ''}
   '';
   packages = epkgs: cfg.extraPackages epkgs ++ [ epkgs.exwm ];
   exwm-emacs = pkgs.emacsWithPackages packages;

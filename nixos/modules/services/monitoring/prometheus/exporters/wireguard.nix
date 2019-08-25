@@ -4,7 +4,8 @@ with lib;
 
 let
   cfg = config.services.prometheus.exporters.wireguard;
-in {
+in
+{
   port = 9586;
   extraOpts = {
     verbose = mkEnableOption "Verbose logging mode for prometheus-wireguard-exporter";

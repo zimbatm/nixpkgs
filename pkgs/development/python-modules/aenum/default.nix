@@ -14,10 +14,10 @@ buildPythonPackage rec {
   checkInputs = if isPy3k then [ glibcLocales ] else [];
 
   checkPhase = ''
-  runHook preCheck
-  ${if isPy3k then "export LC_ALL=en_US.UTF-8" else ""}
-  PYTHONPATH=`pwd` ${python.interpreter} aenum/test.py
-  runHook postCheck
+    runHook preCheck
+    ${if isPy3k then "export LC_ALL=en_US.UTF-8" else ""}
+    PYTHONPATH=`pwd` ${python.interpreter} aenum/test.py
+    runHook postCheck
   '';
 
 

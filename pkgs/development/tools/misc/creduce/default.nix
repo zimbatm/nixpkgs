@@ -1,5 +1,9 @@
-{ stdenv, fetchurl, cmake, makeWrapper
-, llvm, clang-unwrapped
+{ stdenv
+, fetchurl
+, cmake
+, makeWrapper
+, llvm
+, clang-unwrapped
 , flex
 , zlib
 , perlPackages
@@ -20,9 +24,13 @@ stdenv.mkDerivation rec {
     # Ensure stdenv's CC is on PATH before clang-unwrapped
     stdenv.cc
     # Actual deps:
-    llvm clang-unwrapped
-    flex zlib
-  ] ++ (with perlPackages; [ perl ExporterLite FileWhich GetoptTabular RegexpCommon TermReadKey ]);
+    llvm
+    clang-unwrapped
+    flex
+    zlib
+  ]
+  ++ (with perlPackages; [ perl ExporterLite FileWhich GetoptTabular RegexpCommon TermReadKey ])
+  ;
 
   # On Linux, c-reduce's preferred way to reason about
   # the cpu architecture/topology is to use 'lscpu',

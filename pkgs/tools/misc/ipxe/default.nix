@@ -1,4 +1,13 @@
-{ stdenv, lib, fetchgit, perl, cdrkit, syslinux, xz, openssl, gnu-efi, mtools
+{ stdenv
+, lib
+, fetchgit
+, perl
+, cdrkit
+, syslinux
+, xz
+, openssl
+, gnu-efi
+, mtools
 , embedScript ? null
 , additionalTargets ? {}
 }:
@@ -6,17 +15,20 @@
 let
   date = "20190318";
   rev = "ebf2eaf515e46abd43bc798e7e4ba77bfe529218";
-  targets = additionalTargets // lib.optionalAttrs stdenv.isx86_64 {
-    "bin-x86_64-efi/ipxe.efi" = null;
-    "bin-x86_64-efi/ipxe.efirom" = null;
-    "bin-x86_64-efi/ipxe.usb" = "ipxe-efi.usb";
-  } // {
-    "bin/ipxe.dsk" = null;
-    "bin/ipxe.usb" = null;
-    "bin/ipxe.iso" = null;
-    "bin/ipxe.lkrn" = null;
-    "bin/undionly.kpxe" = null;
-  };
+  targets = additionalTargets
+    // lib.optionalAttrs stdenv.isx86_64 {
+         "bin-x86_64-efi/ipxe.efi" = null;
+         "bin-x86_64-efi/ipxe.efirom" = null;
+         "bin-x86_64-efi/ipxe.usb" = "ipxe-efi.usb";
+       }
+    // {
+         "bin/ipxe.dsk" = null;
+         "bin/ipxe.usb" = null;
+         "bin/ipxe.iso" = null;
+         "bin/ipxe.lkrn" = null;
+         "bin/undionly.kpxe" = null;
+       }
+    ;
 in
 
 stdenv.mkDerivation {
@@ -36,10 +48,14 @@ stdenv.mkDerivation {
   NIX_CFLAGS_COMPILE = "-Wno-error";
 
   makeFlags =
-    [ "ECHO_E_BIN_ECHO=echo" "ECHO_E_BIN_ECHO_E=echo" # No /bin/echo here.
+    [
+      "ECHO_E_BIN_ECHO=echo"
+      "ECHO_E_BIN_ECHO_E=echo" # No /bin/echo here.
       "ISOLINUX_BIN_LIST=${syslinux}/share/syslinux/isolinux.bin"
       "LDLINUX_C32=${syslinux}/share/syslinux/ldlinux.c32"
-    ] ++ lib.optional (embedScript != null) "EMBED=${embedScript}";
+    ]
+    ++ lib.optional (embedScript != null) "EMBED=${embedScript}"
+  ;
 
 
   enabledOptions = [
@@ -63,10 +79,14 @@ stdenv.mkDerivation {
 
   installPhase = ''
     mkdir -p $out
-    ${lib.concatStringsSep "\n" (lib.mapAttrsToList (from: to:
-      if to == null
-      then "cp -v ${from} $out"
-      else "cp -v ${from} $out/${to}") targets)}
+    ${lib.concatStringsSep "\n" (
+    lib.mapAttrsToList (
+      from: to:
+        if to == null
+        then "cp -v ${from} $out"
+        else "cp -v ${from} $out/${to}"
+    ) targets
+  )}
 
     # Some PXE constellations especially with dnsmasq are looking for the file with .0 ending
     # let's provide it as a symlink to be compatible in this case.
@@ -76,7 +96,8 @@ stdenv.mkDerivation {
   enableParallelBuilding = true;
 
   meta = with stdenv.lib;
-    { description = "Network boot firmware";
+    {
+      description = "Network boot firmware";
       homepage = http://ipxe.org/;
       license = licenses.gpl2;
       maintainers = with maintainers; [ ehmry ];

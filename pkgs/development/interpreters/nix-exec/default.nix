@@ -1,6 +1,7 @@
 { stdenv, fetchurl, pkgconfig, nix, git }: let
   version = "4.1.6";
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "nix-exec-${version}";
 
   src = fetchurl {

@@ -47,10 +47,12 @@ stdenv.mkDerivation rec {
   };
 
   patches = [
-    (substituteAll {
-      src = ./fix-paths.patch;
-      inherit tzdata mousetweaks;
-    })
+    (
+      substituteAll {
+        src = ./fix-paths.patch;
+        inherit tzdata mousetweaks;
+      }
+    )
     ./global-backlight-helper.patch
   ];
 

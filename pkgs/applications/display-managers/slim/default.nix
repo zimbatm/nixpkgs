@@ -1,5 +1,17 @@
-{ stdenv, fetchurl, fetchpatch, cmake, pkgconfig, xorg, libjpeg, libpng
-, fontconfig, freetype, pam, dbus, makeWrapper }:
+{ stdenv
+, fetchurl
+, fetchpatch
+, cmake
+, pkgconfig
+, xorg
+, libjpeg
+, libpng
+, fontconfig
+, freetype
+, pam
+, dbus
+, makeWrapper
+}:
 
 stdenv.mkDerivation rec {
   name = "slim-1.3.6";
@@ -10,7 +22,8 @@ stdenv.mkDerivation rec {
   };
 
   patches =
-    [ # Allow the paths of the configuration file and theme directory to
+    [
+      # Allow the paths of the configuration file and theme directory to
       # be set at runtime.
       ./runtime-paths.patch
 
@@ -26,10 +39,14 @@ stdenv.mkDerivation rec {
       # Allow to set logfile to a special "/dev/stderr" in order to continue
       # logging to stderr and thus to the journal.
       ./no-logfile.patch
-    ] ++ stdenv.lib.optional stdenv.hostPlatform.isMusl (fetchpatch {
-      url = "https://raw.githubusercontent.com/gentoo/musl/8eddda8072add075ebf56cf6d288bc1450d6b5f8/x11-misc/slim/files/slim-1.3.6-add-missing-libgen_h.patch";
-      sha256 = "0f82672s2r2cmdqfn2mbg3di76mbla9n0ik20p2gv4igi6p866xm";
-    });
+    ]
+    ++ stdenv.lib.optional stdenv.hostPlatform.isMusl (
+         fetchpatch {
+           url = "https://raw.githubusercontent.com/gentoo/musl/8eddda8072add075ebf56cf6d288bc1450d6b5f8/x11-misc/slim/files/slim-1.3.6-add-missing-libgen_h.patch";
+           sha256 = "0f82672s2r2cmdqfn2mbg3di76mbla9n0ik20p2gv4igi6p866xm";
+         }
+       )
+  ;
 
   preConfigure = "substituteInPlace CMakeLists.txt --replace /lib $out/lib";
 
@@ -40,9 +57,22 @@ stdenv.mkDerivation rec {
   enableParallelBuilding = true;
 
   buildInputs =
-    [ cmake pkgconfig libjpeg libpng fontconfig freetype
-      pam dbus
-      xorg.libX11 xorg.libXext xorg.libXrandr xorg.libXrender xorg.libXmu xorg.libXft makeWrapper
+    [
+      cmake
+      pkgconfig
+      libjpeg
+      libpng
+      fontconfig
+      freetype
+      pam
+      dbus
+      xorg.libX11
+      xorg.libXext
+      xorg.libXrandr
+      xorg.libXrender
+      xorg.libXmu
+      xorg.libXft
+      makeWrapper
     ];
 
   NIX_CFLAGS_LINK = "-lXmu";

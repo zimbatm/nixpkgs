@@ -1,7 +1,8 @@
 { stdenv, fetchurl, unzip }:
 let
   version = "7.6.1";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "libjson-${version}";
   src = fetchurl {
     url = "mirror://sourceforge/libjson/libjson_${version}.zip";

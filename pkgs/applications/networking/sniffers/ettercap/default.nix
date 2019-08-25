@@ -1,6 +1,22 @@
-{ stdenv, fetchFromGitHub, cmake, libpcap, libnet, zlib, curl, pcre
-, openssl, ncurses, glib, gtk3, atk, pango, flex, bison, geoip
-, pkgconfig }:
+{ stdenv
+, fetchFromGitHub
+, cmake
+, libpcap
+, libnet
+, zlib
+, curl
+, pcre
+, openssl
+, ncurses
+, glib
+, gtk3
+, atk
+, pango
+, flex
+, bison
+, geoip
+, pkgconfig
+}:
 
 stdenv.mkDerivation rec {
   name = "ettercap-${version}";
@@ -16,8 +32,18 @@ stdenv.mkDerivation rec {
   strictDeps = true;
   nativeBuildInputs = [ cmake flex bison pkgconfig ];
   buildInputs = [
-    libpcap libnet zlib curl pcre openssl ncurses
-    glib gtk3 atk pango geoip
+    libpcap
+    libnet
+    zlib
+    curl
+    pcre
+    openssl
+    ncurses
+    glib
+    gtk3
+    atk
+    pango
+    geoip
   ];
 
   preConfigure = ''

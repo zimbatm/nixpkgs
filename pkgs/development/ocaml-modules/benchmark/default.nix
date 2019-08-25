@@ -1,6 +1,8 @@
 { stdenv, fetchzip, ocaml, findlib, ocamlbuild, ocaml_pcre }:
 
-let version = "1.4"; in
+let
+  version = "1.4";
+in
 
 stdenv.mkDerivation {
   name = "ocaml${ocaml.version}-benchmark-${version}";

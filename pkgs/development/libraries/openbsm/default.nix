@@ -8,7 +8,7 @@ stdenv.mkDerivation rec {
   src = fetchFromGitHub {
     owner = pname;
     repo = pname;
-    rev = "${lib.toUpper (builtins.replaceStrings ["." "-"] ["_" "_"] name)}";
+    rev = "${lib.toUpper (builtins.replaceStrings [ "." "-" ] [ "_" "_" ] name)}";
     sha256 = "0b98359hd8mm585sh145ss828pg2y8vgz38lqrb7nypapiyqdnd1";
   };
 

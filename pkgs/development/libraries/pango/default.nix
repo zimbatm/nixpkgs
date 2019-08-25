@@ -1,8 +1,23 @@
-{ stdenv, fetchurl, pkgconfig, cairo, harfbuzz
-, libintl, gobject-introspection, darwin, fribidi, gnome3
-, gtk-doc, docbook_xsl, docbook_xml_dtd_43, makeFontsConf, freefont_ttf
-, meson, ninja, glib
-, x11Support? !stdenv.isDarwin, libXft
+{ stdenv
+, fetchurl
+, pkgconfig
+, cairo
+, harfbuzz
+, libintl
+, gobject-introspection
+, darwin
+, fribidi
+, gnome3
+, gtk-doc
+, docbook_xsl
+, docbook_xml_dtd_43
+, makeFontsConf
+, freefont_ttf
+, meson
+, ninja
+, glib
+, x11Support ? !stdenv.isDarwin
+, libXft
 }:
 
 with stdenv.lib;
@@ -10,7 +25,8 @@ with stdenv.lib;
 let
   pname = "pango";
   version = "1.43.0";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "${pname}-${version}";
 
   src = fetchurl {
@@ -22,26 +38,39 @@ in stdenv.mkDerivation rec {
   outputs = [ "bin" "dev" "out" ] ++ optional (!stdenv.isDarwin) "devdoc";
 
   nativeBuildInputs = [
-    meson ninja
-    pkgconfig gobject-introspection gtk-doc docbook_xsl docbook_xml_dtd_43
+    meson
+    ninja
+    pkgconfig
+    gobject-introspection
+    gtk-doc
+    docbook_xsl
+    docbook_xml_dtd_43
   ];
   buildInputs = [
-    harfbuzz fribidi
-  ] ++ optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
-    ApplicationServices
-    Carbon
-    CoreGraphics
-    CoreText
-  ]);
-  propagatedBuildInputs = [ cairo glib libintl ] ++
-    optional x11Support libXft;
+    harfbuzz
+    fribidi
+  ]
+  ++ optionals stdenv.isDarwin (
+       with darwin.apple_sdk.frameworks; [
+         ApplicationServices
+         Carbon
+         CoreGraphics
+         CoreText
+       ]
+     )
+  ;
+  propagatedBuildInputs = [ cairo glib libintl ]
+    ++ optional x11Support libXft
+    ;
 
   patches = [
-    (fetchurl {
-      # Add gobject-2 to .pc file
-      url = "https://gitlab.gnome.org/GNOME/pango/commit/546f4c242d6f4fe312de3b7c918a848e5172e18d.patch";
-      sha256 = "034na38cq98vk8gggn3yfr65jmv3jgig8d25zg89wydrandp14yr";
-    })
+    (
+      fetchurl {
+        # Add gobject-2 to .pc file
+        url = "https://gitlab.gnome.org/GNOME/pango/commit/546f4c242d6f4fe312de3b7c918a848e5172e18d.patch";
+        sha256 = "034na38cq98vk8gggn3yfr65jmv3jgig8d25zg89wydrandp14yr";
+      }
+    )
   ];
 
   mesonFlags = [

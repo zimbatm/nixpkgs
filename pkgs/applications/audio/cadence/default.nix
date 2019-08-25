@@ -6,7 +6,7 @@
 , python3Packages
 }:
 
- stdenv.mkDerivation rec {
+stdenv.mkDerivation rec {
   version = "0.9.0";
   pname = "cadence";
 

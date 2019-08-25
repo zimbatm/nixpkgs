@@ -9,8 +9,9 @@ let
     HomepageLocation = cfg.homepageLocation;
     DefaultSearchProviderSearchURL = cfg.defaultSearchProviderSearchURL;
     DefaultSearchProviderSuggestURL = cfg.defaultSearchProviderSuggestURL;
-    ExtensionInstallForcelist = map (extension:
-      "${extension};https://clients2.google.com/service/update2/crx"
+    ExtensionInstallForcelist = map (
+      extension:
+        "${extension};https://clients2.google.com/service/update2/crx"
     ) cfg.extensions;
   };
 in

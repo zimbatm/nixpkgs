@@ -1,10 +1,24 @@
-{ stdenv, fetchurl, pkgconfig, intltool
-, gtk, dbus-glib, libstartup_notification, libnotify, libexif, pcre, udev
-, exo, libxfce4util, xfconf, xfce4-panel, hicolor-icon-theme, wrapGAppsHook
+{ stdenv
+, fetchurl
+, pkgconfig
+, intltool
+, gtk
+, dbus-glib
+, libstartup_notification
+, libnotify
+, libexif
+, pcre
+, udev
+, exo
+, libxfce4util
+, xfconf
+, xfce4-panel
+, hicolor-icon-theme
+, wrapGAppsHook
 }:
 
 stdenv.mkDerivation rec {
-  p_name  = "thunar";
+  p_name = "thunar";
   ver_maj = "1.6";
   ver_min = "10";
 
@@ -24,8 +38,17 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ pkgconfig wrapGAppsHook ];
   buildInputs = [
     intltool
-    gtk dbus-glib libstartup_notification libnotify libexif pcre udev
-    exo libxfce4util xfconf xfce4-panel
+    gtk
+    dbus-glib
+    libstartup_notification
+    libnotify
+    libexif
+    pcre
+    udev
+    exo
+    libxfce4util
+    xfconf
+    xfce4-panel
     hicolor-icon-theme
   ];
   # TODO: optionality?

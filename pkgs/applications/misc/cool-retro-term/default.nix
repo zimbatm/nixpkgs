@@ -1,5 +1,13 @@
-{ stdenv, fetchFromGitHub, mkDerivation, qtbase, qtquick1, qmltermwidget
-, qtquickcontrols, qtgraphicaleffects, qmake }:
+{ stdenv
+, fetchFromGitHub
+, mkDerivation
+, qtbase
+, qtquick1
+, qmltermwidget
+, qtquickcontrols
+, qtgraphicaleffects
+, qmake
+}:
 
 mkDerivation rec {
   version = "1.1.1";
@@ -25,9 +33,11 @@ mkDerivation rec {
     mv $out/usr/share $out/share
     mv $out/usr/bin $out/bin
     rmdir $out/usr
-  '' + stdenv.lib.optionalString stdenv.isDarwin ''
-    ln -s $out/bin/cool-retro-term.app/Contents/MacOS/cool-retro-term $out/bin/cool-retro-term
-  '';
+  ''
+  + stdenv.lib.optionalString stdenv.isDarwin ''
+      ln -s $out/bin/cool-retro-term.app/Contents/MacOS/cool-retro-term $out/bin/cool-retro-term
+    ''
+  ;
 
   enableParallelBuilding = true;
 

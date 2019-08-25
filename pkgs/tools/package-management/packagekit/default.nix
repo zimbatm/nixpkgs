@@ -1,11 +1,27 @@
-{ stdenv, fetchFromGitHub, lib
-, intltool, glib, pkgconfig, polkit, python, sqlite
-, gobject-introspection, vala, gtk-doc, autoreconfHook, autoconf-archive
-# TODO: set enableNixBackend to true, as soon as it builds
-, nix, enableNixBackend ? false, boost
+{ stdenv
+, fetchFromGitHub
+, lib
+, intltool
+, glib
+, pkgconfig
+, polkit
+, python
+, sqlite
+, gobject-introspection
+, vala
+, gtk-doc
+, autoreconfHook
+, autoconf-archive
+  # TODO: set enableNixBackend to true, as soon as it builds
+, nix
+, enableNixBackend ? false
+, boost
 , enableCommandNotFound ? false
-, enableBashCompletion ? false, bash-completion ? null
-, enableSystemd ? stdenv.isLinux, systemd }:
+, enableBashCompletion ? false
+, bash-completion ? null
+, enableSystemd ? stdenv.isLinux
+, systemd
+}:
 
 stdenv.mkDerivation rec {
   name = "packagekit-${version}";
@@ -16,13 +32,14 @@ stdenv.mkDerivation rec {
   src = fetchFromGitHub {
     owner = "hughsie";
     repo = "PackageKit";
-    rev = "PACKAGEKIT_${lib.replaceStrings ["."] ["_"] version}";
+    rev = "PACKAGEKIT_${lib.replaceStrings [ "." ] [ "_" ] version}";
     sha256 = "02wq3jw3mkdld90irh5vdfd5bri2g1p89mhrmj56kvif1fqak46x";
   };
 
   buildInputs = [ glib polkit python gobject-introspection ]
-                  ++ lib.optional enableSystemd systemd
-                  ++ lib.optional enableBashCompletion bash-completion;
+    ++ lib.optional enableSystemd systemd
+    ++ lib.optional enableBashCompletion bash-completion
+    ;
   propagatedBuildInputs = [ sqlite nix boost ];
   nativeBuildInputs = [ vala intltool pkgconfig autoreconfHook autoconf-archive gtk-doc ];
 
@@ -44,7 +61,8 @@ stdenv.mkDerivation rec {
   ]
   ++ lib.optional enableNixBackend "--enable-nix"
   ++ lib.optional (!enableBashCompletion) "--disable-bash-completion"
-  ++ lib.optional (!enableCommandNotFound) "--disable-command-not-found";
+  ++ lib.optional (!enableCommandNotFound) "--disable-command-not-found"
+  ;
 
   enableParallelBuilding = true;
 

@@ -9,9 +9,9 @@ stdenv.mkDerivation rec {
     sha256 = "0j5zvsx51dg5r7sli7bakv7gfd29z890h0xzi876pg9vywwz9w7l";
   };
 
-  buildInputs = [which ocaml findlib];
+  buildInputs = [ which ocaml findlib ];
 
-  propagatedBuildInputs = [openssl];
+  propagatedBuildInputs = [ openssl ];
 
   dontAddPrefix = true;
 

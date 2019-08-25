@@ -1,4 +1,7 @@
-{ stdenv, fetchurl, config, makeWrapper
+{ stdenv
+, fetchurl
+, config
+, makeWrapper
 , gconf
 , alsaLib
 , at-spi2-atk
@@ -49,14 +52,14 @@ with (import ./release_sources.nix);
 
 let
   arch = if stdenv.hostPlatform.system == "i686-linux"
-    then "linux-i686"
-    else "linux-x86_64";
+  then "linux-i686"
+  else "linux-x86_64";
 
   isPrefixOf = prefix: string:
     builtins.substring 0 (builtins.stringLength prefix) string == prefix;
 
   sourceMatches = locale: source:
-      (isPrefixOf source.locale locale) && source.arch == arch;
+    (isPrefixOf source.locale locale) && source.arch == arch;
 
   systemLocale = config.i18n.defaultLocale or "en-US";
 
@@ -78,7 +81,8 @@ stdenv.mkDerivation {
   phases = "unpackPhase installPhase";
 
   libPath = stdenv.lib.makeLibraryPath
-    [ stdenv.cc.cc
+    [
+      stdenv.cc.cc
       gconf
       alsaLib
       at-spi2-atk
@@ -114,9 +118,12 @@ stdenv.mkDerivation {
       nspr
       nss
       pango
-    ] + ":" + stdenv.lib.makeSearchPathOutput "lib" "lib64" [
+    ]
+  + ":"
+  + stdenv.lib.makeSearchPathOutput "lib" "lib64" [
       stdenv.cc.cc
-    ];
+    ]
+  ;
 
   buildInputs = [ gtk3 gnome3.adwaita-icon-theme ];
 

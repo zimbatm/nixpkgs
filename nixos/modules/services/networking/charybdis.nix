@@ -69,41 +69,45 @@ in
 
   ###### implementation
 
-  config = mkIf cfg.enable (lib.mkMerge [
-    {
-      users.users = singleton {
-        name = cfg.user;
-        description = "Charybdis IRC daemon user";
-        uid = config.ids.uids.ircd;
-        group = cfg.group;
-      };
-
-      users.groups = singleton {
-        name = cfg.group;
-        gid = config.ids.gids.ircd;
-      };
-
-      systemd.tmpfiles.rules = [
-        "d ${cfg.statedir} - ${cfg.user} ${cfg.group} - -"
-      ];
-
-      systemd.services.charybdis = {
-        description = "Charybdis IRC daemon";
-        wantedBy = [ "multi-user.target" ];
-        environment = {
-          BANDB_DBPATH = "${cfg.statedir}/ban.db";
+  config = mkIf cfg.enable (
+    lib.mkMerge [
+      {
+        users.users = singleton {
+          name = cfg.user;
+          description = "Charybdis IRC daemon user";
+          uid = config.ids.uids.ircd;
+          group = cfg.group;
         };
-        serviceConfig = {
-          ExecStart   = "${charybdis}/bin/charybdis -foreground -logfile /dev/stdout -configfile ${configFile}";
-          Group = cfg.group;
-          User = cfg.user;
-        };
-      };
 
-    }
-    
-    (mkIf (cfg.motd != null) {
-      environment.etc."charybdis/ircd.motd".text = cfg.motd;
-    })
-  ]);
+        users.groups = singleton {
+          name = cfg.group;
+          gid = config.ids.gids.ircd;
+        };
+
+        systemd.tmpfiles.rules = [
+          "d ${cfg.statedir} - ${cfg.user} ${cfg.group} - -"
+        ];
+
+        systemd.services.charybdis = {
+          description = "Charybdis IRC daemon";
+          wantedBy = [ "multi-user.target" ];
+          environment = {
+            BANDB_DBPATH = "${cfg.statedir}/ban.db";
+          };
+          serviceConfig = {
+            ExecStart = "${charybdis}/bin/charybdis -foreground -logfile /dev/stdout -configfile ${configFile}";
+            Group = cfg.group;
+            User = cfg.user;
+          };
+        };
+
+      }
+
+      (
+        mkIf (cfg.motd != null) {
+          environment.etc."charybdis/ircd.motd".text = cfg.motd;
+        }
+      )
+    ]
+  );
 }

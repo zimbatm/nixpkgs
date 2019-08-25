@@ -2,7 +2,8 @@
 
 let
   date = "2016-05-13";
-in fetchzip {
+in
+fetchzip {
   name = "siji-${date}";
 
   url = https://github.com/stark/siji/archive/95369afac3e661cb6d3329ade5219992c88688c1.zip;

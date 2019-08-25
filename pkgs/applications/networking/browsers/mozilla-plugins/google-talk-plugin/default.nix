@@ -1,6 +1,20 @@
-{ stdenv, fetchurl, libGL, xorg, cairo
-, libpng, gtk2, glib, gdk-pixbuf, fontconfig, freetype, curl
-, dbus-glib, alsaLib, libpulseaudio, systemd, pango
+{ stdenv
+, fetchurl
+, libGL
+, xorg
+, cairo
+, libpng
+, gtk2
+, glib
+, gdk-pixbuf
+, fontconfig
+, freetype
+, curl
+, dbus-glib
+, alsaLib
+, libpulseaudio
+, systemd
+, pango
 }:
 
 with stdenv.lib;
@@ -10,7 +24,8 @@ let
   baseURL = "http://dl.google.com/linux/talkplugin/deb/pool/main/g/google-talkplugin";
 
   rpathPlugin = makeLibraryPath
-    [ libGL
+    [
+      libGL
       xorg.libXt
       xorg.libX11
       xorg.libXrender
@@ -24,7 +39,8 @@ let
     ];
 
   rpathProgram = makeLibraryPath
-    [ gdk-pixbuf
+    [
+      gdk-pixbuf
       glib
       gtk2
       xorg.libX11

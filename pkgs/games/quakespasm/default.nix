@@ -12,7 +12,10 @@ stdenv.mkDerivation rec {
   sourceRoot = "${name}/Quake";
 
   buildInputs = [
-    gzip SDL libvorbis libmad
+    gzip
+    SDL
+    libvorbis
+    libmad
   ];
 
   buildFlags = [ "DO_USERDIRS=1" ];

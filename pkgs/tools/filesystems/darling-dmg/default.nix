@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, fetchpatch, cmake, fuse, zlib, bzip2, openssl, libxml2, icu } :
+{ stdenv, fetchFromGitHub, fetchpatch, cmake, fuse, zlib, bzip2, openssl, libxml2, icu }:
 
 stdenv.mkDerivation rec {
   name = "darling-dmg-${version}";
@@ -12,10 +12,12 @@ stdenv.mkDerivation rec {
   };
 
   patches = [
-    (fetchpatch {
-      url = "https://github.com/darlinghq/darling-dmg/commit/cbb0092264b5c5cf3e92d6c2de23f02d859ebf44.patch";
-    sha256 = "05fhgn5c09f1rva6bvbq16nhlkblrhscbf69k04ajwdh7y98sw39";
-     })
+    (
+      fetchpatch {
+        url = "https://github.com/darlinghq/darling-dmg/commit/cbb0092264b5c5cf3e92d6c2de23f02d859ebf44.patch";
+        sha256 = "05fhgn5c09f1rva6bvbq16nhlkblrhscbf69k04ajwdh7y98sw39";
+      }
+    )
   ];
 
   buildInputs = [ cmake fuse openssl zlib bzip2 libxml2 icu ];

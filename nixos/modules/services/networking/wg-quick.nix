@@ -210,9 +210,10 @@ let
     let
       preUpFile = if values.preUp != "" then writeScriptFile "preUp.sh" values.preUp else null;
       postUp =
-            optional (values.privateKeyFile != null) "wg set ${name} private-key <(cat ${values.privateKeyFile})" ++
-            (concatMap (peer: optional (peer.presharedKeyFile != null) "wg set ${name} peer ${peer.publicKey} preshared-key <(cat ${peer.presharedKeyFile})") values.peers) ++
-            optional (values.postUp != null) values.postUp;
+        optional (values.privateKeyFile != null) "wg set ${name} private-key <(cat ${values.privateKeyFile})"
+        ++ (concatMap (peer: optional (peer.presharedKeyFile != null) "wg set ${name} peer ${peer.publicKey} preshared-key <(cat ${peer.presharedKeyFile})") values.peers)
+        ++ optional (values.postUp != null) values.postUp
+        ;
       postUpFile = if postUp != [] then writeScriptFile "postUp.sh" (concatMapStringsSep "\n" (line: line) postUp) else null;
       preDownFile = if values.preDown != "" then writeScriptFile "preDown.sh" values.preDown else null;
       postDownFile = if values.postDown != "" then writeScriptFile "postDown.sh" values.postDown else null;
@@ -221,59 +222,64 @@ let
         executable = false;
         destination = "/${name}.conf";
         text =
-        ''
-        [interface]
-        ${concatMapStringsSep "\n" (address:
-          "Address = ${address}"
-        ) values.address}
-        ${concatMapStringsSep "\n" (dns:
-          "DNS = ${dns}"
-        ) values.dns}
-        '' +
-        optionalString (values.table != null) "Table = ${values.table}\n" +
-        optionalString (values.mtu != null) "MTU = ${toString values.mtu}\n" +
-        optionalString (values.privateKey != null) "PrivateKey = ${values.privateKey}\n" +
-        optionalString (values.listenPort != null) "ListenPort = ${toString values.listenPort}\n" +
-        optionalString (preUpFile != null) "PreUp = ${preUpFile}\n" +
-        optionalString (postUpFile != null) "PostUp = ${postUpFile}\n" +
-        optionalString (preDownFile != null) "PreDown = ${preDownFile}\n" +
-        optionalString (postDownFile != null) "PostDown = ${postDownFile}\n" +
-        concatMapStringsSep "\n" (peer:
-          assert assertMsg (!((peer.presharedKeyFile != null) && (peer.presharedKey != null))) "Only one of presharedKey or presharedKeyFile may be set";
-          "[Peer]\n" +
-          "PublicKey = ${peer.publicKey}\n" +
-          optionalString (peer.presharedKey != null) "PresharedKey = ${peer.presharedKey}\n" +
-          optionalString (peer.endpoint != null) "Endpoint = ${peer.endpoint}\n" +
-          optionalString (peer.persistentKeepalive != null) "PersistentKeepalive = ${toString peer.persistentKeepalive}\n" +
-          optionalString (peer.allowedIPs != []) "AllowedIPs = ${concatStringsSep "," peer.allowedIPs}\n"
-        ) values.peers;
+          ''
+            [interface]
+            ${concatMapStringsSep "\n" (
+            address:
+              "Address = ${address}"
+          ) values.address}
+            ${concatMapStringsSep "\n" (
+            dns:
+              "DNS = ${dns}"
+          ) values.dns}
+          ''
+          + optionalString (values.table != null) "Table = ${values.table}\n"
+          + optionalString (values.mtu != null) "MTU = ${toString values.mtu}\n"
+          + optionalString (values.privateKey != null) "PrivateKey = ${values.privateKey}\n"
+          + optionalString (values.listenPort != null) "ListenPort = ${toString values.listenPort}\n"
+          + optionalString (preUpFile != null) "PreUp = ${preUpFile}\n"
+          + optionalString (postUpFile != null) "PostUp = ${postUpFile}\n"
+          + optionalString (preDownFile != null) "PreDown = ${preDownFile}\n"
+          + optionalString (postDownFile != null) "PostDown = ${postDownFile}\n"
+          + concatMapStringsSep "\n" (
+              peer:
+                assert assertMsg (!((peer.presharedKeyFile != null) && (peer.presharedKey != null))) "Only one of presharedKey or presharedKeyFile may be set";
+                "[Peer]\n"
+                + "PublicKey = ${peer.publicKey}\n"
+                + optionalString (peer.presharedKey != null) "PresharedKey = ${peer.presharedKey}\n"
+                + optionalString (peer.endpoint != null) "Endpoint = ${peer.endpoint}\n"
+                + optionalString (peer.persistentKeepalive != null) "PersistentKeepalive = ${toString peer.persistentKeepalive}\n"
+                + optionalString (peer.allowedIPs != []) "AllowedIPs = ${concatStringsSep "," peer.allowedIPs}\n"
+            ) values.peers
+        ;
       };
       configPath = "${configDir}/${name}.conf";
     in
-    nameValuePair "wg-quick-${name}"
-      {
-        description = "wg-quick WireGuard Tunnel - ${name}";
-        requires = [ "network-online.target" ];
-        after = [ "network.target" "network-online.target" ];
-        wantedBy = [ "multi-user.target" ];
-        environment.DEVICE = name;
-        path = [ pkgs.kmod pkgs.wireguard-tools ];
+      nameValuePair "wg-quick-${name}"
+        {
+          description = "wg-quick WireGuard Tunnel - ${name}";
+          requires = [ "network-online.target" ];
+          after = [ "network.target" "network-online.target" ];
+          wantedBy = [ "multi-user.target" ];
+          environment.DEVICE = name;
+          path = [ pkgs.kmod pkgs.wireguard-tools ];
 
-        serviceConfig = {
-          Type = "oneshot";
-          RemainAfterExit = true;
+          serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+          };
+
+          script = ''
+            ${optionalString (!config.boot.isContainer) "modprobe wireguard"}
+            wg-quick up ${configPath}
+          '';
+
+          preStop = ''
+            wg-quick down ${configPath}
+          '';
         };
-
-        script = ''
-          ${optionalString (!config.boot.isContainer) "modprobe wireguard"}
-          wg-quick up ${configPath}
-        '';
-
-        preStop = ''
-          wg-quick down ${configPath}
-        '';
-      };
-in {
+in
+{
 
   ###### interface
 
@@ -287,9 +293,11 @@ in {
             address = [ "192.168.20.4/24" ];
             privateKey = "yAnz5TF+lXXJte14tji3zlMNq+hd2rYUIgJBgB3fBmk=";
             peers = [
-              { allowedIPs = [ "192.168.20.1/32" ];
-                publicKey  = "xTIBA5rboUvnH4htodjb6e697QjLERt1NAB4mZqp8Dg=";
-                endpoint   = "demo.wireguard.io:12913"; }
+              {
+                allowedIPs = [ "192.168.20.1/32" ];
+                publicKey = "xTIBA5rboUvnH4htodjb6e697QjLERt1NAB4mZqp8Dg=";
+                endpoint = "demo.wireguard.io:12913";
+              }
             ];
           };
         };

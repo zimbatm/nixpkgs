@@ -1,5 +1,10 @@
-{ lib, stdenv, fetchurl, pkgconfig
-, libffi, libxml2, wayland
+{ lib
+, stdenv
+, fetchurl
+, pkgconfig
+, libffi
+, libxml2
+, wayland
 , expat ? null # Build wayland-scanner (currently cannot be disabled as of 1.7.0)
 }:
 
@@ -19,24 +24,28 @@ stdenv.mkDerivation rec {
 
   configureFlags = [
     "--disable-documentation"
-  ] ++ lib.optionals (stdenv.buildPlatform != stdenv.hostPlatform) [
-    "--with-host-scanner"
-  ];
+  ]
+  ++ lib.optionals (stdenv.buildPlatform != stdenv.hostPlatform) [
+       "--with-host-scanner"
+     ]
+  ;
 
   nativeBuildInputs = [
     pkgconfig
-  ] ++ lib.optionals (stdenv.buildPlatform != stdenv.hostPlatform) [
-    # for wayland-scanner during build
-    wayland
-  ];
+  ]
+  ++ lib.optionals (stdenv.buildPlatform != stdenv.hostPlatform) [
+       # for wayland-scanner during build
+       wayland
+     ]
+  ;
 
   buildInputs = [ libffi /* docbook_xsl doxygen graphviz libxslt xmlto */ expat libxml2 ];
 
   meta = {
     description = "Reference implementation of the wayland protocol";
-    homepage    = https://wayland.freedesktop.org/;
-    license     = lib.licenses.mit;
-    platforms   = lib.platforms.linux;
+    homepage = https://wayland.freedesktop.org/;
+    license = lib.licenses.mit;
+    platforms = lib.platforms.linux;
     maintainers = with lib.maintainers; [ codyopel ];
   };
 

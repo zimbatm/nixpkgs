@@ -17,7 +17,9 @@ let
     FRAB_PROTOCOL = cfg.protocol;
     FROM_EMAIL = cfg.fromEmail;
     RAILS_SERVE_STATIC_FILES = "1";
-  } // cfg.extraEnvironment;
+  }
+  // cfg.extraEnvironment
+  ;
 
   frab-rake = pkgs.stdenv.mkDerivation rec {
     name = "frab-rake";
@@ -32,7 +34,7 @@ let
           --run 'cd ${package}/share/frab'
       makeWrapper $out/bin/frab-bundle $out/bin/frab-rake \
           --add-flags "exec rake"
-     '';
+    '';
   };
 
 in
@@ -174,7 +176,8 @@ in
     environment.systemPackages = [ frab-rake ];
 
     users.users = [
-      { name = cfg.user;
+      {
+        name = cfg.user;
         group = cfg.group;
         home = "${cfg.statePath}";
       }
@@ -214,8 +217,9 @@ in
         RestartSec = "10s";
         RuntimeDirectory = "frab";
         WorkingDirectory = "${package}/share/frab";
-        ExecStart = "${frab-rake}/bin/frab-bundle exec rails server " +
-          "--binding=${cfg.listenAddress} --port=${toString cfg.listenPort}";
+        ExecStart = "${frab-rake}/bin/frab-bundle exec rails server "
+          + "--binding=${cfg.listenAddress} --port=${toString cfg.listenPort}"
+          ;
       };
     };
 

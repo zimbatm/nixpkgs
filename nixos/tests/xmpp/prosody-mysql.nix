@@ -9,12 +9,14 @@ import ../make-test.nix {
     };
     server = { config, pkgs, ... }: {
       nixpkgs.overlays = [
-        (self: super: {
-          prosody = super.prosody.override {
-            withDBI = true;
-            withExtraLibs = [ pkgs.luaPackages.luadbi-mysql ];
-          };
-        })
+        (
+          self: super: {
+            prosody = super.prosody.override {
+              withDBI = true;
+              withExtraLibs = [ pkgs.luaPackages.luadbi-mysql ];
+            };
+          }
+        )
       ];
       networking.extraHosts = ''
         ${config.networking.primaryIPAddress} example.com
@@ -74,4 +76,3 @@ import ../make-test.nix {
     $server->succeed('prosodyctl deluser azurediamond@example.com');
   '';
 }
-

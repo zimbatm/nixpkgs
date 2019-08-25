@@ -6,7 +6,8 @@ let
 
   cfg = config.services.postsrsd;
 
-in {
+in
+{
 
   ###### interface
 
@@ -32,7 +33,7 @@ in {
       };
 
       separator = mkOption {
-        type = types.enum ["-" "=" "+"];
+        type = types.enum [ "-" "=" "+" ];
         default = "=";
         description = "First separator character in generated addresses";
       };
@@ -90,16 +91,22 @@ in {
 
     services.postsrsd.domain = mkDefault config.networking.hostName;
 
-    users.users = optionalAttrs (cfg.user == "postsrsd") (singleton
-      { name = "postsrsd";
-        group = cfg.group;
-        uid = config.ids.uids.postsrsd;
-      });
+    users.users = optionalAttrs (cfg.user == "postsrsd") (
+      singleton
+        {
+          name = "postsrsd";
+          group = cfg.group;
+          uid = config.ids.uids.postsrsd;
+        }
+    );
 
-    users.groups = optionalAttrs (cfg.group == "postsrsd") (singleton
-      { name = "postsrsd";
-        gid = config.ids.gids.postsrsd;
-      });
+    users.groups = optionalAttrs (cfg.group == "postsrsd") (
+      singleton
+        {
+          name = "postsrsd";
+          gid = config.ids.gids.postsrsd;
+        }
+    );
 
     systemd.services.postsrsd = {
       description = "PostSRSd SRS rewriting server";

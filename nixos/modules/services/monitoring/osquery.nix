@@ -41,11 +41,13 @@ in
       };
 
       extraConfig = mkOption {
-        type = types.attrs // {
-          merge = loc: foldl' (res: def: recursiveUpdate res def.value) {};
-        };
+        type = types.attrs
+          // {
+               merge = loc: foldl' (res: def: recursiveUpdate res def.value) {};
+             }
+          ;
         description = "Extra config to be recursively merged into the JSON config file.";
-        default = { };
+        default = {};
       };
     };
 

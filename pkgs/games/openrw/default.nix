@@ -1,5 +1,17 @@
-{ stdenv, fetchgit, cmake, sfml, libGLU_combined, bullet, glm, libmad, xlibsWrapper, openal
-, SDL2, boost, ffmpeg }:
+{ stdenv
+, fetchgit
+, cmake
+, sfml
+, libGLU_combined
+, bullet
+, glm
+, libmad
+, xlibsWrapper
+, openal
+, SDL2
+, boost
+, ffmpeg
+}:
 
 stdenv.mkDerivation rec {
   version = "2017-09-17";
@@ -13,7 +25,17 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [
-    cmake sfml libGLU_combined bullet glm libmad xlibsWrapper openal SDL2 boost ffmpeg
+    cmake
+    sfml
+    libGLU_combined
+    bullet
+    glm
+    libmad
+    xlibsWrapper
+    openal
+    SDL2
+    boost
+    ffmpeg
   ];
 
   meta = with stdenv.lib; {

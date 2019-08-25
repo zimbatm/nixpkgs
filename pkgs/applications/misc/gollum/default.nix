@@ -1,5 +1,10 @@
-{ stdenv, bundlerEnv, ruby, makeWrapper, bundlerUpdateScript
-, git }:
+{ stdenv
+, bundlerEnv
+, ruby
+, makeWrapper
+, bundlerUpdateScript
+, git
+}:
 
 stdenv.mkDerivation rec {
   name = "${pname}-${version}";

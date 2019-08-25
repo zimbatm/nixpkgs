@@ -51,10 +51,12 @@ stdenv.mkDerivation rec {
 
   patches = [
     # Fix hardcoded FHS gsettings path
-    (fetchpatch {
-      url = "https://github.com/calo001/fondo/commit/98afdd834201321a3242f0b53bfba4b2ffa04a4c.patch";
-      sha256 = "0vvgbgjja6vyrk6in3sgv8jbl4bwxkm6fhllgjzq7r65gkj4jg79";
-    })
+    (
+      fetchpatch {
+        url = "https://github.com/calo001/fondo/commit/98afdd834201321a3242f0b53bfba4b2ffa04a4c.patch";
+        sha256 = "0vvgbgjja6vyrk6in3sgv8jbl4bwxkm6fhllgjzq7r65gkj4jg79";
+      }
+    )
   ];
 
   postPatch = ''

@@ -22,9 +22,11 @@ buildPythonPackage rec {
     uamqp
     azure-common
     msrestazure
-  ] ++ lib.optionals (!isPy3k) [
-    futures
-  ];
+  ]
+  ++ lib.optionals (!isPy3k) [
+       futures
+     ]
+  ;
 
   # has no tests
   doCheck = false;

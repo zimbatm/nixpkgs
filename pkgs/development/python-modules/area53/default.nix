@@ -1,5 +1,8 @@
-{ lib, buildPythonPackage, fetchPypi
-, boto }:
+{ lib
+, buildPythonPackage
+, fetchPypi
+, boto
+}:
 
 buildPythonPackage rec {
   pname = "Area53";

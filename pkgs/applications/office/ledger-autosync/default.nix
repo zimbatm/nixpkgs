@@ -4,7 +4,7 @@ python3Packages.buildPythonApplication rec {
   pname = "ledger-autosync";
   version = "1.0.0";
 
-# no tests included in PyPI tarball
+  # no tests included in PyPI tarball
   src = fetchFromGitHub {
     owner = "egh";
     repo = "ledger-autosync";
@@ -32,7 +32,8 @@ python3Packages.buildPythonApplication rec {
     pycparser
     secretstorage
     six
-  ] ++ stdenv.lib.optional useLedger ledger
+  ]
+    ++ stdenv.lib.optional useLedger ledger
     ++ stdenv.lib.optional useHledger hledger;
 
   # Checks require ledger as a python package,

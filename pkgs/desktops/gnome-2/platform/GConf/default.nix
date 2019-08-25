@@ -12,9 +12,10 @@ stdenv.mkDerivation rec {
   outputs = [ "out" "dev" "man" ];
 
   buildInputs = [ ORBit2 libxml2 python2 ]
-    # polkit requires pam, which requires shadow.h, which is not available on
-    # darwin
-    ++ stdenv.lib.optional (!stdenv.isDarwin) polkit;
+  # polkit requires pam, which requires shadow.h, which is not available on
+  # darwin
+    ++ stdenv.lib.optional (!stdenv.isDarwin) polkit
+    ;
 
   propagatedBuildInputs = [ glib dbus-glib ];
 

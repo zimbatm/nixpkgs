@@ -1,5 +1,8 @@
-{ stdenv, fetchFromGitHub
-, inkscape, xcursorgen }:
+{ stdenv
+, fetchFromGitHub
+, inkscape
+, xcursorgen
+}:
 
 stdenv.mkDerivation rec {
   pname = "capitaine-cursors";
@@ -16,7 +19,7 @@ stdenv.mkDerivation rec {
     patchShebangs .
   '';
 
-  buildInputs  =[
+  buildInputs = [
     inkscape
     xcursorgen
   ];

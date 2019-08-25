@@ -1,7 +1,11 @@
 { useLua ? !stdenv.isDarwin
 , usePcre ? true
-, stdenv, fetchurl
-, openssl, zlib, lua5_3 ? null, pcre ? null
+, stdenv
+, fetchurl
+, openssl
+, zlib
+, lua5_3 ? null
+, pcre ? null
 }:
 
 assert useLua -> lua5_3 != null;
@@ -19,28 +23,38 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ openssl zlib ]
     ++ stdenv.lib.optional useLua lua5_3
-    ++ stdenv.lib.optional usePcre pcre;
+    ++ stdenv.lib.optional usePcre pcre
+    ;
 
   # TODO: make it work on bsd as well
   makeFlags = [
     "PREFIX=\${out}"
-    ("TARGET=" + (if stdenv.isSunOS  then "solaris"
-             else if stdenv.isLinux  then "linux2628"
-             else if stdenv.isDarwin then "osx"
-             else "generic"))
+    (
+      "TARGET="
+      + (
+          if stdenv.isSunOS then "solaris"
+          else if stdenv.isLinux then "linux2628"
+          else if stdenv.isDarwin then "osx"
+          else "generic"
+        )
+    )
   ];
   buildFlags = [
     "USE_OPENSSL=yes"
     "USE_ZLIB=yes"
-  ] ++ stdenv.lib.optionals usePcre [
-    "USE_PCRE=yes"
-    "USE_PCRE_JIT=yes"
-  ] ++ stdenv.lib.optionals useLua [
-    "USE_LUA=yes"
-    "LUA_LIB=${lua5_3}/lib"
-    "LUA_INC=${lua5_3}/include"
-  ] ++ stdenv.lib.optional stdenv.isDarwin "CC=cc"
-    ++ stdenv.lib.optional stdenv.isLinux "USE_GETADDRINFO=1";
+  ]
+  ++ stdenv.lib.optionals usePcre [
+       "USE_PCRE=yes"
+       "USE_PCRE_JIT=yes"
+     ]
+  ++ stdenv.lib.optionals useLua [
+       "USE_LUA=yes"
+       "LUA_LIB=${lua5_3}/lib"
+       "LUA_INC=${lua5_3}/include"
+     ]
+  ++ stdenv.lib.optional stdenv.isDarwin "CC=cc"
+  ++ stdenv.lib.optional stdenv.isLinux "USE_GETADDRINFO=1"
+  ;
 
   meta = {
     description = "Reliable, high performance TCP/HTTP load balancer";

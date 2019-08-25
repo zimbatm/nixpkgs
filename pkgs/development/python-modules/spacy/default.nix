@@ -38,24 +38,26 @@ buildPythonPackage rec {
   '';
 
   propagatedBuildInputs = [
-   numpy
-   murmurhash
-   cymem
-   preshed
-   thinc
-   plac
-   ujson
-   dill
-   requests
-   regex
-   ftfy
-   msgpack-python
-   msgpack-numpy
-   jsonschema
-   blis
-   wasabi
-   srsly
-  ] ++ lib.optional (pythonOlder "3.4") pathlib;
+    numpy
+    murmurhash
+    cymem
+    preshed
+    thinc
+    plac
+    ujson
+    dill
+    requests
+    regex
+    ftfy
+    msgpack-python
+    msgpack-numpy
+    jsonschema
+    blis
+    wasabi
+    srsly
+  ]
+  ++ lib.optional (pythonOlder "3.4") pathlib
+  ;
 
   checkInputs = [
     pytest
@@ -71,5 +73,5 @@ buildPythonPackage rec {
     homepage = https://github.com/explosion/spaCy;
     license = licenses.mit;
     maintainers = with maintainers; [ danieldk sdll ];
-    };
+  };
 }

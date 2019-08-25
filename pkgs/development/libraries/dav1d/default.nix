@@ -1,6 +1,11 @@
-{ stdenv, fetchFromGitLab
-, meson, ninja, nasm, pkgconfig
-, withTools ? false, SDL2
+{ stdenv
+, fetchFromGitLab
+, meson
+, ninja
+, nasm
+, pkgconfig
+, withTools ? false
+, SDL2
 }:
 
 stdenv.mkDerivation rec {
@@ -19,7 +24,7 @@ stdenv.mkDerivation rec {
   # TODO: doxygen (currently only HTML and not build by default).
   buildInputs = stdenv.lib.optional withTools SDL2;
 
-  mesonFlags= [
+  mesonFlags = [
     "-Denable_tools=${stdenv.lib.boolToString withTools}"
   ];
 

@@ -1,6 +1,11 @@
-{ stdenv, fetchgit, zlib
-, gnutlsSupport ? false, gnutls ? null, nettle ? null
-, opensslSupport ? true, openssl ? null
+{ stdenv
+, fetchgit
+, zlib
+, gnutlsSupport ? false
+, gnutls ? null
+, nettle ? null
+, opensslSupport ? true
+, openssl ? null
 }:
 
 # Must have an ssl library enabled
@@ -24,19 +29,21 @@ stdenv.mkDerivation rec {
     ++ optional gnutlsSupport "CRYPTO=GNUTLS"
     ++ optional opensslSupport "CRYPTO=OPENSSL"
     ++ optional stdenv.isDarwin "SYS=darwin"
-    ++ optional stdenv.cc.isClang "CC=clang";
+    ++ optional stdenv.cc.isClang "CC=clang"
+    ;
 
   propagatedBuildInputs = [ zlib ]
     ++ optionals gnutlsSupport [ gnutls nettle ]
-    ++ optional opensslSupport openssl;
+    ++ optional opensslSupport openssl
+    ;
 
   outputs = [ "out" "dev" ];
 
   meta = {
     description = "Toolkit for RTMP streams";
-    homepage    = http://rtmpdump.mplayerhq.hu/;
-    license     = licenses.gpl2;
-    platforms   = platforms.unix;
+    homepage = http://rtmpdump.mplayerhq.hu/;
+    license = licenses.gpl2;
+    platforms = platforms.unix;
     maintainers = with maintainers; [ codyopel ];
   };
 }

@@ -1,7 +1,20 @@
-{ stdenv, fetchFromGitHub, mkDerivation
-, qtbase, qtsvg, qtserialport, qtwebkit, qtmultimedia, qttools
-, qtconnectivity, qtcharts
-, yacc, flex, zlib, qmake, makeDesktopItem, makeWrapper
+{ stdenv
+, fetchFromGitHub
+, mkDerivation
+, qtbase
+, qtsvg
+, qtserialport
+, qtwebkit
+, qtmultimedia
+, qttools
+, qtconnectivity
+, qtcharts
+, yacc
+, flex
+, zlib
+, qmake
+, makeDesktopItem
+, makeWrapper
 }:
 
 let
@@ -14,7 +27,8 @@ let
     comment = "Performance software for cyclists, runners and triathletes";
     categories = "Application;Utility;";
   };
-in mkDerivation rec {
+in
+mkDerivation rec {
   name = "golden-cheetah-${version}";
   version = "3.5-DEV1903";
 
@@ -26,8 +40,15 @@ in mkDerivation rec {
   };
 
   buildInputs = [
-    qtbase qtsvg qtserialport qtwebkit qtmultimedia qttools zlib
-    qtconnectivity qtcharts
+    qtbase
+    qtsvg
+    qtserialport
+    qtwebkit
+    qtmultimedia
+    qttools
+    zlib
+    qtconnectivity
+    qtcharts
   ];
   nativeBuildInputs = [ flex makeWrapper qmake yacc ];
 

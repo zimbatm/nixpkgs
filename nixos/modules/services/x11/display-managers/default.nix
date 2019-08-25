@@ -29,11 +29,13 @@ let
 
   mkCases = session:
     concatStrings (
-      mapAttrsToList (name: starts: ''
-                       (${name})
-                         ${concatMapStringsSep "\n  " (n: n.start) starts}
-                         ;;
-                     '') (lib.groupBy (n: n.name) session)
+      mapAttrsToList (
+        name: starts: ''
+          (${name})
+            ${concatMapStringsSep "\n  " (n: n.start) starts}
+            ;;
+        ''
+      ) (lib.groupBy (n: n.name) session)
     );
 
   # file provided by services.xserver.displayManager.session.wrapper
@@ -47,29 +49,29 @@ let
       cd "$HOME"
 
       ${optionalString cfg.startDbusSession ''
-        if test -z "$DBUS_SESSION_BUS_ADDRESS"; then
-          exec ${pkgs.dbus.dbus-launch} --exit-with-session "$0" "$@"
-        fi
-      ''}
+      if test -z "$DBUS_SESSION_BUS_ADDRESS"; then
+        exec ${pkgs.dbus.dbus-launch} --exit-with-session "$0" "$@"
+      fi
+    ''}
 
       ${optionalString cfg.displayManager.job.logToJournal ''
-        if [ -z "$_DID_SYSTEMD_CAT" ]; then
-          export _DID_SYSTEMD_CAT=1
-          exec ${config.systemd.package}/bin/systemd-cat -t xsession "$0" "$@"
-        fi
-      ''}
+      if [ -z "$_DID_SYSTEMD_CAT" ]; then
+        export _DID_SYSTEMD_CAT=1
+        exec ${config.systemd.package}/bin/systemd-cat -t xsession "$0" "$@"
+      fi
+    ''}
 
       ${optionalString cfg.displayManager.job.logToFile ''
-        exec &> >(tee ~/.xsession-errors)
-      ''}
+      exec &> >(tee ~/.xsession-errors)
+    ''}
 
       # Start PulseAudio if enabled.
       ${optionalString (config.hardware.pulseaudio.enable) ''
-        # Publish access credentials in the root window.
-        if ${config.hardware.pulseaudio.package.out}/bin/pulseaudio --dump-modules | grep module-x11-publish &> /dev/null; then
-          ${config.hardware.pulseaudio.package.out}/bin/pactl load-module module-x11-publish "display=$DISPLAY"
-        fi
-      ''}
+      # Publish access credentials in the root window.
+      if ${config.hardware.pulseaudio.package.out}/bin/pulseaudio --dump-modules | grep module-x11-publish &> /dev/null; then
+        ${config.hardware.pulseaudio.package.out}/bin/pactl load-module module-x11-publish "display=$DISPLAY"
+      fi
+    ''}
 
       # Tell systemd about our $DISPLAY and $XAUTHORITY.
       # This is needed by the ssh-agent unit.
@@ -158,8 +160,8 @@ let
       esac
 
       ${optionalString cfg.updateDbusEnvironment ''
-        ${lib.getBin pkgs.dbus}/bin/dbus-update-activation-environment --systemd --all
-      ''}
+      ${lib.getBin pkgs.dbus}/bin/dbus-update-activation-environment --systemd --all
+    ''}
 
       test -n "$waitPID" && wait "$waitPID"
 
@@ -172,13 +174,15 @@ let
   # - https://standards.freedesktop.org/desktop-entry-spec/latest/
   # - https://standards.freedesktop.org/desktop-entry-spec/latest/ar01s06.html
   mkDesktops = names: pkgs.runCommand "desktops"
-    { # trivial derivation
+    {
+      # trivial derivation
       preferLocalBuild = true;
       allowSubstitutes = false;
     }
     ''
       mkdir -p "$out/share/xsessions"
-      ${concatMapStrings (n: ''
+      ${concatMapStrings (
+      n: ''
         cat - > "$out/share/xsessions/${n}.desktop" << EODESKTOP
         [Desktop Entry]
         Version=1.0
@@ -188,21 +192,26 @@ let
         Name=${n}
         Comment=
         EODESKTOP
-      '') names}
+      ''
+    ) names}
 
-      ${concatMapStrings (pkg: ''
+      ${concatMapStrings (
+      pkg: ''
         if test -d ${pkg}/share/xsessions; then
           ${xorg.lndir}/bin/lndir ${pkg}/share/xsessions $out/share/xsessions
         fi
-      '') cfg.displayManager.extraSessionFilePackages}
+      ''
+    ) cfg.displayManager.extraSessionFilePackages}
 
       
-      ${concatMapStrings (pkg: ''
+      ${concatMapStrings (
+      pkg: ''
         if test -d ${pkg}/share/wayland-sessions; then
           mkdir -p "$out/share/wayland-sessions"
           ${xorg.lndir}/bin/lndir ${pkg}/share/wayland-sessions $out/share/wayland-sessions
         fi
-      '') cfg.displayManager.extraSessionFilePackages}
+      ''
+    ) cfg.displayManager.extraSessionFilePackages}
     '';
 
 in
@@ -302,8 +311,10 @@ in
           wm = filter (s: s.manage == "window") list;
           dm = filter (s: s.manage == "desktop") list;
           names = flip concatMap dm
-            (d: map (w: d.name + optionalString (w.name != "none") ("+" + w.name))
-              (filter (w: d.name != "none" || w.name != "none") wm));
+            (
+              d: map (w: d.name + optionalString (w.name != "none") ("+" + w.name))
+                (filter (w: d.name != "none" || w.name != "none") wm)
+            );
           desktops = mkDesktops names;
           script = xsession wm dm;
           wrapper = xsessionWrapper;
@@ -370,8 +381,10 @@ in
   };
 
   imports = [
-   (mkRemovedOptionModule [ "services" "xserver" "displayManager" "desktopManagerHandlesLidAndPower" ]
-     "The option is no longer necessary because all display managers have already delegated lid management to systemd.")
+    (
+      mkRemovedOptionModule [ "services" "xserver" "displayManager" "desktopManagerHandlesLidAndPower" ]
+        "The option is no longer necessary because all display managers have already delegated lid management to systemd."
+    )
   ];
 
 }

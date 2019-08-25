@@ -9,10 +9,11 @@ stdenv.mkDerivation rec {
     sha256 = "0ijljhs0v99dj6y27hc10z6qchyp8gdp4199y6jzngy6dzxlzsvw";
   };
 
-  buildInputs = [ SDL ] ;
+  buildInputs = [ SDL ];
 
   configureFlags = [ "--disable-mmx" ]
-    ++ stdenv.lib.optional stdenv.isDarwin "--disable-sdltest";
+    ++ stdenv.lib.optional stdenv.isDarwin "--disable-sdltest"
+    ;
 
   meta = with stdenv.lib; {
     description = "SDL graphics drawing primitives and support functions";

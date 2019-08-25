@@ -5,7 +5,7 @@ rec {
 
   description = ''Access TrueType font metrics and outlines from Common Lisp'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/zpb-ttf/2013-07-20/zpb-ttf-1.0.3.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "zpb-ttf";
 
-  asdFilesToKeep = ["zpb-ttf.asd"];
+  asdFilesToKeep = [ "zpb-ttf.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM zpb-ttf DESCRIPTION

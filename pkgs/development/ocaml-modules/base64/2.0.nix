@@ -1,6 +1,8 @@
 { stdenv, fetchzip, ocaml, findlib, ocamlbuild }:
 
-let version = "2.0.0"; in
+let
+  version = "2.0.0";
+in
 
 stdenv.mkDerivation {
   name = "ocaml-base64-${version}";

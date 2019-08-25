@@ -1,6 +1,8 @@
 { stdenv, fetchFromGitHub, cmake }:
 
-let version = "0.7.2"; in
+let
+  version = "0.7.2";
+in
 stdenv.mkDerivation {
   name = "libdynd-${version}";
 

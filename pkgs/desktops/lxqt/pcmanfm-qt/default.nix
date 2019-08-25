@@ -1,5 +1,15 @@
-{ stdenv, fetchFromGitHub, cmake, pkgconfig, lxqt, qtbase, qttools,
-  qtx11extras, libfm-qt, menu-cache, lxmenu-data }:
+{ stdenv
+, fetchFromGitHub
+, cmake
+, pkgconfig
+, lxqt
+, qtbase
+, qttools
+, qtx11extras
+, libfm-qt
+, menu-cache
+, lxmenu-data
+}:
 
 stdenv.mkDerivation rec {
   pname = "pcmanfm-qt";

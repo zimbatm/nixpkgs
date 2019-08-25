@@ -1,6 +1,6 @@
 { stdenv, fetchurl, makeWrapper, jre, makeDesktopItem, lib }:
 
-  stdenv.mkDerivation rec {
+stdenv.mkDerivation rec {
   name = "runelite-${version}";
   version = "1.6.0";
 
@@ -50,4 +50,4 @@
     maintainers = [ lib.maintainers.kmeakin ];
     platforms = lib.platforms.all;
   };
-  }
+}

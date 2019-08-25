@@ -7,7 +7,7 @@ rec {
 
   description = ''Number parsing library'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/parse-number/2018-02-28/parse-number-v1.7.tgz'';
@@ -16,7 +16,7 @@ rec {
 
   packageName = "parse-number";
 
-  asdFilesToKeep = ["parse-number.asd"];
+  asdFilesToKeep = [ "parse-number.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM parse-number DESCRIPTION Number parsing library SHA256

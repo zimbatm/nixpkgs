@@ -1,10 +1,22 @@
-{ stdenv, fetchurl, pkgconfig, intltool, gtk, polkit
-, libxfce4util, libxfce4ui, xfce4-panel, libwnck, dbus-glib, xfconf, libglade, xorg
+{ stdenv
+, fetchurl
+, pkgconfig
+, intltool
+, gtk
+, polkit
+, libxfce4util
+, libxfce4ui
+, xfce4-panel
+, libwnck
+, dbus-glib
+, xfconf
+, libglade
+, xorg
 , hicolor-icon-theme
 }:
 
 let
-  p_name  = "xfce4-session";
+  p_name = "xfce4-session";
   ver_maj = "4.12";
   ver_min = "1";
 in
@@ -22,9 +34,21 @@ stdenv.mkDerivation rec {
   ];
 
   buildInputs =
-    [ pkgconfig intltool gtk libxfce4util libxfce4ui libwnck dbus-glib
-      xfconf xfce4-panel libglade xorg.iceauth xorg.libSM
-      polkit hicolor-icon-theme
+    [
+      pkgconfig
+      intltool
+      gtk
+      libxfce4util
+      libxfce4ui
+      libwnck
+      dbus-glib
+      xfconf
+      xfce4-panel
+      libglade
+      xorg.iceauth
+      xorg.libSM
+      polkit
+      hicolor-icon-theme
     ]; #TODO: upower-glib, gconf (assistive?), gnome keyring
 
   preBuild = ''

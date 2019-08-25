@@ -1,4 +1,7 @@
-{ lib, stdenv, fetchurl, pkgconfig
+{ lib
+, stdenv
+, fetchurl
+, pkgconfig
 
 , abiVersion ? "6"
 , mouseSupport ? false
@@ -22,10 +25,11 @@ stdenv.mkDerivation rec {
   src = let
     # Note the version needs to be adjusted.
     rev = "acb4184f8f69fddd052a3daa8c8675f4bf8ce369";
-  in fetchurl {
-    url = "https://github.com/mirror/ncurses/archive/${rev}.tar.gz";
-    sha256 = "1z8v63cj2y7dxf4m1api8cvk0ns9frif9c60m2sxhibs06pjy4q0";
-  };
+  in
+    fetchurl {
+      url = "https://github.com/mirror/ncurses/archive/${rev}.tar.gz";
+      sha256 = "1z8v63cj2y7dxf4m1api8cvk0ns9frif9c60m2sxhibs06pjy4q0";
+    };
 
   patches = lib.optional (!stdenv.cc.isClang) ./clang.patch;
 
@@ -39,13 +43,15 @@ stdenv.mkDerivation rec {
     "--enable-symlinks"
     "--with-manpage-format=normal"
     "--disable-stripping"
-  ] ++ lib.optional unicode "--enable-widec"
-    ++ lib.optional (!withCxx) "--without-cxx"
-    ++ lib.optional (abiVersion == "5") "--with-abi-version=5"
-    ++ lib.optionals stdenv.hostPlatform.isWindows [
-      "--enable-sp-funcs"
-      "--enable-term-driver"
-    ];
+  ]
+  ++ lib.optional unicode "--enable-widec"
+  ++ lib.optional (!withCxx) "--without-cxx"
+  ++ lib.optional (abiVersion == "5") "--with-abi-version=5"
+  ++ lib.optionals stdenv.hostPlatform.isWindows [
+       "--enable-sp-funcs"
+       "--enable-term-driver"
+     ]
+  ;
 
   # Only the C compiler, and explicitly not C++ compiler needs this flag on solaris:
   CFLAGS = lib.optionalString stdenv.isSunOS "-D_XOPEN_SOURCE_EXTENDED";
@@ -53,9 +59,11 @@ stdenv.mkDerivation rec {
   depsBuildBuild = [ buildPackages.stdenv.cc ];
   nativeBuildInputs = [
     pkgconfig
-  ] ++ lib.optionals (stdenv.buildPlatform != stdenv.hostPlatform) [
-    buildPackages.ncurses
-  ];
+  ]
+  ++ lib.optionals (stdenv.buildPlatform != stdenv.hostPlatform) [
+       buildPackages.ncurses
+     ]
+  ;
   buildInputs = lib.optional (mouseSupport && stdenv.isLinux) gpm;
 
   preConfigure = ''
@@ -70,11 +78,12 @@ stdenv.mkDerivation rec {
     )
   ''
   + lib.optionalString stdenv.isSunOS ''
-    sed -i -e '/-D__EXTENSIONS__/ s/-D_XOPEN_SOURCE=\$cf_XOPEN_SOURCE//' \
-           -e '/CPPFLAGS="$CPPFLAGS/s/ -D_XOPEN_SOURCE_EXTENDED//' \
-        configure
-    CFLAGS=-D_XOPEN_SOURCE_EXTENDED
-  '';
+      sed -i -e '/-D__EXTENSIONS__/ s/-D_XOPEN_SOURCE=\$cf_XOPEN_SOURCE//' \
+             -e '/CPPFLAGS="$CPPFLAGS/s/ -D_XOPEN_SOURCE_EXTENDED//' \
+          configure
+      CFLAGS=-D_XOPEN_SOURCE_EXTENDED
+    ''
+  ;
 
   enableParallelBuilding = true;
 
@@ -84,64 +93,65 @@ stdenv.mkDerivation rec {
   # compatibility links from the the "normal" libraries to the
   # wide-character libraries (e.g. libncurses.so to libncursesw.so).
   postFixup = let
-    abiVersion-extension = if stdenv.isDarwin then "${abiVersion}.$dylibtype" else "$dylibtype.${abiVersion}"; in
-  ''
-    # Determine what suffixes our libraries have
-    suffix="$(awk -F': ' 'f{print $3; f=0} /default library suffix/{f=1}' config.log)"
-    libs="$(ls $dev/lib/pkgconfig | tr ' ' '\n' | sed "s,\(.*\)$suffix\.pc,\1,g")"
-    suffixes="$(echo "$suffix" | awk '{for (i=1; i < length($0); i++) {x=substr($0, i+1, length($0)-i); print x}}')"
+    abiVersion-extension = if stdenv.isDarwin then "${abiVersion}.$dylibtype" else "$dylibtype.${abiVersion}";
+  in
+    ''
+      # Determine what suffixes our libraries have
+      suffix="$(awk -F': ' 'f{print $3; f=0} /default library suffix/{f=1}' config.log)"
+      libs="$(ls $dev/lib/pkgconfig | tr ' ' '\n' | sed "s,\(.*\)$suffix\.pc,\1,g")"
+      suffixes="$(echo "$suffix" | awk '{for (i=1; i < length($0); i++) {x=substr($0, i+1, length($0)-i); print x}}')"
 
-    # Get the path to the config util
-    cfg=$(basename $dev/bin/ncurses*-config)
+      # Get the path to the config util
+      cfg=$(basename $dev/bin/ncurses*-config)
 
-    # symlink the full suffixed include directory
-    ln -svf . $dev/include/ncurses$suffix
+      # symlink the full suffixed include directory
+      ln -svf . $dev/include/ncurses$suffix
 
-    for newsuffix in $suffixes ""; do
-      # Create a non-abi versioned config util links
-      ln -svf $cfg $dev/bin/ncurses$newsuffix-config
+      for newsuffix in $suffixes ""; do
+        # Create a non-abi versioned config util links
+        ln -svf $cfg $dev/bin/ncurses$newsuffix-config
 
-      # Allow for end users who #include <ncurses?w/*.h>
-      ln -svf . $dev/include/ncurses$newsuffix
+        # Allow for end users who #include <ncurses?w/*.h>
+        ln -svf . $dev/include/ncurses$newsuffix
 
-      for library in $libs; do
-        for dylibtype in so dll dylib; do
-          if [ -e "$out/lib/lib''${library}$suffix.$dylibtype" ]; then
-            ln -svf lib''${library}$suffix.$dylibtype $out/lib/lib$library$newsuffix.$dylibtype
-            ln -svf lib''${library}$suffix.${abiVersion-extension} $out/lib/lib$library$newsuffix.${abiVersion-extension}
-            if [ "ncurses" = "$library" ]
-            then
-              # make libtinfo symlinks
-              ln -svf lib''${library}$suffix.$dylibtype $out/lib/libtinfo$newsuffix.$dylibtype
-              ln -svf lib''${library}$suffix.${abiVersion-extension} $out/lib/libtinfo$newsuffix.${abiVersion-extension}
+        for library in $libs; do
+          for dylibtype in so dll dylib; do
+            if [ -e "$out/lib/lib''${library}$suffix.$dylibtype" ]; then
+              ln -svf lib''${library}$suffix.$dylibtype $out/lib/lib$library$newsuffix.$dylibtype
+              ln -svf lib''${library}$suffix.${abiVersion-extension} $out/lib/lib$library$newsuffix.${abiVersion-extension}
+              if [ "ncurses" = "$library" ]
+              then
+                # make libtinfo symlinks
+                ln -svf lib''${library}$suffix.$dylibtype $out/lib/libtinfo$newsuffix.$dylibtype
+                ln -svf lib''${library}$suffix.${abiVersion-extension} $out/lib/libtinfo$newsuffix.${abiVersion-extension}
+              fi
             fi
-          fi
-        done
-        for statictype in a dll.a la; do
-          if [ -e "$out/lib/lib''${library}$suffix.$statictype" ]; then
-            ln -svf lib''${library}$suffix.$statictype $out/lib/lib$library$newsuffix.$statictype
-            if [ "ncurses" = "$library" ]
-            then
-              # make libtinfo symlinks
-              ln -svf lib''${library}$suffix.$statictype $out/lib/libtinfo$newsuffix.$statictype
+          done
+          for statictype in a dll.a la; do
+            if [ -e "$out/lib/lib''${library}$suffix.$statictype" ]; then
+              ln -svf lib''${library}$suffix.$statictype $out/lib/lib$library$newsuffix.$statictype
+              if [ "ncurses" = "$library" ]
+              then
+                # make libtinfo symlinks
+                ln -svf lib''${library}$suffix.$statictype $out/lib/libtinfo$newsuffix.$statictype
+              fi
             fi
-          fi
+          done
+          ln -svf ''${library}$suffix.pc $dev/lib/pkgconfig/$library$newsuffix.pc
         done
-        ln -svf ''${library}$suffix.pc $dev/lib/pkgconfig/$library$newsuffix.pc
       done
-    done
 
-    # move some utilities to $bin
-    # these programs are used at runtime and don't really belong in $dev
-    moveToOutput "bin/clear" "$out"
-    moveToOutput "bin/reset" "$out"
-    moveToOutput "bin/tabs" "$out"
-    moveToOutput "bin/tic" "$out"
-    moveToOutput "bin/tput" "$out"
-    moveToOutput "bin/tset" "$out"
-    moveToOutput "bin/captoinfo" "$out"
-    moveToOutput "bin/infotocap" "$out"
-  '';
+      # move some utilities to $bin
+      # these programs are used at runtime and don't really belong in $dev
+      moveToOutput "bin/clear" "$out"
+      moveToOutput "bin/reset" "$out"
+      moveToOutput "bin/tabs" "$out"
+      moveToOutput "bin/tic" "$out"
+      moveToOutput "bin/tput" "$out"
+      moveToOutput "bin/tset" "$out"
+      moveToOutput "bin/captoinfo" "$out"
+      moveToOutput "bin/infotocap" "$out"
+    '';
 
   preFixup = lib.optionalString (!stdenv.hostPlatform.isCygwin && !enableStatic) ''
     rm "$out"/lib/*.a

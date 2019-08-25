@@ -17,7 +17,7 @@ let
       mkdir -p $out/kubernetes-json-schema/master
       cp -R . $out/kubernetes-json-schema/master
     '';
-   };
+  };
 
 in
 

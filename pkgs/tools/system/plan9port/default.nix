@@ -1,4 +1,10 @@
-{ stdenv, fetchFromGitHub, which, libX11, libXt, fontconfig, freetype
+{ stdenv
+, fetchFromGitHub
+, which
+, libX11
+, libXt
+, fontconfig
+, freetype
 , xorgproto ? null
 , libXext ? null
 , zlib ? null
@@ -10,7 +16,7 @@ stdenv.mkDerivation rec {
   version = "2019-02-25";
   name = "${pname}-${version}";
 
-  src =  fetchFromGitHub {
+  src = fetchFromGitHub {
     owner = "9fans";
     repo = "plan9port";
     rev = "047fd921744f39a82a86d9370e03f7af511e6e84";
@@ -25,17 +31,25 @@ stdenv.mkDerivation rec {
     find . -type f \
       -exec sed -i -e 's/_SVID_SOURCE/_DEFAULT_SOURCE/g' {} \; \
       -exec sed -i -e 's/_BSD_SOURCE/_DEFAULT_SOURCE/g' {} \;
-  '' + stdenv.lib.optionalString (!stdenv.isDarwin) ''
-    #add missing ctrl+c\z\x\v keybind for non-Darwin
-    substituteInPlace src/cmd/acme/text.c \
-      --replace "case Kcmd+'c':" "case 0x03: case Kcmd+'c':" \
-      --replace "case Kcmd+'z':" "case 0x1a: case Kcmd+'z':" \
-      --replace "case Kcmd+'x':" "case 0x18: case Kcmd+'x':" \
-      --replace "case Kcmd+'v':" "case 0x16: case Kcmd+'v':"
-  '';
+  ''
+  + stdenv.lib.optionalString (!stdenv.isDarwin) ''
+      #add missing ctrl+c\z\x\v keybind for non-Darwin
+      substituteInPlace src/cmd/acme/text.c \
+        --replace "case Kcmd+'c':" "case 0x03: case Kcmd+'c':" \
+        --replace "case Kcmd+'z':" "case 0x1a: case Kcmd+'z':" \
+        --replace "case Kcmd+'x':" "case 0x18: case Kcmd+'x':" \
+        --replace "case Kcmd+'v':" "case 0x16: case Kcmd+'v':"
+    ''
+  ;
 
   buildInputs = [
-    which perl libX11 fontconfig xorgproto libXt libXext
+    which
+    perl
+    libX11
+    fontconfig
+    xorgproto
+    libXt
+    libXext
     freetype # fontsrv wants ft2build.h provides system fonts for acme and sam.
   ];
 
@@ -57,7 +71,7 @@ stdenv.mkDerivation rec {
 
   fontconfig_lib = fontconfig.lib;
 
-  NIX_LDFLAGS="-lgcc_s";
+  NIX_LDFLAGS = "-lgcc_s";
   enableParallelBuilding = true;
 
   doInstallCheck = true;
@@ -89,8 +103,12 @@ stdenv.mkDerivation rec {
       from their native Plan 9 environment to Unix-like operating systems.
     '';
     license = licenses.lpl-102;
-    maintainers = with maintainers; [ AndersonTorres bbarker
-                                      ftrvxmtrx kovirobi ];
+    maintainers = with maintainers; [
+      AndersonTorres
+      bbarker
+      ftrvxmtrx
+      kovirobi
+    ];
     platforms = platforms.unix;
   };
 }

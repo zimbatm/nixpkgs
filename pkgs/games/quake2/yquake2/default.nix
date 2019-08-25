@@ -1,9 +1,20 @@
-{ stdenv, lib, fetchFromGitHub, buildEnv, cmake, makeWrapper
-, SDL2, libGL
-, oggSupport ? true, libogg, libvorbis
-, openalSupport ? true, openal
-, zipSupport ? true, zlib
-, Cocoa, OpenAL
+{ stdenv
+, lib
+, fetchFromGitHub
+, buildEnv
+, cmake
+, makeWrapper
+, SDL2
+, libGL
+, oggSupport ? true
+, libogg
+, libvorbis
+, openalSupport ? true
+, openal
+, zipSupport ? true
+, zlib
+, Cocoa
+, OpenAL
 }:
 
 let
@@ -20,7 +31,7 @@ let
     src = fetchFromGitHub {
       owner = "yquake2";
       repo = "yquake2";
-      rev = "QUAKE2_${builtins.replaceStrings ["."] ["_"] version}";
+      rev = "QUAKE2_${builtins.replaceStrings [ "." ] [ "_" ] version}";
       sha256 = "0xfr620k1hns70dckv6k0kc72jbiwyghcys904jpriv5x94lnrlc";
     };
 
@@ -32,7 +43,8 @@ let
       ++ lib.optionals stdenv.isDarwin [ Cocoa OpenAL ]
       ++ lib.optionals oggSupport [ libogg libvorbis ]
       ++ lib.optional openalSupport openal
-      ++ lib.optional zipSupport zlib;
+      ++ lib.optional zipSupport zlib
+      ;
 
     cmakeFlags = [
       "-DCMAKE_BUILD_TYPE=Release"
@@ -66,7 +78,8 @@ let
     };
   };
 
-in rec {
+in
+rec {
   inherit yquake2;
 
   yquake2-ctf = wrapper {

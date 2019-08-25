@@ -1,4 +1,7 @@
-{ lib, buildPythonPackage, fetchPypi, pythonOlder
+{ lib
+, buildPythonPackage
+, fetchPypi
+, pythonOlder
 , attrs
 , sortedcontainers
 , async_generator
@@ -36,7 +39,9 @@ buildPythonPackage rec {
     idna
     outcome
     sniffio
-  ] ++ lib.optionals (pythonOlder "3.7") [ contextvars ];
+  ]
+  ++ lib.optionals (pythonOlder "3.7") [ contextvars ]
+  ;
 
   # tests are failing on Darwin
   doCheck = !stdenv.isDarwin;

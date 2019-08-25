@@ -1,7 +1,26 @@
-{ stdenv, fetchurl, substituteAll, pkgconfig, glib, itstool, libxml2, xorg
-, accountsservice, libX11, gnome3, systemd, autoreconfHook
-, gtk3, libcanberra-gtk3, pam, libtool, gobject-introspection, plymouth
-, librsvg, coreutils, xwayland }:
+{ stdenv
+, fetchurl
+, substituteAll
+, pkgconfig
+, glib
+, itstool
+, libxml2
+, xorg
+, accountsservice
+, libX11
+, gnome3
+, systemd
+, autoreconfHook
+, gtk3
+, libcanberra-gtk3
+, pam
+, libtool
+, gobject-introspection
+, plymouth
+, librsvg
+, coreutils
+, xwayland
+}:
 
 stdenv.mkDerivation rec {
   name = "gdm-${version}";
@@ -29,19 +48,28 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ pkgconfig libxml2 itstool autoreconfHook libtool gnome3.dconf ];
   buildInputs = [
-    glib accountsservice systemd
-    gobject-introspection libX11 gtk3
-    libcanberra-gtk3 pam plymouth librsvg
+    glib
+    accountsservice
+    systemd
+    gobject-introspection
+    libX11
+    gtk3
+    libcanberra-gtk3
+    pam
+    plymouth
+    librsvg
   ];
 
   enableParallelBuilding = true;
 
   patches = [
     # Change hardcoded paths to nix store paths.
-    (substituteAll {
-      src = ./fix-paths.patch;
-      inherit coreutils plymouth xwayland;
-    })
+    (
+      substituteAll {
+        src = ./fix-paths.patch;
+        inherit coreutils plymouth xwayland;
+      }
+    )
 
     # The following patches implement certain environment variables in GDM which are set by
     # the gdm configuration module (nixos/modules/services/x11/display-managers/gdm.nix).

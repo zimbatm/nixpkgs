@@ -16,12 +16,12 @@ stdenv.mkDerivation rec {
   buildPhase = ''
     export LEX=${flex}/bin/flex
     make -C util/nvramtool
-    '';
+  '';
 
   installPhase = ''
     mkdir -p $out/bin
     cp util/nvramtool/nvramtool $out/bin
-    '';
+  '';
 
   meta = with stdenv.lib; {
     description = "utility for reading/writing coreboot parameters and displaying information from the coreboot table in CMOS/NVRAM";
@@ -31,4 +31,3 @@ stdenv.mkDerivation rec {
     platforms = platforms.linux;
   };
 }
-

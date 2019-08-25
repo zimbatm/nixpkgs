@@ -1,4 +1,4 @@
 { callPackage, hello }:
 {
-  makeSnap = callPackage ./make-snap.nix { };
+  makeSnap = callPackage ./make-snap.nix {};
 }

@@ -11,9 +11,16 @@ pythonPackages.buildPythonApplication rec {
     sha256 = "0zisvvlclsf4sdh7dpqcl1149xbxw6pi1aqcwjbqblgf8m4nm0c7";
   };
 
-  propagatedBuildInputs = (with pythonPackages; [
-    ansi kazoo nose six tabulate twitter
-  ]);
+  propagatedBuildInputs = (
+    with pythonPackages; [
+      ansi
+      kazoo
+      nose
+      six
+      tabulate
+      twitter
+    ]
+  );
 
   #requires a running zookeeper, don't know how to fix that for the moment
   doCheck = false;

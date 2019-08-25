@@ -1,6 +1,30 @@
-{ fetchurl, stdenv, substituteAll, meson, ninja, pkgconfig, gnome3, glib, gtk3, gsettings-desktop-schemas
-, gnome-desktop, dbus, json-glib, libICE, xmlto, docbook_xsl, docbook_xml_dtd_412, python3
-, libxslt, gettext, makeWrapper, systemd, xorg, epoxy, gnugrep, bash }:
+{ fetchurl
+, stdenv
+, substituteAll
+, meson
+, ninja
+, pkgconfig
+, gnome3
+, glib
+, gtk3
+, gsettings-desktop-schemas
+, gnome-desktop
+, dbus
+, json-glib
+, libICE
+, xmlto
+, docbook_xsl
+, docbook_xml_dtd_412
+, python3
+, libxslt
+, gettext
+, makeWrapper
+, systemd
+, xorg
+, epoxy
+, gnugrep
+, bash
+}:
 
 stdenv.mkDerivation rec {
   name = "gnome-session-${version}";
@@ -12,26 +36,45 @@ stdenv.mkDerivation rec {
   };
 
   patches = [
-    (substituteAll {
-      src = ./fix-paths.patch;
-      gsettings = "${glib.bin}/bin/gsettings";
-      dbusLaunch = "${dbus.lib}/bin/dbus-launch";
-      grep = "${gnugrep}/bin/grep";
-      bash = "${bash}/bin/bash";
-    })
+    (
+      substituteAll {
+        src = ./fix-paths.patch;
+        gsettings = "${glib.bin}/bin/gsettings";
+        dbusLaunch = "${dbus.lib}/bin/dbus-launch";
+        grep = "${gnugrep}/bin/grep";
+        bash = "${bash}/bin/bash";
+      }
+    )
   ];
 
   mesonFlags = [ "-Dsystemd=true" ];
 
   nativeBuildInputs = [
-    meson ninja pkgconfig gettext makeWrapper
-    xmlto libxslt docbook_xsl docbook_xml_dtd_412 python3
+    meson
+    ninja
+    pkgconfig
+    gettext
+    makeWrapper
+    xmlto
+    libxslt
+    docbook_xsl
+    docbook_xml_dtd_412
+    python3
     dbus # for DTD
   ];
 
   buildInputs = [
-    glib gtk3 libICE gnome-desktop json-glib xorg.xtrans gnome3.adwaita-icon-theme
-    gnome3.gnome-settings-daemon gsettings-desktop-schemas systemd epoxy
+    glib
+    gtk3
+    libICE
+    gnome-desktop
+    json-glib
+    xorg.xtrans
+    gnome3.adwaita-icon-theme
+    gnome3.gnome-settings-daemon
+    gsettings-desktop-schemas
+    systemd
+    epoxy
   ];
 
   postPatch = ''

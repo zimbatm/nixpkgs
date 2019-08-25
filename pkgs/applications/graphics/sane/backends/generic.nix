@@ -1,15 +1,24 @@
 { stdenv
-, avahi, libjpeg, libusb1, libv4l, net_snmp, libpng
-, gettext, pkgconfig
+, avahi
+, libjpeg
+, libusb1
+, libv4l
+, net_snmp
+, libpng
+, gettext
+, pkgconfig
 
-# List of { src name backend } attibute sets - see installFirmware below:
+  # List of { src name backend } attibute sets - see installFirmware below:
 , extraFirmware ? []
 
-# For backwards compatibility with older setups; use extraFirmware instead:
-, gt68xxFirmware ? null, snapscanFirmware ? null
+  # For backwards compatibility with older setups; use extraFirmware instead:
+, gt68xxFirmware ? null
+, snapscanFirmware ? null
 
-# Passed from versioned package (e.g. default.nix, git.nix):
-, version, src, ...
+  # Passed from versioned package (e.g. default.nix, git.nix):
+, version
+, src
+, ...
 }:
 
 stdenv.mkDerivation {
@@ -20,7 +29,7 @@ stdenv.mkDerivation {
   outputs = [ "out" "doc" "man" ];
 
   configureFlags = []
-    ++ stdenv.lib.optional (avahi != null)   "--enable-avahi"
+    ++ stdenv.lib.optional (avahi != null) "--enable-avahi"
     ++ stdenv.lib.optional (libusb1 != null) "--enable-libusb_1_0"
     ;
 
@@ -32,32 +41,35 @@ stdenv.mkDerivation {
 
     compatFirmware = extraFirmware
       ++ stdenv.lib.optional (gt68xxFirmware != null) {
-        src = gt68xxFirmware.fw;
-        inherit (gt68xxFirmware) name;
-        backend = "gt68xx";
-      }
+           src = gt68xxFirmware.fw;
+           inherit (gt68xxFirmware) name;
+           backend = "gt68xx";
+         }
       ++ stdenv.lib.optional (snapscanFirmware != null) {
-        src = snapscanFirmware;
-        name = "your-firmwarefile.bin";
-        backend = "snapscan";
-      };
+           src = snapscanFirmware;
+           name = "your-firmwarefile.bin";
+           backend = "snapscan";
+         }
+      ;
 
     installFirmware = f: ''
       mkdir -p $out/share/sane/${f.backend}
       ln -sv ${f.src} $out/share/sane/${f.backend}/${f.name}
     '';
 
-  in ''
-    mkdir -p $out/etc/udev/rules.d/
-    ./tools/sane-desc -m udev > $out/etc/udev/rules.d/49-libsane.rules || \
-    cp tools/udev/libsane.rules $out/etc/udev/rules.d/49-libsane.rules
-    # the created 49-libsane references /bin/sh
-    substituteInPlace $out/etc/udev/rules.d/49-libsane.rules \
-      --replace "RUN+=\"/bin/sh" "RUN+=\"${stdenv.shell}"
+  in
+    ''
+      mkdir -p $out/etc/udev/rules.d/
+      ./tools/sane-desc -m udev > $out/etc/udev/rules.d/49-libsane.rules || \
+      cp tools/udev/libsane.rules $out/etc/udev/rules.d/49-libsane.rules
+      # the created 49-libsane references /bin/sh
+      substituteInPlace $out/etc/udev/rules.d/49-libsane.rules \
+        --replace "RUN+=\"/bin/sh" "RUN+=\"${stdenv.shell}"
 
-    substituteInPlace $out/lib/libsane.la \
-      --replace "-ljpeg" "-L${libjpeg.out}/lib -ljpeg"
-  '' + stdenv.lib.concatStrings (builtins.map installFirmware compatFirmware);
+      substituteInPlace $out/lib/libsane.la \
+        --replace "-ljpeg" "-L${libjpeg.out}/lib -ljpeg"
+    ''
+    + stdenv.lib.concatStrings (builtins.map installFirmware compatFirmware);
 
   meta = with stdenv.lib; {
     description = "SANE (Scanner Access Now Easy) backends";

@@ -10,16 +10,19 @@
 , scipy
 , six
 , libgpuarray
-, cudaSupport ? false, cudatoolkit
-, cudnnSupport ? false, cudnn
+, cudaSupport ? false
+, cudatoolkit
+, cudnnSupport ? false
+, cudnn
 , nvidia_x11
 }:
 
 assert cudnnSupport -> cudaSupport;
 
-assert cudaSupport -> nvidia_x11 != null
-                   && cudatoolkit != null
-                   && cudnn != null;
+assert cudaSupport
+-> nvidia_x11 != null
+   && cudatoolkit != null
+   && cudnn != null;
 
 let
   wrapped = command: buildTop: buildInputs:
@@ -36,12 +39,15 @@ let
 
   # Theano spews warnings and disabled flags if the compiler isn't named g++
   cxx_compiler = wrapped "g++" "\\$HOME/.theano"
-    (    stdenv.lib.optional cudaSupport libgpuarray_
-      ++ stdenv.lib.optional cudnnSupport cudnn );
+    (
+      stdenv.lib.optional cudaSupport libgpuarray_
+      ++ stdenv.lib.optional cudnnSupport cudnn
+    );
 
   libgpuarray_ = libgpuarray.override { inherit cudaSupport cudatoolkit; };
 
-in buildPythonPackage rec {
+in
+buildPythonPackage rec {
   pname = "Theano";
   version = "1.0.4";
 
@@ -56,13 +62,16 @@ in buildPythonPackage rec {
     substituteInPlace theano/configdefaults.py \
       --replace 'StrParam(param, is_valid=warn_cxx)' 'StrParam('\'''${cxx_compiler}'\''', is_valid=warn_cxx)' \
       --replace 'rc == 0 and config.cxx != ""' 'config.cxx != ""'
-  '' + stdenv.lib.optionalString cudaSupport ''
-    substituteInPlace theano/configdefaults.py \
-      --replace 'StrParam(get_cuda_root)' 'StrParam('\'''${cudatoolkit}'\''')'
-  '' + stdenv.lib.optionalString cudnnSupport ''
-    substituteInPlace theano/configdefaults.py \
-      --replace 'StrParam(default_dnn_base_path)' 'StrParam('\'''${cudnn}'\''')'
-  '';
+  ''
+  + stdenv.lib.optionalString cudaSupport ''
+      substituteInPlace theano/configdefaults.py \
+        --replace 'StrParam(get_cuda_root)' 'StrParam('\'''${cudatoolkit}'\''')'
+    ''
+  + stdenv.lib.optionalString cudnnSupport ''
+      substituteInPlace theano/configdefaults.py \
+        --replace 'StrParam(default_dnn_base_path)' 'StrParam('\'''${cudnn}'\''')'
+    ''
+  ;
 
   preCheck = ''
     mkdir -p check-phase

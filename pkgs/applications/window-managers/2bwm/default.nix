@@ -1,15 +1,22 @@
-{ stdenv, fetchFromGitHub, patches
-, libxcb, xcbutilkeysyms, xcbutilwm
-, libX11, xcbutil, xcbutilxrm }:
+{ stdenv
+, fetchFromGitHub
+, patches
+, libxcb
+, xcbutilkeysyms
+, xcbutilwm
+, libX11
+, xcbutil
+, xcbutilxrm
+}:
 
 stdenv.mkDerivation rec {
   version = "0.2";
   name = "2bwm-${version}";
 
   src = fetchFromGitHub {
-    owner  = "venam";
-    repo   = "2bwm";
-    rev    = "v${version}";
+    owner = "venam";
+    repo = "2bwm";
+    rev = "v${version}";
     sha256 = "1la1ixpm5knsj2gvdcmxzj1jfbzxvhmgzps4f5kbvx5047xc6ici";
   };
 
@@ -24,7 +31,7 @@ stdenv.mkDerivation rec {
     homepage = https://github.com/venam/2bwm;
     description = "A fast floating WM written over the XCB library and derived from mcwm";
     license = licenses.mit;
-    maintainers =  [ maintainers.sternenseemann ];
+    maintainers = [ maintainers.sternenseemann ];
     platforms = platforms.unix;
   };
 }

@@ -15,11 +15,12 @@ rustPlatform.buildRustPackage rec {
 
   nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ openssl ]
-  ++ stdenv.lib.optionals stdenv.isDarwin [
-    darwin.apple_sdk.frameworks.Security
-    libiconv
-    curl
-  ];
+    ++ stdenv.lib.optionals stdenv.isDarwin [
+         darwin.apple_sdk.frameworks.Security
+         libiconv
+         curl
+       ]
+    ;
 
   meta = with stdenv.lib; {
     description = "A cargo subcommand for displaying when Rust dependencies are out of date";

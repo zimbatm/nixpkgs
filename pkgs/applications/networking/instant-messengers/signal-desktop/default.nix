@@ -1,26 +1,61 @@
-{ stdenv, lib, fetchurl, dpkg, wrapGAppsHook
-, gnome2, gtk3, atk, at-spi2-atk, cairo, pango, gdk-pixbuf, glib, freetype, fontconfig
-, dbus, libX11, xorg, libXi, libXcursor, libXdamage, libXrandr, libXcomposite
-, libXext, libXfixes, libXrender, libXtst, libXScrnSaver, nss, nspr, alsaLib
-, cups, expat, udev, libnotify, libuuid
-# Unfortunately this also overwrites the UI language (not just the spell
-# checking language!):
-, hunspellDicts, spellcheckerLanguage ? null # E.g. "de_DE"
-# For a full list of available languages:
-# $ cat pkgs/development/libraries/hunspell/dictionaries.nix | grep "dictFileName =" | awk '{ print $3 }'
+{ stdenv
+, lib
+, fetchurl
+, dpkg
+, wrapGAppsHook
+, gnome2
+, gtk3
+, atk
+, at-spi2-atk
+, cairo
+, pango
+, gdk-pixbuf
+, glib
+, freetype
+, fontconfig
+, dbus
+, libX11
+, xorg
+, libXi
+, libXcursor
+, libXdamage
+, libXrandr
+, libXcomposite
+, libXext
+, libXfixes
+, libXrender
+, libXtst
+, libXScrnSaver
+, nss
+, nspr
+, alsaLib
+, cups
+, expat
+, udev
+, libnotify
+, libuuid
+  # Unfortunately this also overwrites the UI language (not just the spell
+  # checking language!):
+, hunspellDicts
+, spellcheckerLanguage ? null # E.g. "de_DE"
+  # For a full list of available languages:
+  # $ cat pkgs/development/libraries/hunspell/dictionaries.nix | grep "dictFileName =" | awk '{ print $3 }'
 }:
 
 let
-  customLanguageWrapperArgs = (with lib;
+  customLanguageWrapperArgs = (
+    with lib;
     let
       # E.g. "de_DE" -> "de-de" (spellcheckerLanguage -> hunspellDict)
       spellLangComponents = splitString "_" spellcheckerLanguage;
       hunspellDict = elemAt spellLangComponents 0 + "-" + toLower (elemAt spellLangComponents 1);
-    in if spellcheckerLanguage != null
+    in
+      if spellcheckerLanguage != null
       then ''
         --set HUNSPELL_DICTIONARIES "${hunspellDicts.${hunspellDict}}/share/hunspell" \
         --set LC_MESSAGES "${spellcheckerLanguage}"''
-      else "");
+      else ""
+  );
   rpath = lib.makeLibraryPath [
     alsaLib
     atk
@@ -55,7 +90,8 @@ let
     xorg.libxcb
   ];
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "signal-desktop-${version}";
   version = "1.26.2";
 
@@ -104,9 +140,9 @@ in stdenv.mkDerivation rec {
       Signal Desktop is an Electron application that links with your
       "Signal Android" or "Signal iOS" app.
     '';
-    homepage    = https://signal.org/;
-    license     = lib.licenses.gpl3;
+    homepage = https://signal.org/;
+    license = lib.licenses.gpl3;
     maintainers = with lib.maintainers; [ ixmatus primeos ];
-    platforms   = [ "x86_64-linux" ];
+    platforms = [ "x86_64-linux" ];
   };
 }

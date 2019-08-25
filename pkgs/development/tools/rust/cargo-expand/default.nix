@@ -14,7 +14,8 @@ rustPlatform.buildRustPackage rec {
   cargoSha256 = "050q4rk1x3jghinxg6gszi993a6zbg41vg535dlvvsqi36l278qc";
 
   buildInputs = [ llvmPackages.libclang ]
-    ++ stdenv.lib.optional stdenv.isDarwin darwin.apple_sdk.frameworks.Security;
+    ++ stdenv.lib.optional stdenv.isDarwin darwin.apple_sdk.frameworks.Security
+    ;
 
   LIBCLANG_PATH = "${llvmPackages.libclang}/lib";
 

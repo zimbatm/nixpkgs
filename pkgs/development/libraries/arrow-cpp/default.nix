@@ -31,13 +31,28 @@ stdenv.mkDerivation rec {
   patches = [
     # patch to fix python-test
     ./darwin.patch
-    ];
+  ];
 
   nativeBuildInputs = [ cmake autoconf /* for vendored jemalloc */ ]
-    ++ stdenv.lib.optional stdenv.isDarwin fixDarwinDylibNames;
+    ++ stdenv.lib.optional stdenv.isDarwin fixDarwinDylibNames
+    ;
   buildInputs = [
-    boost brotli double-conversion flatbuffers gflags glog gtest lz4 rapidjson
-    snappy thrift uriparser zlib zstd python.pkgs.python python.pkgs.numpy
+    boost
+    brotli
+    double-conversion
+    flatbuffers
+    gflags
+    glog
+    gtest
+    lz4
+    rapidjson
+    snappy
+    thrift
+    uriparser
+    zlib
+    zstd
+    python.pkgs.python
+    python.pkgs.numpy
   ];
 
   preConfigure = ''
@@ -57,18 +72,24 @@ stdenv.mkDerivation rec {
     "-DARROW_PARQUET=ON"
     "-DARROW_PYTHON=ON"
     "-Duriparser_SOURCE=SYSTEM"
-  ] ++ stdenv.lib.optional (!stdenv.isx86_64) "-DARROW_USE_SIMD=OFF";
+  ]
+  ++ stdenv.lib.optional (!stdenv.isx86_64) "-DARROW_USE_SIMD=OFF"
+  ;
 
   doInstallCheck = true;
   PARQUET_TEST_DATA = if doInstallCheck then "${parquet-testing}/data" else null;
   installCheckInputs = [ perl which ];
-  installCheckPhase = (stdenv.lib.optionalString stdenv.isDarwin ''
-    for f in release/*test; do
-      install_name_tool -add_rpath "$out"/lib  "$f"
-    done
-  '') + ''
+  installCheckPhase = (
+    stdenv.lib.optionalString stdenv.isDarwin ''
+      for f in release/*test; do
+        install_name_tool -add_rpath "$out"/lib  "$f"
+      done
+    ''
+  )
+  + ''
     ctest -L unittest -V
-  '';
+  ''
+  ;
 
   meta = {
     description = "A  cross-language development platform for in-memory data";

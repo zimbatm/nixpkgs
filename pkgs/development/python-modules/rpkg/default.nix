@@ -1,10 +1,18 @@
-{ stdenv, buildPythonPackage, isPy3k, fetchurl, six, pycurl, cccolutils
-, koji, rpmfluff }:
+{ stdenv
+, buildPythonPackage
+, isPy3k
+, fetchurl
+, six
+, pycurl
+, cccolutils
+, koji
+, rpmfluff
+}:
 
 buildPythonPackage rec {
   pname = "rpkg";
   version = "1.50";
-  name  = "${pname}-${version}";
+  name = "${pname}-${version}";
 
   disabled = isPy3k;
 
@@ -22,7 +30,7 @@ buildPythonPackage rec {
     description = "Python library for dealing with rpm packaging";
     homepage = https://pagure.io/fedpkg;
     license = licenses.gpl2Plus;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
   };
 
 }

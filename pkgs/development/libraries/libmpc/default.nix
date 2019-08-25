@@ -1,5 +1,7 @@
-{ stdenv, fetchurl
-, gmp, mpfr
+{ stdenv
+, fetchurl
+, gmp
+, mpfr
 }:
 
 let
@@ -30,6 +32,6 @@ stdenv.mkDerivation rec {
     license = stdenv.lib.licenses.lgpl2Plus;
 
     platforms = stdenv.lib.platforms.all;
-    maintainers = [ ];
+    maintainers = [];
   };
 }

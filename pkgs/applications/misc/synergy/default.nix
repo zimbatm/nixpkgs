@@ -1,6 +1,24 @@
-{ stdenv, lib, fetchFromGitHub, fetchpatch, fetchurl, cmake, xlibsWrapper
-, ApplicationServices, Carbon, Cocoa, CoreServices, ScreenSaver
-, libX11, libXi, libXtst, libXrandr, xinput, curl, openssl, unzip }:
+{ stdenv
+, lib
+, fetchFromGitHub
+, fetchpatch
+, fetchurl
+, cmake
+, xlibsWrapper
+, ApplicationServices
+, Carbon
+, Cocoa
+, CoreServices
+, ScreenSaver
+, libX11
+, libXi
+, libXtst
+, libXrandr
+, xinput
+, curl
+, openssl
+, unzip
+}:
 
 stdenv.mkDerivation rec {
   name = "synergy-${version}";
@@ -13,8 +31,12 @@ stdenv.mkDerivation rec {
     sha256 = "0ksgr9hkf09h54572p7k7b9zkfhcdb2g2d5x7ixxn028y8i3jyp3";
   };
 
-  patches = [./openssl-1.1.patch ./update_gtest_gmock.patch
-  ] ++ lib.optional stdenv.isDarwin ./respect_macos_arch.patch;
+  patches = [
+    ./openssl-1.1.patch
+    ./update_gtest_gmock.patch
+  ]
+  ++ lib.optional stdenv.isDarwin ./respect_macos_arch.patch
+  ;
 
   patch_gcc6 = fetchpatch {
     url = https://raw.githubusercontent.com/gentoo/gentoo/20e2bff3697ebf5f291e9907b34aae3074a36b53/dev-cpp/gmock/files/gmock-1.7.0-gcc6.patch;
@@ -41,31 +63,41 @@ stdenv.mkDerivation rec {
     mv ext/googletest-release-1.7.0 ext/gtest-1.7.0
     patch -d ext/gmock-1.7.0 -p1 -i ${patch_gcc6}
   ''
-    # We have XRRNotifyEvent (libXrandr), but with the upstream CMakeLists.txt
-    # it's not able to find it (it's trying to search the store path of libX11
-    # instead) and we don't get XRandR support, even though the CMake output
-    # _seems_ to say so:
-    #
-    #   Looking for XRRQueryExtension in Xrandr - found
-    #
-    # The relevant part however is:
-    #
-    #   Looking for XRRNotifyEvent - not found
-    #
-    # So let's force it:
+  # We have XRRNotifyEvent (libXrandr), but with the upstream CMakeLists.txt
+  # it's not able to find it (it's trying to search the store path of libX11
+  # instead) and we don't get XRandR support, even though the CMake output
+  # _seems_ to say so:
+  #
+  #   Looking for XRRQueryExtension in Xrandr - found
+  #
+  # The relevant part however is:
+  #
+  #   Looking for XRRNotifyEvent - not found
+  #
+  # So let's force it:
   + lib.optionalString stdenv.isLinux ''
-    sed -i -e '/HAVE_X11_EXTENSIONS_XRANDR_H/c \
-      set(HAVE_X11_EXTENSIONS_XRANDR_H true)
-    ' CMakeLists.txt
-  '';
+      sed -i -e '/HAVE_X11_EXTENSIONS_XRANDR_H/c \
+        set(HAVE_X11_EXTENSIONS_XRANDR_H true)
+      ' CMakeLists.txt
+    ''
+  ;
 
   cmakeFlags = lib.optionals stdenv.isDarwin [ "-DOSX_TARGET_MAJOR=10" "-DOSX_TARGET_MINOR=7" ];
 
   buildInputs = [
-    cmake curl openssl
-  ] ++ lib.optionals stdenv.isDarwin [
-    ApplicationServices Carbon Cocoa CoreServices ScreenSaver
-  ] ++ lib.optionals stdenv.isLinux [ xlibsWrapper libX11 libXi libXtst libXrandr xinput ];
+    cmake
+    curl
+    openssl
+  ]
+  ++ lib.optionals stdenv.isDarwin [
+       ApplicationServices
+       Carbon
+       Cocoa
+       CoreServices
+       ScreenSaver
+     ]
+  ++ lib.optionals stdenv.isLinux [ xlibsWrapper libX11 libXi libXtst libXrandr xinput ]
+  ;
 
   installPhase = ''
     mkdir -p $out/bin

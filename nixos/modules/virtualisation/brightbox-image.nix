@@ -10,7 +10,8 @@ in
   system.build.brightboxImage =
     pkgs.vmTools.runInLinuxVM (
       pkgs.runCommand "brightbox-image"
-        { preVM =
+        {
+          preVM =
             ''
               mkdir $out
               diskImage=$out/$diskImageBase
@@ -112,7 +113,8 @@ in
   environment.systemPackages = [ pkgs.cryptsetup ];
 
   systemd.services."fetch-ec2-data" =
-    { description = "Fetch EC2 Data";
+    {
+      description = "Fetch EC2 Data";
 
       wantedBy = [ "multi-user.target" "sshd.service" ];
       before = [ "sshd.service" ];
@@ -126,9 +128,9 @@ in
           wget="wget -q --retry-connrefused -O -"
 
           ${optionalString (config.networking.hostName == "") ''
-            echo "setting host name..."
-            ${pkgs.nettools}/bin/hostname $($wget http://169.254.169.254/latest/meta-data/hostname)
-          ''}
+          echo "setting host name..."
+          ${pkgs.nettools}/bin/hostname $($wget http://169.254.169.254/latest/meta-data/hostname)
+        ''}
 
           # Don't download the SSH key if it has already been injected
           # into the image (a Nova feature).

@@ -1,5 +1,17 @@
-{ stdenv, fetchurl, qtbase, qmake, makeDesktopItem, openjpeg, pkgconfig, fftw,
-  libpulseaudio, alsaLib, hamlib, libv4l, fftwFloat }:
+{ stdenv
+, fetchurl
+, qtbase
+, qmake
+, makeDesktopItem
+, openjpeg
+, pkgconfig
+, fftw
+, libpulseaudio
+, alsaLib
+, hamlib
+, libv4l
+, fftwFloat
+}:
 
 stdenv.mkDerivation rec {
   version = "9.2.6";
@@ -17,8 +29,16 @@ stdenv.mkDerivation rec {
     pkgconfig
   ];
 
-  buildInputs = [ qtbase openjpeg fftw libpulseaudio alsaLib hamlib libv4l
-                  fftwFloat ];
+  buildInputs = [
+    qtbase
+    openjpeg
+    fftw
+    libpulseaudio
+    alsaLib
+    hamlib
+    libv4l
+    fftwFloat
+  ];
 
   desktopItem = makeDesktopItem {
     name = "QSSTV";
@@ -51,4 +71,3 @@ stdenv.mkDerivation rec {
     maintainers = with stdenv.lib.maintainers; [ hax404 ];
   };
 }
-

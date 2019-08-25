@@ -15,16 +15,16 @@ stdenv.mkDerivation rec {
   buildInputs = [ makeWrapper ];
 
   libPath = stdenv.lib.makeLibraryPath [
-      xorg.libX11
-      xorg.libxcb
-      freetype
-      fontconfig
-      xorg.libXext
-      xorg.libXi
-      xorg.libXrender
-      stdenv.cc.cc
-      glibc
-      libGLU_combined
+    xorg.libX11
+    xorg.libxcb
+    freetype
+    fontconfig
+    xorg.libXext
+    xorg.libXi
+    xorg.libXrender
+    stdenv.cc.cc
+    glibc
+    libGLU_combined
   ];
 
   installPhase = ''

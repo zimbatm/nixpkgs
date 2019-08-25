@@ -1,5 +1,8 @@
-{stdenv, buildOcamlJane,
- ppx_core, ppx_optcomp}:
+{ stdenv
+, buildOcamlJane
+, ppx_core
+, ppx_optcomp
+}:
 
 buildOcamlJane rec {
   name = "ppx_driver";

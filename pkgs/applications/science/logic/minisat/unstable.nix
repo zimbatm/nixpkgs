@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [ zlib ];
-  nativeBuildInputs =  [ cmake ];
+  nativeBuildInputs = [ cmake ];
 
   meta = with stdenv.lib; {
     description = "Compact and readable SAT solver";

@@ -12,18 +12,22 @@ stdenv.mkDerivation rec {
   };
 
   patches = [
-    (fetchpatch {
-      name = "CVE-2017-1000231.patch";
-      url = "https://git.nlnetlabs.nl/ldns/patch/?id=c8391790";
-      sha256 = "1rprfh0y1c28dqiy3vgwvwdhn7b5rsylfzzblx5xdhwfqgdw8vn0";
-      excludes = [ "Changelog" ];
-    })
-    (fetchpatch {
-      name = "CVE-2017-1000232.patch";
-      url = "https://git.nlnetlabs.nl/ldns/patch/?id=3bdeed02";
-      sha256 = "0bv0s5jjp0sswfg8da47d346iwp9yjhj9w7fa3bxh174br0zj07r";
-      excludes = [ "Changelog" ];
-    })
+    (
+      fetchpatch {
+        name = "CVE-2017-1000231.patch";
+        url = "https://git.nlnetlabs.nl/ldns/patch/?id=c8391790";
+        sha256 = "1rprfh0y1c28dqiy3vgwvwdhn7b5rsylfzzblx5xdhwfqgdw8vn0";
+        excludes = [ "Changelog" ];
+      }
+    )
+    (
+      fetchpatch {
+        name = "CVE-2017-1000232.patch";
+        url = "https://git.nlnetlabs.nl/ldns/patch/?id=3bdeed02";
+        sha256 = "0bv0s5jjp0sswfg8da47d346iwp9yjhj9w7fa3bxh174br0zj07r";
+        excludes = [ "Changelog" ];
+      }
+    )
   ];
 
   postPatch = ''
@@ -40,10 +44,12 @@ stdenv.mkDerivation rec {
     "--with-trust-anchor=${dns-root-data}/root.key"
     "--with-drill"
     "--disable-gost"
-  ] ++ stdenv.lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
-    "ac_cv_func_malloc_0_nonnull=yes"
-    "ac_cv_func_realloc_0_nonnull=yes"
-  ];
+  ]
+  ++ stdenv.lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
+       "ac_cv_func_malloc_0_nonnull=yes"
+       "ac_cv_func_realloc_0_nonnull=yes"
+     ]
+  ;
 
   checkInputs = [ which ];
   doCheck = false; # fails. missing some files
@@ -66,6 +72,6 @@ stdenv.mkDerivation rec {
     license = licenses.bsd3;
     homepage = http://www.nlnetlabs.nl/projects/ldns/;
     platforms = platforms.unix;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
   };
 }

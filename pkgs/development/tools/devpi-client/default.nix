@@ -4,7 +4,7 @@
 , devpi-server
 , git
 , mercurial
-} :
+}:
 
 pythonPackages.buildPythonApplication rec {
   name = "${pname}-${version}";
@@ -17,11 +17,19 @@ pythonPackages.buildPythonApplication rec {
   };
 
   checkInputs = with pythonPackages; [
-                    pytest pytest-flakes webtest mock
-                    devpi-server tox
-                    sphinx wheel git mercurial detox
-                    setuptools
-                    ];
+    pytest
+    pytest-flakes
+    webtest
+    mock
+    devpi-server
+    tox
+    sphinx
+    wheel
+    git
+    mercurial
+    detox
+    setuptools
+  ];
   checkPhase = ''
     export PATH=$PATH:$out/bin
     export HOME=$TMPDIR # fix tests failing in sandbox due to "/homeless-shelter"

@@ -1,4 +1,5 @@
-{ stdenv, fetchFromGitHub
+{ stdenv
+, fetchFromGitHub
 , pythonPackages
 }:
 pythonPackages.buildPythonPackage rec {

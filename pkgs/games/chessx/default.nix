@@ -1,4 +1,13 @@
-{ stdenv, pkgconfig, zlib, qtbase, qtsvg, qttools, qtmultimedia, qmake, fetchurl, makeWrapper
+{ stdenv
+, pkgconfig
+, zlib
+, qtbase
+, qtsvg
+, qttools
+, qtmultimedia
+, qmake
+, fetchurl
+, makeWrapper
 , lib
 }:
 
@@ -39,7 +48,7 @@ stdenv.mkDerivation rec {
     homepage = http://chessx.sourceforge.net/;
     description = "ChessX allows you to browse and analyse chess games";
     license = licenses.gpl2;
-    maintainers = [maintainers.luispedro];
+    maintainers = [ maintainers.luispedro ];
     platforms = platforms.linux;
   };
 }

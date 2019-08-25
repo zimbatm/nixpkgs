@@ -3,7 +3,7 @@
 stdenv.mkDerivation {
   name = "polly-${version}";
 
-  src =  fetch "polly" "1s6v54czmgq626an4yk2k34lrzkwmz1bjrbiafh7j23yc2w4nalx";
+  src = fetch "polly" "1s6v54czmgq626an4yk2k34lrzkwmz1bjrbiafh7j23yc2w4nalx";
 
   patches = [ ./polly-separate-build.patch ];
 
@@ -18,8 +18,8 @@ stdenv.mkDerivation {
 
   meta = {
     description = "A polyhedral optimizer for llvm";
-    homepage    = http://llvm.org/;
-    license     = stdenv.lib.licenses.ncsa;
-    platforms   = stdenv.lib.platforms.all;
+    homepage = http://llvm.org/;
+    license = stdenv.lib.licenses.ncsa;
+    platforms = stdenv.lib.platforms.all;
   };
 }

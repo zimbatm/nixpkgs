@@ -63,13 +63,15 @@ in
     environment.etc."kresd.conf".source = configFile; # not required
 
     users.users = singleton
-      { name = "kresd";
+      {
+        name = "kresd";
         uid = config.ids.uids.kresd;
         group = "kresd";
         description = "Knot-resolver daemon user";
       };
     users.groups = singleton
-      { name = "kresd";
+      {
+        name = "kresd";
         gid = config.ids.gids.kresd;
       };
 
@@ -122,7 +124,8 @@ in
         WorkingDirectory = cfg.cacheDir;
         Restart = "on-failure";
         Sockets = [ "kresd.socket" "kresd-control.socket" ]
-          ++ optional (cfg.listenTLS != []) "kresd-tls.socket";
+          ++ optional (cfg.listenTLS != []) "kresd-tls.socket"
+          ;
       };
 
       # Trust anchor goes from dns-root-data by default.

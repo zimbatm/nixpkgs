@@ -23,10 +23,12 @@ stdenv.mkDerivation rec {
   };
 
   patches = [
-    (fetchpatch {
-      url = "https://github.com/fribidi/fribidi/pull/88.patch";
-      sha256 = "1n4l6333vhbxfckwg101flmvq6bbygg66fjp69ddcjqaqb6gh9k9";
-    })
+    (
+      fetchpatch {
+        url = "https://github.com/fribidi/fribidi/pull/88.patch";
+        sha256 = "1n4l6333vhbxfckwg101flmvq6bbygg66fjp69ddcjqaqb6gh9k9";
+      }
+    )
   ];
 
   postPatch = ''

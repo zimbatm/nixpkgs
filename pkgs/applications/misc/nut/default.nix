@@ -1,5 +1,15 @@
-{ stdenv, fetchurl, pkgconfig, neon, libusb, openssl, udev, avahi, freeipmi
-, libtool, makeWrapper }:
+{ stdenv
+, fetchurl
+, pkgconfig
+, neon
+, libusb
+, openssl
+, udev
+, avahi
+, freeipmi
+, libtool
+, makeWrapper
+}:
 
 stdenv.mkDerivation rec {
   name = "nut-2.7.4";
@@ -14,7 +24,8 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ pkgconfig makeWrapper ];
 
   configureFlags =
-    [ "--with-all"
+    [
+      "--with-all"
       "--with-ssl"
       "--without-snmp" # Until we have it ...
       "--without-powerman" # Until we have it ...

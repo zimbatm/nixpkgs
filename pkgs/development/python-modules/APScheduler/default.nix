@@ -47,7 +47,9 @@ buildPythonPackage rec {
     pytz
     tzlocal
     funcsigs
-  ] ++ lib.optional (!isPy3k) futures;
+  ]
+  ++ lib.optional (!isPy3k) futures
+  ;
 
   checkPhase = ''
     py.test

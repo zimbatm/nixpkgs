@@ -8,10 +8,12 @@ buildGoPackage rec {
   goPackagePath = "github.com/ipfs/ipget";
 
   extraSrcPaths = [
-    (fetchgx {
-      inherit name src;
-      sha256 = "07l9hpkhk5phr95zp1l5wd3ii38bw91hy4dlw2rsfbzcsc8bq4s8";
-    })
+    (
+      fetchgx {
+        inherit name src;
+        sha256 = "07l9hpkhk5phr95zp1l5wd3ii38bw91hy4dlw2rsfbzcsc8bq4s8";
+      }
+    )
   ];
 
   goDeps = ../../../tools/package-management/gx/deps.nix;

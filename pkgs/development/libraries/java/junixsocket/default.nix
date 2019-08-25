@@ -24,7 +24,8 @@ stdenv.mkDerivation rec {
     # Note that our OpenJDK on Darwin is currently 32-bit, so we have to build a 32-bit dylib.
     (if stdenv.is64bit then [ "-Dskip32=true" ] else [ "-Dskip64=true" ])
     ++ [ "-Dgcc=cc" "-Dant.build.javac.source=1.6" ]
-    ++ stdenv.lib.optional stdenv.isDarwin "-DisMac=true";
+    ++ stdenv.lib.optional stdenv.isDarwin "-DisMac=true"
+    ;
 
   installPhase =
     ''

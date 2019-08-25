@@ -2,7 +2,9 @@
 
 with lib;
 
-let kernelVersion = config.boot.kernelPackages.kernel.version; in
+let
+  kernelVersion = config.boot.kernelPackages.kernel.version;
+in
 
 {
 
@@ -25,7 +27,8 @@ let kernelVersion = config.boot.kernelPackages.kernel.version; in
 
   config = mkIf config.networking.enableB43Firmware {
     assertions = singleton
-      { assertion = lessThan 0 (builtins.compareVersions kernelVersion "3.2");
+      {
+        assertion = lessThan 0 (builtins.compareVersions kernelVersion "3.2");
         message = "b43 firmware for kernels older than 3.2 not packaged yet!";
       };
     hardware.firmware = [ pkgs.b43Firmware_5_1_138 ];

@@ -1,9 +1,10 @@
-{stdenv, fetchpatch, autoconf, automake, fetchFromGitHub, pkgconfig}:
+{ stdenv, fetchpatch, autoconf, automake, fetchFromGitHub, pkgconfig }:
 
 let
   pname = "mypaint-brushes";
   version = "1.3.0";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "${pname}-${version}";
 
   src = fetchFromGitHub {
@@ -17,10 +18,12 @@ in stdenv.mkDerivation rec {
 
   patches = [
     # build with automake 1.16
-    (fetchpatch {
-      url = https://github.com/Jehan/mypaint-brushes/commit/1e9109dde3bffd416ed351c3f30ecd6ffd0ca2cd.patch;
-      sha256 = "0mi8rwbirl0ib22f2hz7kdlgi4hw8s3ab29b003dsshdyzn5iha9";
-    })
+    (
+      fetchpatch {
+        url = https://github.com/Jehan/mypaint-brushes/commit/1e9109dde3bffd416ed351c3f30ecd6ffd0ca2cd.patch;
+        sha256 = "0mi8rwbirl0ib22f2hz7kdlgi4hw8s3ab29b003dsshdyzn5iha9";
+      }
+    )
   ];
 
   preConfigure = "./autogen.sh";

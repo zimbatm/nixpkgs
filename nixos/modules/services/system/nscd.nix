@@ -40,7 +40,8 @@ in
     environment.etc."nscd.conf".text = cfg.config;
 
     systemd.services.nscd =
-      { description = "Name Service Cache Daemon";
+      {
+        description = "Name Service Cache Daemon";
 
         wantedBy = [ "nss-lookup.target" "nss-user-lookup.target" ];
 
@@ -59,14 +60,16 @@ in
         # files. So prefix the ExecStart command with "!" to prevent systemd
         # from dropping privileges early. See ExecStart in systemd.service(5).
         serviceConfig =
-          { ExecStart = "!@${pkgs.glibc.bin}/sbin/nscd nscd";
+          {
+            ExecStart = "!@${pkgs.glibc.bin}/sbin/nscd nscd";
             Type = "forking";
             DynamicUser = true;
             RuntimeDirectory = "nscd";
             PIDFile = "/run/nscd/nscd.pid";
             Restart = "always";
             ExecReload =
-              [ "${pkgs.glibc.bin}/sbin/nscd --invalidate passwd"
+              [
+                "${pkgs.glibc.bin}/sbin/nscd --invalidate passwd"
                 "${pkgs.glibc.bin}/sbin/nscd --invalidate group"
                 "${pkgs.glibc.bin}/sbin/nscd --invalidate hosts"
               ];

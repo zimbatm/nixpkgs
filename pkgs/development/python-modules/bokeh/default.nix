@@ -43,7 +43,7 @@ buildPythonPackage rec {
   disabled = isPyPy;
 
   # Some test that uses tornado fails
-#   doCheck = false;
+  #   doCheck = false;
 
   checkInputs = [ mock pytest pillow selenium ];
 
@@ -66,9 +66,10 @@ buildPythonPackage rec {
     colorama
     bkcharts
   ]
-  ++ lib.optionals ( !isPy3k ) [ futures ]
-  ++ lib.optionals ( !isPy3k && !isPyPy ) [ websocket_client ]
-  ++ lib.optionals ( !isPyPy ) [ numpy pandas greenlet ];
+  ++ lib.optionals (!isPy3k) [ futures ]
+  ++ lib.optionals (!isPy3k && !isPyPy) [ websocket_client ]
+  ++ lib.optionals (!isPyPy) [ numpy pandas greenlet ]
+  ;
 
   checkPhase = ''
     ${python.interpreter} -m unittest discover -s bokeh/tests

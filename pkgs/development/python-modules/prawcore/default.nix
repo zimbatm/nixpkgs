@@ -1,7 +1,13 @@
-{ stdenv, buildPythonPackage, fetchPypi
+{ stdenv
+, buildPythonPackage
+, fetchPypi
 , requests
-, testfixtures, mock, requests_toolbelt
-, betamax, betamax-serializers, betamax-matchers
+, testfixtures
+, mock
+, requests_toolbelt
+, betamax
+, betamax-serializers
+, betamax-matchers
 }:
 
 buildPythonPackage rec {
@@ -31,6 +37,6 @@ buildPythonPackage rec {
     homepage = https://praw.readthedocs.org/;
     license = licenses.gpl3;
     platforms = platforms.all;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
   };
 }

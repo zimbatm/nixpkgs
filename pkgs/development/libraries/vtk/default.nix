@@ -1,8 +1,27 @@
-{ stdenv, fetchurl, cmake, libGLU_combined, libX11, xorgproto, libXt
+{ stdenv
+, fetchurl
+, cmake
+, libGLU_combined
+, libX11
+, xorgproto
+, libXt
 , qtLib ? null
-# Darwin support
-, Cocoa, CoreServices, DiskArbitration, IOKit, CFNetwork, Security, GLUT, OpenGL
-, ApplicationServices, CoreText, IOSurface, ImageIO, xpc, libobjc }:
+  # Darwin support
+, Cocoa
+, CoreServices
+, DiskArbitration
+, IOKit
+, CFNetwork
+, Security
+, GLUT
+, OpenGL
+, ApplicationServices
+, CoreText
+, IOSurface
+, ImageIO
+, xpc
+, libobjc
+}:
 
 with stdenv.lib;
 
@@ -23,9 +42,22 @@ stdenv.mkDerivation rec {
   buildInputs = [ cmake ]
     ++ optional (qtLib != null) qtLib
     ++ optionals stdenv.isLinux [ libGLU_combined libX11 xorgproto libXt ]
-    ++ optionals stdenv.isDarwin [ xpc Cocoa CoreServices DiskArbitration IOKit
-                                   CFNetwork Security ApplicationServices CoreText
-                                   IOSurface ImageIO OpenGL GLUT ];
+    ++ optionals stdenv.isDarwin [
+         xpc
+         Cocoa
+         CoreServices
+         DiskArbitration
+         IOKit
+         CFNetwork
+         Security
+         ApplicationServices
+         CoreText
+         IOSurface
+         ImageIO
+         OpenGL
+         GLUT
+       ]
+    ;
   propagatedBuildInputs = stdenv.lib.optionals stdenv.isDarwin [ libobjc ];
 
 
@@ -40,7 +72,8 @@ stdenv.mkDerivation rec {
   # objects.
   cmakeFlags = [ "-DCMAKE_C_FLAGS=-fPIC" "-DCMAKE_CXX_FLAGS=-fPIC" ]
     ++ optional (qtLib != null) [ "-DVTK_USE_QT:BOOL=ON" ]
-    ++ optional stdenv.isDarwin "-DOPENGL_INCLUDE_DIR=${OpenGL}/Library/Frameworks";
+    ++ optional stdenv.isDarwin "-DOPENGL_INCLUDE_DIR=${OpenGL}/Library/Frameworks"
+    ;
 
   postPatch = stdenv.lib.optionalString stdenv.isDarwin ''
     sed -i 's|COMMAND vtkHashSource|COMMAND "DYLD_LIBRARY_PATH=''${VTK_BINARY_DIR}/lib" ''${VTK_BINARY_DIR}/bin/vtkHashSource-7.0|' ./Parallel/Core/CMakeLists.txt
@@ -54,7 +87,7 @@ stdenv.mkDerivation rec {
     description = "Open source libraries for 3D computer graphics, image processing and visualization";
     homepage = http://www.vtk.org/;
     license = stdenv.lib.licenses.bsd3;
-    maintainers = with stdenv.lib.maintainers; [ ];
+    maintainers = with stdenv.lib.maintainers; [];
     platforms = with stdenv.lib.platforms; unix;
   };
 }

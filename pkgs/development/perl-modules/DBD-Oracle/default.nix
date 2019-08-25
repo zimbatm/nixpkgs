@@ -11,7 +11,7 @@ buildPerlPackage {
 
   ORACLE_HOME = "${oracle-instantclient.lib}/lib";
 
-  buildInputs = [ TestNoWarnings oracle-instantclient ] ;
+  buildInputs = [ TestNoWarnings oracle-instantclient ];
   propagatedBuildInputs = [ DBI ];
 
   postBuild = stdenv.lib.optionalString stdenv.isDarwin ''

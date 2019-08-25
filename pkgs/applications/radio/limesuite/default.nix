@@ -1,12 +1,21 @@
-{ stdenv, fetchFromGitHub, cmake
-, sqlite, wxGTK30, libusb1, soapysdr
-, mesa_glu, libX11, gnuplot, fltk
-} :
+{ stdenv
+, fetchFromGitHub
+, cmake
+, sqlite
+, wxGTK30
+, libusb1
+, soapysdr
+, mesa_glu
+, libX11
+, gnuplot
+, fltk
+}:
 
 let
   version = "19.04.0";
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "limesuite-${version}";
 
   src = fetchFromGitHub {
@@ -48,4 +57,3 @@ in stdenv.mkDerivation {
     platforms = platforms.linux;
   };
 }
-

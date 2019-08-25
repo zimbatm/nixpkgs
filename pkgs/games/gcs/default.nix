@@ -1,6 +1,10 @@
-{ stdenv, fetchFromGitHub, runCommand
-, jdk8, ant
-, jre8, makeWrapper
+{ stdenv
+, fetchFromGitHub
+, runCommand
+, jdk8
+, ant
+, jre8
+, makeWrapper
 }:
 
 let
@@ -28,7 +32,8 @@ let
     rev = "gcs-4.8.0";
     sha256 = "085jpp9mpv5kw00zds9sywmfq31mrlbrgahnwcjkx0z9i22amz4g";
   };
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "gcs-${version}";
   version = "4.8.0";
 
@@ -64,7 +69,7 @@ in stdenv.mkDerivation rec {
     makeWrapper ${jre8}/bin/java $out/bin/gcs \
       --set GCS_LIBRARY ${library} \
       --add-flags "-cp $out/share/java/gcs-${version}.jar com.trollworks.gcs.app.GCS"
-  '';  
+  '';
 
   meta = with stdenv.lib; {
     description = "A stand-alone, interactive, character sheet editor for the GURPS 4th Edition roleplaying game system";

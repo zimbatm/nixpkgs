@@ -1,6 +1,6 @@
-{ system ? builtins.currentSystem,
-  config ? {},
-  pkgs ? import ../.. { inherit system config; }
+{ system ? builtins.currentSystem
+, config ? {}
+, pkgs ? import ../.. { inherit system config; }
 }:
 
 with import ../lib/testing.nix { inherit system pkgs; };
@@ -10,27 +10,30 @@ with import common/ec2.nix { inherit makeTest pkgs; };
 
 let
   image =
-    (import ../lib/eval-config.nix {
-      inherit system;
-      modules = [
-        ../maintainers/scripts/openstack/openstack-image.nix
-        ../modules/testing/test-instrumentation.nix
-        ../modules/profiles/qemu-guest.nix
-      ];
-    }).config.system.build.openstackImage;
+    (
+      import ../lib/eval-config.nix {
+        inherit system;
+        modules = [
+          ../maintainers/scripts/openstack/openstack-image.nix
+          ../modules/testing/test-instrumentation.nix
+          ../modules/profiles/qemu-guest.nix
+        ];
+      }
+    ).config.system.build.openstackImage;
 
   sshKeys = import ./ssh-keys.nix pkgs;
   snakeOilPrivateKey = sshKeys.snakeOilPrivateKey.text;
   snakeOilPublicKey = sshKeys.snakeOilPublicKey;
 
-in {
+in
+{
   metadata = makeEc2Test {
     name = "openstack-ec2-metadata";
     inherit image;
     sshPublicKey = snakeOilPublicKey;
     userData = ''
       SSH_HOST_ED25519_KEY_PUB:${snakeOilPublicKey}
-      SSH_HOST_ED25519_KEY:${replaceStrings ["\n"] ["|"] snakeOilPrivateKey}
+      SSH_HOST_ED25519_KEY:${replaceStrings [ "\n" ] [ "|" ] snakeOilPrivateKey}
     '';
     script = ''
       $machine->start;

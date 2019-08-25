@@ -9,7 +9,7 @@ buildGoPackage rec {
   name = "${pname}-${version}";
   inherit version;
 
-  src =  fetchFromGitHub {
+  src = fetchFromGitHub {
     inherit owner;
     repo = pname;
     rev = "v${version}";

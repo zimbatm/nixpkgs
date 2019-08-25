@@ -13,8 +13,21 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ autoreconfHook pkgconfig python2.pkgs.wrapPython ];
   buildInputs = [ python2 ];
   propagatedBuildInputs = with python2.pkgs; [
-    pygtk keyring virtkey pillow dbus-python pyinotify lxml pyxdg pyusb gnome_python gnome_python_desktop
-    python-uinput xlib pyudev pyinputevent
+    pygtk
+    keyring
+    virtkey
+    pillow
+    dbus-python
+    pyinotify
+    lxml
+    pyxdg
+    pyusb
+    gnome_python
+    gnome_python_desktop
+    python-uinput
+    xlib
+    pyudev
+    pyinputevent
   ];
 
   postPatch = ''

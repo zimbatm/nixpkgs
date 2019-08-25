@@ -1,6 +1,8 @@
 { stdenv, fetchFromGitHub, pkgconfig, file, fuse, libmtp }:
 
-let version = "0.5"; in
+let
+  version = "0.5";
+in
 stdenv.mkDerivation {
   name = "jmtpfs-${version}";
 

@@ -1,4 +1,4 @@
-{stdenv, fetchFromGitHub, autoreconfHook, ncurses, libpcap }:
+{ stdenv, fetchFromGitHub, autoreconfHook, ncurses, libpcap }:
 
 stdenv.mkDerivation rec {
   version = "3.5.1";
@@ -27,7 +27,7 @@ stdenv.mkDerivation rec {
     cp pcap/* $out/share/pcap
   '';
 
-  buildInputs = [ncurses libpcap];
+  buildInputs = [ ncurses libpcap ];
 
   nativeBuildInputs = [ autoreconfHook ];
 
@@ -38,4 +38,3 @@ stdenv.mkDerivation rec {
     platforms = platforms.unix;
   };
 }
-

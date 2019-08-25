@@ -35,10 +35,10 @@ in
 
           Note that this should be a last resort; patching the package is preferred (see GPaste).
         '';
-        apply = list: list ++
-        [
-          pkgs.pantheon.pantheon-agent-geoclue2
-        ];
+        apply = list: list
+          ++ [
+               pkgs.pantheon.pantheon-agent-geoclue2
+             ];
       };
 
       extraGSettingsOverrides = mkOption {
@@ -88,16 +88,18 @@ in
 
     services.xserver.displayManager.sessionCommands = ''
       if test "$XDG_CURRENT_DESKTOP" = "Pantheon"; then
-          ${concatMapStrings (p: ''
-            if [ -d "${p}/share/gsettings-schemas/${p.name}" ]; then
-              export XDG_DATA_DIRS=$XDG_DATA_DIRS''${XDG_DATA_DIRS:+:}${p}/share/gsettings-schemas/${p.name}
-            fi
+          ${concatMapStrings (
+      p: ''
+        if [ -d "${p}/share/gsettings-schemas/${p.name}" ]; then
+          export XDG_DATA_DIRS=$XDG_DATA_DIRS''${XDG_DATA_DIRS:+:}${p}/share/gsettings-schemas/${p.name}
+        fi
 
-            if [ -d "${p}/lib/girepository-1.0" ]; then
-              export GI_TYPELIB_PATH=$GI_TYPELIB_PATH''${GI_TYPELIB_PATH:+:}${p}/lib/girepository-1.0
-              export LD_LIBRARY_PATH=$LD_LIBRARY_PATH''${LD_LIBRARY_PATH:+:}${p}/lib
-            fi
-          '') cfg.sessionPath}
+        if [ -d "${p}/lib/girepository-1.0" ]; then
+          export GI_TYPELIB_PATH=$GI_TYPELIB_PATH''${GI_TYPELIB_PATH:+:}${p}/lib/girepository-1.0
+          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH''${LD_LIBRARY_PATH:+:}${p}/lib
+        fi
+      ''
+    ) cfg.sessionPath}
 
           # Settings from elementary-default-settings
           export GTK_CSD=1
@@ -115,7 +117,7 @@ in
     services.tumbler.enable = mkDefault true;
     services.dbus.packages = mkMerge [
       ([ pkgs.pantheon.switchboard-plug-power ])
-      (mkIf config.services.printing.enable  ([pkgs.system-config-printer]) )
+      (mkIf config.services.printing.enable ([ pkgs.system-config-printer ]))
     ];
     services.pantheon.contractor.enable = mkDefault true;
     services.gnome3.at-spi2-core.enable = true;
@@ -157,10 +159,13 @@ in
 
     networking.networkmanager.enable = mkDefault true;
     networking.networkmanager.basePackages =
-      { inherit (pkgs) networkmanager modemmanager wpa_supplicant crda;
+      {
+        inherit (pkgs) networkmanager modemmanager wpa_supplicant crda;
         inherit (pkgs.gnome3) networkmanager-openvpn networkmanager-vpnc
-                              networkmanager-openconnect networkmanager-fortisslvpn
-                              networkmanager-iodine networkmanager-l2tp; };
+          networkmanager-openconnect networkmanager-fortisslvpn
+          networkmanager-iodine networkmanager-l2tp
+          ;
+      };
 
     # Override GSettings schemas
     environment.variables.NIX_GSETTINGS_OVERRIDES_DIR = "${nixos-gsettings-desktop-schemas}/share/gsettings-schemas/nixos-gsettings-overrides/glib-2.0/schemas";
@@ -174,29 +179,37 @@ in
 
     environment.systemPackages =
       pkgs.pantheon.artwork ++ pkgs.pantheon.desktop ++ pkgs.pantheon.services ++ cfg.sessionPath
-      ++ (with pkgs; gnome3.removePackagesByName
-      ([
-        gnome3.geary
-        gnome3.epiphany
-        gnome3.gnome-font-viewer
-      ] ++ pantheon.apps) config.environment.pantheon.excludePackages)
-      ++ (with pkgs;
-      [
-        adwaita-qt
-        desktop-file-utils
-        glib
-        glib-networking
-        gnome-menus
-        gnome3.adwaita-icon-theme
-        gtk3.out
-        hicolor-icon-theme
-        lightlocker
-        plank
-        qgnomeplatform
-        shared-mime-info
-        sound-theme-freedesktop
-        xdg-user-dirs
-      ]);
+      ++ (
+           with pkgs; gnome3.removePackagesByName
+             (
+               [
+                 gnome3.geary
+                 gnome3.epiphany
+                 gnome3.gnome-font-viewer
+               ]
+               ++ pantheon.apps
+             ) config.environment.pantheon.excludePackages
+         )
+      ++ (
+           with pkgs;
+           [
+             adwaita-qt
+             desktop-file-utils
+             glib
+             glib-networking
+             gnome-menus
+             gnome3.adwaita-icon-theme
+             gtk3.out
+             hicolor-icon-theme
+             lightlocker
+             plank
+             qgnomeplatform
+             shared-mime-info
+             sound-theme-freedesktop
+             xdg-user-dirs
+           ]
+         )
+      ;
 
     fonts.fonts = with pkgs; [
       open-sans

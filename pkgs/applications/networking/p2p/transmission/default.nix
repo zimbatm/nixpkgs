@@ -1,12 +1,26 @@
-{ stdenv, fetchurl, pkgconfig, intltool, file, wrapGAppsHook
-, openssl, curl, libevent, inotify-tools, systemd, zlib, hicolor-icon-theme
-, enableGTK3 ? false, gtk3
+{ stdenv
+, fetchurl
+, pkgconfig
+, intltool
+, file
+, wrapGAppsHook
+, openssl
+, curl
+, libevent
+, inotify-tools
+, systemd
+, zlib
+, hicolor-icon-theme
+, enableGTK3 ? false
+, gtk3
 , enableSystemd ? stdenv.isLinux
 , enableDaemon ? true
 , enableCli ? true
 }:
 
-let inherit (stdenv.lib) optional optionals optionalString; in
+let
+  inherit (stdenv.lib) optional optionals optionalString;
+in
 
 stdenv.mkDerivation rec {
   name = "transmission-" + optionalString enableGTK3 "gtk-" + version;
@@ -18,12 +32,14 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ pkgconfig ]
-    ++ optionals enableGTK3 [ wrapGAppsHook ];
+    ++ optionals enableGTK3 [ wrapGAppsHook ]
+    ;
   buildInputs = [ intltool file openssl curl libevent zlib ]
     ++ optionals enableGTK3 [ gtk3 ]
     ++ optionals enableSystemd [ systemd ]
     ++ optionals stdenv.isLinux [ inotify-tools ]
-    ++ optionals enableGTK3 [ hicolor-icon-theme ];
+    ++ optionals enableGTK3 [ hicolor-icon-theme ]
+    ;
 
   postPatch = ''
     substituteInPlace ./configure \
@@ -33,12 +49,13 @@ stdenv.mkDerivation rec {
   '';
 
   configureFlags = [
-      ("--enable-cli=" + (if enableCli then "yes" else "no"))
-      ("--enable-daemon=" + (if enableDaemon then "yes" else "no"))
-      "--disable-mac" # requires xcodebuild
-    ]
-    ++ optional enableSystemd "--with-systemd-daemon"
-    ++ optional enableGTK3 "--with-gtk";
+    ("--enable-cli=" + (if enableCli then "yes" else "no"))
+    ("--enable-daemon=" + (if enableDaemon then "yes" else "no"))
+    "--disable-mac" # requires xcodebuild
+  ]
+  ++ optional enableSystemd "--with-systemd-daemon"
+  ++ optional enableGTK3 "--with-gtk"
+  ;
 
   NIX_LDFLAGS = optionalString stdenv.isDarwin "-framework CoreFoundation";
 
@@ -61,4 +78,3 @@ stdenv.mkDerivation rec {
     platforms = platforms.unix;
   };
 }
-

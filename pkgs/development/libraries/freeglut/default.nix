@@ -1,7 +1,9 @@
 { stdenv, fetchurl, libXi, libXrandr, libXxf86vm, libGL, libGLU, xlibsWrapper, cmake }:
 
-let version = "3.0.0";
-in stdenv.mkDerivation {
+let
+  version = "3.0.0";
+in
+stdenv.mkDerivation {
   name = "freeglut-${version}";
 
   src = fetchurl {
@@ -14,12 +16,12 @@ in stdenv.mkDerivation {
   buildInputs = [ libXi libXrandr libXxf86vm libGL libGLU xlibsWrapper cmake ];
 
   cmakeFlags = stdenv.lib.optionals stdenv.isDarwin [
-                 "-DOPENGL_INCLUDE_DIR=${libGL}/include"
-                 "-DOPENGL_gl_LIBRARY:FILEPATH=${libGL}/lib/libGL.dylib"
-                 "-DOPENGL_glu_LIBRARY:FILEPATH=${libGLU}/lib/libGLU.dylib"
-                 "-DFREEGLUT_BUILD_DEMOS:BOOL=OFF"
-                 "-DFREEGLUT_BUILD_STATIC:BOOL=OFF"
-               ];
+    "-DOPENGL_INCLUDE_DIR=${libGL}/include"
+    "-DOPENGL_gl_LIBRARY:FILEPATH=${libGL}/lib/libGL.dylib"
+    "-DOPENGL_glu_LIBRARY:FILEPATH=${libGLU}/lib/libGLU.dylib"
+    "-DFREEGLUT_BUILD_DEMOS:BOOL=OFF"
+    "-DFREEGLUT_BUILD_STATIC:BOOL=OFF"
+  ];
 
   enableParallelBuilding = true;
 

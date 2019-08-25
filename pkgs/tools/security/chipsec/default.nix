@@ -1,5 +1,12 @@
-{ stdenv, lib, fetchFromGitHub, python27Packages, nasm, libelf
-, kernel ? null, withDriver ? false }:
+{ stdenv
+, lib
+, fetchFromGitHub
+, python27Packages
+, nasm
+, libelf
+, kernel ? null
+, withDriver ? false
+}:
 python27Packages.buildPythonApplication rec {
   name = "chipsec-${version}";
   version = "1.3.7";
@@ -12,14 +19,16 @@ python27Packages.buildPythonApplication rec {
   };
 
   nativeBuildInputs = [
-    nasm libelf
+    nasm
+    libelf
   ];
 
   setupPyBuildFlags = lib.optional (!withDriver) "--skip-driver";
 
   checkPhase = "python setup.py build "
-             + lib.optionalString (!withDriver) "--skip-driver "
-             + "test";
+    + lib.optionalString (!withDriver) "--skip-driver "
+    + "test"
+    ;
 
   KERNEL_SRC_DIR = lib.optionalString withDriver "${kernel.dev}/lib/modules/${kernel.modDirVersion}/build";
 

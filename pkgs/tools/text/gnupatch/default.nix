@@ -1,5 +1,7 @@
-{ stdenv, fetchurl
-, ed, autoreconfHook
+{ stdenv
+, fetchurl
+, ed
+, autoreconfHook
 }:
 
 stdenv.mkDerivation rec {
@@ -13,16 +15,21 @@ stdenv.mkDerivation rec {
   patches = [
     # https://git.savannah.gnu.org/cgit/patch.git/patch/?id=f290f48a621867084884bfff87f8093c15195e6a
     ./CVE-2018-6951.patch
-    (fetchurl {
-      url = https://git.savannah.gnu.org/cgit/patch.git/patch/?id=b5a91a01e5d0897facdd0f49d64b76b0f02b43e1;
-      name = "Allow_input_files_to_be_missing_for_ed-style_patches.patch";
-      sha256 = "0iw0lk0yhnhvfjzal48ij6zdr92mgb84jq7fwryy1hdhi47hhq64";
-    })
-    (fetchurl { # CVE-2018-1000156
-      url = https://git.savannah.gnu.org/cgit/patch.git/patch/?id=123eaff0d5d1aebe128295959435b9ca5909c26d;
-      name = "Fix_arbitrary_command_execution_in_ed-style_patches.patch";
-      sha256 = "1bpy16n3hm5nv9xkrn6c4wglzsdzj3ss1biq16w9kfv48p4hx2vg";
-    })
+    (
+      fetchurl {
+        url = https://git.savannah.gnu.org/cgit/patch.git/patch/?id=b5a91a01e5d0897facdd0f49d64b76b0f02b43e1;
+        name = "Allow_input_files_to_be_missing_for_ed-style_patches.patch";
+        sha256 = "0iw0lk0yhnhvfjzal48ij6zdr92mgb84jq7fwryy1hdhi47hhq64";
+      }
+    )
+    (
+      fetchurl {
+        # CVE-2018-1000156
+        url = https://git.savannah.gnu.org/cgit/patch.git/patch/?id=123eaff0d5d1aebe128295959435b9ca5909c26d;
+        name = "Fix_arbitrary_command_execution_in_ed-style_patches.patch";
+        sha256 = "1bpy16n3hm5nv9xkrn6c4wglzsdzj3ss1biq16w9kfv48p4hx2vg";
+      }
+    )
     # https://git.savannah.gnu.org/cgit/patch.git/commit/?id=9c986353e420ead6e706262bf204d6e03322c300
     ./CVE-2018-6952.patch
 
@@ -40,7 +47,7 @@ stdenv.mkDerivation rec {
   ];
 
   doCheck = stdenv.hostPlatform.libc != "musl"; # not cross;
-  checkInputs = [ed];
+  checkInputs = [ ed ];
 
   meta = {
     description = "GNU Patch, a program to apply differences to files";
@@ -55,7 +62,7 @@ stdenv.mkDerivation rec {
 
     license = stdenv.lib.licenses.gpl3Plus;
 
-    maintainers = [ ];
+    maintainers = [];
     platforms = stdenv.lib.platforms.all;
   };
 }

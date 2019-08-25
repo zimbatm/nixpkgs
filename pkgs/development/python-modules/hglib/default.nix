@@ -10,10 +10,12 @@ buildPythonPackage rec {
   };
 
   patches = [
-    (substituteAll {
-      src = ./hgpath.patch;
-      hg = "${mercurial}/bin/hg";
-    })
+    (
+      substituteAll {
+        src = ./hgpath.patch;
+        hg = "${mercurial}/bin/hg";
+      }
+    )
   ];
 
   checkInputs = [ nose ];

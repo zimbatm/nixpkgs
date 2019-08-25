@@ -10,10 +10,12 @@ buildPythonPackage rec {
   };
 
   patches = [
-    (substituteAll {
-      src = ./hardcode-git-path.patch;
-      inherit git;
-    })
+    (
+      substituteAll {
+        src = ./hardcode-git-path.patch;
+        inherit git;
+      }
+    )
   ];
 
   checkInputs = [ nose ] ++ lib.optional isPy27 mock;
@@ -24,7 +26,7 @@ buildPythonPackage rec {
 
   meta = {
     description = "Python Git Library";
-    maintainers = [ ];
+    maintainers = [];
     homepage = https://github.com/gitpython-developers/GitPython;
     license = lib.licenses.bsd3;
   };

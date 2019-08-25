@@ -5,7 +5,7 @@ rec {
 
   description = ''Alexandria is a collection of portable public domain utilities.'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/alexandria/2018-12-10/alexandria-20181210-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "alexandria";
 
-  asdFilesToKeep = ["alexandria.asd"];
+  asdFilesToKeep = [ "alexandria.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM alexandria DESCRIPTION

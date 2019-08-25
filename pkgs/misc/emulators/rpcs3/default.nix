@@ -1,8 +1,23 @@
-{ stdenv, lib, fetchgit, cmake, pkgconfig, git
-, qt5, openal, glew, vulkan-loader, libpng, ffmpeg, libevdev, python27
-, pulseaudioSupport ? true, libpulseaudio
-, waylandSupport ? true, wayland
-, alsaSupport ? true, alsaLib
+{ stdenv
+, lib
+, fetchgit
+, cmake
+, pkgconfig
+, git
+, qt5
+, openal
+, glew
+, vulkan-loader
+, libpng
+, ffmpeg
+, libevdev
+, python27
+, pulseaudioSupport ? true
+, libpulseaudio
+, waylandSupport ? true
+, wayland
+, alsaSupport ? true
+, alsaLib
 }:
 
 let
@@ -36,10 +51,20 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ cmake pkgconfig git ];
 
   buildInputs = [
-    qt5.qtbase qt5.qtquickcontrols openal glew vulkan-loader libpng ffmpeg libevdev python27
-  ] ++ lib.optional pulseaudioSupport libpulseaudio
-    ++ lib.optional alsaSupport alsaLib
-    ++ lib.optional waylandSupport wayland;
+    qt5.qtbase
+    qt5.qtquickcontrols
+    openal
+    glew
+    vulkan-loader
+    libpng
+    ffmpeg
+    libevdev
+    python27
+  ]
+  ++ lib.optional pulseaudioSupport libpulseaudio
+  ++ lib.optional alsaSupport alsaLib
+  ++ lib.optional waylandSupport wayland
+  ;
 
   enableParallelBuilding = true;
 

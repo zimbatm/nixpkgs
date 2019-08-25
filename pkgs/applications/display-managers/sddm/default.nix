@@ -1,12 +1,25 @@
-{ mkDerivation, lib, fetchFromGitHub
-, cmake, extra-cmake-modules, pkgconfig, libxcb, libpthreadstubs
-, libXdmcp, libXau, qtbase, qtdeclarative, qttools, pam, systemd
+{ mkDerivation
+, lib
+, fetchFromGitHub
+, cmake
+, extra-cmake-modules
+, pkgconfig
+, libxcb
+, libpthreadstubs
+, libXdmcp
+, libXau
+, qtbase
+, qtdeclarative
+, qttools
+, pam
+, systemd
 }:
 
 let
   version = "0.18.1";
 
-in mkDerivation rec {
+in
+mkDerivation rec {
   name = "sddm-${version}";
 
   src = fetchFromGitHub {
@@ -29,7 +42,14 @@ in mkDerivation rec {
   nativeBuildInputs = [ cmake extra-cmake-modules pkgconfig qttools ];
 
   buildInputs = [
-    libxcb libpthreadstubs libXdmcp libXau pam qtbase qtdeclarative systemd
+    libxcb
+    libpthreadstubs
+    libXdmcp
+    libXau
+    pam
+    qtbase
+    qtdeclarative
+    systemd
   ];
 
   cmakeFlags = [
@@ -58,9 +78,9 @@ in mkDerivation rec {
 
   meta = with lib; {
     description = "QML based X11 display manager";
-    homepage    = https://github.com/sddm/sddm;
+    homepage = https://github.com/sddm/sddm;
     maintainers = with maintainers; [ abbradar ttuegel ];
-    platforms   = platforms.linux;
-    license     = licenses.gpl2Plus;
+    platforms = platforms.linux;
+    license = licenses.gpl2Plus;
   };
 }

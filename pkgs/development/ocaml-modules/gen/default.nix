@@ -1,6 +1,8 @@
 { stdenv, fetchFromGitHub, ocaml, findlib, ocamlbuild, qtest, ounit }:
 
-let version = "0.5"; in
+let
+  version = "0.5";
+in
 
 stdenv.mkDerivation {
   name = "ocaml${ocaml.version}-gen-${version}";

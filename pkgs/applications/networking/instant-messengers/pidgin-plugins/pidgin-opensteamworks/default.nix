@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, pidgin, glib, json-glib, nss, nspr, libgnome-keyring } :
+{ stdenv, fetchFromGitHub, pidgin, glib, json-glib, nss, nspr, libgnome-keyring }:
 
 stdenv.mkDerivation rec {
   name = "pidgin-opensteamworks-${version}";

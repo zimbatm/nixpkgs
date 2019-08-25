@@ -24,7 +24,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
   buildInputs = [ cmake vtk ] ++ stdenv.lib.optional stdenv.isDarwin [ darwin.apple_sdk.frameworks.ApplicationServices darwin.apple_sdk.frameworks.Cocoa ];
-  propagatedBuildInputs = [ ];
+  propagatedBuildInputs = [];
 
   meta = with stdenv.lib; {
     description = "The grassroots cross-platform DICOM implementation";
@@ -37,4 +37,3 @@ stdenv.mkDerivation rec {
     platforms = platforms.all;
   };
 }
-

@@ -1,11 +1,26 @@
-{ stdenv, lib, buildPackages
-, autoreconfHook, bison, texinfo, fetchurl, perl, xz, libiconv, gmp ? null
-, aclSupport ? stdenv.isLinux, acl ? null
-, attrSupport ? stdenv.isLinux, attr ? null
-, selinuxSupport? false, libselinux ? null, libsepol ? null
-# No openssl in default version, so openssl-induced rebuilds aren't too big.
-# It makes *sum functions significantly faster.
-, minimal ? true, withOpenssl ? !minimal, openssl ? null
+{ stdenv
+, lib
+, buildPackages
+, autoreconfHook
+, bison
+, texinfo
+, fetchurl
+, perl
+, xz
+, libiconv
+, gmp ? null
+, aclSupport ? stdenv.isLinux
+, acl ? null
+, attrSupport ? stdenv.isLinux
+, attr ? null
+, selinuxSupport ? false
+, libselinux ? null
+, libsepol ? null
+  # No openssl in default version, so openssl-induced rebuilds aren't too big.
+  # It makes *sum functions significantly faster.
+, minimal ? true
+, withOpenssl ? !minimal
+, openssl ? null
 , withPrefix ? false
 , singleBinary ? "symlinks" # you can also pass "shebangs" or false
 }:
@@ -25,11 +40,12 @@ stdenv.mkDerivation rec {
   };
 
   patches = optional stdenv.hostPlatform.isCygwin ./coreutils-8.23-4.cygwin.patch
-         # Fix failing test with musl. See https://lists.gnu.org/r/coreutils/2019-05/msg00031.html
-         # To be removed in coreutils-8.32.
-         ++ optional stdenv.hostPlatform.isMusl ./avoid-false-positive-in-date-debug-test.patch
-         # Fix compilation in musl-cross environments. To be removed in coreutils-8.32.
-         ++ optional stdenv.hostPlatform.isMusl ./coreutils-8.31-musl-cross.patch;
+  # Fix failing test with musl. See https://lists.gnu.org/r/coreutils/2019-05/msg00031.html
+  # To be removed in coreutils-8.32.
+    ++ optional stdenv.hostPlatform.isMusl ./avoid-false-positive-in-date-debug-test.patch
+  # Fix compilation in musl-cross environments. To be removed in coreutils-8.32.
+    ++ optional stdenv.hostPlatform.isMusl ./coreutils-8.31-musl-cross.patch
+    ;
 
   postPatch = ''
     # The test tends to fail on btrfs,f2fs and maybe other unusual filesystems.
@@ -57,29 +73,35 @@ stdenv.mkDerivation rec {
     for f in gnulib-tests/{test-chown.c,test-fchownat.c,test-lchown.c}; do
       echo "int main() { return 77; }" > "$f"
     done
-  '' + optionalString (stdenv.hostPlatform.libc == "musl") (lib.concatStringsSep "\n" [
-    ''
-      echo "int main() { return 77; }" > gnulib-tests/test-parse-datetime.c
-      echo "int main() { return 77; }" > gnulib-tests/test-getlogin.c
-    ''
-  ]);
+  ''
+  + optionalString (stdenv.hostPlatform.libc == "musl") (
+      lib.concatStringsSep "\n" [
+        ''
+          echo "int main() { return 77; }" > gnulib-tests/test-parse-datetime.c
+          echo "int main() { return 77; }" > gnulib-tests/test-getlogin.c
+        ''
+      ]
+    )
+  ;
 
   outputs = [ "out" "info" ];
 
   nativeBuildInputs = [ perl xz.bin ]
     ++ optionals stdenv.hostPlatform.isCygwin [ autoreconfHook texinfo ]   # due to patch
-    ++ optionals stdenv.hostPlatform.isMusl [ autoreconfHook bison ];   # due to patch
+    ++ optionals stdenv.hostPlatform.isMusl [ autoreconfHook bison ]
+    ; # due to patch
   configureFlags = [ "--with-packager=https://NixOS.org" ]
     ++ optional (singleBinary != false)
-      ("--enable-single-binary" + optionalString (isString singleBinary) "=${singleBinary}")
+         ("--enable-single-binary" + optionalString (isString singleBinary) "=${singleBinary}")
     ++ optional withOpenssl "--with-openssl"
     ++ optional stdenv.hostPlatform.isSunOS "ac_cv_func_inotify_init=no"
     ++ optional withPrefix "--program-prefix=g"
     ++ optionals (stdenv.hostPlatform != stdenv.buildPlatform && stdenv.hostPlatform.libc == "glibc") [
-      # TODO(19b98110126fde7cbb1127af7e3fe1568eacad3d): Needed for fstatfs() I
-      # don't know why it is not properly detected cross building with glibc.
-      "fu_cv_sys_stat_statfs2_bsize=yes"
-    ];
+         # TODO(19b98110126fde7cbb1127af7e3fe1568eacad3d): Needed for fstatfs() I
+         # don't know why it is not properly detected cross building with glibc.
+         "fu_cv_sys_stat_statfs2_bsize=yes"
+       ]
+    ;
 
 
   buildInputs = [ gmp ]
@@ -87,8 +109,9 @@ stdenv.mkDerivation rec {
     ++ optional attrSupport attr
     ++ optional withOpenssl openssl
     ++ optionals selinuxSupport [ libselinux libsepol ]
-       # TODO(@Ericson2314): Investigate whether Darwin could benefit too
-    ++ optional (stdenv.hostPlatform != stdenv.buildPlatform && stdenv.hostPlatform.libc != "glibc") libiconv;
+  # TODO(@Ericson2314): Investigate whether Darwin could benefit too
+    ++ optional (stdenv.hostPlatform != stdenv.buildPlatform && stdenv.hostPlatform.libc != "glibc") libiconv
+    ;
 
   # The tests are known broken on Cygwin
   # (http://article.gmane.org/gmane.comp.gnu.core-utils.bugs/19025),
@@ -97,7 +120,8 @@ stdenv.mkDerivation rec {
   # With non-standard storeDir: https://github.com/NixOS/nix/issues/512
   doCheck = stdenv.hostPlatform == stdenv.buildPlatform
     && (stdenv.hostPlatform.libc == "glibc" || stdenv.hostPlatform.isMusl)
-    && builtins.storeDir == "/nix/store";
+    && builtins.storeDir == "/nix/store"
+    ;
 
   # Prevents attempts of running 'help2man' on cross-built binaries.
   PERL = if stdenv.hostPlatform == stdenv.buildPlatform then null else "missing";
@@ -121,8 +145,9 @@ stdenv.mkDerivation rec {
   ''
   # du: 8.7 M locale + 0.4 M man pages
   + optionalString minimal ''
-    rm -r "$out/share"
-  '';
+      rm -r "$out/share"
+    ''
+  ;
 
   meta = {
     homepage = https://www.gnu.org/software/coreutils/;
@@ -144,7 +169,8 @@ stdenv.mkDerivation rec {
     maintainers = [ maintainers.eelco ];
   };
 
-} // optionalAttrs stdenv.hostPlatform.isMusl {
-  # Work around a bogus warning in conjunction with musl.
-  NIX_CFLAGS_COMPILE = "-Wno-error";
 }
+// optionalAttrs stdenv.hostPlatform.isMusl {
+     # Work around a bogus warning in conjunction with musl.
+     NIX_CFLAGS_COMPILE = "-Wno-error";
+   }

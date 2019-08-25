@@ -24,13 +24,16 @@ buildPythonApplication rec {
   doCheck = false;
 
   propagatedBuildInputs = [
-    click colorama kaptan libtmux
+    click
+    colorama
+    kaptan
+    libtmux
   ];
 
   meta = with stdenv.lib; {
     description = "Manage tmux workspaces from JSON and YAML";
     homepage = https://tmuxp.git-pull.com/;
     license = licenses.bsd3;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
   };
 }

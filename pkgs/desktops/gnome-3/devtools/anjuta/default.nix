@@ -1,6 +1,21 @@
-{ stdenv, fetchurl, pkgconfig, gnome3, gtk3, flex, bison, libxml2, intltool,
-  gdl, libgda, gtksourceview, gsettings-desktop-schemas,
-  itstool, python3, ncurses, makeWrapper }:
+{ stdenv
+, fetchurl
+, pkgconfig
+, gnome3
+, gtk3
+, flex
+, bison
+, libxml2
+, intltool
+, gdl
+, libgda
+, gtksourceview
+, gsettings-desktop-schemas
+, itstool
+, python3
+, ncurses
+, makeWrapper
+}:
 
 stdenv.mkDerivation rec {
   name = "anjuta-${version}";
@@ -18,13 +33,23 @@ stdenv.mkDerivation rec {
   enableParallelBuilding = true;
 
   nativeBuildInputs = [
-    pkgconfig intltool itstool python3 makeWrapper
+    pkgconfig
+    intltool
+    itstool
+    python3
+    makeWrapper
     # Required by python3
     ncurses
   ];
   buildInputs = [
-    flex bison gtk3 libxml2 gnome3.gjs gdl
-    libgda gtksourceview
+    flex
+    bison
+    gtk3
+    libxml2
+    gnome3.gjs
+    gdl
+    libgda
+    gtksourceview
     gsettings-desktop-schemas
   ];
 

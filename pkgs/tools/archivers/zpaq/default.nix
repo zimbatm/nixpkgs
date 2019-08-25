@@ -19,9 +19,10 @@ stdenv.mkDerivation rec {
       + (lib.optionalString (!isi686 && !isx86_64) "-DNOJIT ")
       + "-Dunix";
     CXXFLAGS = "-O3 -DNDEBUG";
-  in ''
-    buildFlagsArray=( "CPPFLAGS=${CPPFLAGS}" "CXXFLAGS=${CXXFLAGS}" )
-  '';
+  in
+    ''
+      buildFlagsArray=( "CPPFLAGS=${CPPFLAGS}" "CXXFLAGS=${CXXFLAGS}" )
+    '';
 
   enableParallelBuilding = true;
 
@@ -30,7 +31,7 @@ stdenv.mkDerivation rec {
   meta = with stdenv.lib; {
     description = "Incremental journaling backup utility and archiver";
     homepage = http://mattmahoney.net/dc/zpaq.html;
-    license = licenses.gpl3Plus ;
+    license = licenses.gpl3Plus;
     maintainers = with maintainers; [ raskin ];
     platforms = platforms.linux;
     inherit version;

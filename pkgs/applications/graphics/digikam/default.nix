@@ -1,7 +1,14 @@
-{ mkDerivation, lib, fetchFromGitHub, cmake, doxygen, extra-cmake-modules, wrapGAppsHook
+{ mkDerivation
+, lib
+, fetchFromGitHub
+, cmake
+, doxygen
+, extra-cmake-modules
+, wrapGAppsHook
 
-# For `digitaglinktree`
-, perl, sqlite
+  # For `digitaglinktree`
+, perl
+, sqlite
 
 , qtbase
 , qtxmlpatterns
@@ -42,7 +49,7 @@
 , pcre
 , threadweaver
 
-# For panorama and focus stacking
+  # For panorama and focus stacking
 , enblend-enfuse
 , hugin
 , gnumake
@@ -51,13 +58,13 @@
 }:
 
 mkDerivation rec {
-  pname   = "digikam";
+  pname = "digikam";
   version = "6.2.0";
 
   src = fetchFromGitHub {
-    owner  = "KDE";
-    repo   = "digikam";
-    rev    = "v${version}";
+    owner = "KDE";
+    repo = "digikam";
+    rev = "v${version}";
     sha256 = "1l1nb1nwicmip2jxhn5gzr7h60igvns0zs3kzp36r6qf4wvg3v2z";
   };
 

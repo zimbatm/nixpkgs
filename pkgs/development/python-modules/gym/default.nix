@@ -1,6 +1,11 @@
 { lib
-, buildPythonPackage, fetchPypi
-, numpy, requests, six, pyglet, scipy
+, buildPythonPackage
+, fetchPypi
+, numpy
+, requests
+, six
+, pyglet
+, scipy
 }:
 
 buildPythonPackage rec {
@@ -13,7 +18,11 @@ buildPythonPackage rec {
   };
 
   propagatedBuildInputs = [
-    numpy requests six pyglet scipy
+    numpy
+    requests
+    six
+    pyglet
+    scipy
   ];
 
   # The test needs MuJoCo that is not free library.

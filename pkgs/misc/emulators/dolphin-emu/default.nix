@@ -1,27 +1,55 @@
-{ stdenv, lib, fetchpatch, pkgconfig, cmake, bluez, ffmpeg, libao, gtk2, glib
-, libGLU_combined , gettext, libpthreadstubs, libXrandr, libXext, readline
-, openal , libXdmcp, portaudio, fetchFromGitHub, libusb, libevdev
-, wxGTK30, soundtouch, miniupnpc, mbedtls, curl, lzo, sfml
-, libpulseaudio ? null }:
+{ stdenv
+, lib
+, fetchpatch
+, pkgconfig
+, cmake
+, bluez
+, ffmpeg
+, libao
+, gtk2
+, glib
+, libGLU_combined
+, gettext
+, libpthreadstubs
+, libXrandr
+, libXext
+, readline
+, openal
+, libXdmcp
+, portaudio
+, fetchFromGitHub
+, libusb
+, libevdev
+, wxGTK30
+, soundtouch
+, miniupnpc
+, mbedtls
+, curl
+, lzo
+, sfml
+, libpulseaudio ? null
+}:
 
 stdenv.mkDerivation rec {
   name = "dolphin-emu-${version}";
   version = "5.0";
 
   src = fetchFromGitHub {
-    owner  = "dolphin-emu";
-    repo   = "dolphin";
-    rev    = version;
+    owner = "dolphin-emu";
+    repo = "dolphin";
+    rev = version;
     sha256 = "07mlfnh0hwvk6xarcg315x7z2j0qbg9g7cm040df9c8psiahc3g6";
   };
 
   patches = [
     # Fix build with soundtouch 2.1.2
-    (fetchpatch {
-      url = "https://src.fedoraproject.org/rpms/dolphin-emu/raw/a1b91fdf94981e12c8889a02cba0ec2267d0f303/f/dolphin-emu-5.0-soundtouch-exception-fix.patch";
-      name = "dolphin-emu-5.0-soundtouch-exception-fix.patch";
-      sha256 = "0yd3l46nja5qiknnl30ryad98f3v8911jwnr67hn61dzx2kwbbaw";
-    })
+    (
+      fetchpatch {
+        url = "https://src.fedoraproject.org/rpms/dolphin-emu/raw/a1b91fdf94981e12c8889a02cba0ec2267d0f303/f/dolphin-emu-5.0-soundtouch-exception-fix.patch";
+        name = "dolphin-emu-5.0-soundtouch-exception-fix.patch";
+        sha256 = "0yd3l46nja5qiknnl30ryad98f3v8911jwnr67hn61dzx2kwbbaw";
+      }
+    )
   ];
 
   postPatch = ''
@@ -39,11 +67,38 @@ stdenv.mkDerivation rec {
   enableParallelBuilding = true;
 
   nativeBuildInputs = [ pkgconfig ];
-  buildInputs = [ cmake bluez ffmpeg libao libGLU_combined gtk2 glib
-                  gettext libpthreadstubs libXrandr libXext readline openal
-                  libevdev libXdmcp portaudio libusb libpulseaudio
-                  libevdev libXdmcp portaudio libusb libpulseaudio
-                  wxGTK30 soundtouch miniupnpc mbedtls curl lzo sfml ];
+  buildInputs = [
+    cmake
+    bluez
+    ffmpeg
+    libao
+    libGLU_combined
+    gtk2
+    glib
+    gettext
+    libpthreadstubs
+    libXrandr
+    libXext
+    readline
+    openal
+    libevdev
+    libXdmcp
+    portaudio
+    libusb
+    libpulseaudio
+    libevdev
+    libXdmcp
+    portaudio
+    libusb
+    libpulseaudio
+    wxGTK30
+    soundtouch
+    miniupnpc
+    mbedtls
+    curl
+    lzo
+    sfml
+  ];
 
   meta = with lib; {
     homepage = https://dolphin-emu.org/;

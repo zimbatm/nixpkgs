@@ -1,4 +1,7 @@
-{ stdenv, fetchurl, autoreconfHook, intltool
+{ stdenv
+, fetchurl
+, autoreconfHook
+, intltool
 , pythonPackages
 }:
 
@@ -18,7 +21,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ autoreconfHook ];
   buildInputs = [ intltool pythonPackages.wrapPython ];
-  propagatedBuildInputs = with pythonPackages; [ python pygtk dbus-python  ];
+  propagatedBuildInputs = with pythonPackages; [ python pygtk dbus-python ];
   pythonPath = with pythonPackages; [ mpd pygtk dbus-python notify mutagen ];
   postInstall = "wrapPythonPrograms";
 

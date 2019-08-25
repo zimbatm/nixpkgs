@@ -27,11 +27,15 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     fontforge
-    (pythonFull.withPackages (ps: [
-      ps.jinja2
-      ps.py3to2
-      ps.fonttools
-    ]))
+    (
+      pythonFull.withPackages (
+        ps: [
+          ps.jinja2
+          ps.py3to2
+          ps.fonttools
+        ]
+      )
+    )
   ];
 
   meta = with stdenv.lib; {
@@ -42,4 +46,3 @@ stdenv.mkDerivation rec {
     maintainers = with maintainers; [ mt-caret ];
   };
 }
-

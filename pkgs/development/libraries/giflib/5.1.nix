@@ -1,4 +1,4 @@
-{stdenv, fetchurl, xmlto, docbook_xml_dtd_412, docbook_xsl, libxml2 }:
+{ stdenv, fetchurl, xmlto, docbook_xml_dtd_412, docbook_xsl, libxml2 }:
 
 stdenv.mkDerivation {
   name = "giflib-5.1.4";

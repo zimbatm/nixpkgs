@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
 
   hardeningDisable = [ "format" ];
 
-  buildInputs = [  qt5.qtbase qt5.qttools alsaLib libjack2 ];
+  buildInputs = [ qt5.qtbase qt5.qttools alsaLib libjack2 ];
 
   nativeBuildInputs = [ pkgconfig ];
 

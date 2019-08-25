@@ -1,5 +1,17 @@
-{ stdenv, fetchurl, makeWrapper, symlinkJoin, writeShellScriptBin, callPackage, defaultCrateOverrides
-, wayland, cairo, libxkbcommon, pam, python3Packages, lemonbar, gdk-pixbuf
+{ stdenv
+, fetchurl
+, makeWrapper
+, symlinkJoin
+, writeShellScriptBin
+, callPackage
+, defaultCrateOverrides
+, wayland
+, cairo
+, libxkbcommon
+, pam
+, python3Packages
+, lemonbar
+, gdk-pixbuf
 }:
 
 let
@@ -21,40 +33,56 @@ let
       "way_cooler"."${version}" = f;
     };
   };
-  way-cooler = ((way_cooler_ { builtin-lua = true; }).override {
-    crateOverrides = defaultCrateOverrides // {
+  way-cooler = (
+    (way_cooler_ { builtin-lua = true; }).override {
+      crateOverrides = defaultCrateOverrides
+        // {
 
-    way-cooler = attrs: { buildInputs = [ wlc cairo libxkbcommon fakegit gdk-pixbuf wayland ]; };
-  };}).overrideAttrs (oldAttrs: rec {
-    postBuild = ''
-      mkdir -p $out/etc
-      cp -r config $out/etc/way-cooler
-    '';
-  });
+             way-cooler = attrs: { buildInputs = [ wlc cairo libxkbcommon fakegit gdk-pixbuf wayland ]; };
+           }
+        ;
+    }
+  ).overrideAttrs (
+    oldAttrs: rec {
+      postBuild = ''
+        mkdir -p $out/etc
+        cp -r config $out/etc/way-cooler
+      '';
+    }
+  );
 
-  wc-bg = ((callPackage ./wc-bg.nix {}).wc_bg {}).overrideAttrs (oldAttrs: rec {
-    nativeBuildInputs = [ makeWrapper ];
+  wc-bg = ((callPackage ./wc-bg.nix {}).wc_bg {}).overrideAttrs (
+    oldAttrs: rec {
+      nativeBuildInputs = [ makeWrapper ];
 
-    postFixup = ''
-      makeWrapper $out/bin/wc-bg $out/bin/wc-bg \
-        --prefix LD_LIBRARY_PATH : "${stdenv.lib.makeLibraryPath [ wayland ]}"
-    '';
-  });
+      postFixup = ''
+        makeWrapper $out/bin/wc-bg $out/bin/wc-bg \
+          --prefix LD_LIBRARY_PATH : "${stdenv.lib.makeLibraryPath [ wayland ]}"
+      '';
+    }
+  );
 
   wc-grab = (callPackage ./wc-grab.nix {}).wc_grab {};
 
-  wc-lock = (((callPackage ./wc-lock.nix {}).wc_lock {}).override {
-    crateOverrides = defaultCrateOverrides // {
+  wc-lock = (
+    ((callPackage ./wc-lock.nix {}).wc_lock {}).override {
+      crateOverrides = defaultCrateOverrides
+        // {
 
-    wc-lock = attrs: { buildInputs = [ pam ]; };
-  };}).overrideAttrs (oldAttrs: rec {
-    nativeBuildInputs = [ makeWrapper ];
+             wc-lock = attrs: { buildInputs = [ pam ]; };
+           }
+        ;
+    }
+  ).overrideAttrs (
+    oldAttrs: rec {
+      nativeBuildInputs = [ makeWrapper ];
 
-    postFixup = ''
-      makeWrapper $out/bin/wc-lock $out/bin/wc-lock \
-        --prefix LD_LIBRARY_PATH : "${stdenv.lib.makeLibraryPath [ libxkbcommon wayland ]}"
-    '';
-  });
+      postFixup = ''
+        makeWrapper $out/bin/wc-lock $out/bin/wc-lock \
+          --prefix LD_LIBRARY_PATH : "${stdenv.lib.makeLibraryPath [ libxkbcommon wayland ]}"
+      '';
+    }
+  );
 
   # https://github.com/way-cooler/way-cooler/issues/446
   wc-bar-bare = stdenv.mkDerivation {
@@ -87,7 +115,8 @@ let
     sleep 5
     ${wc-bar-bare}/bin/bar.py $SELECTED $BACKGROUND $SELECTED_OTHER_WORKSPACE 2> /tmp/bar_debug.txt | ${lemonbar}/bin/lemonbar -B $BACKGROUND -F "#FFF" -n "lemonbar" -p -d
   '';
-in symlinkJoin rec {
+in
+symlinkJoin rec {
   inherit version;
   name = "way-cooler-with-extensions-${version}";
   paths = [ way-cooler wc-bg wc-grab wc-lock wc-bar ];

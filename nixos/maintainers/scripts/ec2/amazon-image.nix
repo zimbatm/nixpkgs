@@ -4,7 +4,8 @@ with lib;
 
 let
   cfg = config.amazonImage;
-in {
+in
+{
 
   imports = [ ../../../modules/virtualisation/amazon-image.nix ];
 
@@ -59,8 +60,8 @@ in {
         {
           imports = [ <nixpkgs/nixos/modules/virtualisation/amazon-image.nix> ];
           ${optionalString config.ec2.hvm ''
-            ec2.hvm = true;
-          ''}
+        ec2.hvm = true;
+      ''}
         }
       '';
   };

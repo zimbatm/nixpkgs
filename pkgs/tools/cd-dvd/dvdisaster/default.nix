@@ -1,5 +1,10 @@
-{ stdenv, fetchurl, pkgconfig, gettext, which
-, glib, gtk2
+{ stdenv
+, fetchurl
+, pkgconfig
+, gettext
+, which
+, glib
+, gtk2
 , enableSoftening ? true
 }:
 
@@ -33,7 +38,9 @@ stdenv.mkDerivation rec {
     "--docdir=share/doc"
     "--with-nls=yes"
     "--with-embedded-src-path=no"
-  ] ++ stdenv.lib.optional (stdenv.hostPlatform.isx86_64) "--with-sse2=yes";
+  ]
+  ++ stdenv.lib.optional (stdenv.hostPlatform.isx86_64) "--with-sse2=yes"
+  ;
 
   # fatal error: inlined-icons.h: No such file or directory
   enableParallelBuilding = false;
@@ -83,6 +90,6 @@ stdenv.mkDerivation rec {
     '';
     license = licenses.gpl3Plus;
     platforms = platforms.linux;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
   };
 }

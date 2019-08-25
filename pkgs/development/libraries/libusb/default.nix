@@ -1,4 +1,4 @@
-{stdenv, fetchurl, pkgconfig, libusb1}:
+{ stdenv, fetchurl, pkgconfig, libusb1 }:
 
 stdenv.mkDerivation {
   name = "libusb-compat-0.1.5";

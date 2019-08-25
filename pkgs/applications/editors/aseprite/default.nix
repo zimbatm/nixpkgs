@@ -1,7 +1,29 @@
-{ stdenv, lib, callPackage, fetchFromGitHub, fetchpatch, cmake, ninja, pkgconfig
-, curl, freetype, giflib, libjpeg, libpng, libwebp, pixman, tinyxml, zlib
-, harfbuzzFull, glib, fontconfig, pcre
-, libX11, libXext, libXcursor, libXxf86vm, libGL
+{ stdenv
+, lib
+, callPackage
+, fetchFromGitHub
+, fetchpatch
+, cmake
+, ninja
+, pkgconfig
+, curl
+, freetype
+, giflib
+, libjpeg
+, libpng
+, libwebp
+, pixman
+, tinyxml
+, zlib
+, harfbuzzFull
+, glib
+, fontconfig
+, pcre
+, libX11
+, libXext
+, libXcursor
+, libXxf86vm
+, libGL
 , unfree ? false
 , cmark
 }:
@@ -19,32 +41,56 @@ stdenv.mkDerivation rec {
     rev = "v${version}";
     fetchSubmodules = true;
     sha256 = if unfree
-      then "1illr51jpg5g6nx29rav9dllyy5lzyyn7lj2fhrnpz1ysqgaq5p8"
-      else "0gd49lns2bpzbkwax5jf9x1xmg1j8ij997kcxr2596cwiswnw4di";
+    then "1illr51jpg5g6nx29rav9dllyy5lzyyn7lj2fhrnpz1ysqgaq5p8"
+    else "0gd49lns2bpzbkwax5jf9x1xmg1j8ij997kcxr2596cwiswnw4di";
   };
 
   nativeBuildInputs = [
-    cmake pkgconfig
-  ] ++ lib.optionals unfree [ ninja ];
+    cmake
+    pkgconfig
+  ]
+  ++ lib.optionals unfree [ ninja ]
+  ;
 
   buildInputs = [
-    curl freetype giflib libjpeg libpng libwebp pixman tinyxml zlib
-    libX11 libXext libXcursor libXxf86vm
-  ] ++ lib.optionals unfree [
-    cmark
-    harfbuzzFull glib fontconfig pcre
-    skia libGL
-  ];
+    curl
+    freetype
+    giflib
+    libjpeg
+    libpng
+    libwebp
+    pixman
+    tinyxml
+    zlib
+    libX11
+    libXext
+    libXcursor
+    libXxf86vm
+  ]
+  ++ lib.optionals unfree [
+       cmark
+       harfbuzzFull
+       glib
+       fontconfig
+       pcre
+       skia
+       libGL
+     ]
+  ;
 
   patches = lib.optionals unfree [
-    (fetchpatch {
-      url = "https://github.com/lfont/aseprite/commit/f1ebc47012d3fed52306ed5922787b4b98cc0a7b.patch";
-      sha256 = "03xg7x6b9iv7z18vzlqxhcfphmx4v3qhs9f5rgf38ppyklca5jyw";
-    })
-    (fetchpatch {
-      url = "https://github.com/orivej/aseprite/commit/ea87e65b357ad0bd65467af5529183b5a48a8c17.patch";
-      sha256 = "1vwn8ivap1pzdh444sdvvkndp55iz146nhmd80xbm8cyzn3qmg91";
-    })
+    (
+      fetchpatch {
+        url = "https://github.com/lfont/aseprite/commit/f1ebc47012d3fed52306ed5922787b4b98cc0a7b.patch";
+        sha256 = "03xg7x6b9iv7z18vzlqxhcfphmx4v3qhs9f5rgf38ppyklca5jyw";
+      }
+    )
+    (
+      fetchpatch {
+        url = "https://github.com/orivej/aseprite/commit/ea87e65b357ad0bd65467af5529183b5a48a8c17.patch";
+        sha256 = "1vwn8ivap1pzdh444sdvvkndp55iz146nhmd80xbm8cyzn3qmg91";
+      }
+    )
   ];
 
   postPatch = ''
@@ -64,19 +110,21 @@ stdenv.mkDerivation rec {
     "-DUSE_SHARED_ZLIB=ON"
     "-DWITH_DESKTOP_INTEGRATION=ON"
     "-DWITH_WEBP_SUPPORT=ON"
-  ] ++ lib.optionals unfree [
-    "-DUSE_SHARED_CMARK=ON"
-    "-DUSE_SHARED_HARFBUZZ=ON"
-    # Aseprite needs internal freetype headers.
-    "-DUSE_SHARED_FREETYPE=OFF"
-    # Disable libarchive programs.
-    "-DENABLE_CAT=OFF"
-    "-DENABLE_CPIO=OFF"
-    "-DENABLE_TAR=OFF"
-    # UI backend.
-    "-DLAF_OS_BACKEND=skia"
-    "-DSKIA_DIR=${skia}"
-  ];
+  ]
+  ++ lib.optionals unfree [
+       "-DUSE_SHARED_CMARK=ON"
+       "-DUSE_SHARED_HARFBUZZ=ON"
+       # Aseprite needs internal freetype headers.
+       "-DUSE_SHARED_FREETYPE=OFF"
+       # Disable libarchive programs.
+       "-DENABLE_CAT=OFF"
+       "-DENABLE_CPIO=OFF"
+       "-DENABLE_TAR=OFF"
+       # UI backend.
+       "-DLAF_OS_BACKEND=skia"
+       "-DSKIA_DIR=${skia}"
+     ]
+  ;
 
   postInstall = ''
     # Install desktop icons.
@@ -109,11 +157,13 @@ stdenv.mkDerivation rec {
           - Multiple editors support.
           - Pixel-art specific tools like filled Contour, Polygon, Shading mode, etc.
           - Onion skinning.
-      '' + lib.optionalString unfree
       ''
-        This version is not redistributable: https://dev.aseprite.org/2016/09/01/new-source-code-license/
-        Consider supporting the developer: https://aseprite.org/#buy
-      '';
+      + lib.optionalString unfree
+          ''
+            This version is not redistributable: https://dev.aseprite.org/2016/09/01/new-source-code-license/
+            Consider supporting the developer: https://aseprite.org/#buy
+          ''
+    ;
     maintainers = with maintainers; [ orivej ];
     platforms = platforms.linux;
   };

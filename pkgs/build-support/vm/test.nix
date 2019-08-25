@@ -25,15 +25,17 @@ rec {
   testUbuntuImage = makeImageTestScript diskImages.ubuntu810i386;
 
 
-  buildInDebian = runInLinuxImage (stdenv.mkDerivation {
-    name = "deb-compile";
-    src = patchelf.src;
-    diskImage = diskImages.ubuntu1204i386;
-    memSize = 512;
-    phases = "sysInfoPhase unpackPhase patchPhase configurePhase buildPhase checkPhase installPhase fixupPhase distPhase";
-    sysInfoPhase = ''
-      dpkg-query --list
-    '';
-  });
+  buildInDebian = runInLinuxImage (
+    stdenv.mkDerivation {
+      name = "deb-compile";
+      src = patchelf.src;
+      diskImage = diskImages.ubuntu1204i386;
+      memSize = 512;
+      phases = "sysInfoPhase unpackPhase patchPhase configurePhase buildPhase checkPhase installPhase fixupPhase distPhase";
+      sysInfoPhase = ''
+        dpkg-query --list
+      '';
+    }
+  );
 
 }

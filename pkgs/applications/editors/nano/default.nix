@@ -1,4 +1,6 @@
-{ stdenv, fetchurl, fetchFromGitHub
+{ stdenv
+, fetchurl
+, fetchFromGitHub
 , ncurses
 , texinfo
 , gettext ? null
@@ -18,7 +20,8 @@ let
     sha256 = "0773s5iz8aw9npgyasb0r2ybp6gvy2s9sq51az8w7h52bzn5blnn";
   };
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "nano-${version}";
   version = "4.3";
 

@@ -15,12 +15,14 @@ stdenv.mkDerivation rec {
 
   # Untrunc uses the internal libav headers 'h264dec.h' and 'config.h'.
   # The latter must be created through 'configure'.
-  libavConfiguredSrc = libav_12.overrideAttrs (oldAttrs: {
-    name = "libav-configured-src";
-    outputs = [ "out" ];
-    phases = [ "unpackPhase" "patchPhase" "configurePhase" "installPhase" ];
-    installPhase = "cp -r . $out";
-  });
+  libavConfiguredSrc = libav_12.overrideAttrs (
+    oldAttrs: {
+      name = "libav-configured-src";
+      outputs = [ "out" ];
+      phases = [ "unpackPhase" "patchPhase" "configurePhase" "installPhase" ];
+      installPhase = "cp -r . $out";
+    }
+  );
 
   buildCommand = ''
     mkdir -p $out/bin

@@ -1,5 +1,23 @@
-{ stdenv, fetchurl, dpkg, alsaLib, atk, cairo, cups, dbus, expat, fontconfig
-, freetype, gdk-pixbuf, glib, gnome2, nspr, nss, pango, udev, xorg }:
+{ stdenv
+, fetchurl
+, dpkg
+, alsaLib
+, atk
+, cairo
+, cups
+, dbus
+, expat
+, fontconfig
+, freetype
+, gdk-pixbuf
+, glib
+, gnome2
+, nspr
+, nss
+, pango
+, udev
+, xorg
+}:
 let
   fullPath = stdenv.lib.makeLibraryPath [
     alsaLib
@@ -30,7 +48,9 @@ let
     xorg.libXrender
     xorg.libXtst
     xorg.libxcb
-  ] + ":${stdenv.cc.cc.lib}/lib64";
+  ]
+  + ":${stdenv.cc.cc.lib}/lib64"
+  ;
 in
 stdenv.mkDerivation rec {
   version = "1.17.82";
@@ -50,7 +70,7 @@ stdenv.mkDerivation rec {
     dpkg-deb -x ${src} ./
   '';
 
-  installPhase =''
+  installPhase = ''
     mkdir "$out"
     mv usr/* "$out/"
     patchelf --interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \

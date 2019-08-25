@@ -1,6 +1,16 @@
-{ stdenv, fetchurl
-, xorgproto, motif, libX11, libXt, libXpm, bison
-, flex, automake, autoconf, libtool, runtimeShell
+{ stdenv
+, fetchurl
+, xorgproto
+, motif
+, libX11
+, libXt
+, libXpm
+, bison
+, flex
+, automake
+, autoconf
+, libtool
+, runtimeShell
 }:
 
 stdenv.mkDerivation rec {
@@ -68,7 +78,7 @@ stdenv.mkDerivation rec {
     description = "Complete set of free CAD tools and portable libraries for VLSI design";
     homepage = http://www-asim.lip6.fr/recherche/alliance/;
     license = with licenses; gpl2Plus;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
     platforms = with platforms; linux;
     broken = true;
   };

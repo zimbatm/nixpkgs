@@ -5,7 +5,7 @@ rec {
 
   description = '''';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/kmrcl/2015-09-23/kmrcl-20150923-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "kmrcl";
 
-  asdFilesToKeep = ["kmrcl.asd"];
+  asdFilesToKeep = [ "kmrcl.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM kmrcl DESCRIPTION NIL SHA256

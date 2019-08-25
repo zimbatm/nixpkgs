@@ -16,7 +16,8 @@ rustPlatform.buildRustPackage {
 
   makeFlags =
     [ "CARGO=${cargo}/bin/cargo" "PREFIX=$(out)" "PROFILE=release" "INSTALLDIR_MAN=$(out)/share/man/man1" ]
-    ++ lib.optional (prefix != null) [ "PROG_PREFIX=${prefix}" ];
+    ++ lib.optional (prefix != null) [ "PROG_PREFIX=${prefix}" ]
+    ;
 
   nativeBuildInputs = [ cmake ];
   buildInputs = [ cargo sphinx ];

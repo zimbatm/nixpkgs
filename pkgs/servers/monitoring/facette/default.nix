@@ -1,5 +1,12 @@
-{ stdenv, fetchFromGitHub
-, go, pkgconfig, nodejs, nodePackages, pandoc, rrdtool }:
+{ stdenv
+, fetchFromGitHub
+, go
+, pkgconfig
+, nodejs
+, nodePackages
+, pandoc
+, rrdtool
+}:
 
 stdenv.mkDerivation rec {
   name = "facette-${version}";

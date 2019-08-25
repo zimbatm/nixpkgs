@@ -39,10 +39,12 @@ stdenv.mkDerivation rec {
 
   patches = [
     # https://gitlab.gnome.org/GNOME/gitg/issues/213
-    (fetchpatch {
-      url = "https://gitlab.gnome.org/GNOME/gitg/merge_requests/83.patch";
-      sha256 = "1f7wx1d3k5pnp8zbrqssip57b9jxn3hc7a83psm7fny970qmd18z";
-    })
+    (
+      fetchpatch {
+        url = "https://gitlab.gnome.org/GNOME/gitg/merge_requests/83.patch";
+        sha256 = "1f7wx1d3k5pnp8zbrqssip57b9jxn3hc7a83psm7fny970qmd18z";
+      }
+    )
   ];
 
   postPatch = ''

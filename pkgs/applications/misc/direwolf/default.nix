@@ -1,6 +1,10 @@
-{ stdenv, fetchFromGitHub
-, espeak, alsaLib, perl
-, python }:
+{ stdenv
+, fetchFromGitHub
+, espeak
+, alsaLib
+, perl
+, python
+}:
 
 with stdenv.lib;
 
@@ -16,8 +20,12 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [
-    espeak perl python
-  ] ++ (optional stdenv.isLinux alsaLib);
+    espeak
+    perl
+    python
+  ]
+  ++ (optional stdenv.isLinux alsaLib)
+  ;
 
   postPatch = ''
     for i in Makefile.*; do

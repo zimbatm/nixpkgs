@@ -26,7 +26,8 @@ let
     pkgs.writeText "jormungandr.yaml" (builtins.toJSON configSettings)
   else cfg.configFile;
 
-in {
+in
+{
 
   options = {
 
@@ -34,24 +35,24 @@ in {
       enable = mkEnableOption "jormungandr service";
 
       configFile = mkOption {
-       type = types.nullOr types.path;
-       default = null;
-       example = "/var/lib/jormungandr/node.yaml";
-       description = ''
-         The path of the jormungandr blockchain configuration file in YAML format.
-         If no file is specified, a file is generated using the other options.
-       '';
-     };
+        type = types.nullOr types.path;
+        default = null;
+        example = "/var/lib/jormungandr/node.yaml";
+        description = ''
+          The path of the jormungandr blockchain configuration file in YAML format.
+          If no file is specified, a file is generated using the other options.
+        '';
+      };
 
       secretFile = mkOption {
-       type = types.nullOr types.path;
-       default = null;
-       example = "/etc/secret/jormungandr.yaml";
-       description = ''
-         The path of the jormungandr blockchain secret node configuration file in
-         YAML format. Do not store this in nix store!
-       '';
-     };
+        type = types.nullOr types.path;
+        default = null;
+        example = "/etc/secret/jormungandr.yaml";
+        description = ''
+          The path of the jormungandr blockchain secret node configuration file in
+          YAML format. Do not store this in nix store!
+        '';
+      };
 
       genesisBlockHash = mkOption {
         type = types.nullOr types.string;

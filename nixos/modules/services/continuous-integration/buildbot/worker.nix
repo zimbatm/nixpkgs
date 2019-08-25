@@ -41,7 +41,8 @@ let
     s.setServiceParent(application)
   '';
 
-in {
+in
+{
   options = {
     services.buildbot-worker = {
 
@@ -161,11 +162,11 @@ in {
       preStart = ''
         mkdir -vp "${cfg.buildbotDir}/info"
         ${optionalString (cfg.hostMessage != null) ''
-          ln -sf "${pkgs.writeText "buildbot-worker-host" cfg.hostMessage}" "${cfg.buildbotDir}/info/host"
-        ''}
+        ln -sf "${pkgs.writeText "buildbot-worker-host" cfg.hostMessage}" "${cfg.buildbotDir}/info/host"
+      ''}
         ${optionalString (cfg.adminMessage != null) ''
-          ln -sf "${pkgs.writeText "buildbot-worker-admin" cfg.adminMessage}" "${cfg.buildbotDir}/info/admin"
-        ''}
+        ln -sf "${pkgs.writeText "buildbot-worker-admin" cfg.adminMessage}" "${cfg.buildbotDir}/info/admin"
+      ''}
       '';
 
       serviceConfig = {

@@ -1,5 +1,15 @@
-{ stdenv, fetchurl, libtool, unbound, libidn, m4, file
-, openssl, doxygen, autoreconfHook, automake }:
+{ stdenv
+, fetchurl
+, libtool
+, unbound
+, libidn
+, m4
+, file
+, openssl
+, doxygen
+, autoreconfHook
+, automake
+}:
 
 stdenv.mkDerivation rec {
   pname = "getdns";
@@ -18,7 +28,7 @@ stdenv.mkDerivation rec {
   patchPhase = ''
     substituteInPlace m4/acx_openssl.m4 \
       --replace /usr/local/ssl ${openssl.dev}
-    '';
+  '';
 
   meta = with stdenv.lib; {
     description = "A modern asynchronous DNS API";
@@ -32,7 +42,7 @@ stdenv.mkDerivation rec {
       interface that enables end-to-end trust in the DNS architecture, and which will
       inspire application developers to implement innovative security solutions in
       their applications.
-'';
+    '';
     homepage = https://getdnsapi.net;
     maintainers = with maintainers; [ leenaars ];
     license = licenses.bsd3;

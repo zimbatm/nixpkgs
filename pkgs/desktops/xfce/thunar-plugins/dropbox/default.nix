@@ -1,11 +1,15 @@
-{ stdenv, fetchurl, pkgconfig
+{ stdenv
+, fetchurl
+, pkgconfig
 , gtk
-, thunar-bare, python2, hicolor-icon-theme
+, thunar-bare
+, python2
+, hicolor-icon-theme
 , wafHook
 }:
 
 stdenv.mkDerivation rec {
-  p_name  = "thunar-dropbox-plugin";
+  p_name = "thunar-dropbox-plugin";
   ver_maj = "0.2";
   ver_min = "1";
   name = "${p_name}-${ver_maj}.${ver_min}";
@@ -18,7 +22,9 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ pkgconfig wafHook ];
   buildInputs = [
     gtk
-    thunar-bare python2 hicolor-icon-theme
+    thunar-bare
+    python2
+    hicolor-icon-theme
   ];
 
   enableParallelBuilding = true;

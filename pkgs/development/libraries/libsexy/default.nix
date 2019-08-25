@@ -1,7 +1,12 @@
-{ stdenv, fetchurl, pkgconfig
-, glib, gtk2, libxml2, pango
+{ stdenv
+, fetchurl
+, pkgconfig
+, glib
+, gtk2
+, libxml2
+, pango
 }:
- 
+
 stdenv.mkDerivation {
   name = "libsexy-0.1.11";
 
@@ -18,7 +23,7 @@ stdenv.mkDerivation {
     description = "A collection of GTK+ widgets";
     homepage = https://blog.chipx86.com/tag/libsexy/;
     license = licenses.lgpl21;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
     platforms = platforms.unix;
   };
 }

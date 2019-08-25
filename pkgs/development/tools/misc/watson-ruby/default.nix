@@ -23,9 +23,9 @@ stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "An inline issue manager";
-    homepage    = http://goosecode.com/watson/;
-    license     = with licenses; mit;
+    homepage = http://goosecode.com/watson/;
+    license = with licenses; mit;
     maintainers = with maintainers; [ robertodr nicknovitski ];
-    platforms   = platforms.unix;
+    platforms = platforms.unix;
   };
 }

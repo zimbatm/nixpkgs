@@ -1,6 +1,10 @@
-{ stdenv, fetchFromGitHub
-, pkgconfig, cmake
-, libressl, libuv, zlib
+{ stdenv
+, fetchFromGitHub
+, pkgconfig
+, cmake
+, libressl
+, libuv
+, zlib
 }:
 
 with builtins;
@@ -10,9 +14,9 @@ stdenv.mkDerivation rec {
   version = "2.2.6";
 
   src = fetchFromGitHub {
-    owner  = "h2o";
-    repo   = "h2o";
-    rev    = "refs/tags/v${version}";
+    owner = "h2o";
+    repo = "h2o";
+    rev = "refs/tags/v${version}";
     sha256 = "0qni676wqvxx0sl0pw9j0ph7zf2krrzqc1zwj73mgpdnsr8rsib7";
   };
 
@@ -31,9 +35,9 @@ stdenv.mkDerivation rec {
 
   meta = {
     description = "Optimized HTTP/1 and HTTP/2 server";
-    homepage    = https://h2o.examp1e.net;
-    license     = stdenv.lib.licenses.mit;
+    homepage = https://h2o.examp1e.net;
+    license = stdenv.lib.licenses.mit;
     maintainers = [ stdenv.lib.maintainers.thoughtpolice ];
-    platforms   = stdenv.lib.platforms.linux;
+    platforms = stdenv.lib.platforms.linux;
   };
 }

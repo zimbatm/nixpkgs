@@ -4,9 +4,11 @@ with lib;
 
 let
   cfg = config.services.gitweb;
-  package = pkgs.gitweb.override (optionalAttrs cfg.gitwebTheme {
-    gitwebTheme = true;
-  });
+  package = pkgs.gitweb.override (
+    optionalAttrs cfg.gitwebTheme {
+      gitwebTheme = true;
+    }
+  );
 
 in
 {

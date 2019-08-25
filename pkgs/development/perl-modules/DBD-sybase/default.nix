@@ -11,7 +11,7 @@ buildPerlPackage {
 
   SYBASE = freetds;
 
-  buildInputs = [ freetds ] ;
+  buildInputs = [ freetds ];
   propagatedBuildInputs = [ DBI ];
 
   doCheck = false;

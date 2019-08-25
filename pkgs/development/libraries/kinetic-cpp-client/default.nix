@@ -1,5 +1,14 @@
-{ stdenv, fetchgit, fetchurl, cmake, protobuf, libunwind, openssl, glog
-, gflags, gmock, gtest
+{ stdenv
+, fetchgit
+, fetchurl
+, cmake
+, protobuf
+, libunwind
+, openssl
+, glog
+, gflags
+, gmock
+, gtest
 }:
 
 let

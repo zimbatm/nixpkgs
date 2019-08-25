@@ -21,14 +21,14 @@ buildPythonPackage rec {
     sha256 = "dbcfba5571dc30aaf90dc98fc279e2aab69d0f8f3665fc0394fbc10a87a2be60";
   };
 
-  checkInputs = [ 
+  checkInputs = [
     dateutil
     pygments
     repeated_test
     unittest2
   ];
-  
-  propagatedBuildInputs = [ 
+
+  propagatedBuildInputs = [
     attrs
     docutils
     od

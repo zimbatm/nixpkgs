@@ -1,4 +1,4 @@
-{stdenv, fetchurl, perl, gettext }:
+{ stdenv, fetchurl, perl, gettext }:
 
 stdenv.mkDerivation rec {
   name = "dos2unix-${version}";
@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
   configurePhase = ''
     substituteInPlace Makefile \
     --replace /usr $out
-    '';
+  '';
 
   nativeBuildInputs = [ perl gettext ];
 
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
     homepage = http://waterlan.home.xs4all.nl/dos2unix.html;
     description = "Tools to transform text files from dos to unix formats and vicervesa";
     license = licenses.bsd2;
-    maintainers = with maintainers; [ndowens ];
+    maintainers = with maintainers; [ ndowens ];
 
   };
 }

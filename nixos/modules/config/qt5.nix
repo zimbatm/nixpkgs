@@ -10,8 +10,8 @@ let
   isQtStyle = cfg.platformTheme == "gtk2" && cfg.style != "adwaita";
 
   packages = if isQGnome then [ pkgs.qgnomeplatform pkgs.adwaita-qt ]
-    else if isQtStyle then [ pkgs.qtstyleplugins ]
-    else throw "`qt5.platformTheme` ${cfg.platformTheme} and `qt5.style` ${cfg.style} are not compatible.";
+  else if isQtStyle then [ pkgs.qtstyleplugins ]
+  else throw "`qt5.platformTheme` ${cfg.platformTheme} and `qt5.style` ${cfg.style} are not compatible.";
 
 in
 
@@ -30,7 +30,7 @@ in
         example = "gnome";
         relatedPackages = [
           "qgnomeplatform"
-          ["libsForQt5" "qtstyleplugins"]
+          [ "libsForQt5" "qtstyleplugins" ]
         ];
         description = ''
           Selects the platform theme to use for Qt5 applications.</para>
@@ -63,7 +63,7 @@ in
         example = "adwaita";
         relatedPackages = [
           "adwaita-qt"
-          ["libsForQt5" "qtstyleplugins"]
+          [ "libsForQt5" "qtstyleplugins" ]
         ];
         description = ''
           Selects the style to use for Qt5 applications.</para>

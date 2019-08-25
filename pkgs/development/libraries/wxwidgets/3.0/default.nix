@@ -1,13 +1,33 @@
-{ stdenv, fetchFromGitHub, fetchurl, pkgconfig
-, gtk2, gtk3, libXinerama, libSM, libXxf86vm
-, xorgproto, gstreamer, gst-plugins-base, GConf, setfile
+{ stdenv
+, fetchFromGitHub
+, fetchurl
+, pkgconfig
+, gtk2
+, gtk3
+, libXinerama
+, libSM
+, libXxf86vm
+, xorgproto
+, gstreamer
+, gst-plugins-base
+, GConf
+, setfile
 , libGLSupported ? stdenv.lib.elem stdenv.hostPlatform.system stdenv.lib.platforms.mesaPlatforms
 , withMesa ? stdenv.lib.elem stdenv.hostPlatform.system stdenv.lib.platforms.mesaPlatforms
-, libGLU ? null, libGL ? null
-, compat24 ? false, compat26 ? true, unicode ? true
+, libGLU ? null
+, libGL ? null
+, compat24 ? false
+, compat26 ? true
+, unicode ? true
 , withGtk2 ? true
-, withWebKit ? false, webkitgtk24x-gtk2 ? null, webkitgtk ? null
-, AGL ? null, Carbon ? null, Cocoa ? null, Kernel ? null, QTKit ? null
+, withWebKit ? false
+, webkitgtk24x-gtk2 ? null
+, webkitgtk ? null
+, AGL ? null
+, Carbon ? null
+, Cocoa ? null
+, Kernel ? null
+, QTKit ? null
 }:
 
 
@@ -28,35 +48,52 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs =
-    [ (if withGtk2 then gtk2 else gtk3) libXinerama libSM libXxf86vm xorgproto gstreamer
-      gst-plugins-base GConf ]
+    [
+      (if withGtk2 then gtk2 else gtk3)
+      libXinerama
+      libSM
+      libXxf86vm
+      xorgproto
+      gstreamer
+      gst-plugins-base
+      GConf
+    ]
     ++ optional withMesa libGLU
     ++ optional withWebKit (if withGtk2 then webkitgtk24x-gtk2 else webkitgtk)
-    ++ optionals stdenv.isDarwin [ setfile Carbon Cocoa Kernel QTKit ];
+    ++ optionals stdenv.isDarwin [ setfile Carbon Cocoa Kernel QTKit ]
+  ;
 
   nativeBuildInputs = [ pkgconfig ];
 
   propagatedBuildInputs = optional stdenv.isDarwin AGL;
 
   patches = [
-    (fetchurl { # https://trac.wxwidgets.org/ticket/17942
-      url = "https://trac.wxwidgets.org/raw-attachment/ticket/17942/"
-          + "fix_assertion_using_hide_in_destroy.diff";
-      sha256 = "009y3dav79wiig789vkkc07g1qdqprg1544lih79199kb1h64lvy";
-    })
+    (
+      fetchurl {
+        # https://trac.wxwidgets.org/ticket/17942
+        url = "https://trac.wxwidgets.org/raw-attachment/ticket/17942/"
+          + "fix_assertion_using_hide_in_destroy.diff"
+          ;
+        sha256 = "009y3dav79wiig789vkkc07g1qdqprg1544lih79199kb1h64lvy";
+      }
+    )
   ];
 
   configureFlags =
-    [ "--disable-precomp-headers" "--enable-mediactrl"
+    [
+      "--disable-precomp-headers"
+      "--enable-mediactrl"
       (if compat24 then "--enable-compat24" else "--disable-compat24")
-      (if compat26 then "--enable-compat26" else "--disable-compat26") ]
+      (if compat26 then "--enable-compat26" else "--disable-compat26")
+    ]
     ++ optional unicode "--enable-unicode"
     ++ optional withMesa "--with-opengl"
     ++ optionals stdenv.isDarwin
-      # allow building on 64-bit
-      [ "--with-cocoa" "--enable-universal-binaries" "--with-macosx-version-min=10.7" ]
+         # allow building on 64-bit
+         [ "--with-cocoa" "--enable-universal-binaries" "--with-macosx-version-min=10.7" ]
     ++ optionals withWebKit
-      ["--enable-webview" "--enable-webview-webkit"];
+         [ "--enable-webview" "--enable-webview-webkit" ]
+  ;
 
   SEARCH_LIB = "${libGLU.out}/lib ${libGL.out}/lib ";
 
@@ -64,14 +101,16 @@ stdenv.mkDerivation rec {
     substituteInPlace configure --replace 'SEARCH_INCLUDE=' 'DUMMY_SEARCH_INCLUDE='
     substituteInPlace configure --replace 'SEARCH_LIB=' 'DUMMY_SEARCH_LIB='
     substituteInPlace configure --replace /usr /no-such-path
-  " + optionalString stdenv.isDarwin ''
-    substituteInPlace configure --replace \
-      'ac_cv_prog_SETFILE="/Developer/Tools/SetFile"' \
-      'ac_cv_prog_SETFILE="${setfile}/bin/SetFile"'
-    substituteInPlace configure --replace \
-      "-framework System" \
-      -lSystem
-  '';
+  "
+  + optionalString stdenv.isDarwin ''
+      substituteInPlace configure --replace \
+        'ac_cv_prog_SETFILE="/Developer/Tools/SetFile"' \
+        'ac_cv_prog_SETFILE="${setfile}/bin/SetFile"'
+      substituteInPlace configure --replace \
+        "-framework System" \
+        -lSystem
+    ''
+  ;
 
   postInstall = "
     (cd $out/include && ln -s wx-*/* .)

@@ -1,6 +1,17 @@
-{ stdenv, lib, fetchFromGitHub, pkgconfig, cmake
-, alsaLib, glib, libjack2, libsndfile, libpulseaudio
-, AudioUnit, CoreAudio, CoreMIDI, CoreServices
+{ stdenv
+, lib
+, fetchFromGitHub
+, pkgconfig
+, cmake
+, alsaLib
+, glib
+, libjack2
+, libsndfile
+, libpulseaudio
+, AudioUnit
+, CoreAudio
+, CoreMIDI
+, CoreServices
 , version ? "2"
 }:
 
@@ -17,32 +28,33 @@ let
   };
 in
 
-with versionMap.${version};
+  with versionMap.${version};
 
-stdenv.mkDerivation  rec {
-  name = "fluidsynth-${fluidsynthVersion}";
-  version = fluidsynthVersion;
+  stdenv.mkDerivation rec {
+    name = "fluidsynth-${fluidsynthVersion}";
+    version = fluidsynthVersion;
 
-  src = fetchFromGitHub {
-    owner = "FluidSynth";
-    repo = "fluidsynth";
-    rev = "v${fluidsynthVersion}";
-    inherit sha256;
-  };
+    src = fetchFromGitHub {
+      owner = "FluidSynth";
+      repo = "fluidsynth";
+      rev = "v${fluidsynthVersion}";
+      inherit sha256;
+    };
 
-  nativeBuildInputs = [ pkgconfig cmake ];
+    nativeBuildInputs = [ pkgconfig cmake ];
 
-  buildInputs = [ glib libsndfile libpulseaudio libjack2 ]
-    ++ lib.optionals stdenv.isLinux [ alsaLib ]
-    ++ lib.optionals stdenv.isDarwin [ AudioUnit CoreAudio CoreMIDI CoreServices ];
+    buildInputs = [ glib libsndfile libpulseaudio libjack2 ]
+      ++ lib.optionals stdenv.isLinux [ alsaLib ]
+      ++ lib.optionals stdenv.isDarwin [ AudioUnit CoreAudio CoreMIDI CoreServices ]
+      ;
 
-  cmakeFlags = [ "-Denable-framework=off" ];
+    cmakeFlags = [ "-Denable-framework=off" ];
 
-  meta = with lib; {
-    description = "Real-time software synthesizer based on the SoundFont 2 specifications";
-    homepage    = http://www.fluidsynth.org;
-    license     = licenses.lgpl21Plus;
-    maintainers = with maintainers; [ goibhniu lovek323 ];
-    platforms   = platforms.unix;
-  };
-}
+    meta = with lib; {
+      description = "Real-time software synthesizer based on the SoundFont 2 specifications";
+      homepage = http://www.fluidsynth.org;
+      license = licenses.lgpl21Plus;
+      maintainers = with maintainers; [ goibhniu lovek323 ];
+      platforms = platforms.unix;
+    };
+  }

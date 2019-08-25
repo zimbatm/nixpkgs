@@ -2,7 +2,8 @@
 
 let
   version = "2.3.1";
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "gcolor3-${version}";
 
   src = fetchFromGitLab {

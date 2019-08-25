@@ -17,11 +17,11 @@ rustPlatform.buildRustPackage rec {
         sha256 = "0knmzplxmh8vksmpg56l2p1a10hpqbr9hmbk3hv0aj63125rhhqy";
       };
     in
-    runCommand "cargo-make-src" {} ''
-      cp -R ${source} $out
-      chmod +w $out
-      cp ${cargo-lock} $out/Cargo.lock
-    '';
+      runCommand "cargo-make-src" {} ''
+        cp -R ${source} $out
+        chmod +w $out
+        cp ${cargo-lock} $out/Cargo.lock
+      '';
 
   buildInputs = stdenv.lib.optionals stdenv.isDarwin [ Security ];
 

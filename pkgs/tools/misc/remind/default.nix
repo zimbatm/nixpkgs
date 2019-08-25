@@ -1,6 +1,10 @@
-{stdenv, fetchurl, tk, tcllib, makeWrapper
+{ stdenv
+, fetchurl
+, tk
+, tcllib
+, makeWrapper
 , tkremind ? true
-} :
+}:
 
 assert tkremind -> tk != null;
 assert tkremind -> tcllib != null;
@@ -11,7 +15,8 @@ let
   tclLibraries = stdenv.lib.optionals tkremind [ tcllib tk ];
   tclLibPaths = stdenv.lib.concatStringsSep " "
     (map (p: "${p}/lib/${p.libPrefix}") tclLibraries);
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "remind-3.1.16";
   src = fetchurl {
     url = https://dianne.skoll.ca/projects/remind/download/remind-03.01.16.tar.gz;
@@ -33,7 +38,7 @@ in stdenv.mkDerivation {
     homepage = https://dianne.skoll.ca/projects/remind/;
     description = "Sophisticated calendar and alarm program for the console";
     license = stdenv.lib.licenses.gpl2;
-    maintainers = with stdenv.lib.maintainers; [raskin kovirobi];
+    maintainers = with stdenv.lib.maintainers; [ raskin kovirobi ];
     platforms = with stdenv.lib.platforms; linux;
   };
 }

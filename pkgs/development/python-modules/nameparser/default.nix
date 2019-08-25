@@ -13,7 +13,7 @@ buildPythonPackage rec {
     sha256 = "1kc2phcz22r7vim3hmq0vrp2zqxl6v49hq40jmp4p81pdvgh5c6b";
   };
 
-  LC_ALL="en_US.UTF-8";
+  LC_ALL = "en_US.UTF-8";
   buildInputs = [ glibcLocales ];
 
   meta = with stdenv.lib; {

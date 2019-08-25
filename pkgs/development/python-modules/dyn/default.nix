@@ -1,10 +1,19 @@
-{ stdenv, buildPythonPackage, fetchPypi, pytest, pytestcov, mock, pytestpep8
-, pytest_xdist, covCore, glibcLocales }:
+{ stdenv
+, buildPythonPackage
+, fetchPypi
+, pytest
+, pytestcov
+, mock
+, pytestpep8
+, pytest_xdist
+, covCore
+, glibcLocales
+}:
 
 buildPythonPackage rec {
   pname = "dyn";
   version = "1.8.1";
-  name  = "${pname}-${version}";
+  name = "${pname}-${version}";
 
   src = fetchPypi {
     inherit pname version;
@@ -24,7 +33,7 @@ buildPythonPackage rec {
   # Disable checks because they are not stateless and require internet access.
   doCheck = false;
 
-  LC_ALL="en_US.UTF-8";
+  LC_ALL = "en_US.UTF-8";
 
   meta = with stdenv.lib; {
     description = "Dynect dns lib";

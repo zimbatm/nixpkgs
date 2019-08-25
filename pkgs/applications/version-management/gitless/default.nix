@@ -23,4 +23,3 @@ pythonPackages.buildPythonApplication rec {
     maintainers = [ maintainers.cransom ];
   };
 }
-

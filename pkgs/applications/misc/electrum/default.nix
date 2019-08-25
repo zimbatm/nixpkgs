@@ -1,8 +1,14 @@
-{ stdenv, fetchurl, fetchFromGitHub, python3, python3Packages, zbar, secp256k1
+{ stdenv
+, fetchurl
+, fetchFromGitHub
+, python3
+, python3Packages
+, zbar
+, secp256k1
 , enableQt ? !stdenv.isDarwin
 
 
-# for updater.nix
+  # for updater.nix
 , writeScript
 , common-updater-scripts
 , bash
@@ -78,18 +84,23 @@ python3Packages.buildPythonApplication rec {
 
     # TODO plugins
     # amodem
-  ] ++ stdenv.lib.optionals enableQt [ pyqt5 qdarkstyle ];
+  ]
+    ++ stdenv.lib.optionals enableQt [ pyqt5 qdarkstyle ];
 
   preBuild = ''
     sed -i 's,usr_share = .*,usr_share = "'$out'/share",g' setup.py
     substituteInPlace ./electrum/ecc_fast.py \
       --replace ${libsecp256k1_name} ${secp256k1}/lib/libsecp256k1${stdenv.hostPlatform.extensions.sharedLibrary}
-  '' + (if enableQt then ''
-    substituteInPlace ./electrum/qrscanner.py \
-      --replace ${libzbar_name} ${zbar}/lib/libzbar${stdenv.hostPlatform.extensions.sharedLibrary}
-  '' else ''
-    sed -i '/qdarkstyle/d' contrib/requirements/requirements.txt
-  '');
+  ''
+  + (
+      if enableQt then ''
+        substituteInPlace ./electrum/qrscanner.py \
+          --replace ${libzbar_name} ${zbar}/lib/libzbar${stdenv.hostPlatform.extensions.sharedLibrary}
+      '' else ''
+        sed -i '/qdarkstyle/d' contrib/requirements/requirements.txt
+      ''
+    )
+  ;
 
   postInstall = stdenv.lib.optionalString stdenv.isLinux ''
     # Despite setting usr_share above, these files are installed under
@@ -123,7 +134,7 @@ python3Packages.buildPythonApplication rec {
       gnugrep
       gnused
       nix
-    ;
+      ;
   };
 
   meta = with stdenv.lib; {

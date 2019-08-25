@@ -2,7 +2,7 @@
 
 stdenv.mkDerivation rec {
   name = "libasr-${version}";
-  version=  "1.0.2";
+  version = "1.0.2";
 
   src = fetchurl {
     url = "https://www.opensmtpd.org/archives/${name}.tar.gz";

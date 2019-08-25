@@ -12,13 +12,15 @@ stdenv.mkDerivation rec {
   };
 
   patches = [
-    (substituteAll {
-      src = ./libpath.patch;
-      env = "${buildEnv {
-        name = "wee-slack-env";
-        paths = with pythonPackages; [ websocket_client six ];
-      }}/${pythonPackages.python.sitePackages}";
-    })
+    (
+      substituteAll {
+        src = ./libpath.patch;
+        env = "${buildEnv {
+          name = "wee-slack-env";
+          paths = with pythonPackages; [ websocket_client six ];
+        }}/${pythonPackages.python.sitePackages}";
+      }
+    )
   ];
 
   passthru.scripts = [ "wee_slack.py" ];

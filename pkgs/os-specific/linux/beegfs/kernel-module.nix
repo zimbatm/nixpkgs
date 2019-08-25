@@ -1,10 +1,14 @@
-{ stdenv, fetchurl, which
-, kmod, kernel
-} :
+{ stdenv
+, fetchurl
+, which
+, kmod
+, kernel
+}:
 
 let
   version = "7.0";
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "beegfs-module-${version}-${kernel.version}";
 
   src = fetchurl {

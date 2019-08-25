@@ -69,10 +69,12 @@ rustPlatform.buildRustPackage rec {
 
   cargoPatches = [
     # https://gitlab.gnome.org/GNOME/fractal/merge_requests/446
-    (fetchpatch {
-      url = "https://gitlab.gnome.org/GNOME/fractal/commit/2778acdc6c50bc6f034513029b66b0b092bc4c38.patch";
-      sha256 = "08v17xmbwrjw688ps4hsnd60d5fm26xj72an3zf6yszha2b97j6y";
-    })
+    (
+      fetchpatch {
+        url = "https://gitlab.gnome.org/GNOME/fractal/commit/2778acdc6c50bc6f034513029b66b0b092bc4c38.patch";
+        sha256 = "08v17xmbwrjw688ps4hsnd60d5fm26xj72an3zf6yszha2b97j6y";
+      }
+    )
   ];
 
   postPatch = ''
@@ -93,4 +95,3 @@ rustPlatform.buildRustPackage rec {
     maintainers = with maintainers; [ dtzWill worldofpeace ];
   };
 }
-

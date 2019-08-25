@@ -1,9 +1,31 @@
-{ stdenv, fetchurl, mkDerivation, pkgconfig, cmake, qtbase, cairo, pixman,
-boost, cups, fontconfig, freetype, hunspell, libjpeg, libtiff, libxml2, lcms2,
-podofo, poppler, poppler_data, python2, harfbuzz, qtimageformats, qttools }:
+{ stdenv
+, fetchurl
+, mkDerivation
+, pkgconfig
+, cmake
+, qtbase
+, cairo
+, pixman
+, boost
+, cups
+, fontconfig
+, freetype
+, hunspell
+, libjpeg
+, libtiff
+, libxml2
+, lcms2
+, podofo
+, poppler
+, poppler_data
+, python2
+, harfbuzz
+, qtimageformats
+, qttools
+}:
 
 let
-  pythonEnv = python2.withPackages(ps: [ps.tkinter ps.pillow]);
+  pythonEnv = python2.withPackages (ps: [ ps.tkinter ps.pillow ]);
 in
 mkDerivation rec {
   pname = "scribus";
@@ -16,11 +38,27 @@ mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  nativeBuildInputs = [ pkgconfig cmake  ];
+  nativeBuildInputs = [ pkgconfig cmake ];
   buildInputs = [
-    qtbase cairo pixman boost cups fontconfig
-    freetype hunspell libjpeg libtiff libxml2 lcms2 podofo poppler
-    poppler_data pythonEnv harfbuzz qtimageformats qttools
+    qtbase
+    cairo
+    pixman
+    boost
+    cups
+    fontconfig
+    freetype
+    hunspell
+    libjpeg
+    libtiff
+    libxml2
+    lcms2
+    podofo
+    poppler
+    poppler_data
+    pythonEnv
+    harfbuzz
+    qtimageformats
+    qttools
   ];
 
   meta = {

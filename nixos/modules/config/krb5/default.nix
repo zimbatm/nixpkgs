@@ -12,36 +12,48 @@ let
     libdefaults = optionalAttrs (cfg.defaultRealm != null)
       { default_realm = cfg.defaultRealm; };
 
-    realms = optionalAttrs (lib.all (value: value != null) [
-      cfg.defaultRealm cfg.kdc cfg.kerberosAdminServer
-    ]) {
+    realms = optionalAttrs (
+      lib.all (value: value != null) [
+        cfg.defaultRealm
+        cfg.kdc
+        cfg.kerberosAdminServer
+      ]
+    ) {
       "${cfg.defaultRealm}" = {
         kdc = cfg.kdc;
         admin_server = cfg.kerberosAdminServer;
       };
     };
 
-    domain_realm = optionalAttrs (lib.all (value: value != null) [
-      cfg.domainRealm cfg.defaultRealm
-    ]) {
+    domain_realm = optionalAttrs (
+      lib.all (value: value != null) [
+        cfg.domainRealm
+        cfg.defaultRealm
+      ]
+    ) {
       ".${cfg.domainRealm}" = cfg.defaultRealm;
       "${cfg.domainRealm}" = cfg.defaultRealm;
     };
   };
 
-  mergedConfig = (recursiveUpdate defaultConfig {
-    inherit (config.krb5)
-      kerberos libdefaults realms domain_realm capaths appdefaults plugins
-      extraConfig config;
-  });
+  mergedConfig = (
+    recursiveUpdate defaultConfig {
+      inherit (config.krb5)
+        kerberos libdefaults realms domain_realm capaths appdefaults plugins
+        extraConfig config
+        ;
+    }
+  );
 
   filterEmbeddedMetadata = value: if isAttrs value then
-    (filterAttrs
-      (attrName: attrValue: attrName != "_module" && attrValue != null)
-        value)
-    else value;
+    (
+      filterAttrs
+        (attrName: attrValue: attrName != "_module" && attrValue != null)
+        value
+    )
+  else value;
 
-  mkIndent = depth: concatStrings (builtins.genList (_:  " ") (2 * depth));
+  mkIndent = depth: concatStrings (builtins.genList (_: " ") (2 * depth));
 
   mkRelation = name: value: "${name} = ${mkVal { inherit value; }}";
 
@@ -52,28 +64,46 @@ let
     else if (isList value) then
       concatMapStringsSep " " mkVal { inherit value depth; }
     else if (isAttrs value) then
-      (concatStringsSep "\n${mkIndent (depth + 1)}"
-        ([ "{" ] ++ (mapAttrsToList
-          (attrName: attrValue: let
-            mappedAttrValue = mkVal {
-              value = attrValue;
-              depth = depth + 1;
-            };
-          in "${attrName} = ${mappedAttrValue}")
-        value))) + "\n${mkIndent depth}}"
+      (
+        concatStringsSep "\n${mkIndent (depth + 1)}"
+          (
+            [ "{" ]
+            ++ (
+                 mapAttrsToList
+                   (
+                     attrName: attrValue: let
+                       mappedAttrValue = mkVal {
+                         value = attrValue;
+                         depth = depth + 1;
+                       };
+                     in
+                       "${attrName} = ${mappedAttrValue}"
+                   )
+                   value
+               )
+          )
+      )
+      + "\n${mkIndent depth}}"
     else value;
 
   mkMappedAttrsOrString = value: concatMapStringsSep "\n"
-    (line: if builtins.stringLength line > 0
+    (
+      line: if builtins.stringLength line > 0
       then "${mkIndent 1}${line}"
-      else line)
-    (splitString "\n"
-      (if isAttrs value then
-        concatStringsSep "\n"
-            (mapAttrsToList mkRelation value)
-        else value));
+      else line
+    )
+    (
+      splitString "\n"
+        (
+          if isAttrs value then
+            concatStringsSep "\n"
+              (mapAttrsToList mkRelation value)
+          else value
+        )
+    );
 
-in {
+in
+{
 
   ###### interface
 
@@ -293,8 +323,9 @@ in {
     environment.systemPackages = [ cfg.kerberos ];
 
     environment.etc."krb5.conf".text = if isString cfg.config
-      then cfg.config
-      else (''
+    then cfg.config
+    else (
+      ''
         [libdefaults]
         ${mkMappedAttrsOrString mergedConfig.libdefaults}
 
@@ -312,50 +343,98 @@ in {
 
         [plugins]
         ${mkMappedAttrsOrString mergedConfig.plugins}
-      '' + optionalString (mergedConfig.extraConfig != null)
-          ("\n" + mergedConfig.extraConfig));
+      ''
+      + optionalString (mergedConfig.extraConfig != null)
+          ("\n" + mergedConfig.extraConfig)
+    );
 
     warnings = flatten [
-      (optional (cfg.defaultRealm != null) ''
-        The option krb5.defaultRealm is deprecated, please use
-        krb5.libdefaults.default_realm.
-      '')
-      (optional (cfg.domainRealm != null) ''
-        The option krb5.domainRealm is deprecated, please use krb5.domain_realm.
-      '')
-      (optional (cfg.kdc != null) ''
-        The option krb5.kdc is deprecated, please pass a kdc attribute to a
-        realm in krb5.realms.
-      '')
-      (optional (cfg.kerberosAdminServer != null) ''
-        The option krb5.kerberosAdminServer is deprecated, please pass an
-        admin_server attribute to a realm in krb5.realms.
-      '')
+      (
+        optional (cfg.defaultRealm != null) ''
+          The option krb5.defaultRealm is deprecated, please use
+          krb5.libdefaults.default_realm.
+        ''
+      )
+      (
+        optional (cfg.domainRealm != null) ''
+          The option krb5.domainRealm is deprecated, please use krb5.domain_realm.
+        ''
+      )
+      (
+        optional (cfg.kdc != null) ''
+          The option krb5.kdc is deprecated, please pass a kdc attribute to a
+          realm in krb5.realms.
+        ''
+      )
+      (
+        optional (cfg.kerberosAdminServer != null) ''
+          The option krb5.kerberosAdminServer is deprecated, please pass an
+          admin_server attribute to a realm in krb5.realms.
+        ''
+      )
     ];
 
     assertions = [
-      { assertion = !((builtins.any (value: value != null) [
-            cfg.defaultRealm cfg.domainRealm cfg.kdc cfg.kerberosAdminServer
-          ]) && ((builtins.any (value: value != {}) [
-              cfg.libdefaults cfg.realms cfg.domain_realm cfg.capaths
-              cfg.appdefaults cfg.plugins
-            ]) || (builtins.any (value: value != null) [
-              cfg.config cfg.extraConfig
-            ])));
+      {
+        assertion = !(
+          (
+            builtins.any (value: value != null) [
+              cfg.defaultRealm
+              cfg.domainRealm
+              cfg.kdc
+              cfg.kerberosAdminServer
+            ]
+          )
+          && (
+               (
+                 builtins.any (value: value != {}) [
+                   cfg.libdefaults
+                   cfg.realms
+                   cfg.domain_realm
+                   cfg.capaths
+                   cfg.appdefaults
+                   cfg.plugins
+                 ]
+               )
+               || (
+                    builtins.any (value: value != null) [
+                      cfg.config
+                      cfg.extraConfig
+                    ]
+                  )
+             )
+        );
         message = ''
           Configuration of krb5.conf by deprecated options is mutually exclusive
           with configuration by section.  Please migrate your config using the
           attributes suggested in the warnings.
         '';
       }
-      { assertion = !(cfg.config != null
-          && ((builtins.any (value: value != {}) [
-              cfg.libdefaults cfg.realms cfg.domain_realm cfg.capaths
-              cfg.appdefaults cfg.plugins
-            ]) || (builtins.any (value: value != null) [
-              cfg.extraConfig cfg.defaultRealm cfg.domainRealm cfg.kdc
-              cfg.kerberosAdminServer
-            ])));
+      {
+        assertion = !(
+          cfg.config != null
+          && (
+               (
+                 builtins.any (value: value != {}) [
+                   cfg.libdefaults
+                   cfg.realms
+                   cfg.domain_realm
+                   cfg.capaths
+                   cfg.appdefaults
+                   cfg.plugins
+                 ]
+               )
+               || (
+                    builtins.any (value: value != null) [
+                      cfg.extraConfig
+                      cfg.defaultRealm
+                      cfg.domainRealm
+                      cfg.kdc
+                      cfg.kerberosAdminServer
+                    ]
+                  )
+             )
+        );
         message = ''
           Configuration of krb5.conf using krb.config is mutually exclusive with
           configuration by section.  If you want to mix the two, you can pass

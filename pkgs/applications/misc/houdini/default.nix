@@ -1,8 +1,9 @@
 { callPackage, buildFHSUserEnv, undaemonize }:
 
 let
-  houdini-runtime = callPackage ./runtime.nix { };
-in buildFHSUserEnv rec {
+  houdini-runtime = callPackage ./runtime.nix {};
+in
+buildFHSUserEnv rec {
   name = "houdini-${houdini-runtime.version}";
 
   extraBuildCommands = ''
@@ -11,4 +12,3 @@ in buildFHSUserEnv rec {
 
   runScript = "${undaemonize}/bin/undaemonize ${houdini-runtime}/bin/houdini";
 }
-

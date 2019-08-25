@@ -1,5 +1,16 @@
-{ stdenv, fetchFromGitHub, cmake, pkgconfig, qtbase, qttools,
-  qtx11extras, qtsvg, xorg, lxqt-build-tools, libfm-qt, libexif }:
+{ stdenv
+, fetchFromGitHub
+, cmake
+, pkgconfig
+, qtbase
+, qttools
+, qtx11extras
+, qtsvg
+, xorg
+, lxqt-build-tools
+, libfm-qt
+, libexif
+}:
 
 stdenv.mkDerivation rec {
   pname = "lximage-qt";

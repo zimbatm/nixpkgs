@@ -37,13 +37,15 @@ in
     boot.kernelPackages = mkOption {
       default = pkgs.linuxPackages;
       type = types.unspecified // { merge = mergeEqualOption; };
-      apply = kernelPackages: kernelPackages.extend (self: super: {
-        kernel = super.kernel.override {
-          inherit randstructSeed;
-          kernelPatches = super.kernel.kernelPatches ++ kernelPatches;
-          features = lib.recursiveUpdate super.kernel.features features;
-        };
-      });
+      apply = kernelPackages: kernelPackages.extend (
+        self: super: {
+          kernel = super.kernel.override {
+            inherit randstructSeed;
+            kernelPatches = super.kernel.kernelPatches ++ kernelPatches;
+            features = lib.recursiveUpdate super.kernel.features features;
+          };
+        }
+      );
       # We don't want to evaluate all of linuxPackages for the manual
       # - some of it might not even evaluate correctly.
       defaultText = "pkgs.linuxPackages";
@@ -84,7 +86,7 @@ in
 
     boot.kernelParams = mkOption {
       type = types.listOf types.str;
-      default = [ ];
+      default = [];
       description = "Parameters added to the kernel command line.";
     };
 
@@ -196,15 +198,17 @@ in
     # Implement consoleLogLevel both in early boot and using sysctl
     # (so you don't need to reboot to have changes take effect).
     boot.kernelParams =
-      [ "loglevel=${toString config.boot.consoleLogLevel}" ] ++
-      optionals config.boot.vesa [ "vga=0x317" "nomodeset" ];
+      [ "loglevel=${toString config.boot.consoleLogLevel}" ]
+      ++ optionals config.boot.vesa [ "vga=0x317" "nomodeset" ]
+      ;
 
     boot.kernel.sysctl."kernel.printk" = mkDefault config.boot.consoleLogLevel;
 
     boot.kernelModules = [ "loop" "atkbd" ];
 
     boot.initrd.availableKernelModules =
-      [ # Note: most of these (especially the SATA/PATA modules)
+      [
+        # Note: most of these (especially the SATA/PATA modules)
         # shouldn't be included by default since nixos-generate-config
         # detects them, but I'm keeping them for now for backwards
         # compatibility.
@@ -235,19 +239,28 @@ in
         "xhci_hcd"
         "xhci_pci"
         "usbhid"
-        "hid_generic" "hid_lenovo" "hid_apple" "hid_roccat"
-        "hid_logitech_hidpp" "hid_logitech_dj"
+        "hid_generic"
+        "hid_lenovo"
+        "hid_apple"
+        "hid_roccat"
+        "hid_logitech_hidpp"
+        "hid_logitech_dj"
 
-      ] ++ optionals (pkgs.stdenv.isi686 || pkgs.stdenv.isx86_64) [
-        # Misc. x86 keyboard stuff.
-        "pcips2" "atkbd" "i8042"
+      ]
+      ++ optionals (pkgs.stdenv.isi686 || pkgs.stdenv.isx86_64) [
+           # Misc. x86 keyboard stuff.
+           "pcips2"
+           "atkbd"
+           "i8042"
 
-        # x86 RTC needed by the stage 2 init script.
-        "rtc_cmos"
-      ];
+           # x86 RTC needed by the stage 2 init script.
+           "rtc_cmos"
+         ]
+    ;
 
     boot.initrd.kernelModules =
-      [ # For LVM.
+      [
+        # For LVM.
         "dm_mod"
       ];
 
@@ -257,15 +270,18 @@ in
     # Create /etc/modules-load.d/nixos.conf, which is read by
     # systemd-modules-load.service to load required kernel modules.
     environment.etc = singleton
-      { target = "modules-load.d/nixos.conf";
+      {
+        target = "modules-load.d/nixos.conf";
         source = kernelModulesConf;
       };
 
     systemd.services."systemd-modules-load" =
-      { wantedBy = [ "multi-user.target" ];
+      {
+        wantedBy = [ "multi-user.target" ];
         restartTriggers = [ kernelModulesConf ];
         serviceConfig =
-          { # Ignore failed module loads.  Typically some of the
+          {
+            # Ignore failed module loads.  Typically some of the
             # modules in ‘boot.kernelModules’ are "nice to have but
             # not required" (e.g. acpi-cpufreq), so we don't want to
             # barf on those.
@@ -313,13 +329,18 @@ in
       # !!! Should this really be needed?
       (isYes "MODULES")
       (isYes "BINFMT_ELF")
-    ] ++ (optional (randstructSeed != "") (isYes "GCC_PLUGIN_RANDSTRUCT"));
+    ]
+      ++ (optional (randstructSeed != "") (isYes "GCC_PLUGIN_RANDSTRUCT"));
 
     # nixpkgs kernels are assumed to have all required features
     assertions = if config.boot.kernelPackages.kernel ? features then [] else
-      let cfg = config.boot.kernelPackages.kernel.config; in map (attrs:
-        { assertion = attrs.assertion cfg; inherit (attrs) message; }
-      ) config.system.requiredKernelConfig;
+      let
+        cfg = config.boot.kernelPackages.kernel.config;
+      in
+        map (
+          attrs:
+            { assertion = attrs.assertion cfg; inherit (attrs) message; }
+        ) config.system.requiredKernelConfig;
 
   };
 

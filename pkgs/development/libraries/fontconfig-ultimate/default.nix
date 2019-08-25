@@ -1,6 +1,8 @@
 { stdenv, fetchFromGitHub }:
 
-let version = "2016-04-23"; in
+let
+  version = "2016-04-23";
+in
 stdenv.mkDerivation {
   name = "fontconfig-ultimate-${version}";
 

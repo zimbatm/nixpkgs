@@ -1,4 +1,7 @@
-{ stdenv, fetchzip, makeDesktopItem, makeWrapper
+{ stdenv
+, fetchzip
+, makeDesktopItem
+, makeWrapper
 , jre
 }:
 
@@ -6,11 +9,15 @@ stdenv.mkDerivation rec {
   name = "ganttproject-bin-${version}";
   version = "2.8.10";
 
-  src = let build = "r2364"; in fetchzip {
-    sha256 = "0cclgyqv4f9pjsdlh93cqvgbzrp8ajvrpc2xszs03sknqz2kdh7r";
-    url = "https://dl.ganttproject.biz/ganttproject-${version}/"
-        + "ganttproject-${version}-${build}.zip";
-  };
+  src = let
+    build = "r2364";
+  in
+    fetchzip {
+      sha256 = "0cclgyqv4f9pjsdlh93cqvgbzrp8ajvrpc2xszs03sknqz2kdh7r";
+      url = "https://dl.ganttproject.biz/ganttproject-${version}/"
+        + "ganttproject-${version}-${build}.zip"
+        ;
+    };
 
   nativeBuildInputs = [ makeWrapper ];
   buildInputs = [ jre ];
@@ -33,19 +40,20 @@ stdenv.mkDerivation rec {
       "-Dawt.useSystemAAFontSettings=on"
     ];
 
-  in ''
-    mkdir -pv "$out/share/ganttproject"
-    cp -rv *  "$out/share/ganttproject"
+  in
+    ''
+      mkdir -pv "$out/share/ganttproject"
+      cp -rv *  "$out/share/ganttproject"
 
-    mkdir -pv "$out/bin"
-    wrapProgram "$out/share/ganttproject/ganttproject" \
-      --set JAVA_HOME "${jre}" \
-      --set _JAVA_OPTIONS "${builtins.toString javaOptions}"
+      mkdir -pv "$out/bin"
+      wrapProgram "$out/share/ganttproject/ganttproject" \
+        --set JAVA_HOME "${jre}" \
+        --set _JAVA_OPTIONS "${builtins.toString javaOptions}"
 
-    mv -v "$out/share/ganttproject/ganttproject" "$out/bin"
+      mv -v "$out/share/ganttproject/ganttproject" "$out/bin"
 
-    cp -rv "${desktopItem}/share/applications" "$out/share"
-  '';
+      cp -rv "${desktopItem}/share/applications" "$out/share"
+    '';
 
   meta = with stdenv.lib; {
     description = "Project scheduling and management";

@@ -1,9 +1,19 @@
-{ stdenv, fetchurl, boost, mpd_clientlib, ncurses, pkgconfig, readline
-, libiconv, icu, curl
+{ stdenv
+, fetchurl
+, boost
+, mpd_clientlib
+, ncurses
+, pkgconfig
+, readline
+, libiconv
+, icu
+, curl
 , outputsSupport ? true # outputs screen
-, visualizerSupport ? false, fftw ? null # visualizer screen
+, visualizerSupport ? false
+, fftw ? null # visualizer screen
 , clockSupport ? true # clock screen
-, taglibSupport ? true, taglib ? null # tag editor
+, taglibSupport ? true
+, taglib ? null # tag editor
 }:
 
 assert visualizerSupport -> (fftw != null);
@@ -23,19 +33,21 @@ stdenv.mkDerivation rec {
     ++ optional outputsSupport "--enable-outputs"
     ++ optional visualizerSupport "--enable-visualizer --with-fftw"
     ++ optional clockSupport "--enable-clock"
-    ++ optional taglibSupport "--with-taglib";
+    ++ optional taglibSupport "--with-taglib"
+    ;
 
   nativeBuildInputs = [ pkgconfig ];
 
   buildInputs = [ boost mpd_clientlib ncurses readline libiconv icu curl ]
     ++ optional visualizerSupport fftw
-    ++ optional taglibSupport taglib;
+    ++ optional taglibSupport taglib
+    ;
 
   meta = {
     description = "A featureful ncurses based MPD client inspired by ncmpc";
-    homepage    = https://ncmpcpp.rybczak.net/;
-    license     = licenses.gpl2Plus;
+    homepage = https://ncmpcpp.rybczak.net/;
+    license = licenses.gpl2Plus;
     maintainers = with maintainers; [ jfrankenau koral lovek323 ];
-    platforms   = platforms.all;
+    platforms = platforms.all;
   };
 }

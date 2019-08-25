@@ -22,9 +22,11 @@ buildPythonPackage rec {
     msrest
     msrestazure
     azure-common
-  ] ++ lib.optionals (!isPy3k) [
-    azure-mgmt-nspkg
-  ];
+  ]
+  ++ lib.optionals (!isPy3k) [
+       azure-mgmt-nspkg
+     ]
+  ;
 
   # has no tests
   doCheck = false;

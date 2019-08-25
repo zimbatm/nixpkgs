@@ -1,7 +1,19 @@
-{ stdenv, buildPythonPackage, fetchPypi, isPy3k
+{ stdenv
+, buildPythonPackage
+, fetchPypi
+, isPy3k
 , setuptools_scm
-, cheroot, portend, more-itertools, zc_lockfile, routes
-, objgraph, pytest, pytestcov, pathpy, requests_toolbelt, pytest-services
+, cheroot
+, portend
+, more-itertools
+, zc_lockfile
+, routes
+, objgraph
+, pytest
+, pytestcov
+, pathpy
+, requests_toolbelt
+, pytest-services
 }:
 
 buildPythonPackage rec {
@@ -18,7 +30,10 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [
     # required
-    cheroot portend more-itertools zc_lockfile
+    cheroot
+    portend
+    more-itertools
+    zc_lockfile
     # optional
     routes
   ];
@@ -26,7 +41,12 @@ buildPythonPackage rec {
   nativeBuildInputs = [ setuptools_scm ];
 
   checkInputs = [
-    objgraph pytest pytestcov pathpy requests_toolbelt pytest-services
+    objgraph
+    pytest
+    pytestcov
+    pathpy
+    requests_toolbelt
+    pytest-services
   ];
 
   # Disable doctest plugin because times out

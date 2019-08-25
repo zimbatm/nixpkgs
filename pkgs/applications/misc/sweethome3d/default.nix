@@ -1,5 +1,17 @@
-{ lib, stdenv, fetchurl, fetchsvn, makeWrapper, makeDesktopItem, jdk, jre, ant
-, gtk3, gsettings-desktop-schemas, p7zip, libXxf86vm }:
+{ lib
+, stdenv
+, fetchurl
+, fetchsvn
+, makeWrapper
+, makeDesktopItem
+, jdk
+, jre
+, ant
+, gtk3
+, gsettings-desktop-schemas
+, p7zip
+, libXxf86vm
+}:
 
 let
 
@@ -9,69 +21,74 @@ let
   extensionOf = filePath:
     lib.concatStringsSep "." (lib.tail (lib.splitString "." (builtins.baseNameOf filePath)));
 
-  installIcons = iconName: icons: lib.concatStringsSep "\n" (lib.mapAttrsToList (size: iconFile: ''
-    mkdir -p "$out/share/icons/hicolor/${size}/apps"
-    ln -s -T "${iconFile}" "$out/share/icons/hicolor/${size}/apps/${iconName}.${extensionOf iconFile}"
-  '') icons);
+  installIcons = iconName: icons: lib.concatStringsSep "\n" (
+    lib.mapAttrsToList (
+      size: iconFile: ''
+        mkdir -p "$out/share/icons/hicolor/${size}/apps"
+        ln -s -T "${iconFile}" "$out/share/icons/hicolor/${size}/apps/${iconName}.${extensionOf iconFile}"
+      ''
+    ) icons
+  );
 
   mkSweetHome3D =
-  { name, module, version, src, license, description, desktopName, icons }:
+    { name, module, version, src, license, description, desktopName, icons }:
 
-  stdenv.mkDerivation rec {
-    inherit name version src description;
-    exec = stdenv.lib.toLower module;
-    sweethome3dItem = makeDesktopItem {
-      inherit exec desktopName;
-      name = getDesktopFileName name;
-      icon = getDesktopFileName name;
-      comment =  description;
-      genericName = "Computer Aided (Interior) Design";
-      categories = "Application;Graphics;2DGraphics;3DGraphics;";
-    };
+      stdenv.mkDerivation rec {
+        inherit name version src description;
+        exec = stdenv.lib.toLower module;
+        sweethome3dItem = makeDesktopItem {
+          inherit exec desktopName;
+          name = getDesktopFileName name;
+          icon = getDesktopFileName name;
+          comment = description;
+          genericName = "Computer Aided (Interior) Design";
+          categories = "Application;Graphics;2DGraphics;3DGraphics;";
+        };
 
-    patchPhase = ''
-      patchelf --set-rpath ${libXxf86vm}/lib lib/java3d-1.6/linux/amd64/libnativewindow_awt.so
-      patchelf --set-rpath ${libXxf86vm}/lib lib/java3d-1.6/linux/amd64/libnativewindow_x11.so
-      patchelf --set-rpath ${libXxf86vm}/lib lib/java3d-1.6/linux/i586/libnativewindow_awt.so
-      patchelf --set-rpath ${libXxf86vm}/lib lib/java3d-1.6/linux/i586/libnativewindow_x11.so
-    '';
+        patchPhase = ''
+          patchelf --set-rpath ${libXxf86vm}/lib lib/java3d-1.6/linux/amd64/libnativewindow_awt.so
+          patchelf --set-rpath ${libXxf86vm}/lib lib/java3d-1.6/linux/amd64/libnativewindow_x11.so
+          patchelf --set-rpath ${libXxf86vm}/lib lib/java3d-1.6/linux/i586/libnativewindow_awt.so
+          patchelf --set-rpath ${libXxf86vm}/lib lib/java3d-1.6/linux/i586/libnativewindow_x11.so
+        '';
 
-    buildInputs = [ ant jdk jre makeWrapper p7zip gtk3 gsettings-desktop-schemas ];
+        buildInputs = [ ant jdk jre makeWrapper p7zip gtk3 gsettings-desktop-schemas ];
 
-    buildPhase = ''
-      ant furniture textures help
-      mkdir -p $out/share/{java,applications}
-      mv "build/"*.jar $out/share/java/.
-      ant
-    '';
+        buildPhase = ''
+          ant furniture textures help
+          mkdir -p $out/share/{java,applications}
+          mv "build/"*.jar $out/share/java/.
+          ant
+        '';
 
-    installPhase = ''
-      mkdir -p $out/bin
-      cp install/${module}-${version}.jar $out/share/java/.
+        installPhase = ''
+          mkdir -p $out/bin
+          cp install/${module}-${version}.jar $out/share/java/.
 
-      ${installIcons (getDesktopFileName name) icons}
+          ${installIcons (getDesktopFileName name) icons}
 
-      cp "${sweethome3dItem}/share/applications/"* $out/share/applications
+          cp "${sweethome3dItem}/share/applications/"* $out/share/applications
 
-      makeWrapper ${jre}/bin/java $out/bin/$exec \
-        --prefix XDG_DATA_DIRS : "$XDG_ICON_DIRS:${gtk3.out}/share:${gsettings-desktop-schemas}/share:$out/share:$GSETTINGS_SCHEMAS_PATH" \
-        --add-flags "-jar $out/share/java/${module}-${version}.jar -cp $out/share/java/Furniture.jar:$out/share/java/Textures.jar:$out/share/java/Help.jar -d${toString stdenv.hostPlatform.parsed.cpu.bits}"
-    '';
+          makeWrapper ${jre}/bin/java $out/bin/$exec \
+            --prefix XDG_DATA_DIRS : "$XDG_ICON_DIRS:${gtk3.out}/share:${gsettings-desktop-schemas}/share:$out/share:$GSETTINGS_SCHEMAS_PATH" \
+            --add-flags "-jar $out/share/java/${module}-${version}.jar -cp $out/share/java/Furniture.jar:$out/share/java/Textures.jar:$out/share/java/Help.jar -d${toString stdenv.hostPlatform.parsed.cpu.bits}"
+        '';
 
-    dontStrip = true;
+        dontStrip = true;
 
-    meta = {
-      homepage = http://www.sweethome3d.com/index.jsp;
-      inherit description;
-      inherit license;
-      maintainers = [ stdenv.lib.maintainers.edwtjo ];
-      platforms = stdenv.lib.platforms.linux;
-    };
-  };
+        meta = {
+          homepage = http://www.sweethome3d.com/index.jsp;
+          inherit description;
+          inherit license;
+          maintainers = [ stdenv.lib.maintainers.edwtjo ];
+          platforms = stdenv.lib.platforms.linux;
+        };
+      };
 
-  d2u = stdenv.lib.replaceChars ["."] ["_"];
+  d2u = stdenv.lib.replaceChars [ "." ] [ "_" ];
 
-in rec {
+in
+rec {
 
   application = mkSweetHome3D rec {
     version = "6.2";

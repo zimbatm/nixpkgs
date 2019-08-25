@@ -1,10 +1,18 @@
-{ fetchFromGitHub, stdenv, pythonPackages
-, mp3Support ? true, lame ? null
-, opusSupport ? true, opusTools ? null
-, faacSupport ? false, faac ? null
-, flacSupport ? true, flac ? null
-, soxSupport ? true, sox ? null
-, vorbisSupport ? true, vorbisTools ? null
+{ fetchFromGitHub
+, stdenv
+, pythonPackages
+, mp3Support ? true
+, lame ? null
+, opusSupport ? true
+, opusTools ? null
+, faacSupport ? false
+, faac ? null
+, flacSupport ? true
+, flac ? null
+, soxSupport ? true
+, sox ? null
+, vorbisSupport ? true
+, vorbisTools ? null
 }:
 
 assert mp3Support -> lame != null;
@@ -15,9 +23,10 @@ assert soxSupport -> sox != null;
 assert vorbisSupport -> vorbisTools != null;
 
 let
-  zeroconf = pythonPackages.callPackage ./zeroconf.nix { };
+  zeroconf = pythonPackages.callPackage ./zeroconf.nix {};
 
-in pythonPackages.buildPythonApplication rec {
+in
+pythonPackages.buildPythonApplication rec {
   pname = "pulseaudio-dlna";
   version = "2017-11-01";
 
@@ -32,8 +41,20 @@ in pythonPackages.buildPythonApplication rec {
   doCheck = false;
 
   propagatedBuildInputs = with pythonPackages; [
-    dbus-python docopt requests setproctitle protobuf psutil futures
-    chardet notify2 netifaces pyroute2 pygobject2 lxml ]
+    dbus-python
+    docopt
+    requests
+    setproctitle
+    protobuf
+    psutil
+    futures
+    chardet
+    notify2
+    netifaces
+    pyroute2
+    pygobject2
+    lxml
+  ]
     ++ [ zeroconf ]
     ++ stdenv.lib.optional mp3Support lame
     ++ stdenv.lib.optional opusSupport opusTools

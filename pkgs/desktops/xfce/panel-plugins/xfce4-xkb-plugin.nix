@@ -1,10 +1,20 @@
-{ stdenv, fetchurl, pkgconfig, intltool, libxfce4util, libxfce4ui, xfce4-panel
-, garcon, gtk, libxklavier, librsvg, libwnck
+{ stdenv
+, fetchurl
+, pkgconfig
+, intltool
+, libxfce4util
+, libxfce4ui
+, xfce4-panel
+, garcon
+, gtk
+, libxklavier
+, librsvg
+, libwnck
 }:
 
 with stdenv.lib;
 stdenv.mkDerivation rec {
-  p_name  = "xfce4-xkb-plugin";
+  p_name = "xfce4-xkb-plugin";
   ver_maj = "0.7";
   ver_min = "1";
 
@@ -16,8 +26,17 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ pkgconfig ];
-  buildInputs = [ intltool libxfce4util libxfce4ui xfce4-panel garcon
-    gtk libxklavier librsvg libwnck  ];
+  buildInputs = [
+    intltool
+    libxfce4util
+    libxfce4ui
+    xfce4-panel
+    garcon
+    gtk
+    libxklavier
+    librsvg
+    libwnck
+  ];
 
   meta = {
     homepage = "http://goodies.xfce.org/projects/panel-plugins/${p_name}";

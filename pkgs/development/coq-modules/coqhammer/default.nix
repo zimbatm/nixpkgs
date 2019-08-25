@@ -30,9 +30,15 @@ stdenv.mkDerivation rec {
     substituteInPlace Makefile.coq.local --replace 'g++' 'c++' --replace 'gcc' 'cc'
   '';
 
-  buildInputs = [ coq ] ++ (with coq.ocamlPackages; [
-    ocaml findlib camlp5
-  ]);
+  buildInputs = [ coq ]
+    ++ (
+         with coq.ocamlPackages; [
+           ocaml
+           findlib
+           camlp5
+         ]
+       )
+    ;
 
   preInstall = ''
     mkdir -p $out/bin

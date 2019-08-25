@@ -13,11 +13,15 @@ buildPythonPackage rec {
     export DYLD_LIBRARY_PATH="${libgit2}/lib"
   '';
 
-  patches = [ (fetchpatch {
-    name = "dont-require-old-pycparser"; # https://github.com/libgit2/pygit2/issues/819
-    url = https://github.com/libgit2/pygit2/commit/1eaba181577de206d3d43ec7886d0353fc0c9f2a.patch;
-    sha256 = "18x1fpmywhjjr4lvakwmy34zpxfqi8pqqj48g1wcib39lh3s7l4f";
-  }) ];
+  patches = [
+    (
+      fetchpatch {
+        name = "dont-require-old-pycparser"; # https://github.com/libgit2/pygit2/issues/819
+        url = https://github.com/libgit2/pygit2/commit/1eaba181577de206d3d43ec7886d0353fc0c9f2a.patch;
+        sha256 = "18x1fpmywhjjr4lvakwmy34zpxfqi8pqqj48g1wcib39lh3s7l4f";
+      }
+    )
+  ];
 
   propagatedBuildInputs = [ libgit2 six ] ++ lib.optional (!isPyPy) cffi;
 

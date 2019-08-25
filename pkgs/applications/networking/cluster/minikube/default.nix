@@ -1,18 +1,30 @@
-{ stdenv, buildGoModule, fetchFromGitHub, go-bindata, libvirt, qemu
-, gpgme, makeWrapper, vmnet
-, docker-machine-kvm, docker-machine-kvm2
+{ stdenv
+, buildGoModule
+, fetchFromGitHub
+, go-bindata
+, libvirt
+, qemu
+, gpgme
+, makeWrapper
+, vmnet
+, docker-machine-kvm
+, docker-machine-kvm2
 , extraDrivers ? []
 }:
 
 let
-  drivers = stdenv.lib.filter (d: d != null) (extraDrivers
-            ++ stdenv.lib.optionals stdenv.isLinux [ docker-machine-kvm docker-machine-kvm2 ]);
+  drivers = stdenv.lib.filter (d: d != null) (
+    extraDrivers
+    ++ stdenv.lib.optionals stdenv.isLinux [ docker-machine-kvm docker-machine-kvm2 ]
+  );
 
   binPath = drivers
-            ++ stdenv.lib.optionals stdenv.isLinux ([ libvirt qemu ]);
+    ++ stdenv.lib.optionals stdenv.isLinux ([ libvirt qemu ])
+    ;
 
-in buildGoModule rec {
-  pname   = "minikube";
+in
+buildGoModule rec {
+  pname = "minikube";
   version = "1.2.0";
 
   kubernetesVersion = "1.15.0";
@@ -20,9 +32,9 @@ in buildGoModule rec {
   goPackagePath = "k8s.io/minikube";
 
   src = fetchFromGitHub {
-    owner  = "kubernetes";
-    repo   = "minikube";
-    rev    = "v${version}";
+    owner = "kubernetes";
+    repo = "minikube";
+    rev = "v${version}";
     sha256 = "0l9znrp49877cp1bkwx84c8lv282ga5a946rjbxi8gznkf3kwaw7";
   };
 
@@ -54,15 +66,17 @@ in buildGoModule rec {
     MINIKUBE_WANTUPDATENOTIFICATION=false MINIKUBE_WANTKUBECTLDOWNLOADMSG=false HOME=$PWD $out/bin/minikube completion bash > $out/share/bash-completion/completions/minikube
     mkdir -p $out/share/zsh/site-functions/
     MINIKUBE_WANTUPDATENOTIFICATION=false MINIKUBE_WANTKUBECTLDOWNLOADMSG=false HOME=$PWD $out/bin/minikube completion zsh > $out/share/zsh/site-functions/_minikube
-  ''+ stdenv.lib.optionalString stdenv.hostPlatform.isDarwin ''
-    mv $out/bin/hyperkit $out/bin/docker-machine-driver-hyperkit
-  '';
+  ''
+  + stdenv.lib.optionalString stdenv.hostPlatform.isDarwin ''
+      mv $out/bin/hyperkit $out/bin/docker-machine-driver-hyperkit
+    ''
+  ;
 
   meta = with stdenv.lib; {
-    homepage    = https://github.com/kubernetes/minikube;
+    homepage = https://github.com/kubernetes/minikube;
     description = "A tool that makes it easy to run Kubernetes locally";
-    license     = licenses.asl20;
+    license = licenses.asl20;
     maintainers = with maintainers; [ ebzzry copumpkin vdemeester ];
-    platforms   = with platforms; unix;
+    platforms = with platforms; unix;
   };
 }

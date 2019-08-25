@@ -1,5 +1,11 @@
-{ stdenv, fetchurl
-, libusb1, pkgconfig, qmake, qtbase, qttools, qtwebsockets
+{ stdenv
+, fetchurl
+, libusb1
+, pkgconfig
+, qmake
+, qtbase
+, qttools
+, qtwebsockets
 }:
 
 stdenv.mkDerivation rec {
@@ -20,8 +26,8 @@ stdenv.mkDerivation rec {
     mkdir -p $udev/lib/udev/rules.d
     sed -n '/^ \+cat > "$tmpfile" <<- EOF$/,/^EOF$/p' ../data/moolticute.sh |
         sed '1d;$d' > $udev/lib/udev/rules.d/50-mooltipass.rules
- '';
-  
+  '';
+
   buildInputs = [ libusb1 qtbase qtwebsockets ];
 
   meta = with stdenv.lib; {

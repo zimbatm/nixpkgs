@@ -1,5 +1,15 @@
-{ stdenv, fetchFromGitHub, autoreconfHook, autoconf, automake, pkgconfig, glib
-, perl, ncurses, hamlib, xmlrpc_c }:
+{ stdenv
+, fetchFromGitHub
+, autoreconfHook
+, autoconf
+, automake
+, pkgconfig
+, glib
+, perl
+, ncurses
+, hamlib
+, xmlrpc_c
+}:
 
 stdenv.mkDerivation rec {
   pname = "tlf";

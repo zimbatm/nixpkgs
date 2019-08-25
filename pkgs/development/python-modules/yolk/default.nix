@@ -20,4 +20,3 @@ buildPythonApplication rec {
     license = licenses.bsd3;
   };
 }
-

@@ -1,4 +1,4 @@
-{stdenv, fetchurl, scons, zlib, SDL, lua5_1, pkgconfig}:
+{ stdenv, fetchurl, scons, zlib, SDL, lua5_1, pkgconfig }:
 
 stdenv.mkDerivation {
   name = "fceux-2.2.3";
@@ -10,7 +10,9 @@ stdenv.mkDerivation {
 
   nativeBuildInputs = [ pkgconfig scons ];
   buildInputs = [
-    zlib SDL lua5_1
+    zlib
+    SDL
+    lua5_1
   ];
 
   sconsFlags = "OPENGL=false GTK=false CREATE_AVI=false LOGO=false";

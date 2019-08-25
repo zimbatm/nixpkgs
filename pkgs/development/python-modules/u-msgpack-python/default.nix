@@ -14,7 +14,7 @@ buildPythonPackage rec {
     sha256 = "6c02a0654a5e11f8fad532ed634109ed49cdc929f7b972848773e4e0ce52f30c";
   };
 
-  LC_ALL="en_US.UTF-8";
+  LC_ALL = "en_US.UTF-8";
 
   buildInputs = [ glibcLocales ];
 

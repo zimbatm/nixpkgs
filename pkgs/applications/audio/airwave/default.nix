@@ -1,5 +1,14 @@
-{ stdenv, multiStdenv, cmake, fetchFromGitHub, file, libX11, makeWrapper
-, qt5, requireFile, unzip, wine
+{ stdenv
+, multiStdenv
+, cmake
+, fetchFromGitHub
+, file
+, libX11
+, makeWrapper
+, qt5
+, requireFile
+, unzip
+, wine
 }:
 
 let
@@ -29,10 +38,12 @@ let
     wineBuild = "wineWow";
   };
 
-  wine-xembed = wine-wow64.overrideDerivation (oldAttrs: {
-    patchFlags = [ "-p2" ];
-    patches = [ "${airwave-src}/fix-xembed-wine-windows.patch" ];
-  });
+  wine-xembed = wine-wow64.overrideDerivation (
+    oldAttrs: {
+      patchFlags = [ "-p2" ];
+      patches = [ "${airwave-src}/fix-xembed-wine-windows.patch" ];
+    }
+  );
 
 in
 

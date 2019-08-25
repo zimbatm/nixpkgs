@@ -5,7 +5,7 @@ rec {
 
   description = '''';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/clack/2018-10-18/clack-20181018-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "clack-socket";
 
-  asdFilesToKeep = ["clack-socket.asd"];
+  asdFilesToKeep = [ "clack-socket.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM clack-socket DESCRIPTION NIL SHA256

@@ -3,7 +3,8 @@
 let
   pname = "gspell";
   version = "1.8.1";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "${pname}-${version}";
 
   outputs = [ "out" "dev" ];

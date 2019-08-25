@@ -1,7 +1,8 @@
 { stdenv, fetchgit }:
 let
   version = "2018-12-06";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "edid-decode-unstable-${version}";
 
   src = fetchgit {
@@ -23,4 +24,3 @@ in stdenv.mkDerivation rec {
     platforms = stdenv.lib.platforms.all;
   };
 }
-

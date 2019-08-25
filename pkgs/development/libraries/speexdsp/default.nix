@@ -18,7 +18,9 @@ stdenv.mkDerivation rec {
 
   configureFlags = [
     "--with-fft=gpl-fftw3"
-  ] ++ stdenv.lib.optional stdenv.isAarch64 "--disable-neon";
+  ]
+  ++ stdenv.lib.optional stdenv.isAarch64 "--disable-neon"
+  ;
 
   meta = with stdenv.lib; {
     homepage = https://www.speex.org/;

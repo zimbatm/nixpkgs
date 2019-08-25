@@ -5,14 +5,19 @@ stdenv.mkDerivation rec {
   version = "4.3.4";
 
   srcs =
-    [ (fetchurl {
-         url = "http://cdn.urbanterror.info/urt/43/releases/zips/UrbanTerror434_full.zip";
-         sha256 = "1rx4nnndsk88nvd7k4p35cw6znclkkzm2bl5j6vn6mjjdk66jrki";
-       })
-      (fetchurl {
-         url = "https://github.com/FrozenSand/ioq3-for-UrbanTerror-4/archive/release-${version}.zip";
-         sha256 = "1s9pmw7rbnzwzl1llcs0kr2krf4daf8hhnz1j89qk4bq9a9qfp71";
-       })
+    [
+      (
+        fetchurl {
+          url = "http://cdn.urbanterror.info/urt/43/releases/zips/UrbanTerror434_full.zip";
+          sha256 = "1rx4nnndsk88nvd7k4p35cw6znclkkzm2bl5j6vn6mjjdk66jrki";
+        }
+      )
+      (
+        fetchurl {
+          url = "https://github.com/FrozenSand/ioq3-for-UrbanTerror-4/archive/release-${version}.zip";
+          sha256 = "1s9pmw7rbnzwzl1llcs0kr2krf4daf8hhnz1j89qk4bq9a9qfp71";
+        }
+      )
     ];
 
   buildInputs = [ unzip SDL libGLU_combined openal curl libXxf86vm ];

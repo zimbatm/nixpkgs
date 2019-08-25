@@ -2,7 +2,8 @@
 
 let
   inherit (pythonPackages) python;
-in pythonPackages.buildPythonApplication rec {
+in
+pythonPackages.buildPythonApplication rec {
   name = "jbrout-${version}";
   version = "338";
 

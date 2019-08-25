@@ -47,10 +47,12 @@ stdenv.mkDerivation rec {
     rm "$lib"/lib/*.a
     mkdir -p "$doc/share/doc/${name}"
     cp License "$doc/share/doc/${name}/"
-  '' + stdenv.lib.optionalString (pam != null) ''
-    mkdir -p "$pam/lib/security"
-    mv "$lib"/lib/security "$pam/lib"
-  '';
+  ''
+  + stdenv.lib.optionalString (pam != null) ''
+      mkdir -p "$pam/lib/security"
+      mv "$lib"/lib/security "$pam/lib"
+    ''
+  ;
 
   meta = {
     description = "Library for working with POSIX capabilities";

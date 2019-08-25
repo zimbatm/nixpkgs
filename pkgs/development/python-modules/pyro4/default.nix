@@ -25,7 +25,9 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [
     serpent
-  ] ++ lib.optionals (isPy27 || isPy33) [ selectors34 ];
+  ]
+  ++ lib.optionals (isPy27 || isPy33) [ selectors34 ]
+  ;
 
   buildInputs = [
     dill
@@ -42,5 +44,5 @@ buildPythonPackage rec {
     homepage = https://github.com/irmen/Pyro4;
     license = licenses.mit;
     maintainers = with maintainers; [ prusnak ];
-    };
+  };
 }

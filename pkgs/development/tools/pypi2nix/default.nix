@@ -1,4 +1,11 @@
-{ stdenv, fetchFromGitHub, fetchurl, pythonPackages, zip, makeWrapper, nix, nix-prefetch-git
+{ stdenv
+, fetchFromGitHub
+, fetchurl
+, pythonPackages
+, zip
+, makeWrapper
+, nix
+, nix-prefetch-git
 , nix-prefetch-hg
 }:
 
@@ -23,7 +30,8 @@ let
     sha256 = "1s0wg4any4dsv5l3hqjxqk2zgb7pdbqhy9rhc8kh3aigfq4ws8jp";
   };
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "pypi2nix-${version}";
   srcs = [
     src
@@ -31,8 +39,13 @@ in stdenv.mkDerivation rec {
     requests
   ];
   buildInputs = [
-    pythonPackages.python pythonPackages.flake8
-    zip makeWrapper nix.out nix-prefetch-git nix-prefetch-hg
+    pythonPackages.python
+    pythonPackages.flake8
+    zip
+    makeWrapper
+    nix.out
+    nix-prefetch-git
+    nix-prefetch-hg
   ];
 
   sourceRoot = ".";
@@ -76,11 +89,13 @@ in stdenv.mkDerivation rec {
     flake8 ${src}/src
   '';
 
-  installPhase = commonPhase + ''
+  installPhase = commonPhase
+    + ''
     wrapProgram $out/bin/pypi2nix \
         --prefix PYTHONPATH : "$PYTHONPATH" \
         --prefix PATH : "${nix-prefetch-git}/bin:${nix-prefetch-hg}/bin"
-  '';
+  ''
+    ;
 
   shellHook = ''
     export home=`pwd`
@@ -101,6 +116,6 @@ in stdenv.mkDerivation rec {
   meta = {
     homepage = https://github.com/garbas/pypi2nix;
     description = "A tool that generates nix expressions for your python packages, so you don't have to.";
-    maintainers = with stdenv.lib.maintainers; [ ];
+    maintainers = with stdenv.lib.maintainers; [];
   };
 }

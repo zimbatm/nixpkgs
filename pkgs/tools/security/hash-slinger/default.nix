@@ -2,9 +2,10 @@
 
 let
   inherit (pythonPackages) python;
-in stdenv.mkDerivation rec {
-  pname    = "hash-slinger";
-  name    = "${pname}-${version}";
+in
+stdenv.mkDerivation rec {
+  pname = "hash-slinger";
+  name = "${pname}-${version}";
   version = "2.7";
 
   src = fetchFromGitHub {
@@ -14,8 +15,13 @@ in stdenv.mkDerivation rec {
     sha256 = "05wn744ydclpnpyah6yfjqlfjlasrrhzj48lqmm5a91nyps5yqyn";
   };
 
-  pythonPath = with pythonPackages; [ dnspython m2crypto ipaddr python-gnupg
-                                      pyunbound ];
+  pythonPath = with pythonPackages; [
+    dnspython
+    m2crypto
+    ipaddr
+    python-gnupg
+    pyunbound
+  ];
 
   buildInputs = [ pythonPackages.wrapPython ];
   propagatedBuildInputs = [ unbound libreswan ] ++ pythonPath;
@@ -29,18 +35,18 @@ in stdenv.mkDerivation rec {
     substituteInPlace tlsa \
       --replace "/var/lib/unbound/root" "${pythonPackages.pyunbound}/etc/pyunbound/root"
     patchShebangs *
-    '';
+  '';
 
   installPhase = ''
     mkdir -p $out/bin $out/man $out/${python.sitePackages}/
     make install
     wrapPythonPrograms
-   '';
+  '';
 
-   meta = {
+  meta = {
     description = "Various tools to generate special DNS records";
-    homepage    = "https://github.com/letoams/hash-slinger";
-    license     = stdenv.lib.licenses.gpl2Plus;
+    homepage = "https://github.com/letoams/hash-slinger";
+    license = stdenv.lib.licenses.gpl2Plus;
     maintainers = [ stdenv.lib.maintainers.leenaars ];
   };
 }

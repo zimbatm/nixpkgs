@@ -1,4 +1,4 @@
-{stdenv, fetchzip, emacs, colorTheme}:
+{ stdenv, fetchzip, emacs, colorTheme }:
 let
   commit = "412713a0fcedd520d208a7b783fea03d710bcc61";
 in

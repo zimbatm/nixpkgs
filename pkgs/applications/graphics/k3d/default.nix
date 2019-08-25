@@ -1,7 +1,36 @@
-{ stdenv, fetchFromGitHub, fetchpatch, ftgl, glew, asciidoc
-, cmake, ninja, libGLU_combined, zlib, python, expat, libxml2, libsigcxx, libuuid, freetype
-, libpng, boost, doxygen, cairomm, pkgconfig, imagemagick, libjpeg, libtiff
-, gettext, intltool, perl, gtkmm2, glibmm, gtkglext, pangox_compat, libXmu }:
+{ stdenv
+, fetchFromGitHub
+, fetchpatch
+, ftgl
+, glew
+, asciidoc
+, cmake
+, ninja
+, libGLU_combined
+, zlib
+, python
+, expat
+, libxml2
+, libsigcxx
+, libuuid
+, freetype
+, libpng
+, boost
+, doxygen
+, cairomm
+, pkgconfig
+, imagemagick
+, libjpeg
+, libtiff
+, gettext
+, intltool
+, perl
+, gtkmm2
+, glibmm
+, gtkglext
+, pangox_compat
+, libXmu
+}:
 
 stdenv.mkDerivation rec {
   version = "0.8.0.6";
@@ -14,10 +43,13 @@ stdenv.mkDerivation rec {
   };
 
   patches = [
-    (fetchpatch { /* glibmm 2.50 fix */
-      url = https://github.com/K-3D/k3d/commit/c65889d0652490d88a573e47de7a9324bf27bff2.patch;
-      sha256 = "162icv1hicr2dirkb9ijacvg9bhz5j30yfwg7b45ijavk8rns62j";
-    })
+    (
+      fetchpatch {
+        /* glibmm 2.50 fix */
+        url = https://github.com/K-3D/k3d/commit/c65889d0652490d88a573e47de7a9324bf27bff2.patch;
+        sha256 = "162icv1hicr2dirkb9ijacvg9bhz5j30yfwg7b45ijavk8rns62j";
+      }
+    )
   ];
 
   cmakeFlags = [
@@ -32,10 +64,28 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ cmake ninja gettext intltool doxygen pkgconfig perl asciidoc ];
 
   buildInputs = [
-     libGLU_combined zlib python expat libxml2 libsigcxx libuuid freetype libpng
-     boost cairomm imagemagick libjpeg libtiff
-     ftgl glew gtkmm2 glibmm gtkglext pangox_compat libXmu
-    ];
+    libGLU_combined
+    zlib
+    python
+    expat
+    libxml2
+    libsigcxx
+    libuuid
+    freetype
+    libpng
+    boost
+    cairomm
+    imagemagick
+    libjpeg
+    libtiff
+    ftgl
+    glew
+    gtkmm2
+    glibmm
+    gtkglext
+    pangox_compat
+    libXmu
+  ];
 
   #doCheck = false;
 

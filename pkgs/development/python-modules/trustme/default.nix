@@ -28,9 +28,11 @@ buildPythonPackage rec {
   propagatedBuildInputs = [
     cryptography
     idna
-  ] ++ lib.optionals (!isPy3k) [
-    futures
-  ];
+  ]
+  ++ lib.optionals (!isPy3k) [
+       futures
+     ]
+  ;
 
   checkPhase = ''
     pytest

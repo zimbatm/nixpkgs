@@ -14,12 +14,17 @@ stdenv.mkDerivation rec {
                 "$(cat ${stdenv.cc}/nix-support/orig-cc)/bin/cpp"
   '';
 
-  buildInputs = [ gettext ] ++
-    # We don't have Emacs/GTK/etc. on {Dar,Cyg}win.
-    stdenv.lib.optional
-      (! (stdenv.lib.lists.any (x: stdenv.hostPlatform.system == x)
-              [ "i686-cygwin" ]))
-      emacs;
+  buildInputs = [ gettext ]
+    ++ # We don't have Emacs/GTK/etc. on {Dar,Cyg}win.
+  stdenv.lib.optional
+    (
+      ! (
+        stdenv.lib.lists.any (x: stdenv.hostPlatform.system == x)
+          [ "i686-cygwin" ]
+      )
+    )
+    emacs
+    ;
 
   doCheck = true;
 

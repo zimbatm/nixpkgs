@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ autoreconfHook pkgconfig ];
-  buildInputs = [ ];
+  buildInputs = [];
   propagatedBuildInputs = [ glib ];
 
   postPatch = ''

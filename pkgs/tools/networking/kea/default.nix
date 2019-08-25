@@ -1,5 +1,17 @@
-{ stdenv, fetchurl, autoreconfHook, pkgconfig, openssl, botan2, log4cplus
-, boost, python3, postgresql, mysql, gmp, bzip2 }:
+{ stdenv
+, fetchurl
+, autoreconfHook
+, pkgconfig
+, openssl
+, botan2
+, log4cplus
+, boost
+, python3
+, postgresql
+, mysql
+, gmp
+, bzip2
+}:
 
 stdenv.mkDerivation rec {
   name = "${pname}-${version}";
@@ -26,8 +38,14 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ autoreconfHook pkgconfig ];
   buildInputs = [
-    openssl log4cplus boost python3 mysql.connector-c
-    botan2 gmp bzip2
+    openssl
+    log4cplus
+    boost
+    python3
+    mysql.connector-c
+    botan2
+    gmp
+    bzip2
   ];
 
   enableParallelBuilding = true;

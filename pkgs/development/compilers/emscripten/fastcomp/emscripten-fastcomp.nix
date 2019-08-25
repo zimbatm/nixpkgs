@@ -34,10 +34,13 @@ stdenv.mkDerivation rec {
     #"-DLLVM_CONFIG=${llvm}/bin/llvm-config"
     "-DLLVM_BUILD_TESTS=ON"
     "-DCLANG_INCLUDE_TESTS=ON"
-  ] ++ (stdenv.lib.optional stdenv.isLinux
-    # necessary for clang to find crtend.o
-    "-DGCC_INSTALL_PREFIX=${gcc}"
-  );
+  ]
+  ++ (
+       stdenv.lib.optional stdenv.isLinux
+         # necessary for clang to find crtend.o
+         "-DGCC_INSTALL_PREFIX=${gcc}"
+     )
+  ;
   enableParallelBuilding = true;
 
   passthru = {

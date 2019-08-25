@@ -16,10 +16,12 @@ stdenv.mkDerivation rec {
   patches = [
     # Patch from Gentoo that helps telepathy-haze build with more
     # recent versions of pidgin.
-    (fetchpatch {
-      url = https://raw.githubusercontent.com/gentoo/gentoo/master/net-voip/telepathy-haze/files/telepathy-haze-0.8.0-pidgin-2.10.12-compat.patch;
-      sha256 = "0fa1p4n1559qd096w7ya4kvfnc1c98ykarkxzlpkwvzbczwzng3c";
-    })
+    (
+      fetchpatch {
+        url = https://raw.githubusercontent.com/gentoo/gentoo/master/net-voip/telepathy-haze/files/telepathy-haze-0.8.0-pidgin-2.10.12-compat.patch;
+        sha256 = "0fa1p4n1559qd096w7ya4kvfnc1c98ykarkxzlpkwvzbczwzng3c";
+      }
+    )
   ];
 
   meta = {

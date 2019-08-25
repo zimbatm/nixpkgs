@@ -1,5 +1,7 @@
 { lib }:
-  let inherit (lib.attrsets) mapAttrs; in
+let
+  inherit (lib.attrsets) mapAttrs;
+in
 
 rec {
   doubles = import ./doubles.nix { inherit lib; };
@@ -16,7 +18,7 @@ rec {
   # always just used `final.*` would fail on both counts.
   elaborate = args': let
     args = if lib.isString args' then { system = args'; }
-           else args';
+    else args';
     final = {
       # Prefer to parse `config` as it is strictly more informative.
       parsed = parse.mkSystemFromString (if args ? config then args.config else args.system);
@@ -29,26 +31,26 @@ rec {
       isCompatible = platform: parse.isCompatible final.parsed.cpu platform.parsed.cpu;
       # Derived meta-data
       libc =
-        /**/ if final.isDarwin              then "libSystem"
-        else if final.isMinGW               then "msvcrt"
-        else if final.isWasi                then "wasilibc"
-        else if final.isMusl                then "musl"
-        else if final.isUClibc              then "uclibc"
-        else if final.isAndroid             then "bionic"
-        else if final.isLinux /* default */ then "glibc"
-        else if final.isMsp430              then "newlib"
-        else if final.isAvr                 then "avrlibc"
-        else if final.isNetBSD              then "nblibc"
+        /**/ if final.isDarwin then "libSystem"
+      else if final.isMinGW then "msvcrt"
+      else if final.isWasi then "wasilibc"
+      else if final.isMusl then "musl"
+      else if final.isUClibc then "uclibc"
+      else if final.isAndroid then "bionic"
+      else if final.isLinux /* default */ then "glibc"
+      else if final.isMsp430 then "newlib"
+      else if final.isAvr then "avrlibc"
+      else if final.isNetBSD then "nblibc"
         # TODO(@Ericson2314) think more about other operating systems
-        else                                     "native/impure";
+      else "native/impure";
       extensions = {
         sharedLibrary =
-          /**/ if final.isDarwin  then ".dylib"
-          else if final.isWindows then ".dll"
-          else                         ".so";
+          /**/ if final.isDarwin then ".dylib"
+        else if final.isWindows then ".dll"
+        else ".so";
         executable =
           /**/ if final.isWindows then ".exe"
-          else                         "";
+        else "";
       };
       # Misc boolean options
       useAndroidPrebuilt = false;
@@ -67,11 +69,11 @@ rec {
           "wasi" = "Wasi";
         }.${final.parsed.kernel.name} or null;
 
-         # uname -p
-         processor = final.parsed.cpu.name;
+        # uname -p
+        processor = final.parsed.cpu.name;
 
-         # uname -r
-         release = null;
+        # uname -r
+        release = null;
       };
 
       kernelArch =
@@ -104,13 +106,13 @@ rec {
           pulseSupport = false;
           smbdSupport = false;
           seccompSupport = false;
-          hostCpuTargets = ["${final.qemuArch}-linux-user"];
+          hostCpuTargets = [ "${final.qemuArch}-linux-user" ];
         };
         wine-name = "wine${toString final.parsed.cpu.bits}";
         wine = (pkgs.winePackagesFor wine-name).minimal;
       in
-        if final.parsed.kernel.name == pkgs.stdenv.hostPlatform.parsed.kernel.name &&
-           pkgs.stdenv.hostPlatform.isCompatible final
+        if final.parsed.kernel.name == pkgs.stdenv.hostPlatform.parsed.kernel.name
+        && pkgs.stdenv.hostPlatform.isCompatible final
         then "${pkgs.runtimeShell} -c '\"$@\"' --"
         else if final.isWindows
         then "${wine}/bin/${wine-name}"
@@ -120,15 +122,20 @@ rec {
         then "${pkgs.wasmtime}/bin/wasmtime"
         else throw "Don't know how to run ${final.config} executables.";
 
-    } // mapAttrs (n: v: v final.parsed) inspect.predicates
-      // args;
-  in assert final.useAndroidPrebuilt -> final.isAndroid;
-     assert lib.foldl
-       (pass: { assertion, message }:
-         if assertion final
-         then pass
-         else throw message)
-       true
-       (final.parsed.abi.assertions or []);
+    }
+    // mapAttrs (n: v: v final.parsed) inspect.predicates
+    // args
+    ;
+  in
+    assert final.useAndroidPrebuilt -> final.isAndroid;
+    assert lib.foldl
+      (
+        pass: { assertion, message }:
+          if assertion final
+          then pass
+          else throw message
+      )
+      true
+      (final.parsed.abi.assertions or []);
     final;
 }

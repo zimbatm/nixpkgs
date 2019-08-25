@@ -1,5 +1,13 @@
-{ stdenv, fetchFromGitHub, fetchpatch, autoreconfHook, pkgconfig, which
-, gettext, libffi, libiconv, libtasn1
+{ stdenv
+, fetchFromGitHub
+, fetchpatch
+, autoreconfHook
+, pkgconfig
+, which
+, gettext
+, libffi
+, libiconv
+, libtasn1
 }:
 
 stdenv.mkDerivation rec {
@@ -13,7 +21,7 @@ stdenv.mkDerivation rec {
     sha256 = "0jr62qkbqxp3iawgksk1qc3gp8p6x09sg5v7xac80ghyfxil15wy";
   };
 
-  outputs = [ "out" "dev"];
+  outputs = [ "out" "dev" ];
   outputBin = "dev";
 
   nativeBuildInputs = [ autoreconfHook pkgconfig which ];

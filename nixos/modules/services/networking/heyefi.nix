@@ -21,21 +21,21 @@ in
         default = "";
         description = ''
           An Eye-Fi card MAC address.
-          '';
+        '';
       };
 
       uploadKey = mkOption {
         default = "";
         description = ''
           An Eye-Fi card's upload key.
-          '';
+        '';
       };
 
       uploadDir = mkOption {
         example = "/home/username/pictures";
         description = ''
           The directory to upload the files to.
-          '';
+        '';
       };
 
       user = mkOption {

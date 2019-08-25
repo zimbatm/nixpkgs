@@ -14,9 +14,10 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs =
-    [ ocaml findlib dune base stdio liblapack blas ] ++
-    stdenv.lib.optionals stdenv.isDarwin
-      [ darwin.apple_sdk.frameworks.Accelerate ];
+    [ ocaml findlib dune base stdio liblapack blas ]
+    ++ stdenv.lib.optionals stdenv.isDarwin
+         [ darwin.apple_sdk.frameworks.Accelerate ]
+    ;
 
   inherit (dune) installPhase;
 

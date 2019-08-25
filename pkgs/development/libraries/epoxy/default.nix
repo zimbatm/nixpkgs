@@ -1,5 +1,11 @@
-{ stdenv, fetchFromGitHub, autoreconfHook, pkgconfig, utilmacros, python
-, libGL, libX11
+{ stdenv
+, fetchFromGitHub
+, autoreconfHook
+, pkgconfig
+, utilmacros
+, python
+, libGL
+, libX11
 }:
 
 with stdenv.lib;

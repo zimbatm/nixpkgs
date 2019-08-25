@@ -1,6 +1,21 @@
-{ stdenv, fetchurl, meson, ninja, pkgconfig, gnome3, gtk3, wrapGAppsHook
-, glib, amtk, appstream-glib, gobject-introspection, python3
-, webkitgtk, gettext, itstool, gsettings-desktop-schemas }:
+{ stdenv
+, fetchurl
+, meson
+, ninja
+, pkgconfig
+, gnome3
+, gtk3
+, wrapGAppsHook
+, glib
+, amtk
+, appstream-glib
+, gobject-introspection
+, python3
+, webkitgtk
+, gettext
+, itstool
+, gsettings-desktop-schemas
+}:
 
 stdenv.mkDerivation rec {
   name = "devhelp-${version}";
@@ -13,8 +28,12 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ meson ninja pkgconfig gettext itstool wrapGAppsHook appstream-glib gobject-introspection python3 ];
   buildInputs = [
-    glib gtk3 webkitgtk amtk
-    gnome3.adwaita-icon-theme gsettings-desktop-schemas
+    glib
+    gtk3
+    webkitgtk
+    amtk
+    gnome3.adwaita-icon-theme
+    gsettings-desktop-schemas
   ];
 
   doCheck = true;

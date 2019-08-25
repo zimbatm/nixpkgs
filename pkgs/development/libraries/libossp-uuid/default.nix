@@ -1,18 +1,22 @@
-{stdenv, fetchurl}:
+{ stdenv, fetchurl }:
 
-let version = "1.6.2"; in
+let
+  version = "1.6.2";
+in
 
 stdenv.mkDerivation {
   name = "libossp-uuid-${version}";
 
   src = fetchurl {
     url = "ftp://ftp.ossp.org/pkg/lib/uuid/uuid-${version}.tar.gz";
-    sha256= "11a615225baa5f8bb686824423f50e4427acd3f70d394765bdff32801f0fd5b0";
+    sha256 = "11a615225baa5f8bb686824423f50e4427acd3f70d394765bdff32801f0fd5b0";
   };
 
   configureFlags = [
     "ac_cv_va_copy=yes"
-  ] ++ stdenv.lib.optional stdenv.isFreeBSD "--with-pic";
+  ]
+  ++ stdenv.lib.optional stdenv.isFreeBSD "--with-pic"
+  ;
 
   patches = [ ./shtool.patch ];
 

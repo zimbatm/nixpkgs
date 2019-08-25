@@ -10,13 +10,14 @@ let
     rev = "10b9500b67983f0a9c42d8ce8bf8e8c469f7078c";
     sha256 = "1yy8by15kfklw8lwh17z1swpj067q0skjjih12yawbryraig41m0";
   };
-  
+
   nodePackages = import ./nodepkgs.nix {
     inherit pkgs;
     inherit (stdenv.hostPlatform) system;
   };
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "remarkjs-${version}";
 
   version = "0.7.0";
@@ -26,26 +27,34 @@ in stdenv.mkDerivation rec {
     sha256 = "1a2il6aa0g9cnig56ykmq8lr626pbxlsllk6js41h6gcn214rw60";
   };
 
-  buildInputs = [ nodejs phantomjs2 ] ++ (with nodePackages; [
-    marked
-    browserify
-    uglify-js
-    less
-    mocha
-    #mocha-phantomjs
-    should
-    sinon
-    jshint
-    shelljs
-  ]);
+  buildInputs = [ nodejs phantomjs2 ]
+    ++ (
+         with nodePackages; [
+           marked
+           browserify
+           uglify-js
+           less
+           mocha
+           #mocha-phantomjs
+           should
+           sinon
+           jshint
+           shelljs
+         ]
+       )
+    ;
 
   configurePhase = ''
     mkdir -p node_modules/.bin
-    ${concatStrings (map (dep: ''
-      test -d ${dep}/bin && (for b in $(ls ${dep}/bin); do
-        ln -sv -t node_modules/.bin ${dep}/bin/$b
-      done)
-    '') buildInputs)}
+    ${concatStrings (
+    map (
+      dep: ''
+        test -d ${dep}/bin && (for b in $(ls ${dep}/bin); do
+          ln -sv -t node_modules/.bin ${dep}/bin/$b
+        done)
+      ''
+    ) buildInputs
+  )}
   '';
 
   buildPhase = ''

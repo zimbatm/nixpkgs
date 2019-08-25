@@ -1,6 +1,8 @@
 { lib, buildGoPackage, fetchFromGitHub, ... }:
 
-let version = "0.12.0"; in
+let
+  version = "0.12.0";
+in
 
 buildGoPackage {
   name = "kubecfg-${version}";

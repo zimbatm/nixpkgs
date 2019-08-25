@@ -1,6 +1,6 @@
 { stdenv, fetchurl, makeWrapper, perl, perlPackages, bluez }:
 
-stdenv.mkDerivation  rec {
+stdenv.mkDerivation rec {
   name = "bt-fw-converter-${version}";
   version = "2017-02-19";
   rev = "2d8b34402df01c6f7f4b8622de9e8b82fadf4153";
@@ -32,4 +32,4 @@ stdenv.mkDerivation  rec {
     platforms = platforms.linux;
     maintainers = with maintainers; [ zraexy ];
   };
-} 
+}

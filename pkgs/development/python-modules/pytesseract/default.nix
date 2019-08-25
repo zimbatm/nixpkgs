@@ -10,10 +10,12 @@ buildPythonPackage rec {
   };
 
   patches = [
-    (substituteAll {
-      src = ./tesseract-binary.patch;
-      drv = "${tesseract}";
-    })
+    (
+      substituteAll {
+        src = ./tesseract-binary.patch;
+        drv = "${tesseract}";
+      }
+    )
   ];
 
   buildInputs = [ tesseract ];

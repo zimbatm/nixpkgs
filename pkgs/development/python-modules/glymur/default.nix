@@ -26,7 +26,9 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [
     numpy
-  ] ++ stdenv.lib.optional isPy27 [ contextlib2 mock importlib-resources ];
+  ]
+  ++ stdenv.lib.optional isPy27 [ contextlib2 mock importlib-resources ]
+  ;
 
   checkInputs = [
     scikitimage

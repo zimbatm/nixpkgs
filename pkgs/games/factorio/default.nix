@@ -1,15 +1,24 @@
-{ stdenv, fetchurl, makeWrapper
-, alsaLib, libX11, libXcursor, libXinerama, libXrandr, libXi, libGL
+{ stdenv
+, fetchurl
+, makeWrapper
+, alsaLib
+, libX11
+, libXcursor
+, libXinerama
+, libXrandr
+, libXi
+, libGL
 , factorio-utils
 , releaseType
 , mods ? []
-, username ? "", token ? "" # get/reset token at https://factorio.com/profile
+, username ? ""
+, token ? "" # get/reset token at https://factorio.com/profile
 , experimental ? false # true means to always use the latest branch
 }:
 
 assert releaseType == "alpha"
-    || releaseType == "headless"
-    || releaseType == "demo";
+|| releaseType == "headless"
+|| releaseType == "demo";
 
 let
 
@@ -50,24 +59,30 @@ let
   # NB `experimental` directs us to take the latest build, regardless of its branch;
   # hence the (stable, experimental) pairs may sometimes refer to the same distributable.
   binDists = {
-    x86_64-linux = let bdist = bdistForArch { inUrl = "linux64"; inTar = "x64"; }; in {
-      alpha = {
-        stable        = bdist { sha256 = "0b4hbpdcrh5hgip9q5dkmw22p66lcdhnr0kmb0w5dw6yi7fnxxh0"; version = "0.16.51"; withAuth = true; };
-        experimental  = bdist { sha256 = "1q66chnxsdlaz1bj3al62iikyxvknj1vkwh5bcc46favy4wpqpzz"; version = "0.17.52"; withAuth = true; };
+    x86_64-linux = let
+      bdist = bdistForArch { inUrl = "linux64"; inTar = "x64"; };
+    in
+      {
+        alpha = {
+          stable = bdist { sha256 = "0b4hbpdcrh5hgip9q5dkmw22p66lcdhnr0kmb0w5dw6yi7fnxxh0"; version = "0.16.51"; withAuth = true; };
+          experimental = bdist { sha256 = "1q66chnxsdlaz1bj3al62iikyxvknj1vkwh5bcc46favy4wpqpzz"; version = "0.17.52"; withAuth = true; };
+        };
+        headless = {
+          stable = bdist { sha256 = "0zrnpg2js0ysvx9y50h3gajldk16mv02dvrwnkazh5kzr1d9zc3c"; version = "0.16.51"; };
+          experimental = bdist { sha256 = "03nv0qagv5pmqqbisf0hq6cb5rg2ih37lzkvcxihnnw72r78li94"; version = "0.17.52"; };
+        };
+        demo = {
+          stable = bdist { sha256 = "0zf61z8937yd8pyrjrqdjgd0rjl7snwrm3xw86vv7s7p835san6a"; version = "0.16.51"; };
+        };
       };
-      headless = {
-        stable        = bdist { sha256 = "0zrnpg2js0ysvx9y50h3gajldk16mv02dvrwnkazh5kzr1d9zc3c"; version = "0.16.51"; };
-        experimental  = bdist { sha256 = "03nv0qagv5pmqqbisf0hq6cb5rg2ih37lzkvcxihnnw72r78li94"; version = "0.17.52"; };
+    i686-linux = let
+      bdist = bdistForArch { inUrl = "linux32"; inTar = "i386"; };
+    in
+      {
+        alpha = {
+          stable = bdist { sha256 = "0nnfkxxqnywx1z05xnndgh71gp4izmwdk026nnjih74m2k5j086l"; version = "0.14.23"; withAuth = true; nameMut = asGz; };
+        };
       };
-      demo = {
-        stable        = bdist { sha256 = "0zf61z8937yd8pyrjrqdjgd0rjl7snwrm3xw86vv7s7p835san6a"; version = "0.16.51"; };
-      };
-    };
-    i686-linux = let bdist = bdistForArch { inUrl = "linux32"; inTar = "i386"; }; in {
-      alpha = {
-        stable        = bdist { sha256 = "0nnfkxxqnywx1z05xnndgh71gp4izmwdk026nnjih74m2k5j086l"; version = "0.14.23"; withAuth = true; nameMut = asGz; };
-      };
-    };
   };
 
   actual = binDists.${stdenv.hostPlatform.system}.${releaseType}.${branch} or (throw "Factorio ${releaseType}-${branch} binaries for ${stdenv.hostPlatform.system} are not available for download.");
@@ -80,36 +95,45 @@ let
     let
       url = "https://factorio.com/get-download/${version}/${releaseType}/${arch.inUrl}";
       name = nameMut "factorio_${releaseType}_${arch.inTar}-${version}.tar.xz";
-    in {
-      inherit version arch;
-      src =
-        if withAuth then
-          (stdenv.lib.overrideDerivation
-            (fetchurl {
-              inherit name url sha256;
-              curlOpts = [
-                "--get"
-                "--data-urlencode" "username@username"
-                "--data-urlencode" "token@token"
-              ];
-            })
-            (_: { # This preHook hides the credentials from /proc
-                  preHook = ''
-                    echo -n "${username}" >username
-                    echo -n "${token}"    >token
-                  '';
-                  failureHook = ''
-                    cat <<EOF
-                    ${helpMsg}
-                    EOF
-                  '';
-            })
-          )
-        else
-          fetchurl { inherit name url sha256; };
-    };
+    in
+      {
+        inherit version arch;
+        src =
+          if withAuth then
+            (
+              stdenv.lib.overrideDerivation
+                (
+                  fetchurl {
+                    inherit name url sha256;
+                    curlOpts = [
+                      "--get"
+                      "--data-urlencode"
+                      "username@username"
+                      "--data-urlencode"
+                      "token@token"
+                    ];
+                  }
+                )
+                (
+                  _: {
+                    # This preHook hides the credentials from /proc
+                    preHook = ''
+                      echo -n "${username}" >username
+                      echo -n "${token}"    >token
+                    '';
+                    failureHook = ''
+                      cat <<EOF
+                      ${helpMsg}
+                      EOF
+                    '';
+                  }
+                )
+            )
+          else
+            fetchurl { inherit name url sha256; };
+      };
 
-  asGz = builtins.replaceStrings [".xz"] [".gz"];
+  asGz = builtins.replaceStrings [ ".xz" ] [ ".gz" ];
 
   configBaseCfg = ''
     use-system-read-write-data-directories=false
@@ -173,61 +197,70 @@ let
 
   releases = rec {
     headless = base;
-    demo = base // {
+    demo = base
+      // {
 
-      buildInputs = [ makeWrapper ];
+           buildInputs = [ makeWrapper ];
 
-      libPath = stdenv.lib.makeLibraryPath [
-        alsaLib
-        libX11
-        libXcursor
-        libXinerama
-        libXrandr
-        libXi
-        libGL
-      ];
+           libPath = stdenv.lib.makeLibraryPath [
+             alsaLib
+             libX11
+             libXcursor
+             libXinerama
+             libXrandr
+             libXi
+             libGL
+           ];
 
-      installPhase = base.installPhase + ''
-        wrapProgram $out/bin/factorio                                \
-          --prefix LD_LIBRARY_PATH : /run/opengl-driver/lib:$libPath \
-          --run "$out/share/factorio/update-config.sh"               \
-          --argv0 ""                                                 \
-          --add-flags "-c \$HOME/.factorio/config.cfg"               \
-          ${if mods!=[] then "--add-flags --mod-directory=${modDir}" else ""}
+           installPhase = base.installPhase
+             + ''
+             wrapProgram $out/bin/factorio                                \
+               --prefix LD_LIBRARY_PATH : /run/opengl-driver/lib:$libPath \
+               --run "$out/share/factorio/update-config.sh"               \
+               --argv0 ""                                                 \
+               --add-flags "-c \$HOME/.factorio/config.cfg"               \
+               ${if mods != [] then "--add-flags --mod-directory=${modDir}" else ""}
 
-          # TODO Currently, every time a mod is changed/added/removed using the
-          # modlist, a new derivation will take up the entire footprint of the
-          # client. The only way to avoid this is to remove the mods arg from the
-          # package function. The modsDir derivation will have to be built
-          # separately and have the user specify it in the .factorio config or
-          # right along side it using a symlink into the store I think i will
-          # just remove mods for the client derivation entirely. this is much
-          # cleaner and more useful for headless mode.
+               # TODO Currently, every time a mod is changed/added/removed using the
+               # modlist, a new derivation will take up the entire footprint of the
+               # client. The only way to avoid this is to remove the mods arg from the
+               # package function. The modsDir derivation will have to be built
+               # separately and have the user specify it in the .factorio config or
+               # right along side it using a symlink into the store I think i will
+               # just remove mods for the client derivation entirely. this is much
+               # cleaner and more useful for headless mode.
 
-          # TODO: trying to toggle off a mod will result in read-only-fs-error.
-          # not much we can do about that except warn the user somewhere. In
-          # fact, no exit will be clean, since this error will happen on close
-          # regardless. just prints an ugly stacktrace but seems to be otherwise
-          # harmless, unless maybe the user forgets and tries to use the mod
-          # manager.
+               # TODO: trying to toggle off a mod will result in read-only-fs-error.
+               # not much we can do about that except warn the user somewhere. In
+               # fact, no exit will be clean, since this error will happen on close
+               # regardless. just prints an ugly stacktrace but seems to be otherwise
+               # harmless, unless maybe the user forgets and tries to use the mod
+               # manager.
 
-        install -m0644 <(cat << EOF
-        ${configBaseCfg}
-        EOF
-        ) $out/share/factorio/config-base.cfg
+             install -m0644 <(cat << EOF
+             ${configBaseCfg}
+             EOF
+             ) $out/share/factorio/config-base.cfg
 
-        install -m0755 <(cat << EOF
-        ${updateConfigSh}
-        EOF
-        ) $out/share/factorio/update-config.sh
-      '';
-    };
-    alpha = demo // {
+             install -m0755 <(cat << EOF
+             ${updateConfigSh}
+             EOF
+             ) $out/share/factorio/update-config.sh
+           ''
+             ;
+         }
+      ;
+    alpha = demo
+      // {
 
-      installPhase = demo.installPhase + ''
-        cp -a doc-html $out/share/factorio
-      '';
-    };
+           installPhase = demo.installPhase
+             + ''
+             cp -a doc-html $out/share/factorio
+           ''
+             ;
+         }
+      ;
   };
 
-in stdenv.mkDerivation (releases.${releaseType})
+in
+stdenv.mkDerivation (releases.${releaseType})

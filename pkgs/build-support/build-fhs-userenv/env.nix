@@ -1,8 +1,11 @@
 { stdenv, buildEnv, writeText, pkgs, pkgsi686Linux }:
 
-{ name, profile ? ""
-, targetPkgs ? pkgs: [], multiPkgs ? pkgs: []
-, extraBuildCommands ? "", extraBuildCommandsMulti ? ""
+{ name
+, profile ? ""
+, targetPkgs ? pkgs: []
+, multiPkgs ? pkgs: []
+, extraBuildCommands ? ""
+, extraBuildCommandsMulti ? ""
 , extraOutputsToInstall ? []
 }:
 
@@ -23,7 +26,7 @@
 
 let
   is64Bit = stdenv.hostPlatform.parsed.cpu.bits == 64;
-  isMultiBuild  = multiPkgs != null && is64Bit;
+  isMultiBuild = multiPkgs != null && is64Bit;
   isTargetBuild = !isMultiBuild;
 
   # list of packages (usually programs) which are only be installed for the
@@ -39,14 +42,28 @@ let
   # builds. glibcLocales must be before glibc or glibc_multi as otherwiese
   # the wrong LOCALE_ARCHIVE will be used where only C.UTF-8 is available.
   basePkgs = with pkgs;
-    [ glibcLocales
+    [
+      glibcLocales
       (if isMultiBuild then glibc_multi else glibc)
-      (toString gcc.cc.lib) bashInteractive coreutils less shadow su
-      gawk diffutils findutils gnused gnugrep
-      gnutar gzip bzip2 xz
+      (toString gcc.cc.lib)
+      bashInteractive
+      coreutils
+      less
+      shadow
+      su
+      gawk
+      diffutils
+      findutils
+      gnused
+      gnugrep
+      gnutar
+      gzip
+      bzip2
+      xz
     ];
   baseMultiPkgs = with pkgsi686Linux;
-    [ (toString gcc.cc.lib)
+    [
+      (toString gcc.cc.lib)
     ];
 
   etcProfile = writeText "profile" ''
@@ -70,7 +87,7 @@ let
 
   # Compose /etc for the chroot environment
   etcPkg = stdenv.mkDerivation {
-    name         = "${name}-chrootenv-etc";
+    name = "${name}-chrootenv-etc";
     buildCommand = ''
       mkdir -p $out/etc
       cd $out/etc
@@ -160,7 +177,7 @@ let
   '';
 
   setupLibDirs = if isTargetBuild then setupLibDirs_target
-                                  else setupLibDirs_multi;
+  else setupLibDirs_multi;
 
   # the target profile is the actual profile that will be used for the chroot
   setupTargetProfile = ''
@@ -186,8 +203,9 @@ let
     done
   '';
 
-in stdenv.mkDerivation {
-  name         = "${name}-fhs";
+in
+stdenv.mkDerivation {
+  name = "${name}-fhs";
   buildCommand = ''
     mkdir -p $out
     cd $out

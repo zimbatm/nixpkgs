@@ -52,11 +52,13 @@ stdenv.mkDerivation rec {
   ];
 
   patches = [
-    (substituteAll {
-      src = ./fix-paths.patch;
-      libgnomekbd_path = "${libgnomekbd}/bin/";
-      config = "${xorg.xkeyboardconfig}/share/X11/xkb/rules/evdev.xml";
-    })
+    (
+      substituteAll {
+        src = ./fix-paths.patch;
+        libgnomekbd_path = "${libgnomekbd}/bin/";
+        config = "${xorg.xkeyboardconfig}/share/X11/xkb/rules/evdev.xml";
+      }
+    )
   ];
 
   PKG_CONFIG_WINGPANEL_2_0_INDICATORSDIR = "${placeholder ''out''}/lib/wingpanel";

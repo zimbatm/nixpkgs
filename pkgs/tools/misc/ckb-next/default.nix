@@ -1,5 +1,14 @@
-{ stdenv, mkDerivation, fetchFromGitHub, substituteAll, udev
-, pkgconfig, qtbase, cmake, zlib, kmod }:
+{ stdenv
+, mkDerivation
+, fetchFromGitHub
+, substituteAll
+, udev
+, pkgconfig
+, qtbase
+, cmake
+, zlib
+, kmod
+}:
 
 mkDerivation rec {
   version = "0.3.2";
@@ -26,11 +35,13 @@ mkDerivation rec {
   patches = [
     ./install-dirs.patch
     ./systemd-service.patch
-    (substituteAll {
-      name = "ckb-next-modprobe.patch";
-      src = ./modprobe.patch;
-      inherit kmod;
-    })
+    (
+      substituteAll {
+        name = "ckb-next-modprobe.patch";
+        src = ./modprobe.patch;
+        inherit kmod;
+      }
+    )
   ];
 
   meta = with stdenv.lib; {

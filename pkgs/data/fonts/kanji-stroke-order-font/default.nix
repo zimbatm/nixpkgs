@@ -2,7 +2,8 @@
 
 let
   version = "4.002";
-in fetchzip {
+in
+fetchzip {
   name = "kanji-stroke-order-font-${version}";
 
   url = "https://sites.google.com/site/nihilistorguk/KanjiStrokeOrders_v${version}.zip?attredirects=0";

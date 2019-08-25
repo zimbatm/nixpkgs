@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, cmake, bzip2, qtbase, qttools, libnova, proj, libpng, openjpeg } :
+{ stdenv, fetchFromGitHub, cmake, bzip2, qtbase, qttools, libnova, proj, libpng, openjpeg }:
 
 stdenv.mkDerivation rec {
   version = "1.2.6.1";

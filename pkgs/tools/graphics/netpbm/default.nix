@@ -1,6 +1,18 @@
-{ lib, stdenv, fetchsvn, pkgconfig, libjpeg, libpng, flex, zlib, perl, libxml2
-, makeWrapper, libtiff
-, enableX11 ? false, libX11 }:
+{ lib
+, stdenv
+, fetchsvn
+, pkgconfig
+, libjpeg
+, libpng
+, flex
+, zlib
+, perl
+, libxml2
+, makeWrapper
+, libtiff
+, enableX11 ? false
+, libX11
+}:
 
 stdenv.mkDerivation rec {
   # Determine version and revision from:
@@ -20,7 +32,8 @@ stdenv.mkDerivation rec {
 
   buildInputs =
     [ pkgconfig flex zlib perl libpng libjpeg libxml2 makeWrapper libtiff ]
-    ++ lib.optional enableX11 libX11;
+    ++ lib.optional enableX11 libX11
+    ;
 
   configurePhase = ''
     cp config.mk.in config.mk
@@ -30,11 +43,13 @@ stdenv.mkDerivation rec {
         --replace "TIFFHDR_DIR =" "TIFFHDR_DIR = ${libtiff.dev}/include" \
         --replace "JPEGLIB = NONE" "JPEGLIB = ${libjpeg.out}/lib/libjpeg.so" \
         --replace "JPEGHDR_DIR =" "JPEGHDR_DIR = ${libjpeg.dev}/include"
-   '' + stdenv.lib.optionalString stdenv.isDarwin ''
-    echo "LDSHLIB=-dynamiclib -install_name $out/lib/libnetpbm.\$(MAJ).dylib" >> config.mk
-    echo "NETPBMLIBTYPE = dylib" >> config.mk
-    echo "NETPBMLIBSUFFIX = dylib" >> config.mk
-  '';
+  ''
+  + stdenv.lib.optionalString stdenv.isDarwin ''
+      echo "LDSHLIB=-dynamiclib -install_name $out/lib/libnetpbm.\$(MAJ).dylib" >> config.mk
+      echo "NETPBMLIBTYPE = dylib" >> config.mk
+      echo "NETPBMLIBSUFFIX = dylib" >> config.mk
+    ''
+  ;
 
   preBuild = ''
     export LDFLAGS="-lz"

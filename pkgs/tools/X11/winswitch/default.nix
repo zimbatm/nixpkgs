@@ -1,5 +1,10 @@
-{ stdenv, fetchurl, pythonPackages
-, which, xpra, xmodmap }:
+{ stdenv
+, fetchurl
+, pythonPackages
+, which
+, xpra
+, xmodmap
+}:
 
 let
   base = pythonPackages.buildPythonApplication rec {
@@ -13,7 +18,13 @@ let
     };
 
     propagatedBuildInputs = with pythonPackages; [
-      pygtk twisted pycrypto pyasn1 which xpra xmodmap
+      pygtk
+      twisted
+      pycrypto
+      pyasn1
+      which
+      xpra
+      xmodmap
     ];
 
     patchPhase = ''
@@ -39,8 +50,13 @@ let
 
     meta.platforms = stdenv.lib.platforms.linux;
   };
-in stdenv.lib.overrideDerivation base (b: {
-  postFixup = b.postFixup + ''
-    sed -i -e 's/\''${PATH:+:}\$PATH//g' "$out/bin"/*
-  '';
-})
+in
+stdenv.lib.overrideDerivation base (
+  b: {
+    postFixup = b.postFixup
+      + ''
+      sed -i -e 's/\''${PATH:+:}\$PATH//g' "$out/bin"/*
+    ''
+      ;
+  }
+)

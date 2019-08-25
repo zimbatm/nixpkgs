@@ -1,5 +1,16 @@
-{ stdenv, lib, fetchFromGitHub, pkgconfig, cmake, git, doxygen, help2man, ncurses, tecla
-, libusb1, udev }:
+{ stdenv
+, lib
+, fetchFromGitHub
+, pkgconfig
+, cmake
+, git
+, doxygen
+, help2man
+, ncurses
+, tecla
+, libusb1
+, udev
+}:
 
 let
   # fetch submodule
@@ -12,7 +23,8 @@ let
 
   version = "2.2.0";
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "libbladeRF-${version}";
 
   src = fetchFromGitHub {
@@ -26,7 +38,8 @@ in stdenv.mkDerivation {
   # ncurses used due to https://github.com/Nuand/bladeRF/blob/ab4fc672c8bab4f8be34e8917d3f241b1d52d0b8/host/utilities/bladeRF-cli/CMakeLists.txt#L208
   buildInputs = [ cmake git doxygen help2man tecla libusb1 ]
     ++ lib.optionals stdenv.isLinux [ udev ]
-    ++ lib.optionals stdenv.isDarwin [ ncurses ];
+    ++ lib.optionals stdenv.isDarwin [ ncurses ]
+    ;
 
 
   postUnpack = ''
@@ -43,11 +56,13 @@ in stdenv.mkDerivation {
 
   cmakeFlags = [
     "-DBUILD_DOCUMENTATION=ON"
-  ] ++ lib.optionals stdenv.isLinux [
-    "-DUDEV_RULES_PATH=etc/udev/rules.d"
-    "-DINSTALL_UDEV_RULES=ON"
-    "-DBLADERF_GROUP=bladerf"
-  ];
+  ]
+  ++ lib.optionals stdenv.isLinux [
+       "-DUDEV_RULES_PATH=etc/udev/rules.d"
+       "-DINSTALL_UDEV_RULES=ON"
+       "-DBLADERF_GROUP=bladerf"
+     ]
+  ;
 
   hardeningDisable = [ "fortify" ];
 

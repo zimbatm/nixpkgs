@@ -55,8 +55,8 @@ in
         type = types.str;
         description = ''
           The IP address or hostname of the Zabbix server to connect to.
-          '';
-        };
+        '';
+      };
 
       package = mkOption {
         type = types.package;
@@ -202,13 +202,16 @@ in
   config = mkIf cfg.enable {
 
     assertions = [
-      { assertion = !config.services.zabbixServer.enable;
+      {
+        assertion = !config.services.zabbixServer.enable;
         message = "Please choose one of services.zabbixServer or services.zabbixProxy.";
       }
-      { assertion = cfg.database.createLocally -> cfg.database.user == user;
+      {
+        assertion = cfg.database.createLocally -> cfg.database.user == user;
         message = "services.zabbixProxy.database.user must be set to ${user} if services.zabbixProxy.database.createLocally is set true";
       }
-      { assertion = cfg.database.createLocally -> cfg.database.passwordFile == null;
+      {
+        assertion = cfg.database.createLocally -> cfg.database.passwordFile == null;
         message = "a password cannot be specified if services.zabbixProxy.database.createLocally is set to true";
       }
     ];
@@ -222,7 +225,8 @@ in
       package = mkDefault pkgs.mariadb;
       ensureDatabases = [ cfg.database.name ];
       ensureUsers = [
-        { name = cfg.database.user;
+        {
+          name = cfg.database.user;
           ensurePermissions = { "${cfg.database.name}.*" = "ALL PRIVILEGES"; };
         }
       ];
@@ -232,7 +236,8 @@ in
       enable = true;
       ensureDatabases = [ cfg.database.name ];
       ensureUsers = [
-        { name = cfg.database.user;
+        {
+          name = cfg.database.user;
           ensurePermissions = { "DATABASE ${cfg.database.name}" = "ALL PRIVILEGES"; };
         }
       ];
@@ -264,22 +269,26 @@ in
           cat ${cfg.package}/share/zabbix/database/postgresql/schema.sql | ${pgsql.package}/bin/psql ${cfg.database.name}
           touch "${stateDir}/db-created"
         fi
-      '' + optionalString mysqlLocal ''
-        if ! test -e "${stateDir}/db-created"; then
-          cat ${cfg.package}/share/zabbix/database/mysql/schema.sql | ${mysql.package}/bin/mysql ${cfg.database.name}
-          touch "${stateDir}/db-created"
-        fi
-      '' + optionalString (cfg.database.type == "sqlite") ''
-        if ! test -e "${cfg.database.name}"; then
-          ${pkgs.sqlite}/bin/sqlite3 "${cfg.database.name}" < ${cfg.package}/share/zabbix/database/sqlite3/schema.sql
-        fi
-      '' + optionalString (cfg.database.passwordFile != null) ''
-        # create a copy of the supplied password file in a format zabbix can consume
-        touch ${passwordFile}
-        chmod 0600 ${passwordFile}
-        echo -n "DBPassword = " > ${passwordFile}
-        cat ${cfg.database.passwordFile} >> ${passwordFile}
-      '';
+      ''
+      + optionalString mysqlLocal ''
+          if ! test -e "${stateDir}/db-created"; then
+            cat ${cfg.package}/share/zabbix/database/mysql/schema.sql | ${mysql.package}/bin/mysql ${cfg.database.name}
+            touch "${stateDir}/db-created"
+          fi
+        ''
+      + optionalString (cfg.database.type == "sqlite") ''
+          if ! test -e "${cfg.database.name}"; then
+            ${pkgs.sqlite}/bin/sqlite3 "${cfg.database.name}" < ${cfg.package}/share/zabbix/database/sqlite3/schema.sql
+          fi
+        ''
+      + optionalString (cfg.database.passwordFile != null) ''
+          # create a copy of the supplied password file in a format zabbix can consume
+          touch ${passwordFile}
+          chmod 0600 ${passwordFile}
+          echo -n "DBPassword = " > ${passwordFile}
+          cat ${cfg.database.passwordFile} >> ${passwordFile}
+        ''
+      ;
 
       serviceConfig = {
         ExecStart = "@${cfg.package}/sbin/zabbix_proxy zabbix_proxy -f --config ${configFile}";

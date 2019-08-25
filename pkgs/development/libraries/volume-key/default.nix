@@ -1,12 +1,26 @@
-{ stdenv, fetchgit, autoreconfHook, pkgconfig, gettext, python3
-, ncurses, swig, glib, utillinux, cryptsetup, nss, gpgme
-, autoconf, automake, libtool
+{ stdenv
+, fetchgit
+, autoreconfHook
+, pkgconfig
+, gettext
+, python3
+, ncurses
+, swig
+, glib
+, utillinux
+, cryptsetup
+, nss
+, gpgme
+, autoconf
+, automake
+, libtool
 , buildPackages
 }:
 
 let
   version = "0.3.11";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "volume_key-${version}";
 
   src = fetchgit {

@@ -1,6 +1,8 @@
 { stdenv, fetchurl, b43FirmwareCutter }:
 
-let version = "5.100.138"; in
+let
+  version = "5.100.138";
+in
 
 stdenv.mkDerivation {
   name = "b43-firmware-${version}";
@@ -25,4 +27,3 @@ stdenv.mkDerivation {
     license = stdenv.lib.licenses.unfree;
   };
 }
-

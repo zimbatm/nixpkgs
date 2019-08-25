@@ -10,20 +10,23 @@ let
 
   paramsString = params:
     concatMapStringsSep " " (name: "${name} ${conditionalBoolToString (getAttr name params)}")
-                   (attrNames params);
+      (attrNames params);
 
   interfaceConfig = name:
     let
       interface = getAttr name cfg.interfaces;
     in
-    "interface ${name} ${paramsString interface}\n";
+      "interface ${name} ${paramsString interface}\n";
 
   configFile = with cfg; pkgs.writeText "babeld.conf" (
-    (optionalString (cfg.interfaceDefaults != null) ''
-      default ${paramsString cfg.interfaceDefaults}
-    '')
+    (
+      optionalString (cfg.interfaceDefaults != null) ''
+        default ${paramsString cfg.interfaceDefaults}
+      ''
+    )
     + (concatMapStrings interfaceConfig (attrNames cfg.interfaces))
-    + extraConfig);
+    + extraConfig
+  );
 
 in
 
@@ -64,11 +67,13 @@ in
         '';
         type = types.attrsOf (types.attrsOf types.unspecified);
         example =
-          { enp0s2 =
-            { type = "wired";
-              "hello-interval" = 5;
-              "split-horizon" = "auto";
-            };
+          {
+            enp0s2 =
+              {
+                type = "wired";
+                "hello-interval" = 5;
+                "split-horizon" = "auto";
+              };
           };
       };
 

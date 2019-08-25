@@ -1,10 +1,27 @@
-{ stdenv, fetchPypi, buildPythonPackage, pythonAtLeast
-, more-itertools, six, setuptools_scm, setuptools-scm-git-archive
-, pytest, pytestcov, portend, pytest-testmon, pytest-mock
-, backports_unittest-mock, pyopenssl, requests, trustme, requests-unixsocket
-, backports_functools_lru_cache }:
+{ stdenv
+, fetchPypi
+, buildPythonPackage
+, pythonAtLeast
+, more-itertools
+, six
+, setuptools_scm
+, setuptools-scm-git-archive
+, pytest
+, pytestcov
+, portend
+, pytest-testmon
+, pytest-mock
+, backports_unittest-mock
+, pyopenssl
+, requests
+, trustme
+, requests-unixsocket
+, backports_functools_lru_cache
+}:
 
-let inherit (stdenv) lib; in
+let
+  inherit (stdenv) lib;
+in
 
 buildPythonPackage rec {
   pname = "cheroot";

@@ -53,11 +53,11 @@
   };
 
   ess-R-object-popup =
-    callPackage ./ess-R-object-popup { };
+    callPackage ./ess-R-object-popup {};
 
-  filesets-plus = callPackage ./filesets-plus { };
+  filesets-plus = callPackage ./filesets-plus {};
 
-  font-lock-plus = callPackage ./font-lock-plus { };
+  font-lock-plus = callPackage ./font-lock-plus {};
 
   ghc-mod = melpaBuild rec {
     pname = "ghc";
@@ -96,13 +96,13 @@
     };
   };
 
-  hexrgb = callPackage ./hexrgb { };
+  hexrgb = callPackage ./hexrgb {};
 
-  header2 = callPackage ./header2 { };
+  header2 = callPackage ./header2 {};
 
-  helm-words = callPackage ./helm-words { };
+  helm-words = callPackage ./helm-words {};
 
-  icicles = callPackage ./icicles { };
+  icicles = callPackage ./icicles {};
 
   rtags = melpaBuild rec {
     inherit (external.rtags) version src meta;
@@ -120,26 +120,26 @@
   };
 
   lib-requires =
-    callPackage ./lib-requires { };
+    callPackage ./lib-requires {};
 
   org-mac-link =
-    callPackage ./org-mac-link { };
+    callPackage ./org-mac-link {};
 
   perl-completion =
-    callPackage ./perl-completion { };
+    callPackage ./perl-completion {};
 
-  railgun = callPackage ./railgun { };
+  railgun = callPackage ./railgun {};
 
-  gn = callPackage ./gn { };
+  gn = callPackage ./gn {};
 
   structured-haskell-mode = self.shm;
 
-  thingatpt-plus = callPackage ./thingatpt-plus { };
+  thingatpt-plus = callPackage ./thingatpt-plus {};
 
-  tramp = callPackage ./tramp { };
+  tramp = callPackage ./tramp {};
 
-  yaoddmuse = callPackage ./yaoddmuse { };
+  yaoddmuse = callPackage ./yaoddmuse {};
 
-  zeitgeist = callPackage ./zeitgeist { };
+  zeitgeist = callPackage ./zeitgeist {};
 
 }

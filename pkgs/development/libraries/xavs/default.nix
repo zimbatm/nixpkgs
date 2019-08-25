@@ -20,16 +20,18 @@ stdenv.mkDerivation rec {
     patchShebangs tools/patcheck
     patchShebangs tools/regression-test.pl
     patchShebangs tools/xavs-format
-    '' + stdenv.lib.optionalString stdenv.isDarwin ''
-    substituteInPlace config.guess --replace 'uname -p' 'uname -m'
-    substituteInPlace configure \
-      --replace '-O4' '-O3' \
-      --replace ' -s ' ' ' \
-      --replace 'LDFLAGS -s' 'LDFLAGS' \
-      --replace '-dynamiclib' ' ' \
-      --replace '-falign-loops=16' ' '
-    substituteInPlace Makefile --replace '-Wl,-soname,' ' '
-    '';
+  ''
+  + stdenv.lib.optionalString stdenv.isDarwin ''
+      substituteInPlace config.guess --replace 'uname -p' 'uname -m'
+      substituteInPlace configure \
+        --replace '-O4' '-O3' \
+        --replace ' -s ' ' ' \
+        --replace 'LDFLAGS -s' 'LDFLAGS' \
+        --replace '-dynamiclib' ' ' \
+        --replace '-falign-loops=16' ' '
+      substituteInPlace Makefile --replace '-Wl,-soname,' ' '
+    ''
+  ;
 
   configureFlags = [
     "--enable-pic"
@@ -40,9 +42,9 @@ stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "AVS encoder and decoder";
-    homepage    = http://xavs.sourceforge.net/;
-    license     = licenses.lgpl2;
-    platforms   = platforms.linux ++ platforms.darwin;
+    homepage = http://xavs.sourceforge.net/;
+    license = licenses.lgpl2;
+    platforms = platforms.linux ++ platforms.darwin;
     maintainers = with maintainers; [ codyopel ];
   };
 }

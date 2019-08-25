@@ -1,19 +1,35 @@
-{ stdenv, lib, pkgs, fetchurl, buildEnv
-, coreutils, gnused, getopt, git, tree, gnupg, openssl, which, procps
-, qrencode , makeWrapper
+{ stdenv
+, lib
+, pkgs
+, fetchurl
+, buildEnv
+, coreutils
+, gnused
+, getopt
+, git
+, tree
+, gnupg
+, openssl
+, which
+, procps
+, qrencode
+, makeWrapper
 
-, xclip ? null, xdotool ? null, dmenu ? null
+, xclip ? null
+, xdotool ? null
+, dmenu ? null
 , x11Support ? !stdenv.isDarwin
 
-# For backwards-compatibility
+  # For backwards-compatibility
 , tombPluginSupport ? false
 }:
 
 with lib;
 
-assert x11Support -> xclip != null
-                  && xdotool != null
-                  && dmenu != null;
+assert x11Support
+-> xclip != null
+   && xdotool != null
+   && dmenu != null;
 
 let
   passExtensions = import ./extensions { inherit pkgs; };
@@ -21,24 +37,29 @@ let
   env = extensions:
     let
       selected = extensions passExtensions
-        ++ stdenv.lib.optional tombPluginSupport passExtensions.tomb;
-    in buildEnv {
-      name = "pass-extensions-env";
-      paths = selected;
-      buildInputs = concatMap (x: x.buildInputs) selected;
-    };
+        ++ stdenv.lib.optional tombPluginSupport passExtensions.tomb
+        ;
+    in
+      buildEnv {
+        name = "pass-extensions-env";
+        paths = selected;
+        buildInputs = concatMap (x: x.buildInputs) selected;
+      };
 
   generic = extensionsEnv: extraPassthru: stdenv.mkDerivation rec {
     version = "1.7.3";
-    name    = "password-store-${version}";
+    name = "password-store-${version}";
 
     src = fetchurl {
-      url    = "https://git.zx2c4.com/password-store/snapshot/${name}.tar.xz";
+      url = "https://git.zx2c4.com/password-store/snapshot/${name}.tar.xz";
       sha256 = "1x53k5dn3cdmvy8m4fqdld4hji5n676ksl0ql4armkmsds26av1b";
     };
 
-    patches = [ ./set-correct-program-name-for-sleep.patch
-              ] ++ stdenv.lib.optional stdenv.isDarwin ./no-darwin-getopt.patch;
+    patches = [
+      ./set-correct-program-name-for-sleep.patch
+    ]
+    ++ stdenv.lib.optional stdenv.isDarwin ./no-darwin-getopt.patch
+    ;
 
     nativeBuildInputs = [ makeWrapper ];
 
@@ -52,22 +73,27 @@ let
       # himself.
       mkdir -p "$out/share/emacs/site-lisp"
       cp "contrib/emacs/password-store.el" "$out/share/emacs/site-lisp/"
-    '' + optionalString x11Support ''
-      cp "contrib/dmenu/passmenu" "$out/bin/"
-    '';
+    ''
+    + optionalString x11Support ''
+        cp "contrib/dmenu/passmenu" "$out/bin/"
+      ''
+    ;
 
-    wrapperPath = with stdenv.lib; makeBinPath ([
-      coreutils
-      getopt
-      git
-      gnupg
-      gnused
-      tree
-      which
-      qrencode
-      procps
-    ] ++ optional stdenv.isDarwin openssl
-      ++ ifEnable x11Support [ dmenu xclip xdotool ]);
+    wrapperPath = with stdenv.lib; makeBinPath (
+      [
+        coreutils
+        getopt
+        git
+        gnupg
+        gnused
+        tree
+        which
+        qrencode
+        procps
+      ]
+      ++ optional stdenv.isDarwin openssl
+      ++ ifEnable x11Support [ dmenu xclip xdotool ]
+    );
 
     postFixup = ''
       # Link extensions env
@@ -84,12 +110,14 @@ let
       # Ensure all dependencies are in PATH
       wrapProgram $out/bin/pass \
         --prefix PATH : "${wrapperPath}"
-    '' + stdenv.lib.optionalString x11Support ''
-      # We just wrap passmenu with the same PATH as pass. It doesn't
-      # need all the tools in there but it doesn't hurt either.
-      wrapProgram $out/bin/passmenu \
-        --prefix PATH : "$out/bin:${wrapperPath}"
-    '';
+    ''
+    + stdenv.lib.optionalString x11Support ''
+        # We just wrap passmenu with the same PATH as pass. It doesn't
+        # need all the tools in there but it doesn't hurt either.
+        wrapProgram $out/bin/passmenu \
+          --prefix PATH : "$out/bin:${wrapperPath}"
+      ''
+    ;
 
     # Turn "check" into "installcheck", since we want to test our pass,
     # not the one before the fixup.
@@ -101,10 +129,12 @@ let
              -e 's@^GPGS=.*''$@GPG=${gnupg}/bin/gpg2@' \
              -e '/which gpg/ d' \
         tests/setup.sh
-    '' + stdenv.lib.optionalString stdenv.isDarwin ''
-      # 'pass edit' uses hdid, which is not available from the sandbox.
-      rm -f tests/t0200-edit-tests.sh
-    '';
+    ''
+    + stdenv.lib.optionalString stdenv.isDarwin ''
+        # 'pass edit' uses hdid, which is not available from the sandbox.
+        rm -f tests/t0200-edit-tests.sh
+      ''
+    ;
 
     doCheck = false;
 
@@ -114,14 +144,16 @@ let
 
     passthru = {
       extensions = passExtensions;
-    } // extraPassthru;
+    }
+    // extraPassthru
+    ;
 
     meta = with stdenv.lib; {
       description = "Stores, retrieves, generates, and synchronizes passwords securely";
-      homepage    = https://www.passwordstore.org/;
-      license     = licenses.gpl2Plus;
+      homepage = https://www.passwordstore.org/;
+      license = licenses.gpl2Plus;
       maintainers = with maintainers; [ lovek323 the-kenny fpletz tadfisher globin ];
-      platforms   = platforms.unix;
+      platforms = platforms.unix;
 
       longDescription = ''
         pass is a very simple password store that keeps passwords inside gpg2

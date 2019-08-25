@@ -9,7 +9,8 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [ glib ]
-    ++ stdenv.lib.optional (stdenv ? glibc) stdenv.glibc.linuxHeaders;
+    ++ stdenv.lib.optional (stdenv ? glibc) stdenv.glibc.linuxHeaders
+    ;
 
   nativeBuildInputs = [ pkgconfig which ];
 

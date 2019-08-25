@@ -15,6 +15,6 @@ buildPythonPackage rec {
     homepage = https://github.com/lixxu/flask-paginate;
     description = "Pagination support for Flask";
     license = licenses.bsd3;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
   };
 }

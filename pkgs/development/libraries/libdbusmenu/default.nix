@@ -1,14 +1,27 @@
-{ stdenv, fetchurl, lib, file
-, pkgconfig, intltool
-, glib, dbus-glib, json-glib
-, gobject-introspection, vala, gnome-doc-utils
-, gtkVersion ? null, gtk2 ? null, gtk3 ? null }:
+{ stdenv
+, fetchurl
+, lib
+, file
+, pkgconfig
+, intltool
+, glib
+, dbus-glib
+, json-glib
+, gobject-introspection
+, vala
+, gnome-doc-utils
+, gtkVersion ? null
+, gtk2 ? null
+, gtk3 ? null
+}:
 
 with lib;
 
 stdenv.mkDerivation rec {
-  name = let postfix = if gtkVersion == null then "glib" else "gtk${gtkVersion}";
-          in "libdbusmenu-${postfix}-${version}";
+  name = let
+    postfix = if gtkVersion == null then "glib" else "gtk${gtkVersion}";
+  in
+    "libdbusmenu-${postfix}-${version}";
   version = "${versionMajor}.${versionMinor}";
   versionMajor = "16.04";
   versionMinor = "0";
@@ -21,9 +34,14 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ vala pkgconfig intltool ];
 
   buildInputs = [
-    glib dbus-glib json-glib
-    gobject-introspection gnome-doc-utils
-  ] ++ optional (gtkVersion != null) (if gtkVersion == "2" then gtk2 else gtk3);
+    glib
+    dbus-glib
+    json-glib
+    gobject-introspection
+    gnome-doc-utils
+  ]
+  ++ optional (gtkVersion != null) (if gtkVersion == "2" then gtk2 else gtk3)
+  ;
 
   postPatch = ''
     for f in {configure,ltmain.sh,m4/libtool.m4}; do
@@ -44,7 +62,9 @@ stdenv.mkDerivation rec {
     "--localstatedir=/var"
     (if gtkVersion == null then "--disable-gtk" else "--with-gtk=${gtkVersion}")
     "--disable-scrollkeeper"
-  ] ++ optional (gtkVersion != "2") "--disable-dumper";
+  ]
+  ++ optional (gtkVersion != "2") "--disable-dumper"
+  ;
 
   doCheck = false; # generates shebangs in check phase, too lazy to fix
 

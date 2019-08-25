@@ -1,12 +1,30 @@
-{ stdenv, meson, ninja, gettext, fetchurl, pkgconfig
-, wrapGAppsHook, itstool, desktop-file-utils, python3
-, glib, gtk3, evolution-data-server, gnome-online-accounts
-, libuuid, webkitgtk, zeitgeist
-, gnome3, libxml2, gsettings-desktop-schemas, tracker }:
+{ stdenv
+, meson
+, ninja
+, gettext
+, fetchurl
+, pkgconfig
+, wrapGAppsHook
+, itstool
+, desktop-file-utils
+, python3
+, glib
+, gtk3
+, evolution-data-server
+, gnome-online-accounts
+, libuuid
+, webkitgtk
+, zeitgeist
+, gnome3
+, libxml2
+, gsettings-desktop-schemas
+, tracker
+}:
 
 let
   version = "3.32.2";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "gnome-notes-${version}";
 
   src = fetchurl {
@@ -22,12 +40,25 @@ in stdenv.mkDerivation rec {
   '';
 
   nativeBuildInputs = [
-    meson ninja pkgconfig gettext itstool libxml2 desktop-file-utils python3 wrapGAppsHook
+    meson
+    ninja
+    pkgconfig
+    gettext
+    itstool
+    libxml2
+    desktop-file-utils
+    python3
+    wrapGAppsHook
   ];
 
   buildInputs = [
-    glib gtk3 libuuid webkitgtk tracker
-    gnome-online-accounts zeitgeist
+    glib
+    gtk3
+    libuuid
+    webkitgtk
+    tracker
+    gnome-online-accounts
+    zeitgeist
     gsettings-desktop-schemas
     evolution-data-server
     gnome3.adwaita-icon-theme

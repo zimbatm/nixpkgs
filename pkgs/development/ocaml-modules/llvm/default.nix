@@ -1,6 +1,8 @@
 { stdenv, fetchpatch, python, cmake, llvm, ocaml, findlib, ctypes }:
 
-let version = stdenv.lib.getVersion llvm; in
+let
+  version = stdenv.lib.getVersion llvm;
+in
 
 stdenv.mkDerivation {
   name = "ocaml-llvm-${version}";
@@ -9,10 +11,14 @@ stdenv.mkDerivation {
 
   buildInputs = [ python cmake llvm ocaml findlib ctypes ];
 
-  patches = [ (fetchpatch {
-    url = https://raw.githubusercontent.com/ocaml/opam-repository/master/packages/llvm/llvm.3.9/files/cmake.patch;
-    sha256 = "1fcc6ylfiw1npdhx7mrsj7h0dx7cym7i9664kpr76zqazb52ikm9";
-  })];
+  patches = [
+    (
+      fetchpatch {
+        url = https://raw.githubusercontent.com/ocaml/opam-repository/master/packages/llvm/llvm.3.9/files/cmake.patch;
+        sha256 = "1fcc6ylfiw1npdhx7mrsj7h0dx7cym7i9664kpr76zqazb52ikm9";
+      }
+    )
+  ];
 
   cmakeFlags = [ "-DLLVM_OCAML_OUT_OF_TREE=TRUE" ];
 

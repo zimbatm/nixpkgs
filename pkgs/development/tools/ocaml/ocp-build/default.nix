@@ -17,7 +17,7 @@ stdenv.mkDerivation rec {
   propagatedBuildInputs = [ ncurses ];
   preInstall = "mkdir -p $out/bin";
   preConfigure = ''
-  export configureFlags="$configureFlags --with-metadir=$OCAMLFIND_DESTDIR"
+    export configureFlags="$configureFlags --with-metadir=$OCAMLFIND_DESTDIR"
   '';
 
   meta = with stdenv.lib; {

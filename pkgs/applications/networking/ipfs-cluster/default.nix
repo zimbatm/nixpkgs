@@ -8,10 +8,12 @@ buildGoPackage rec {
   goPackagePath = "github.com/ipfs/ipfs-cluster";
 
   extraSrcPaths = [
-    (fetchgx {
-      inherit name src;
-      sha256 = "1k7xcirvi07p5g9gr9jcx5h39wk7jxfsyjrn5yraa8xdqhn6b6nx";
-    })
+    (
+      fetchgx {
+        inherit name src;
+        sha256 = "1k7xcirvi07p5g9gr9jcx5h39wk7jxfsyjrn5yraa8xdqhn6b6nx";
+      }
+    )
   ];
 
   src = fetchFromGitHub {
@@ -38,4 +40,3 @@ buildGoPackage rec {
     maintainers = with maintainers; [ jglukasik ];
   };
 }
-

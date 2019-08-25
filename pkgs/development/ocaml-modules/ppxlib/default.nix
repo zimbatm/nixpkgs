@@ -1,5 +1,10 @@
-{ stdenv, fetchFromGitHub, buildDunePackage
-, ocaml-compiler-libs, ocaml-migrate-parsetree, ppx_derivers, stdio
+{ stdenv
+, fetchFromGitHub
+, buildDunePackage
+, ocaml-compiler-libs
+, ocaml-migrate-parsetree
+, ppx_derivers
+, stdio
 }:
 
 buildDunePackage rec {
@@ -14,7 +19,10 @@ buildDunePackage rec {
   };
 
   propagatedBuildInputs = [
-    ocaml-compiler-libs ocaml-migrate-parsetree ppx_derivers stdio
+    ocaml-compiler-libs
+    ocaml-migrate-parsetree
+    ppx_derivers
+    stdio
   ];
 
   meta = {

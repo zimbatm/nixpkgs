@@ -1,12 +1,21 @@
-{ stdenv, buildPythonApplication, fetchPypi
-, python-slugify, requests, urllib3, six }:
+{ stdenv
+, buildPythonApplication
+, fetchPypi
+, python-slugify
+, requests
+, urllib3
+, six
+}:
 
 buildPythonApplication rec {
   pname = "transifex-client";
   version = "0.13.6";
 
   propagatedBuildInputs = [
-    urllib3 requests python-slugify six
+    urllib3
+    requests
+    python-slugify
+    six
   ];
 
   src = fetchPypi {

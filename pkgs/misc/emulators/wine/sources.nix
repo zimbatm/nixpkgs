@@ -6,11 +6,13 @@
 ##     nix-prefetch-url sources.nix -A {stable{,.mono,.gecko64,.gecko32}, unstable, staging, winetricks}
 
 # here we wrap fetchurl and fetchFromGitHub, in order to be able to pass additional args around it
-let fetchurl = args@{url, sha256, ...}:
-  pkgs.fetchurl { inherit url sha256; } // args;
-    fetchFromGitHub = args@{owner, repo, rev, sha256, ...}:
-  pkgs.fetchFromGitHub { inherit owner repo rev sha256; } // args;
-in rec {
+let
+  fetchurl = args@{ url, sha256, ... }:
+    pkgs.fetchurl { inherit url sha256; } // args;
+  fetchFromGitHub = args@{ owner, repo, rev, sha256, ... }:
+    pkgs.fetchFromGitHub { inherit owner repo rev sha256; } // args;
+in
+rec {
 
   stable = fetchurl rec {
     version = "4.0.1";

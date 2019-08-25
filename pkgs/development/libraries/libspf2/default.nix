@@ -12,11 +12,13 @@ stdenv.mkDerivation rec {
   };
 
   patches = [
-    (fetchurl {
-      name = "0001-gcc-variadic-macros.patch";
-      url = "https://github.com/shevek/libspf2/commit/5852828582f556e73751076ad092f72acf7fc8b6.patch";
-      sha256 = "1v6ashqzpr0xidxq0vpkjd8wd66cj8df01kyzj678ljzcrax35hk";
-    })
+    (
+      fetchurl {
+        name = "0001-gcc-variadic-macros.patch";
+        url = "https://github.com/shevek/libspf2/commit/5852828582f556e73751076ad092f72acf7fc8b6.patch";
+        sha256 = "1v6ashqzpr0xidxq0vpkjd8wd66cj8df01kyzj678ljzcrax35hk";
+      }
+    )
   ];
 
   postPatch = ''

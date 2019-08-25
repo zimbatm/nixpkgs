@@ -1,4 +1,4 @@
-{ stdenv, pythonPackages, fetchFromGitHub, pkg-config, glib, alsaLib, libjack2  }:
+{ stdenv, pythonPackages, fetchFromGitHub, pkg-config, glib, alsaLib, libjack2 }:
 
 pythonPackages.buildPythonApplication rec {
   version = "20151117";
@@ -14,13 +14,13 @@ pythonPackages.buildPythonApplication rec {
   nativeBuildInputs = [ pkg-config ];
   buildInputs = [ glib alsaLib libjack2 pythonPackages.boost ];
   propagatedBuildInputs = with pythonPackages; [ decorator ]
-    # for livedings
+  # for livedings
     ++ [ tkinter pyliblo ]
-    # for mididings.extra
+  # for mididings.extra
     ++ [ dbus-python pyinotify ]
-    # to read/write standard MIDI files
+  # to read/write standard MIDI files
     ++ [ pysmf ]
-    # so mididings knows where to look for config files
+  # so mididings knows where to look for config files
     ++ [ pyxdg ];
 
   preBuild = with stdenv.lib.versions; ''

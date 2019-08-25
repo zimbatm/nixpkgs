@@ -5,26 +5,34 @@ let
     pname = "graalvm8-ee";
     version = "19.2.0";
     srcs = [
-      (requireFile {
-         name   = "graalvm-ee-linux-amd64-${version}.tar.gz";
-         sha256 = "1j56lyids48zyjhxk8xl4niy8hk6qzi1aj7c55yfh62id8v6cpbw";
-         url    = "https://www.oracle.com/technetwork/graalvm/downloads/index.html";
-      })
-      (requireFile {
-         name   = "native-image-installable-svm-svmee-linux-amd64-${version}.jar";
-         sha256 = "07c25l27msxccqrbz4bknz0sxsl0z2k8990cdfkbrgxvhxspfnnm";
-         url    = "https://www.oracle.com/technetwork/graalvm/downloads/index.html";
-      })
-      (requireFile {
-         name   = "python-installable-svm-svmee-linux-amd64-${version}.jar";
-         sha256 = "1c7kpz56w9p418li97ymixdwywscr85vhn7jkzxq71bj7ia7pxwz";
-         url    = "https://www.oracle.com/technetwork/graalvm/downloads/index.html";
-      })
-      (requireFile {
-         name   = "ruby-installable-svm-svmee-linux-amd64-${version}.jar";
-         sha256 = "13jfm5qpxqxz7f5n9yyvqrv1vwigifrjwk3hssp23maski2ssys1";
-         url    = "https://www.oracle.com/technetwork/graalvm/downloads/index.html";
-      })
+      (
+        requireFile {
+          name = "graalvm-ee-linux-amd64-${version}.tar.gz";
+          sha256 = "1j56lyids48zyjhxk8xl4niy8hk6qzi1aj7c55yfh62id8v6cpbw";
+          url = "https://www.oracle.com/technetwork/graalvm/downloads/index.html";
+        }
+      )
+      (
+        requireFile {
+          name = "native-image-installable-svm-svmee-linux-amd64-${version}.jar";
+          sha256 = "07c25l27msxccqrbz4bknz0sxsl0z2k8990cdfkbrgxvhxspfnnm";
+          url = "https://www.oracle.com/technetwork/graalvm/downloads/index.html";
+        }
+      )
+      (
+        requireFile {
+          name = "python-installable-svm-svmee-linux-amd64-${version}.jar";
+          sha256 = "1c7kpz56w9p418li97ymixdwywscr85vhn7jkzxq71bj7ia7pxwz";
+          url = "https://www.oracle.com/technetwork/graalvm/downloads/index.html";
+        }
+      )
+      (
+        requireFile {
+          name = "ruby-installable-svm-svmee-linux-amd64-${version}.jar";
+          sha256 = "13jfm5qpxqxz7f5n9yyvqrv1vwigifrjwk3hssp23maski2ssys1";
+          url = "https://www.oracle.com/technetwork/graalvm/downloads/index.html";
+        }
+      )
     ];
     nativeBuildInputs = [ unzip perl ];
     unpackPhase = ''
@@ -78,8 +86,28 @@ let
 
     postFixup = ''
       rpath="$out/jre/lib/amd64/jli:$out/jre/lib/amd64/server:$out/jre/lib/amd64:${
-        stdenv.lib.strings.makeLibraryPath [ glibc xorg.libXxf86vm xorg.libX11 xorg.libXext xorg.libXtst xorg.libXi xorg.libXrender
-                                             glib zlib alsaLib fontconfig freetype pango gtk3 gtk2 cairo gdk-pixbuf atk ffmpeg libGL ]}"
+    stdenv.lib.strings.makeLibraryPath [
+      glibc
+      xorg.libXxf86vm
+      xorg.libX11
+      xorg.libXext
+      xorg.libXtst
+      xorg.libXi
+      xorg.libXrender
+      glib
+      zlib
+      alsaLib
+      fontconfig
+      freetype
+      pango
+      gtk3
+      gtk2
+      cairo
+      gdk-pixbuf
+      atk
+      ffmpeg
+      libGL
+    ]}"
 
       for f in $(find $out -type f -perm -0100); do
         patchelf --interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" "$f" || true
@@ -92,16 +120,16 @@ let
     '';
 
     propagatedBuildInputs = [ setJavaClassPath zlib ]; # $out/bin/native-image needs zlib to build native executables
-    
+
     doInstallCheck = true;
     installCheckPhase = ''
       echo ${stdenv.lib.escapeShellArg ''
-               public class HelloWorld {
-                 public static void main(String[] args) {
-                   System.out.println("Hello World");
-                 }
-               }
-             ''} > HelloWorld.java
+      public class HelloWorld {
+        public static void main(String[] args) {
+          System.out.println("Hello World");
+        }
+      }
+    ''} > HelloWorld.java
       $out/bin/javac HelloWorld.java
 
       # run on JVM with Graal Compiler
@@ -130,4 +158,4 @@ let
     };
   };
 in
-  graalvm8-ee
+graalvm8-ee

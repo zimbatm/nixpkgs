@@ -16,7 +16,7 @@ let
         };
 
         cmd = mkOption {
-          type =  with types; listOf str;
+          type = with types; listOf str;
           default = [];
           description = "Commandline arguments to pass to the image's entrypoint.";
           example = literalExample ''
@@ -40,7 +40,7 @@ let
               DATABASE_HOST = "db.example.com";
               DATABASE_PORT = "3306";
             }
-        '';
+          '';
         };
 
         log-driver = mkOption {
@@ -169,20 +169,22 @@ let
     after = [ "docker.service" "docker.socket" ];
     requires = [ "docker.service" "docker.socket" ];
     serviceConfig = {
-      ExecStart = concatStringsSep " \\\n  " ([
-        "${pkgs.docker}/bin/docker run"
-        "--rm"
-        "--name=%n"
-        "--log-driver=${container.log-driver}"
-      ] ++ optional (container.entrypoint != null)
-        "--entrypoint=${escapeShellArg container.entrypoint}"
+      ExecStart = concatStringsSep " \\\n  " (
+        [
+          "${pkgs.docker}/bin/docker run"
+          "--rm"
+          "--name=%n"
+          "--log-driver=${container.log-driver}"
+        ]
+        ++ optional (container.entrypoint != null)
+             "--entrypoint=${escapeShellArg container.entrypoint}"
         ++ (mapAttrsToList (k: v: "-e ${escapeShellArg k}=${escapeShellArg v}") container.environment)
         ++ map (p: "-p ${escapeShellArg p}") container.ports
         ++ optional (container.user != null) "-u ${escapeShellArg container.user}"
         ++ map (v: "-v ${escapeShellArg v}") container.volumes
         ++ optional (container.workdir != null) "-w ${escapeShellArg container.workdir}"
         ++ map escapeShellArg container.extraDockerOptions
-        ++ [container.image]
+        ++ [ container.image ]
         ++ map escapeShellArg container.cmd
       );
       ExecStartPre = "-${pkgs.docker}/bin/docker rm -f %n";
@@ -211,7 +213,8 @@ let
     };
   };
 
-in {
+in
+{
 
   options.docker-containers = mkOption {
     default = {};

@@ -13,7 +13,8 @@ let
   makePackage = p: pkgs.buildEnv {
     name = "mesa-drivers+txc-${p.mesa.version}";
     paths =
-      [ p.mesa.drivers
+      [
+        p.mesa.drivers
         (if cfg.s3tcSupport then p.libtxc_dxtn else p.libtxc_dxtn_s2tc)
       ];
   };
@@ -138,10 +139,12 @@ in
   config = mkIf cfg.enable {
 
     assertions = [
-      { assertion = cfg.driSupport32Bit -> pkgs.stdenv.isx86_64;
+      {
+        assertion = cfg.driSupport32Bit -> pkgs.stdenv.isx86_64;
         message = "Option driSupport32Bit only makes sense on a 64-bit system.";
       }
-      { assertion = cfg.driSupport32Bit -> (config.boot.kernelPackages.kernel.features.ia32Emulation or false);
+      {
+        assertion = cfg.driSupport32Bit -> (config.boot.kernelPackages.kernel.features.ia32Emulation or false);
         message = "Option driSupport32Bit requires a kernel that supports 32bit emulation";
       }
     ];

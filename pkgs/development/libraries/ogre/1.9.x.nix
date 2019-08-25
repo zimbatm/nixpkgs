@@ -1,12 +1,30 @@
-{ fetchFromGitHub, stdenv, lib
-, cmake, libGLU_combined
-, freetype, freeimage, zziplib, xorgproto, libXrandr
-, libXaw, freeglut, libXt, libpng, boost, ois
-, libX11, libXmu, libSM, pkgconfig
-, libXxf86vm, libICE
+{ fetchFromGitHub
+, stdenv
+, lib
+, cmake
+, libGLU_combined
+, freetype
+, freeimage
+, zziplib
+, xorgproto
+, libXrandr
+, libXaw
+, freeglut
+, libXt
+, libpng
+, boost
+, ois
+, libX11
+, libXmu
+, libSM
+, pkgconfig
+, libXxf86vm
+, libICE
 , libXrender
-, withNvidiaCg ? false, nvidia_cg_toolkit
-, withSamples ? false }:
+, withNvidiaCg ? false
+, nvidia_cg_toolkit
+, withSamples ? false
+}:
 
 stdenv.mkDerivation rec {
   pname = "ogre";
@@ -22,19 +40,37 @@ stdenv.mkDerivation rec {
 
   cmakeFlags = [ "-DOGRE_BUILD_SAMPLES=${toString withSamples}" ]
     ++ map (x: "-DOGRE_BUILD_PLUGIN_${x}=on")
-           ([ "BSP" "OCTREE" "PCZ" "PFX" ] ++ lib.optional withNvidiaCg "CG")
-    ++ map (x: "-DOGRE_BUILD_RENDERSYSTEM_${x}=on") [ "GL" ];
+         ([ "BSP" "OCTREE" "PCZ" "PFX" ] ++ lib.optional withNvidiaCg "CG")
+    ++ map (x: "-DOGRE_BUILD_RENDERSYSTEM_${x}=on") [ "GL" ]
+    ;
 
   enableParallelBuilding = true;
 
   buildInputs =
-   [ cmake libGLU_combined
-     freetype freeimage zziplib xorgproto libXrandr
-     libXaw freeglut libXt libpng boost ois
-     libX11 libXmu libSM pkgconfig
-     libXxf86vm libICE
-     libXrender
-   ] ++ lib.optional withNvidiaCg nvidia_cg_toolkit;
+    [
+      cmake
+      libGLU_combined
+      freetype
+      freeimage
+      zziplib
+      xorgproto
+      libXrandr
+      libXaw
+      freeglut
+      libXt
+      libpng
+      boost
+      ois
+      libX11
+      libXmu
+      libSM
+      pkgconfig
+      libXxf86vm
+      libICE
+      libXrender
+    ]
+    ++ lib.optional withNvidiaCg nvidia_cg_toolkit
+  ;
 
   meta = {
     description = "A 3D engine";

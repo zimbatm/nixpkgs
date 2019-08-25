@@ -13,13 +13,15 @@ in
 
   config = mkIf cfg.enable {
     services.xserver.windowManager = {
-      session = [{
-        name = "notion";
-        start = ''
-          ${pkgs.notion}/bin/notion &
-          waitPID=$!
-        '';
-      }];
+      session = [
+        {
+          name = "notion";
+          start = ''
+            ${pkgs.notion}/bin/notion &
+            waitPID=$!
+          '';
+        }
+      ];
     };
     environment.systemPackages = [ pkgs.notion ];
   };

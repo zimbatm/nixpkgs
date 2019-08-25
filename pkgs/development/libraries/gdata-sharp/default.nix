@@ -2,7 +2,8 @@
 
 let
   newtonsoft-json = dotnetPackages.NewtonsoftJson;
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "gdata-sharp-${version}";
   version = "2.2.0.0";
 

@@ -1,21 +1,43 @@
-{ stdenv, fetchFromGitHub, shared-mime-info
-, autoconf, automake, intltool, libtool, pkgconfig, cmake
-, ruby, librsvg
-, ncurses, m17n_lib, m17n_db, expat
-, withAnthy ? true, anthy ? null
+{ stdenv
+, fetchFromGitHub
+, shared-mime-info
+, autoconf
+, automake
+, intltool
+, libtool
+, pkgconfig
+, cmake
+, ruby
+, librsvg
+, ncurses
+, m17n_lib
+, m17n_db
+, expat
+, withAnthy ? true
+, anthy ? null
 , withGtk ? true
-, withGtk2 ? withGtk, gtk2 ? null
-, withGtk3 ? withGtk, gtk3 ? null
+, withGtk2 ? withGtk
+, gtk2 ? null
+, withGtk3 ? withGtk
+, gtk3 ? null
 , withQt ? true
-, withQt4 ? withQt, qt4 ? null
-, withQt5 ? false, qt5 ? null
-, withLibnotify ? true, libnotify ? null
-, withSqlite ? true, sqlite ? null
-, withNetworking ? true, curl ? null, openssl ? null
-, withFFI ? true, libffi ? null
+, withQt4 ? withQt
+, qt4 ? null
+, withQt5 ? false
+, qt5 ? null
+, withLibnotify ? true
+, libnotify ? null
+, withSqlite ? true
+, sqlite ? null
+, withNetworking ? true
+, curl ? null
+, openssl ? null
+, withFFI ? true
+, libffi ? null
 
-# Things that are clearly an overkill to be enabled by default
-, withMisc ? false, libeb ? null
+  # Things that are clearly an overkill to be enabled by default
+, withMisc ? false
+, libeb ? null
 }:
 
 with stdenv.lib;
@@ -50,14 +72,22 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    autoconf automake intltool libtool pkgconfig cmake
+    autoconf
+    automake
+    intltool
+    libtool
+    pkgconfig
+    cmake
 
     ruby # used by sigscheme build to generate function tables
     librsvg # used by uim build to generate png pixmaps from svg
   ];
 
   buildInputs = [
-    ncurses m17n_lib m17n_db expat
+    ncurses
+    m17n_lib
+    m17n_db
+    expat
   ]
   ++ optional withAnthy anthy
   ++ optional withGtk2 gtk2
@@ -67,10 +97,12 @@ stdenv.mkDerivation rec {
   ++ optional withLibnotify libnotify
   ++ optional withSqlite sqlite
   ++ optionals withNetworking [
-    curl openssl
-  ]
+       curl
+       openssl
+     ]
   ++ optional withFFI libffi
-  ++ optional withMisc libeb;
+  ++ optional withMisc libeb
+  ;
 
   prePatch = ''
     patchShebangs *.sh */*.sh */*/*.sh
@@ -103,21 +135,22 @@ stdenv.mkDerivation rec {
   ++ optional withGtk2 "--with-gtk2"
   ++ optional withGtk3 "--with-gtk3"
   ++ optionals withQt4 [
-    "--with-qt4"
-    "--with-qt4-immodule"
-  ]
+       "--with-qt4"
+       "--with-qt4-immodule"
+     ]
   ++ optionals withQt5 [
-    "--with-qt5"
-    "--with-qt5-immodule"
-  ]
+       "--with-qt5"
+       "--with-qt5-immodule"
+     ]
   ++ optional withLibnotify "--enable-notify=libnotify"
   ++ optional withSqlite "--with-sqlite3"
   ++ optionals withNetworking [
-    "--with-curl"
-    "--with-openssl-dir=${openssl.dev}"
-  ]
+       "--with-curl"
+       "--with-openssl-dir=${openssl.dev}"
+     ]
   ++ optional withFFI "--with-ffi"
-  ++ optional withMisc "--with-eb";
+  ++ optional withMisc "--with-eb"
+  ;
 
   # TODO: things in `./configure --help`, but not in nixpkgs
   #--with-canna            Use Canna [default=no]
@@ -136,11 +169,11 @@ stdenv.mkDerivation rec {
   dontUseCmakeConfigure = true;
 
   meta = with stdenv.lib; {
-    homepage    = src.meta.homepage;
+    homepage = src.meta.homepage;
     description = "A multilingual input method framework";
-    license     = licenses.bsd3;
-    platforms   = platforms.unix;
-    broken      = stdenv.hostPlatform.isAarch64; # fails to build libgcroots (not supported on aarch64)
+    license = licenses.bsd3;
+    platforms = platforms.unix;
+    broken = stdenv.hostPlatform.isAarch64; # fails to build libgcroots (not supported on aarch64)
     maintainers = with maintainers; [ ericsagnes oxij ];
   };
 }

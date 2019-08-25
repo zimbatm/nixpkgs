@@ -1,7 +1,27 @@
-{ stdenv, lib, fetchurl, unzip, makeWrapper, setJavaClassPath
-, zulu, glib, libxml2, libav_0_8, ffmpeg, libxslt, libGL, alsaLib
-, fontconfig, freetype, gnome2, cairo, gdk-pixbuf, atk, xorg, zlib
-, swingSupport ? true }:
+{ stdenv
+, lib
+, fetchurl
+, unzip
+, makeWrapper
+, setJavaClassPath
+, zulu
+, glib
+, libxml2
+, libav_0_8
+, ffmpeg
+, libxslt
+, libGL
+, alsaLib
+, fontconfig
+, freetype
+, gnome2
+, cairo
+, gdk-pixbuf
+, atk
+, xorg
+, zlib
+, swingSupport ? true
+}:
 
 let
   version = "10.1+11";
@@ -15,15 +35,42 @@ let
   extension = if stdenv.isDarwin then "zip" else "tar.gz";
 
   libraries = [
-    stdenv.cc.libc glib libxml2 libav_0_8 ffmpeg libxslt libGL
-    xorg.libXxf86vm alsaLib fontconfig freetype gnome2.pango
-    gnome2.gtk cairo gdk-pixbuf atk zlib
-  ] ++ (lib.optionals swingSupport (with xorg; [
-    xorg.libX11 xorg.libXext xorg.libXtst xorg.libXi xorg.libXp
-    xorg.libXt xorg.libXrender stdenv.cc.cc
-  ]));
+    stdenv.cc.libc
+    glib
+    libxml2
+    libav_0_8
+    ffmpeg
+    libxslt
+    libGL
+    xorg.libXxf86vm
+    alsaLib
+    fontconfig
+    freetype
+    gnome2.pango
+    gnome2.gtk
+    cairo
+    gdk-pixbuf
+    atk
+    zlib
+  ]
+  ++ (
+       lib.optionals swingSupport (
+         with xorg; [
+           xorg.libX11
+           xorg.libXext
+           xorg.libXtst
+           xorg.libXi
+           xorg.libXp
+           xorg.libXt
+           xorg.libXrender
+           stdenv.cc.cc
+         ]
+       )
+     )
+  ;
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   inherit version openjdk platform hash extension;
 
   name = "zulu-${version}";

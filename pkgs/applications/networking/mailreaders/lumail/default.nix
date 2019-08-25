@@ -1,11 +1,20 @@
-{ stdenv, fetchurl, pkgconfig, lua, file, ncurses, gmime, pcre-cpp
-, perl, perlPackages, makeWrapper
+{ stdenv
+, fetchurl
+, pkgconfig
+, lua
+, file
+, ncurses
+, gmime
+, pcre-cpp
+, perl
+, perlPackages
+, makeWrapper
 , debugBuild ? false
 , alternativeGlobalConfigFilePath ? null
 }:
 
 let
-  version    = "3.1";
+  version = "3.1";
   binaryName = if debugBuild then "lumail2-debug" else "lumail2";
   alternativeConfig = builtins.toFile "lumail2.lua"
     (builtins.readFile alternativeGlobalConfigFilePath);
@@ -20,8 +29,8 @@ let
     ln -s ${alternativeConfig} $out/etc/lumail2.lua
   '';
 
-  getPath  = type : "${lua}/lib/?.${type};";
-  luaPath  = getPath "lua";
+  getPath = type: "${lua}/lib/?.${type};";
+  luaPath = getPath "lua";
   luaCPath = getPath "so";
 in
 stdenv.mkDerivation {
@@ -36,8 +45,14 @@ stdenv.mkDerivation {
 
   nativeBuildInputs = [ pkgconfig makeWrapper ];
   buildInputs = [
-    lua file ncurses gmime pcre-cpp
-    perl perlPackages.JSON perlPackages.NetIMAPClient
+    lua
+    file
+    ncurses
+    gmime
+    pcre-cpp
+    perl
+    perlPackages.JSON
+    perlPackages.NetIMAPClient
   ];
 
   preConfigure = ''
@@ -62,7 +77,8 @@ stdenv.mkDerivation {
     wrapProgram $out/bin/${binaryName} \
         --prefix LUA_PATH : "${luaPath}" \
         --prefix LUA_CPATH : "${luaCPath}"
-  '';
+  ''
+  ;
 
   makeFlags = [
     "LVER=lua"
@@ -76,6 +92,6 @@ stdenv.mkDerivation {
     homepage = https://lumail.org/;
     license = licenses.gpl2;
     platforms = platforms.linux;
-    maintainers = with maintainers; [orivej];
+    maintainers = with maintainers; [ orivej ];
   };
 }

@@ -48,14 +48,16 @@ in
   config = mkIf config.services.searx.enable {
 
     users.users.searx =
-      { uid = config.ids.uids.searx;
+      {
+        uid = config.ids.uids.searx;
         description = "Searx user";
         createHome = true;
         home = "/var/lib/searx";
       };
 
     users.groups.searx =
-      { gid = config.ids.gids.searx;
+      {
+        gid = config.ids.gids.searx;
       };
 
     systemd.services.searx =
@@ -67,9 +69,13 @@ in
           User = "searx";
           ExecStart = "${cfg.package}/bin/searx-run";
         };
-      } // (optionalAttrs (configFile != null) {
-        environment.SEARX_SETTINGS_PATH = configFile;
-      });
+      }
+      // (
+           optionalAttrs (configFile != null) {
+             environment.SEARX_SETTINGS_PATH = configFile;
+           }
+         )
+    ;
 
     environment.systemPackages = [ cfg.package ];
 

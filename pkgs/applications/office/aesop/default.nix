@@ -1,5 +1,18 @@
-{ stdenv, fetchFromGitHub, pantheon, pkgconfig, meson, ninja, python3, gtk3
-, desktop-file-utils, json-glib, libsoup, libgee, poppler, wrapGAppsHook }:
+{ stdenv
+, fetchFromGitHub
+, pantheon
+, pkgconfig
+, meson
+, ninja
+, python3
+, gtk3
+, desktop-file-utils
+, json-glib
+, libsoup
+, libgee
+, poppler
+, wrapGAppsHook
+}:
 
 stdenv.mkDerivation rec {
   pname = "aesop";

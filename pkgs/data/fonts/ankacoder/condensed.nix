@@ -1,6 +1,8 @@
 { lib, fetchzip }:
 
-let version = "1.100"; in
+let
+  version = "1.100";
+in
 fetchzip rec {
   name = "ankacoder-condensed-${version}";
   url = "https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/anka-coder-fonts/AnkaCoderCondensed.${version}.zip";
@@ -21,4 +23,3 @@ fetchzip rec {
     platforms = platforms.all;
   };
 }
-

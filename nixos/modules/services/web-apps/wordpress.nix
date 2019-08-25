@@ -196,12 +196,14 @@ let
         };
 
         virtualHost = mkOption {
-          type = types.submodule ({
-            options = import ../web-servers/apache-httpd/per-server-options.nix {
-              inherit lib;
-              forMainServer = false;
-            };
-          });
+          type = types.submodule (
+            {
+              options = import ../web-servers/apache-httpd/per-server-options.nix {
+                inherit lib;
+                forMainServer = false;
+              };
+            }
+          );
           example = literalExample ''
             {
               enableSSL = true;
@@ -261,104 +263,127 @@ in
   # implementation
   config = mkIf (eachSite != {}) {
 
-    assertions = mapAttrsToList (hostName: cfg:
-      { assertion = cfg.database.createLocally -> cfg.database.user == user;
-        message = "services.wordpress.${hostName}.database.user must be ${user} if the database is to be automatically provisioned";
-      }
+    assertions = mapAttrsToList (
+      hostName: cfg:
+        {
+          assertion = cfg.database.createLocally -> cfg.database.user == user;
+          message = "services.wordpress.${hostName}.database.user must be ${user} if the database is to be automatically provisioned";
+        }
     ) eachSite;
 
     services.mysql = mkIf (any (v: v.database.createLocally) (attrValues eachSite)) {
       enable = true;
       package = mkDefault pkgs.mariadb;
       ensureDatabases = mapAttrsToList (hostName: cfg: cfg.database.name) eachSite;
-      ensureUsers = mapAttrsToList (hostName: cfg:
-        { name = cfg.database.user;
-          ensurePermissions = { "${cfg.database.name}.*" = "ALL PRIVILEGES"; };
-        }
+      ensureUsers = mapAttrsToList (
+        hostName: cfg:
+          {
+            name = cfg.database.user;
+            ensurePermissions = { "${cfg.database.name}.*" = "ALL PRIVILEGES"; };
+          }
       ) eachSite;
     };
 
-    services.phpfpm.pools = mapAttrs' (hostName: cfg: (
-      nameValuePair "wordpress-${hostName}" {
-        inherit user group;
-        settings = {
-          "listen.owner" = config.services.httpd.user;
-          "listen.group" = config.services.httpd.group;
-        } // cfg.poolConfig;
-      }
-    )) eachSite;
+    services.phpfpm.pools = mapAttrs' (
+      hostName: cfg: (
+        nameValuePair "wordpress-${hostName}" {
+          inherit user group;
+          settings = {
+            "listen.owner" = config.services.httpd.user;
+            "listen.group" = config.services.httpd.group;
+          }
+          // cfg.poolConfig
+          ;
+        }
+      )
+    ) eachSite;
 
     services.httpd = {
       enable = true;
       extraModules = [ "proxy_fcgi" ];
-      virtualHosts = mapAttrsToList (hostName: cfg:
-        (mkMerge [
-          cfg.virtualHost {
-            documentRoot = mkForce "${pkg hostName cfg}/share/wordpress";
-            extraConfig = ''
-              <Directory "${pkg hostName cfg}/share/wordpress">
-                <FilesMatch "\.php$">
-                  <If "-f %{REQUEST_FILENAME}">
-                    SetHandler "proxy:unix:${config.services.phpfpm.pools."wordpress-${hostName}".socket}|fcgi://localhost/"
-                  </If>
-                </FilesMatch>
+      virtualHosts = mapAttrsToList (
+        hostName: cfg:
+          (
+            mkMerge [
+              cfg.virtualHost
+              {
+                documentRoot = mkForce "${pkg hostName cfg}/share/wordpress";
+                extraConfig = ''
+                  <Directory "${pkg hostName cfg}/share/wordpress">
+                    <FilesMatch "\.php$">
+                      <If "-f %{REQUEST_FILENAME}">
+                        SetHandler "proxy:unix:${config.services.phpfpm.pools."wordpress-${hostName}".socket}|fcgi://localhost/"
+                      </If>
+                    </FilesMatch>
 
-                # standard wordpress .htaccess contents
-                <IfModule mod_rewrite.c>
-                  RewriteEngine On
-                  RewriteBase /
-                  RewriteRule ^index\.php$ - [L]
-                  RewriteCond %{REQUEST_FILENAME} !-f
-                  RewriteCond %{REQUEST_FILENAME} !-d
-                  RewriteRule . /index.php [L]
-                </IfModule>
+                    # standard wordpress .htaccess contents
+                    <IfModule mod_rewrite.c>
+                      RewriteEngine On
+                      RewriteBase /
+                      RewriteRule ^index\.php$ - [L]
+                      RewriteCond %{REQUEST_FILENAME} !-f
+                      RewriteCond %{REQUEST_FILENAME} !-d
+                      RewriteRule . /index.php [L]
+                    </IfModule>
 
-                DirectoryIndex index.php
-                Require all granted
-                Options +FollowSymLinks
-              </Directory>
+                    DirectoryIndex index.php
+                    Require all granted
+                    Options +FollowSymLinks
+                  </Directory>
 
-              # https://wordpress.org/support/article/hardening-wordpress/#securing-wp-config-php
-              <Files wp-config.php>
-                Require all denied
-              </Files>
-            '';
-          }
-        ])
+                  # https://wordpress.org/support/article/hardening-wordpress/#securing-wp-config-php
+                  <Files wp-config.php>
+                    Require all denied
+                  </Files>
+                '';
+              }
+            ]
+          )
       ) eachSite;
     };
 
-    systemd.tmpfiles.rules = flatten (mapAttrsToList (hostName: cfg: [
-      "d '${stateDir hostName}' 0750 ${user} ${group} - -"
-      "d '${cfg.uploadsDir}' 0750 ${user} ${group} - -"
-      "Z '${cfg.uploadsDir}' 0750 ${user} ${group} - -"
-    ]) eachSite);
+    systemd.tmpfiles.rules = flatten (
+      mapAttrsToList (
+        hostName: cfg: [
+          "d '${stateDir hostName}' 0750 ${user} ${group} - -"
+          "d '${cfg.uploadsDir}' 0750 ${user} ${group} - -"
+          "Z '${cfg.uploadsDir}' 0750 ${user} ${group} - -"
+        ]
+      ) eachSite
+    );
 
     systemd.services = mkMerge [
-      (mapAttrs' (hostName: cfg: (
-        nameValuePair "wordpress-init-${hostName}" {
-          wantedBy = [ "multi-user.target" ];
-          before = [ "phpfpm-wordpress-${hostName}.service" ];
-          after = optional cfg.database.createLocally "mysql.service";
-          script = ''
-            if ! test -e "${stateDir hostName}/secret-keys.php"; then
-              echo "<?php" >> "${stateDir hostName}/secret-keys.php"
-              ${pkgs.curl}/bin/curl -s https://api.wordpress.org/secret-key/1.1/salt/ >> "${stateDir hostName}/secret-keys.php"
-              echo "?>" >> "${stateDir hostName}/secret-keys.php"
-              chmod 440 "${stateDir hostName}/secret-keys.php"
-            fi
-          '';
+      (
+        mapAttrs' (
+          hostName: cfg: (
+            nameValuePair "wordpress-init-${hostName}" {
+              wantedBy = [ "multi-user.target" ];
+              before = [ "phpfpm-wordpress-${hostName}.service" ];
+              after = optional cfg.database.createLocally "mysql.service";
+              script = ''
+                if ! test -e "${stateDir hostName}/secret-keys.php"; then
+                  echo "<?php" >> "${stateDir hostName}/secret-keys.php"
+                  ${pkgs.curl}/bin/curl -s https://api.wordpress.org/secret-key/1.1/salt/ >> "${stateDir hostName}/secret-keys.php"
+                  echo "?>" >> "${stateDir hostName}/secret-keys.php"
+                  chmod 440 "${stateDir hostName}/secret-keys.php"
+                fi
+              '';
 
-          serviceConfig = {
-            Type = "oneshot";
-            User = user;
-            Group = group;
-          };
-      })) eachSite)
+              serviceConfig = {
+                Type = "oneshot";
+                User = user;
+                Group = group;
+              };
+            }
+          )
+        ) eachSite
+      )
 
-      (optionalAttrs (any (v: v.database.createLocally) (attrValues eachSite)) {
-        httpd.after = [ "mysql.service" ];
-      })
+      (
+        optionalAttrs (any (v: v.database.createLocally) (attrValues eachSite)) {
+          httpd.after = [ "mysql.service" ];
+        }
+      )
     ];
 
     users.users.${user}.group = group;

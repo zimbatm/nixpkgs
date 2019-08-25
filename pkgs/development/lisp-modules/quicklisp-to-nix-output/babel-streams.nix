@@ -14,7 +14,7 @@ rec {
 
   packageName = "babel-streams";
 
-  asdFilesToKeep = ["babel-streams.asd"];
+  asdFilesToKeep = [ "babel-streams.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM babel-streams DESCRIPTION

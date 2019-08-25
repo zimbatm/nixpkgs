@@ -1,9 +1,15 @@
 { version, sha256 }:
 
-{ stdenv, buildPackages, fetchurl, perl, xz
+{ stdenv
+, buildPackages
+, fetchurl
+, perl
+, xz
 
-# we are a dependency of gcc, this simplifies bootstraping
-, interactive ? false, ncurses, procps
+  # we are a dependency of gcc, this simplifies bootstraping
+, interactive ? false
+, ncurses
+, procps
 }:
 
 with stdenv.lib;
@@ -25,10 +31,12 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ xz.bin ]
     ++ optionals stdenv.isSunOS [ libiconv gawk ]
-    ++ optional interactive ncurses;
+    ++ optional interactive ncurses
+    ;
 
   configureFlags = [ "PERL=${buildPackages.perl}/bin/perl" ]
-    ++ stdenv.lib.optional stdenv.isSunOS "AWK=${gawk}/bin/awk";
+    ++ stdenv.lib.optional stdenv.isSunOS "AWK=${gawk}/bin/awk"
+    ;
 
   preInstall = ''
     installFlags="TEXMF=$out/texmf-dist";
@@ -39,7 +47,8 @@ stdenv.mkDerivation rec {
 
   doCheck = interactive
     && !stdenv.isDarwin
-    && !stdenv.isSunOS; # flaky
+    && !stdenv.isSunOS
+    ; # flaky
 
   meta = {
     homepage = https://www.gnu.org/software/texinfo/;

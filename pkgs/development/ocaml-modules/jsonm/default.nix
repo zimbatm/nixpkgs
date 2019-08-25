@@ -1,6 +1,8 @@
 { stdenv, fetchurl, ocaml, findlib, ocamlbuild, topkg, uutf }:
 
-let version = "1.0.1"; in
+let
+  version = "1.0.1";
+in
 
 stdenv.mkDerivation {
   name = "ocaml${ocaml.version}-jsonm-${version}";

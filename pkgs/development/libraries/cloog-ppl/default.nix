@@ -44,7 +44,7 @@ stdenv.mkDerivation rec {
 
     license = stdenv.lib.licenses.gpl2Plus;
 
-    maintainers = [ ];
+    maintainers = [];
 
     /* Leads to an ICE on Cygwin:
 

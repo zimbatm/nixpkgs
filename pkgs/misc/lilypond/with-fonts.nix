@@ -1,17 +1,23 @@
-{ stdenv, lndir, symlinkJoin, makeWrapper
-, lilypond, openlilylib-fonts
+{ stdenv
+, lndir
+, symlinkJoin
+, makeWrapper
+, lilypond
+, openlilylib-fonts
 }:
 
-stdenv.lib.appendToName "with-fonts" (symlinkJoin {
-  inherit (lilypond) meta name version ;
+stdenv.lib.appendToName "with-fonts" (
+  symlinkJoin {
+    inherit (lilypond) meta name version;
 
-  paths = [ lilypond ];
+    paths = [ lilypond ];
 
-  buildInputs = [ makeWrapper lndir ];
+    buildInputs = [ makeWrapper lndir ];
 
-  postBuild = ''
-    for p in $out/bin/*; do
-        wrapProgram "$p" --set LILYPOND_DATADIR "$datadir"
-    done
-  '';
-})
+    postBuild = ''
+      for p in $out/bin/*; do
+          wrapProgram "$p" --set LILYPOND_DATADIR "$datadir"
+      done
+    '';
+  }
+)

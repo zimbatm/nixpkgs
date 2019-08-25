@@ -2,8 +2,10 @@
 
 with lib;
 
-let cfg = config.programs.cdemu;
-in {
+let
+  cfg = config.programs.cdemu;
+in
+{
 
   options = {
     programs.cdemu = {
@@ -52,7 +54,8 @@ in {
     environment.systemPackages =
       [ pkgs.cdemu-daemon pkgs.cdemu-client ]
       ++ optional cfg.gui pkgs.gcdemu
-      ++ optional cfg.image-analyzer pkgs.image-analyzer;
+      ++ optional cfg.image-analyzer pkgs.image-analyzer
+      ;
   };
 
 }

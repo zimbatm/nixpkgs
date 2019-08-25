@@ -3,7 +3,7 @@
 buildPythonPackage rec {
   pname = "cx_Freeze";
   version = "5.1.1";
-  name  = "${pname}-${version}";
+  name = "${pname}-${version}";
 
   src = fetchPypi {
     inherit pname version;

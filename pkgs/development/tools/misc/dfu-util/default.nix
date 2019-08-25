@@ -1,7 +1,7 @@
 { stdenv, fetchurl, pkgconfig, libusb1 }:
 
 stdenv.mkDerivation rec {
-  name="dfu-util-${version}";
+  name = "dfu-util-${version}";
   version = "0.9";
 
   nativeBuildInputs = [ pkgconfig ];

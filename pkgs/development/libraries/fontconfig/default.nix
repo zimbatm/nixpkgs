@@ -1,5 +1,12 @@
-{ stdenv, substituteAll, fetchurl
-, pkgconfig, freetype, expat, libxslt, gperf, dejavu_fonts
+{ stdenv
+, substituteAll
+, fetchurl
+, pkgconfig
+, freetype
+, expat
+, libxslt
+, gperf
+, dejavu_fonts
 }:
 
 /** Font configuration scheme
@@ -26,10 +33,12 @@ stdenv.mkDerivation rec {
   };
 
   patches = [
-    (substituteAll {
-      src = ./config-compat.patch;
-      inherit configVersion;
-    })
+    (
+      substituteAll {
+        src = ./config-compat.patch;
+        inherit configVersion;
+      }
+    )
   ];
 
   outputs = [ "bin" "dev" "lib" "out" ]; # $out contains all the config
@@ -44,9 +53,11 @@ stdenv.mkDerivation rec {
     "--disable-docs"
     # just <1MB; this is what you get when loading config fails for some reason
     "--with-default-fonts=${dejavu_fonts.minimal}"
-  ] ++ stdenv.lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
-    "--with-arch=${stdenv.hostPlatform.parsed.cpu.name}"
-  ];
+  ]
+  ++ stdenv.lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
+       "--with-arch=${stdenv.hostPlatform.parsed.cpu.name}"
+     ]
+  ;
 
   enableParallelBuilding = true;
 

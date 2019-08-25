@@ -1,6 +1,8 @@
 { stdenv, fetchFromGitHub, which, ocamlPackages }:
 
-let version = "5.0"; in
+let
+  version = "5.0";
+in
 
 stdenv.mkDerivation {
 
@@ -13,9 +15,18 @@ stdenv.mkDerivation {
     sha256 = "1fslfj5d7fhj3f7kh558b8mk5wllwyq4rnhfkyd96fpy144sdcka";
   };
 
-  buildInputs = [ which ] ++ (with ocamlPackages; [
-    ocaml findlib ocamlbuild menhir js_of_ocaml js_of_ocaml-ocamlbuild
-  ]);
+  buildInputs = [ which ]
+    ++ (
+         with ocamlPackages; [
+           ocaml
+           findlib
+           ocamlbuild
+           menhir
+           js_of_ocaml
+           js_of_ocaml-ocamlbuild
+         ]
+       )
+    ;
 
   doCheck = true;
   checkTarget = "test";

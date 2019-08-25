@@ -1,5 +1,14 @@
-{ stdenv, lib, fetchurl, autoconf, automake, pkgconfig, libtool
-, gtk2, halibut, ncurses, perl
+{ stdenv
+, lib
+, fetchurl
+, autoconf
+, automake
+, pkgconfig
+, libtool
+, gtk2
+, halibut
+, ncurses
+, perl
 }:
 
 stdenv.mkDerivation rec {
@@ -22,9 +31,11 @@ stdenv.mkDerivation rec {
         -e '/AC_OUTPUT/iAM_PROG_AR' -i configure.ac
     ./mkauto.sh
     cd unix
-  '' + lib.optionalString stdenv.hostPlatform.isWindows ''
-    cd windows
-  '';
+  ''
+  + lib.optionalString stdenv.hostPlatform.isWindows ''
+      cd windows
+    ''
+  ;
 
   TOOLPATH = stdenv.cc.targetPrefix;
   makefile = if stdenv.hostPlatform.isWindows then "Makefile.mgw" else null;
@@ -37,7 +48,8 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ autoconf automake halibut libtool perl pkgconfig ];
   buildInputs = lib.optionals stdenv.hostPlatform.isUnix [
-    gtk2 ncurses
+    gtk2
+    ncurses
   ];
   enableParallelBuilding = true;
 

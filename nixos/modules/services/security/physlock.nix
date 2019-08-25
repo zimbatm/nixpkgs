@@ -93,36 +93,42 @@ in
 
   ###### implementation
 
-  config = mkIf cfg.enable (mkMerge [
-    {
+  config = mkIf cfg.enable (
+    mkMerge [
+      {
 
-      # for physlock -l and physlock -L
-      environment.systemPackages = [ pkgs.physlock ];
+        # for physlock -l and physlock -L
+        environment.systemPackages = [ pkgs.physlock ];
 
-      systemd.services."physlock" = {
-        enable = true;
-        description = "Physlock";
-        wantedBy = optional cfg.lockOn.suspend   "suspend.target"
-                ++ optional cfg.lockOn.hibernate "hibernate.target"
-                ++ cfg.lockOn.extraTargets;
-        before   = optional cfg.lockOn.suspend   "systemd-suspend.service"
-                ++ optional cfg.lockOn.hibernate "systemd-hibernate.service"
-                ++ cfg.lockOn.extraTargets;
-        serviceConfig = {
-          Type = "forking";
-          ExecStart = "${pkgs.physlock}/bin/physlock -d${optionalString cfg.disableSysRq "s"}";
+        systemd.services."physlock" = {
+          enable = true;
+          description = "Physlock";
+          wantedBy = optional cfg.lockOn.suspend "suspend.target"
+            ++ optional cfg.lockOn.hibernate "hibernate.target"
+            ++ cfg.lockOn.extraTargets
+            ;
+          before = optional cfg.lockOn.suspend "systemd-suspend.service"
+            ++ optional cfg.lockOn.hibernate "systemd-hibernate.service"
+            ++ cfg.lockOn.extraTargets
+            ;
+          serviceConfig = {
+            Type = "forking";
+            ExecStart = "${pkgs.physlock}/bin/physlock -d${optionalString cfg.disableSysRq "s"}";
+          };
         };
-      };
 
-      security.pam.services.physlock = {};
+        security.pam.services.physlock = {};
 
-    }
+      }
 
-    (mkIf cfg.allowAnyUser {
+      (
+        mkIf cfg.allowAnyUser {
 
-      security.wrappers.physlock = { source = "${pkgs.physlock}/bin/physlock"; user = "root"; };
+          security.wrappers.physlock = { source = "${pkgs.physlock}/bin/physlock"; user = "root"; };
 
-    })
-  ]);
+        }
+      )
+    ]
+  );
 
 }

@@ -67,27 +67,31 @@ self: super: {
 
   # The Hackage tarball is purposefully broken, because it's not intended to be, like, useful.
   # https://git-annex.branchable.com/bugs/bash_completion_file_is_missing_in_the_6.20160527_tarball_on_hackage/
-  git-annex = (overrideSrc super.git-annex {
-    src = pkgs.fetchgit {
-      name = "git-annex-${super.git-annex.version}-src";
-      url = "git://git-annex.branchable.com/";
-      rev = "refs/tags/" + super.git-annex.version;
-      sha256 = "1795sad0jr2da2pn28nbqsvpld6zw8gf9yscywixkbabf7ls66fn";
-    };
-  }).override {
+  git-annex = (
+    overrideSrc super.git-annex {
+      src = pkgs.fetchgit {
+        name = "git-annex-${super.git-annex.version}-src";
+        url = "git://git-annex.branchable.com/";
+        rev = "refs/tags/" + super.git-annex.version;
+        sha256 = "1795sad0jr2da2pn28nbqsvpld6zw8gf9yscywixkbabf7ls66fn";
+      };
+    }
+  ).override {
     dbus = if pkgs.stdenv.isLinux then self.dbus else null;
     fdo-notify = if pkgs.stdenv.isLinux then self.fdo-notify else null;
     hinotify = if pkgs.stdenv.isLinux then self.hinotify else self.fsnotify;
   };
 
   # Fix test trying to access /home directory
-  shell-conduit = overrideCabal super.shell-conduit (drv: {
-    postPatch = "sed -i s/home/tmp/ test/Spec.hs";
+  shell-conduit = overrideCabal super.shell-conduit (
+    drv: {
+      postPatch = "sed -i s/home/tmp/ test/Spec.hs";
 
-    # the tests for shell-conduit on Darwin illegitimatey assume non-GNU echo
-    # see: https://github.com/psibi/shell-conduit/issues/12
-    doCheck = !pkgs.stdenv.isDarwin;
-  });
+      # the tests for shell-conduit on Darwin illegitimatey assume non-GNU echo
+      # see: https://github.com/psibi/shell-conduit/issues/12
+      doCheck = !pkgs.stdenv.isDarwin;
+    }
+  );
 
   # https://github.com/froozen/kademlia/issues/2
   kademlia = dontCheck super.kademlia;
@@ -116,13 +120,15 @@ self: super: {
   hails-bin = dontDistribute super.hails-bin;
 
   # Switch levmar build to openblas.
-  bindings-levmar = overrideCabal super.bindings-levmar (drv: {
-    preConfigure = ''
-      sed -i bindings-levmar.cabal \
-          -e 's,extra-libraries: lapack blas,extra-libraries: openblas,'
-    '';
-    extraLibraries = [ pkgs.openblasCompat ];
-  });
+  bindings-levmar = overrideCabal super.bindings-levmar (
+    drv: {
+      preConfigure = ''
+        sed -i bindings-levmar.cabal \
+            -e 's,extra-libraries: lapack blas,extra-libraries: openblas,'
+      '';
+      extraLibraries = [ pkgs.openblasCompat ];
+    }
+  );
 
   # The Haddock phase fails for one reason or another.
   bytestring-progress = dontHaddock super.bytestring-progress;
@@ -140,35 +146,47 @@ self: super: {
   vector = dontCheck (if pkgs.stdenv.isi686 then appendConfigureFlag super.vector "--ghc-options=-msse2" else super.vector);
 
   conduit-extra = if pkgs.stdenv.isDarwin
-    then super.conduit-extra.overrideAttrs (drv: { __darwinAllowLocalNetworking = true; })
-    else super.conduit-extra;
+  then super.conduit-extra.overrideAttrs (drv: { __darwinAllowLocalNetworking = true; })
+  else super.conduit-extra;
 
   # Fix Darwin build.
   halive = if pkgs.stdenv.isDarwin
-    then addBuildDepend super.halive pkgs.darwin.apple_sdk.frameworks.AppKit
-    else super.halive;
+  then addBuildDepend super.halive pkgs.darwin.apple_sdk.frameworks.AppKit
+  else super.halive;
 
   # Hakyll's tests are broken on Darwin (3 failures); and they require util-linux
   hakyll = appendPatch
-    (if pkgs.stdenv.isDarwin
-    then dontCheck (overrideCabal super.hakyll (drv: {
-      testToolDepends = [];
-    }))
-    else super.hakyll)
-    (pkgs.fetchpatch {
-      url = https://github.com/jaspervdj/hakyll/commit/25a4460b75b3c9f3ce339b3311b084d92994f5f1.patch;
-      sha256 = "sha256-F59WHt52LOKGsGoaD3LAIZFEMe9s9WHfGxQgSh9Q8uQ=";
-    });
+    (
+      if pkgs.stdenv.isDarwin
+      then dontCheck (
+        overrideCabal super.hakyll (
+          drv: {
+            testToolDepends = [];
+          }
+        )
+      )
+      else super.hakyll
+    )
+    (
+      pkgs.fetchpatch {
+        url = https://github.com/jaspervdj/hakyll/commit/25a4460b75b3c9f3ce339b3311b084d92994f5f1.patch;
+        sha256 = "sha256-F59WHt52LOKGsGoaD3LAIZFEMe9s9WHfGxQgSh9Q8uQ=";
+      }
+    );
 
   double-conversion = if !pkgs.stdenv.isDarwin
-    then super.double-conversion
-    else addExtraLibrary super.double-conversion pkgs.libcxx;
+  then super.double-conversion
+  else addExtraLibrary super.double-conversion pkgs.libcxx;
 
-  inline-c-cpp = overrideCabal super.inline-c-cpp (drv: {
-    postPatch = (drv.postPatch or "") + ''
-      substituteInPlace inline-c-cpp.cabal --replace "-optc-std=c++11" ""
-    '';
-  });
+  inline-c-cpp = overrideCabal super.inline-c-cpp (
+    drv: {
+      postPatch = (drv.postPatch or "")
+        + ''
+        substituteInPlace inline-c-cpp.cabal --replace "-optc-std=c++11" ""
+      ''
+        ;
+    }
+  );
 
   inline-java = addBuildDepend super.inline-java pkgs.jdk;
 
@@ -188,16 +206,16 @@ self: super: {
   assertions = dontCheck super.assertions;
 
   # These packages try to execute non-existent external programs.
-  cmaes = dontCheck super.cmaes;                        # http://hydra.cryp.to/build/498725/log/raw
+  cmaes = dontCheck super.cmaes; # http://hydra.cryp.to/build/498725/log/raw
   dbmigrations = dontCheck super.dbmigrations;
-  euler = dontCheck super.euler;                        # https://github.com/decomputed/euler/issues/1
+  euler = dontCheck super.euler; # https://github.com/decomputed/euler/issues/1
   filestore = dontCheck super.filestore;
   getopt-generics = dontCheck super.getopt-generics;
   graceful = dontCheck super.graceful;
   Hclip = dontCheck super.Hclip;
   HList = dontCheck super.HList;
   ide-backend = dontCheck super.ide-backend;
-  marquise = dontCheck super.marquise;                  # https://github.com/anchor/marquise/issues/69
+  marquise = dontCheck super.marquise; # https://github.com/anchor/marquise/issues/69
   memcached-binary = dontCheck super.memcached-binary;
   msgpack-rpc = dontCheck super.msgpack-rpc;
   persistent-zookeeper = dontCheck super.persistent-zookeeper;
@@ -244,61 +262,61 @@ self: super: {
   structures = dontCheck super.structures;
 
   # Disable test suites to fix the build.
-  acme-year = dontCheck super.acme-year;                # http://hydra.cryp.to/build/497858/log/raw
-  aeson-lens = dontCheck super.aeson-lens;              # http://hydra.cryp.to/build/496769/log/raw
-  aeson-schema = dontCheck super.aeson-schema;          # https://github.com/timjb/aeson-schema/issues/9
+  acme-year = dontCheck super.acme-year; # http://hydra.cryp.to/build/497858/log/raw
+  aeson-lens = dontCheck super.aeson-lens; # http://hydra.cryp.to/build/496769/log/raw
+  aeson-schema = dontCheck super.aeson-schema; # https://github.com/timjb/aeson-schema/issues/9
   angel = dontCheck super.angel;
-  apache-md5 = dontCheck super.apache-md5;              # http://hydra.cryp.to/build/498709/nixlog/1/raw
-  app-settings = dontCheck super.app-settings;          # http://hydra.cryp.to/build/497327/log/raw
-  aws = dontCheck super.aws;                            # needs aws credentials
-  aws-kinesis = dontCheck super.aws-kinesis;            # needs aws credentials for testing
-  binary-protocol = dontCheck super.binary-protocol;    # http://hydra.cryp.to/build/499749/log/raw
+  apache-md5 = dontCheck super.apache-md5; # http://hydra.cryp.to/build/498709/nixlog/1/raw
+  app-settings = dontCheck super.app-settings; # http://hydra.cryp.to/build/497327/log/raw
+  aws = dontCheck super.aws; # needs aws credentials
+  aws-kinesis = dontCheck super.aws-kinesis; # needs aws credentials for testing
+  binary-protocol = dontCheck super.binary-protocol; # http://hydra.cryp.to/build/499749/log/raw
   binary-search = dontCheck super.binary-search;
-  bits = dontCheck super.bits;                          # http://hydra.cryp.to/build/500239/log/raw
+  bits = dontCheck super.bits; # http://hydra.cryp.to/build/500239/log/raw
   bloodhound = dontCheck super.bloodhound;
   buildwrapper = dontCheck super.buildwrapper;
-  burst-detection = dontCheck super.burst-detection;    # http://hydra.cryp.to/build/496948/log/raw
-  cabal-bounds = dontCheck super.cabal-bounds;          # http://hydra.cryp.to/build/496935/nixlog/1/raw
-  cabal-meta = dontCheck super.cabal-meta;              # http://hydra.cryp.to/build/497892/log/raw
+  burst-detection = dontCheck super.burst-detection; # http://hydra.cryp.to/build/496948/log/raw
+  cabal-bounds = dontCheck super.cabal-bounds; # http://hydra.cryp.to/build/496935/nixlog/1/raw
+  cabal-meta = dontCheck super.cabal-meta; # http://hydra.cryp.to/build/497892/log/raw
   camfort = dontCheck super.camfort;
   cjk = dontCheck super.cjk;
-  CLI = dontCheck super.CLI;                            # Upstream has no issue tracker.
-  command-qq = dontCheck super.command-qq;              # http://hydra.cryp.to/build/499042/log/raw
+  CLI = dontCheck super.CLI; # Upstream has no issue tracker.
+  command-qq = dontCheck super.command-qq; # http://hydra.cryp.to/build/499042/log/raw
   conduit-connection = dontCheck super.conduit-connection;
   craftwerk = dontCheck super.craftwerk;
   css-text = dontCheck super.css-text;
-  damnpacket = dontCheck super.damnpacket;              # http://hydra.cryp.to/build/496923/log
+  damnpacket = dontCheck super.damnpacket; # http://hydra.cryp.to/build/496923/log
   data-hash = dontCheck super.data-hash;
-  Deadpan-DDP = dontCheck super.Deadpan-DDP;            # http://hydra.cryp.to/build/496418/log/raw
+  Deadpan-DDP = dontCheck super.Deadpan-DDP; # http://hydra.cryp.to/build/496418/log/raw
   DigitalOcean = dontCheck super.DigitalOcean;
   direct-sqlite = dontCheck super.direct-sqlite;
   directory-layout = dontCheck super.directory-layout;
   dlist = dontCheck super.dlist;
-  docopt = dontCheck super.docopt;                      # http://hydra.cryp.to/build/499172/log/raw
-  dom-selector = dontCheck super.dom-selector;          # http://hydra.cryp.to/build/497670/log/raw
-  dotfs = dontCheck super.dotfs;                        # http://hydra.cryp.to/build/498599/log/raw
-  DRBG = dontCheck super.DRBG;                          # http://hydra.cryp.to/build/498245/nixlog/1/raw
+  docopt = dontCheck super.docopt; # http://hydra.cryp.to/build/499172/log/raw
+  dom-selector = dontCheck super.dom-selector; # http://hydra.cryp.to/build/497670/log/raw
+  dotfs = dontCheck super.dotfs; # http://hydra.cryp.to/build/498599/log/raw
+  DRBG = dontCheck super.DRBG; # http://hydra.cryp.to/build/498245/nixlog/1/raw
   ed25519 = dontCheck super.ed25519;
   etcd = dontCheck super.etcd;
-  fb = dontCheck super.fb;                              # needs credentials for Facebook
-  fptest = dontCheck super.fptest;                      # http://hydra.cryp.to/build/499124/log/raw
+  fb = dontCheck super.fb; # needs credentials for Facebook
+  fptest = dontCheck super.fptest; # http://hydra.cryp.to/build/499124/log/raw
   friday-juicypixels = dontCheck super.friday-juicypixels; #tarball missing test/rgba8.png
-  ghc-events = dontCheck super.ghc-events;              # http://hydra.cryp.to/build/498226/log/raw
-  ghc-events-parallel = dontCheck super.ghc-events-parallel;    # http://hydra.cryp.to/build/496828/log/raw
+  ghc-events = dontCheck super.ghc-events; # http://hydra.cryp.to/build/498226/log/raw
+  ghc-events-parallel = dontCheck super.ghc-events-parallel; # http://hydra.cryp.to/build/496828/log/raw
   ghc-imported-from = dontCheck super.ghc-imported-from;
   ghc-parmake = dontCheck super.ghc-parmake;
   ghcid = dontCheck super.ghcid;
   git-vogue = dontCheck super.git-vogue;
   gitlib-cmdline = dontCheck super.gitlib-cmdline;
-  GLFW-b = dontCheck super.GLFW-b;                      # https://github.com/bsl/GLFW-b/issues/50
+  GLFW-b = dontCheck super.GLFW-b; # https://github.com/bsl/GLFW-b/issues/50
   hackport = dontCheck super.hackport;
   hadoop-formats = dontCheck super.hadoop-formats;
   haeredes = dontCheck super.haeredes;
   hashed-storage = dontCheck super.hashed-storage;
   hashring = dontCheck super.hashring;
   hath = dontCheck super.hath;
-  haxl = dontCheck super.haxl;                          # non-deterministic failure https://github.com/facebook/Haxl/issues/85
-  haxl-facebook = dontCheck super.haxl-facebook;        # needs facebook credentials for testing
+  haxl = dontCheck super.haxl; # non-deterministic failure https://github.com/facebook/Haxl/issues/85
+  haxl-facebook = dontCheck super.haxl-facebook; # needs facebook credentials for testing
   hdbi-postgresql = dontCheck super.hdbi-postgresql;
   hedis = dontCheck super.hedis;
   hedis-pile = dontCheck super.hedis-pile;
@@ -327,7 +345,7 @@ self: super: {
   ldap-client = dontCheck super.ldap-client;
   lensref = dontCheck super.lensref;
   lucid = dontCheck super.lucid; #https://github.com/chrisdone/lucid/issues/25
-  lvmrun = disableHardening (dontCheck super.lvmrun) ["format"];
+  lvmrun = disableHardening (dontCheck super.lvmrun) [ "format" ];
   memcache = dontCheck super.memcache;
   MemoTrie = dontHaddock (dontCheck super.MemoTrie);
   metrics = dontCheck super.metrics;
@@ -346,7 +364,7 @@ self: super: {
   optional = dontCheck super.optional;
   orgmode-parse = dontCheck super.orgmode-parse;
   os-release = dontCheck super.os-release;
-  pandoc-crossref = dontCheck super.pandoc-crossref;  # (most likely change when no longer 0.3.2.1) https://github.com/lierdakil/pandoc-crossref/issues/199
+  pandoc-crossref = dontCheck super.pandoc-crossref; # (most likely change when no longer 0.3.2.1) https://github.com/lierdakil/pandoc-crossref/issues/199
   persistent-redis = dontCheck super.persistent-redis;
   pipes-extra = dontCheck super.pipes-extra;
   pipes-websockets = dontCheck super.pipes-websockets;
@@ -370,7 +388,7 @@ self: super: {
   shadowsocks = dontCheck super.shadowsocks;
   shake-language-c = dontCheck super.shake-language-c;
   static-resources = dontCheck super.static-resources;
-  strive = dontCheck super.strive;                      # fails its own hlint test with tons of warnings
+  strive = dontCheck super.strive; # fails its own hlint test with tons of warnings
   svndump = dontCheck super.svndump;
   tar = dontCheck super.tar; #http://hydra.nixos.org/build/25088435/nixlog/2 (fails only on 32-bit)
   th-printf = dontCheck super.th-printf;
@@ -381,13 +399,13 @@ self: super: {
   ua-parser = dontCheck super.ua-parser;
   unagi-chan = dontCheck super.unagi-chan;
   wai-logger = dontCheck super.wai-logger;
-  WebBits = dontCheck super.WebBits;                    # http://hydra.cryp.to/build/499604/log/raw
+  WebBits = dontCheck super.WebBits; # http://hydra.cryp.to/build/499604/log/raw
   webdriver = dontCheck super.webdriver;
   webdriver-angular = dontCheck super.webdriver-angular;
   xsd = dontCheck super.xsd;
   snap-core = dontCheck super.snap-core;
   sourcemap = dontCheck super.sourcemap;
-  zip-archive = dontCheck super.zip-archive;  # https://github.com/jgm/zip-archive/issues/57
+  zip-archive = dontCheck super.zip-archive; # https://github.com/jgm/zip-archive/issues/57
 
   # These test suites run for ages, even on a fast machine. This is nuts.
   Random123 = dontCheck super.Random123;
@@ -427,8 +445,8 @@ self: super: {
   threads = dontCheck super.threads;
 
   # Missing module.
-  rematch = dontCheck super.rematch;            # https://github.com/tcrayford/rematch/issues/5
-  rematch-text = dontCheck super.rematch-text;  # https://github.com/tcrayford/rematch/issues/6
+  rematch = dontCheck super.rematch; # https://github.com/tcrayford/rematch/issues/5
+  rematch-text = dontCheck super.rematch-text; # https://github.com/tcrayford/rematch/issues/6
 
   # Should not appear in nixpkgs yet (broken anyway)
   yarn2nix = throw "yarn2nix is not yet packaged for nixpkgs. See https://github.com/Profpatsch/yarn2nix#yarn2nix";
@@ -505,9 +523,11 @@ self: super: {
 
   # Depends on itself for testing
   tasty-discover = addBuildTool super.tasty-discover
-    (if pkgs.buildPlatform != pkgs.hostPlatform
-     then self.buildHaskellPackages.tasty-discover
-     else dontCheck super.tasty-discover);
+    (
+      if pkgs.buildPlatform != pkgs.hostPlatform
+      then self.buildHaskellPackages.tasty-discover
+      else dontCheck super.tasty-discover
+    );
 
   # generic-deriving bound is too tight
   aeson = doJailbreak super.aeson;
@@ -595,48 +615,54 @@ self: super: {
   sets = dontCheck super.sets;
 
   # Install icons, metadata and cli program.
-  bustle = overrideCabal super.bustle (drv: {
-    buildDepends = [ pkgs.libpcap ];
-    buildTools = with pkgs.buildPackages; [ gettext perl help2man ];
-    postInstall = ''
-      make install PREFIX=$out
-    '';
-  });
+  bustle = overrideCabal super.bustle (
+    drv: {
+      buildDepends = [ pkgs.libpcap ];
+      buildTools = with pkgs.buildPackages; [ gettext perl help2man ];
+      postInstall = ''
+        make install PREFIX=$out
+      '';
+    }
+  );
 
   # Byte-compile elisp code for Emacs.
-  ghc-mod = overrideCabal super.ghc-mod (drv: {
-    preCheck = "export HOME=$TMPDIR";
-    testToolDepends = drv.testToolDepends or [] ++ [self.cabal-install];
-    doCheck = false;            # https://github.com/kazu-yamamoto/ghc-mod/issues/335
-    executableToolDepends = drv.executableToolDepends or [] ++ [pkgs.emacs];
-    postInstall = ''
-      local lispdir=( "$data/share/${self.ghc.name}/*/${drv.pname}-${drv.version}/elisp" )
-      make -C $lispdir
-      mkdir -p $data/share/emacs/site-lisp
-      ln -s "$lispdir/"*.el{,c} $data/share/emacs/site-lisp/
-    '';
-  });
+  ghc-mod = overrideCabal super.ghc-mod (
+    drv: {
+      preCheck = "export HOME=$TMPDIR";
+      testToolDepends = drv.testToolDepends or [] ++ [ self.cabal-install ];
+      doCheck = false; # https://github.com/kazu-yamamoto/ghc-mod/issues/335
+      executableToolDepends = drv.executableToolDepends or [] ++ [ pkgs.emacs ];
+      postInstall = ''
+        local lispdir=( "$data/share/${self.ghc.name}/*/${drv.pname}-${drv.version}/elisp" )
+        make -C $lispdir
+        mkdir -p $data/share/emacs/site-lisp
+        ln -s "$lispdir/"*.el{,c} $data/share/emacs/site-lisp/
+      '';
+    }
+  );
 
   # Build the latest git version instead of the official release. This isn't
   # ideal, but Chris doesn't seem to make official releases any more.
-  structured-haskell-mode = overrideCabal super.structured-haskell-mode (drv: {
-    src = pkgs.fetchFromGitHub {
-      owner = "chrisdone";
-      repo = "structured-haskell-mode";
-      rev = "7f9df73f45d107017c18ce4835bbc190dfe6782e";
-      sha256 = "1jcc30048j369jgsbbmkb63whs4wb37bq21jrm3r6ry22izndsqa";
-    };
-    version = "20170205-git";
-    editedCabalFile = null;
-    # Make elisp files available at a location where people expect it. We
-    # cannot easily byte-compile these files, unfortunately, because they
-    # depend on a new version of haskell-mode that we don't have yet.
-    postInstall = ''
-      local lispdir=( "$data/share/${self.ghc.name}/"*"/${drv.pname}-"*"/elisp" )
-      mkdir -p $data/share/emacs
-      ln -s $lispdir $data/share/emacs/site-lisp
-    '';
-  });
+  structured-haskell-mode = overrideCabal super.structured-haskell-mode (
+    drv: {
+      src = pkgs.fetchFromGitHub {
+        owner = "chrisdone";
+        repo = "structured-haskell-mode";
+        rev = "7f9df73f45d107017c18ce4835bbc190dfe6782e";
+        sha256 = "1jcc30048j369jgsbbmkb63whs4wb37bq21jrm3r6ry22izndsqa";
+      };
+      version = "20170205-git";
+      editedCabalFile = null;
+      # Make elisp files available at a location where people expect it. We
+      # cannot easily byte-compile these files, unfortunately, because they
+      # depend on a new version of haskell-mode that we don't have yet.
+      postInstall = ''
+        local lispdir=( "$data/share/${self.ghc.name}/"*"/${drv.pname}-"*"/elisp" )
+        mkdir -p $data/share/emacs
+        ln -s $lispdir $data/share/emacs/site-lisp
+      '';
+    }
+  );
   descriptive = overrideSrc super.descriptive {
     version = "20180514-git";
     src = pkgs.fetchFromGitHub {
@@ -648,16 +674,20 @@ self: super: {
   };
 
   # Make elisp files available at a location where people expect it.
-  hindent = (overrideCabal super.hindent (drv: {
-    # We cannot easily byte-compile these files, unfortunately, because they
-    # depend on a new version of haskell-mode that we don't have yet.
-    postInstall = ''
-      local lispdir=( "$data/share/${self.ghc.name}/"*"/${drv.pname}-"*"/elisp" )
-      mkdir -p $data/share/emacs
-      ln -s $lispdir $data/share/emacs/site-lisp
-    '';
-    doCheck = false; # https://github.com/chrisdone/hindent/issues/299
-  }));
+  hindent = (
+    overrideCabal super.hindent (
+      drv: {
+        # We cannot easily byte-compile these files, unfortunately, because they
+        # depend on a new version of haskell-mode that we don't have yet.
+        postInstall = ''
+          local lispdir=( "$data/share/${self.ghc.name}/"*"/${drv.pname}-"*"/elisp" )
+          mkdir -p $data/share/emacs
+          ln -s $lispdir $data/share/emacs/site-lisp
+        '';
+        doCheck = false; # https://github.com/chrisdone/hindent/issues/299
+      }
+    )
+  );
 
   # https://github.com/bos/configurator/issues/22
   configurator = dontCheck super.configurator;
@@ -681,17 +711,21 @@ self: super: {
   # https://github.com/haskell-crypto/cryptonite/issues/234
   # This has been committed upstream, but there is, as of yet, no new release.
   # Also, disable the test suite to avoid https://github.com/haskell-crypto/cryptonite/issues/260.
-  cryptonite = appendPatch (dontCheck super.cryptonite) (pkgs.fetchpatch {
-    url = https://github.com/haskell-crypto/cryptonite/commit/4622e5fc8ece82f4cf31358e31cd02cf020e558e.patch;
-    sha256 = "1m2d47ni4jbrpvxry50imj91qahr3r7zkqm157clrzlmw6gzpgnq";
-  });
+  cryptonite = appendPatch (dontCheck super.cryptonite) (
+    pkgs.fetchpatch {
+      url = https://github.com/haskell-crypto/cryptonite/commit/4622e5fc8ece82f4cf31358e31cd02cf020e558e.patch;
+      sha256 = "1m2d47ni4jbrpvxry50imj91qahr3r7zkqm157clrzlmw6gzpgnq";
+    }
+  );
 
   # Djinn's last release was 2014, incompatible with Semigroup-Monoid Proposal
   # https://github.com/augustss/djinn/pull/8
-  djinn = appendPatch super.djinn (pkgs.fetchpatch {
-    url = https://github.com/augustss/djinn/commit/6cb9433a137fb6b5194afe41d616bd8b62b95630.patch;
-    sha256 = "0s021y5nzrh74gfp8xpxpxm11ivzfs3jwg6mkrlyry3iy584xqil";
-  });
+  djinn = appendPatch super.djinn (
+    pkgs.fetchpatch {
+      url = https://github.com/augustss/djinn/commit/6cb9433a137fb6b5194afe41d616bd8b62b95630.patch;
+      sha256 = "0s021y5nzrh74gfp8xpxpxm11ivzfs3jwg6mkrlyry3iy584xqil";
+    }
+  );
 
   # We cannot build this package w/o the C library from <http://www.phash.org/>.
   phash = markBroken super.phash;
@@ -701,7 +735,7 @@ self: super: {
 
   # Tools that use gtk2hs-buildtools now depend on them in a custom-setup stanza
   cairo = addBuildTool super.cairo self.buildHaskellPackages.gtk2hs-buildtools;
-  pango = disableHardening (addBuildTool super.pango self.buildHaskellPackages.gtk2hs-buildtools) ["fortify"];
+  pango = disableHardening (addBuildTool super.pango self.buildHaskellPackages.gtk2hs-buildtools) [ "fortify" ];
   gtk =
     if pkgs.stdenv.isDarwin
     then appendConfigureFlag super.gtk "-fhave-quartz-gtk"
@@ -709,11 +743,15 @@ self: super: {
 
   # https://github.com/Philonous/hs-stun/pull/1
   # Remove if a version > 0.1.0.1 ever gets released.
-  stunclient = overrideCabal super.stunclient (drv: {
-    postPatch = (drv.postPatch or "") + ''
-      substituteInPlace source/Network/Stun/MappedAddress.hs --replace "import Network.Endian" ""
-    '';
-  });
+  stunclient = overrideCabal super.stunclient (
+    drv: {
+      postPatch = (drv.postPatch or "")
+        + ''
+        substituteInPlace source/Network/Stun/MappedAddress.hs --replace "import Network.Endian" ""
+      ''
+        ;
+    }
+  );
 
   # The standard libraries are compiled separately
   idris = generateOptparseApplicativeCompletion "idris" (
@@ -745,11 +783,16 @@ self: super: {
           mv _build/html $out
         '';
       };
-    in overrideCabal super.servant (old: {
-      postInstall = old.postInstall or "" + ''
-        ln -s ${docs} ''${!outputDoc}/share/doc/servant
-      '';
-    });
+    in
+      overrideCabal super.servant (
+        old: {
+          postInstall = old.postInstall or ""
+            + ''
+            ln -s ${docs} ''${!outputDoc}/share/doc/servant
+          ''
+            ;
+        }
+      );
 
   # https://github.com/pontarius/pontarius-xmpp/issues/105
   pontarius-xmpp = dontCheck super.pontarius-xmpp;
@@ -830,10 +873,12 @@ self: super: {
 
   # Test suite fails: https://github.com/lymar/hastache/issues/46.
   # Don't install internal mkReadme tool.
-  hastache = overrideCabal super.hastache (drv: {
-    doCheck = false;
-    postInstall = "rm $out/bin/mkReadme && rmdir $out/bin";
-  });
+  hastache = overrideCabal super.hastache (
+    drv: {
+      doCheck = false;
+      postInstall = "rm $out/bin/mkReadme && rmdir $out/bin";
+    }
+  );
 
   # Has a dependency on outdated versions of directory.
   cautious-file = doJailbreak (dontCheck super.cautious-file);
@@ -857,14 +902,18 @@ self: super: {
   # Wrap the generated binaries to include their run-time dependencies in
   # $PATH. Also, cryptol needs a version of sbl that's newer than what we have
   # in LTS-13.x.
-  cryptol = overrideCabal super.cryptol (drv: {
-    buildTools = drv.buildTools or [] ++ [ pkgs.makeWrapper ];
-    postInstall = drv.postInstall or "" + ''
-      for b in $out/bin/cryptol $out/bin/cryptol-html; do
-        wrapProgram $b --prefix 'PATH' ':' "${pkgs.lib.getBin pkgs.z3}/bin"
-      done
-    '';
-  });
+  cryptol = overrideCabal super.cryptol (
+    drv: {
+      buildTools = drv.buildTools or [] ++ [ pkgs.makeWrapper ];
+      postInstall = drv.postInstall or ""
+        + ''
+        for b in $out/bin/cryptol $out/bin/cryptol-html; do
+          wrapProgram $b --prefix 'PATH' ':' "${pkgs.lib.getBin pkgs.z3}/bin"
+        done
+      ''
+        ;
+    }
+  );
 
   # Tests try to invoke external process and process == 1.4
   grakn = dontCheck (doJailbreak super.grakn);
@@ -881,16 +930,18 @@ self: super: {
   c2hs = dontCheck super.c2hs;
 
   # Needs pginit to function and pgrep to verify.
-  tmp-postgres = overrideCabal super.tmp-postgres (drv: {
-    libraryToolDepends = drv.libraryToolDepends or [] ++ [pkgs.postgresql];
-    testToolDepends = drv.testToolDepends or [] ++ [pkgs.procps];
-  });
+  tmp-postgres = overrideCabal super.tmp-postgres (
+    drv: {
+      libraryToolDepends = drv.libraryToolDepends or [] ++ [ pkgs.postgresql ];
+      testToolDepends = drv.testToolDepends or [] ++ [ pkgs.procps ];
+    }
+  );
 
   # Needs QuickCheck <2.10, which we don't have.
   edit-distance = doJailbreak super.edit-distance;
   blaze-markup = doJailbreak super.blaze-markup;
   blaze-html = doJailbreak super.blaze-html;
-  attoparsec = dontCheck super.attoparsec;      # 1 out of 67 tests fails
+  attoparsec = dontCheck super.attoparsec; # 1 out of 67 tests fails
   int-cast = doJailbreak super.int-cast;
   nix-derivation = doJailbreak super.nix-derivation;
 
@@ -935,9 +986,10 @@ self: super: {
   servant-docs =
     let
       f = if (pkgs.stdenv.hostPlatform.isAarch32 || pkgs.stdenv.hostPlatform.isAarch64)
-          then dontCheck
-          else pkgs.lib.id;
-    in doJailbreak (f super.servant-docs); # jailbreak tasty < 1.2 until servant-docs > 0.11.3 is on hackage.
+      then dontCheck
+      else pkgs.lib.id;
+    in
+      doJailbreak (f super.servant-docs); # jailbreak tasty < 1.2 until servant-docs > 0.11.3 is on hackage.
   swagger2 = if (pkgs.stdenv.hostPlatform.isAarch32 || pkgs.stdenv.hostPlatform.isAarch64) then dontHaddock (dontCheck super.swagger2) else super.swagger2;
 
   # requires a release including https://github.com/haskell-servant/servant-swagger/commit/249530d9f85fe76dfb18b100542f75a27e6a3079
@@ -948,45 +1000,51 @@ self: super: {
 
   # Copy hledger man pages from data directory into the proper place. This code
   # should be moved into the cabal2nix generator.
-  hledger = overrideCabal super.hledger (drv: {
-    postInstall = ''
-      # Don't install files that don't belong into this package to avoid
-      # conflicts when hledger and hledger-ui end up in the same profile.
-      rm embeddedfiles/hledger-{api,ui,web}.*
-      for i in $(seq 1 9); do
-        for j in embeddedfiles/*.$i; do
-          mkdir -p $out/share/man/man$i
-          cp -v $j $out/share/man/man$i/
+  hledger = overrideCabal super.hledger (
+    drv: {
+      postInstall = ''
+        # Don't install files that don't belong into this package to avoid
+        # conflicts when hledger and hledger-ui end up in the same profile.
+        rm embeddedfiles/hledger-{api,ui,web}.*
+        for i in $(seq 1 9); do
+          for j in embeddedfiles/*.$i; do
+            mkdir -p $out/share/man/man$i
+            cp -v $j $out/share/man/man$i/
+          done
         done
-      done
-      mkdir -p $out/share/info
-      cp -v embeddedfiles/*.info* $out/share/info/
-    '';
-  });
-  hledger-ui = overrideCabal super.hledger-ui (drv: {
-    postInstall = ''
-      for i in $(seq 1 9); do
-        for j in *.$i; do
-          mkdir -p $out/share/man/man$i
-          cp -v $j $out/share/man/man$i/
+        mkdir -p $out/share/info
+        cp -v embeddedfiles/*.info* $out/share/info/
+      '';
+    }
+  );
+  hledger-ui = overrideCabal super.hledger-ui (
+    drv: {
+      postInstall = ''
+        for i in $(seq 1 9); do
+          for j in *.$i; do
+            mkdir -p $out/share/man/man$i
+            cp -v $j $out/share/man/man$i/
+          done
         done
-      done
-      mkdir -p $out/share/info
-      cp -v *.info* $out/share/info/
-    '';
-  });
-  hledger-web = overrideCabal super.hledger-web (drv: {
-    postInstall = ''
-      for i in $(seq 1 9); do
-        for j in *.$i; do
-          mkdir -p $out/share/man/man$i
-          cp -v $j $out/share/man/man$i/
+        mkdir -p $out/share/info
+        cp -v *.info* $out/share/info/
+      '';
+    }
+  );
+  hledger-web = overrideCabal super.hledger-web (
+    drv: {
+      postInstall = ''
+        for i in $(seq 1 9); do
+          for j in *.$i; do
+            mkdir -p $out/share/man/man$i
+            cp -v $j $out/share/man/man$i/
+          done
         done
-      done
-      mkdir -p $out/share/info
-      cp -v *.info* $out/share/info/
-    '';
-  });
+        mkdir -p $out/share/info
+        cp -v *.info* $out/share/info/
+      '';
+    }
+  );
 
   # https://github.com/haskell-rewriting/term-rewriting/issues/11
   term-rewriting = dontCheck (doJailbreak super.term-rewriting);
@@ -1014,15 +1072,19 @@ self: super: {
   spdx = dontCheck super.spdx;
 
   # The test suite does not know how to find the 'alex' binary.
-  alex = overrideCabal super.alex (drv: {
-    testSystemDepends = (drv.testSystemDepends or []) ++ [pkgs.which];
-    preCheck = ''export PATH="$PWD/dist/build/alex:$PATH"'';
-  });
-  arbtt = overrideCabal super.arbtt (drv: {
-    preCheck = ''
-      for n in $PWD/dist/build/*; do PATH+=":$n"; done
-    '';
-  });
+  alex = overrideCabal super.alex (
+    drv: {
+      testSystemDepends = (drv.testSystemDepends or []) ++ [ pkgs.which ];
+      preCheck = ''export PATH="$PWD/dist/build/alex:$PATH"'';
+    }
+  );
+  arbtt = overrideCabal super.arbtt (
+    drv: {
+      preCheck = ''
+        for n in $PWD/dist/build/*; do PATH+=":$n"; done
+      '';
+    }
+  );
 
   # This package refers to the wrong library (itself in fact!)
   vulkan = super.vulkan.override { vulkan = pkgs.vulkan-loader; };
@@ -1057,17 +1119,17 @@ self: super: {
   dhall =
     generateOptparseApplicativeCompletion "dhall" (
       dontCheck super.dhall
-  );
+    );
 
   dhall-json =
-    generateOptparseApplicativeCompletions ["dhall-to-json" "dhall-to-yaml"] (
+    generateOptparseApplicativeCompletions [ "dhall-to-json" "dhall-to-yaml" ] (
       super.dhall-json
-  );
+    );
 
   dhall-nix =
     generateOptparseApplicativeCompletion "dhall-to-nix" (
       super.dhall-nix
-  );
+    );
 
   # https://github.com/well-typed/cborg/issues/174
   cborg = doJailbreak super.cborg;
@@ -1094,11 +1156,13 @@ self: super: {
 
   # hdocs-0.5.3.1: Break out of “haddock-api ==2.21.*”
   # cannot use doJailbreak due to https://github.com/peti/jailbreak-cabal/issues/7
-  hdocs = overrideCabal super.hdocs (drv: {
-    postPatch = ''
-      sed -i 's#haddock-api == 2\.21\.\*,#haddock-api == 2.22.*,#' hdocs.cabal
-    '';
-  });
+  hdocs = overrideCabal super.hdocs (
+    drv: {
+      postPatch = ''
+        sed -i 's#haddock-api == 2\.21\.\*,#haddock-api == 2.22.*,#' hdocs.cabal
+      '';
+    }
+  );
 
   # Break out of tasty >=0.10 && <1.2.
   aeson-compat = doJailbreak super.aeson-compat;
@@ -1108,8 +1172,11 @@ self: super: {
 
   # Generate shell completion.
   cabal2nix = generateOptparseApplicativeCompletion "cabal2nix" super.cabal2nix;
-  stack = generateOptparseApplicativeCompletion "stack" (super.stack.overrideScope (self: super: {
-  }));
+  stack = generateOptparseApplicativeCompletion "stack" (
+    super.stack.overrideScope (
+      self: super: {}
+    )
+  );
 
   # musl fixes
   # dontCheck: use of non-standard strptime "%s" which musl doesn't support; only used in test
@@ -1118,10 +1185,12 @@ self: super: {
   prettyprinter = if pkgs.stdenv.hostPlatform.isMusl then dontCheck super.prettyprinter else super.prettyprinter;
 
   # Fix with Cabal 2.2, https://github.com/guillaume-nargeot/hpc-coveralls/pull/73
-  hpc-coveralls = appendPatch super.hpc-coveralls (pkgs.fetchpatch {
-    url = "https://github.com/guillaume-nargeot/hpc-coveralls/pull/73/commits/344217f513b7adfb9037f73026f5d928be98d07f.patch";
-    sha256 = "056rk58v9h114mjx62f41x971xn9p3nhsazcf9zrcyxh1ymrdm8j";
-  });
+  hpc-coveralls = appendPatch super.hpc-coveralls (
+    pkgs.fetchpatch {
+      url = "https://github.com/guillaume-nargeot/hpc-coveralls/pull/73/commits/344217f513b7adfb9037f73026f5d928be98d07f.patch";
+      sha256 = "056rk58v9h114mjx62f41x971xn9p3nhsazcf9zrcyxh1ymrdm8j";
+    }
+  );
 
   # Tests require a browser: https://github.com/ku-fpg/blank-canvas/issues/73
   blank-canvas = dontCheck super.blank-canvas;
@@ -1132,10 +1201,14 @@ self: super: {
 
   # sexpr is old, broken and has no issue-tracker. Let's fix it the best we can.
   sexpr =
-    appendPatch (overrideCabal super.sexpr (drv: {
-      isExecutable = false;
-      libraryHaskellDepends = drv.libraryHaskellDepends ++ [self.QuickCheck];
-    })) ./patches/sexpr-0.2.1.patch;
+    appendPatch (
+      overrideCabal super.sexpr (
+        drv: {
+          isExecutable = false;
+          libraryHaskellDepends = drv.libraryHaskellDepends ++ [ self.QuickCheck ];
+        }
+      )
+    ) ./patches/sexpr-0.2.1.patch;
 
   # https://github.com/haskell/hoopl/issues/50
   hoopl = dontCheck super.hoopl;
@@ -1147,10 +1220,12 @@ self: super: {
   purescript = generateOptparseApplicativeCompletion "purs" super.purescript;
 
   # https://github.com/adinapoli/mandrill/pull/52
-  mandrill = appendPatch super.mandrill (pkgs.fetchpatch {
-    url = https://github.com/adinapoli/mandrill/commit/30356d9dfc025a5f35a156b17685241fc3882c55.patch;
-    sha256 = "1qair09xs6vln3vsjz7sy4hhv037146zak4mq3iv6kdhmp606hqv";
-  });
+  mandrill = appendPatch super.mandrill (
+    pkgs.fetchpatch {
+      url = https://github.com/adinapoli/mandrill/commit/30356d9dfc025a5f35a156b17685241fc3882c55.patch;
+      sha256 = "1qair09xs6vln3vsjz7sy4hhv037146zak4mq3iv6kdhmp606hqv";
+    }
+  );
 
   # https://github.com/Euterpea/Euterpea2/pull/22
   Euterpea = overrideSrc super.Euterpea {
@@ -1188,53 +1263,71 @@ self: super: {
   tdigest = doJailbreak super.tdigest; # until tdigest > 0.2.1
   these = doJailbreak super.these; # until these >= 0.7.6
 
-  uri-bytestring = appendPatch super.uri-bytestring (pkgs.fetchpatch {
-    url = "https://github.com/Soostone/uri-bytestring/commit/e5c5602a97160a6a6304a24947e33e47c9155460.patch";
-    sha256 = "1qwy8bj6vywhp0075dza8j90zrzsm3144qz3c703s9c4n6pg3gw4";
-    });
+  uri-bytestring = appendPatch super.uri-bytestring (
+    pkgs.fetchpatch {
+      url = "https://github.com/Soostone/uri-bytestring/commit/e5c5602a97160a6a6304a24947e33e47c9155460.patch";
+      sha256 = "1qwy8bj6vywhp0075dza8j90zrzsm3144qz3c703s9c4n6pg3gw4";
+    }
+  );
 
   # Requires pg_ctl command during tests
-  beam-postgres = overrideCabal super.beam-postgres (drv: {
-    testToolDepends = (drv.testToolDepends or []) ++ [pkgs.postgresql];
-    });
+  beam-postgres = overrideCabal super.beam-postgres (
+    drv: {
+      testToolDepends = (drv.testToolDepends or []) ++ [ pkgs.postgresql ];
+    }
+  );
 
   # https://github.com/sighingnow/computations/pull/1
-  primesieve = appendPatch super.primesieve (pkgs.fetchpatch {
-    url = "https://github.com/sighingnow/computations/commit/1f96788367c879b999afe733e2fe28d919d17702.patch";
-    sha256 = "0lrcmcrxp9imj9rfaq7mb0fn9mxms4gq4sz95n4san3dpd0qmj9x";
-    stripLen = 1;
-    });
+  primesieve = appendPatch super.primesieve (
+    pkgs.fetchpatch {
+      url = "https://github.com/sighingnow/computations/commit/1f96788367c879b999afe733e2fe28d919d17702.patch";
+      sha256 = "0lrcmcrxp9imj9rfaq7mb0fn9mxms4gq4sz95n4san3dpd0qmj9x";
+      stripLen = 1;
+    }
+  );
 
   # Fix for base >= 4.11
-  scat = overrideCabal super.scat (drv: {
-    patches = [(pkgs.fetchpatch {
-      url    = "https://github.com/redelmann/scat/pull/6.diff";
-      sha256 = "07nj2p0kg05livhgp1hkkdph0j0a6lb216f8x348qjasy0lzbfhl";
-    })];
-  });
+  scat = overrideCabal super.scat (
+    drv: {
+      patches = [
+        (
+          pkgs.fetchpatch {
+            url = "https://github.com/redelmann/scat/pull/6.diff";
+            sha256 = "07nj2p0kg05livhgp1hkkdph0j0a6lb216f8x348qjasy0lzbfhl";
+          }
+        )
+      ];
+    }
+  );
 
   # Remove unecessary constraint:
   # https://github.com/agrafix/superbuffer/pull/2
-  superbuffer = overrideCabal super.superbuffer (drv: {
-    postPatch = ''
-      sed -i 's#QuickCheck < 2.10#QuickCheck < 2.13#' superbuffer.cabal
-    '';
-  });
+  superbuffer = overrideCabal super.superbuffer (
+    drv: {
+      postPatch = ''
+        sed -i 's#QuickCheck < 2.10#QuickCheck < 2.13#' superbuffer.cabal
+      '';
+    }
+  );
 
   # test suite failure: https://github.com/jgm/pandoc/issues/5582
   pandoc = dontCheck super.pandoc;
 
   # The latest release version is ancient. You really need this tool from git.
   haskell-ci = generateOptparseApplicativeCompletion "haskell-ci"
-    (addBuildDepend (overrideSrc (dontCheck super.haskell-ci) {
-      version = "20190814-git";
-      src = pkgs.fetchFromGitHub {
-        owner = "haskell-CI";
-        repo = "haskell-ci";
-        rev = "70918d80b6fd43aca7e4d00ba0d2ea116b666556";
-        sha256 = "0bzp959qy74zmqq75f60rcixpjbvvyrb5a8zp2nyql3nm9vxzy5k";
-      };
-  }) (with self; [temporary lattices Cabal_3_0_0_0]));
+    (
+      addBuildDepend (
+        overrideSrc (dontCheck super.haskell-ci) {
+          version = "20190814-git";
+          src = pkgs.fetchFromGitHub {
+            owner = "haskell-CI";
+            repo = "haskell-ci";
+            rev = "70918d80b6fd43aca7e4d00ba0d2ea116b666556";
+            sha256 = "0bzp959qy74zmqq75f60rcixpjbvvyrb5a8zp2nyql3nm9vxzy5k";
+          };
+        }
+      ) (with self; [ temporary lattices Cabal_3_0_0_0 ])
+    );
 
   # Fix build with attr-2.4.48 (see #53716)
   xattr = appendPatch super.xattr ./patches/xattr-fix-build.patch;
@@ -1288,4 +1381,5 @@ self: super: {
   # https://github.com/elliottt/hsopenid/issues/15
   openid = markBroken super.openid;
 
-} // import ./configuration-tensorflow.nix {inherit pkgs haskellLib;} self super
+}
+// import ./configuration-tensorflow.nix { inherit pkgs haskellLib; } self super

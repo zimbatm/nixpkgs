@@ -14,7 +14,7 @@ let
     [General]
     Pipefs-Directory = ${rpcMountpoint}
     ${optionalString (config.networking.domain != null)
-      "Domain = ${config.networking.domain}"}
+    "Domain = ${config.networking.domain}"}
 
     [Mapping]
     Nobody-User = nobody
@@ -63,24 +63,29 @@ in
     };
 
     systemd.services.nfs-blkmap =
-      { restartTriggers = [ nfsConfFile ];
+      {
+        restartTriggers = [ nfsConfFile ];
       };
 
     systemd.targets.nfs-client =
-      { wantedBy = [ "multi-user.target" "remote-fs.target" ];
+      {
+        wantedBy = [ "multi-user.target" "remote-fs.target" ];
       };
 
     systemd.services.nfs-idmapd =
-      { restartTriggers = [ idmapdConfFile ];
+      {
+        restartTriggers = [ idmapdConfFile ];
       };
 
     systemd.services.nfs-mountd =
-      { restartTriggers = [ nfsConfFile ];
+      {
+        restartTriggers = [ nfsConfFile ];
         enable = mkDefault false;
       };
 
     systemd.services.nfs-server =
-      { restartTriggers = [ nfsConfFile ];
+      {
+        restartTriggers = [ nfsConfFile ];
         enable = mkDefault false;
       };
 
@@ -90,12 +95,14 @@ in
       };
 
     systemd.services.rpc-gssd =
-      { restartTriggers = [ nfsConfFile ];
+      {
+        restartTriggers = [ nfsConfFile ];
         unitConfig.ConditionPathExists = [ "" "/etc/krb5.keytab" ];
       };
 
     systemd.services.rpc-statd =
-      { restartTriggers = [ nfsConfFile ];
+      {
+        restartTriggers = [ nfsConfFile ];
 
         preStart =
           ''

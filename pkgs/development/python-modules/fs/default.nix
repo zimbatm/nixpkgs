@@ -32,9 +32,10 @@ buildPythonPackage rec {
     ++ lib.optionals (!isPy3k) [ backports_os ]
     ++ lib.optionals (!pythonAtLeast "3.6") [ typing ]
     ++ lib.optionals (!pythonAtLeast "3.5") [ scandir ]
-    ++ lib.optionals (!pythonAtLeast "3.5") [ enum34 ];
+    ++ lib.optionals (!pythonAtLeast "3.5") [ enum34 ]
+    ;
 
-  LC_ALL="en_US.utf-8";
+  LC_ALL = "en_US.utf-8";
 
   checkPhase = ''
     HOME=$(mktemp -d) nosetests tests []
@@ -42,10 +43,10 @@ buildPythonPackage rec {
 
   meta = with lib; {
     description = "Filesystem abstraction";
-    homepage    = https://github.com/PyFilesystem/pyfilesystem2;
-    license     = licenses.bsd3;
+    homepage = https://github.com/PyFilesystem/pyfilesystem2;
+    license = licenses.bsd3;
     maintainers = with maintainers; [ lovek323 ];
-    platforms   = platforms.unix;
+    platforms = platforms.unix;
   };
 
 }

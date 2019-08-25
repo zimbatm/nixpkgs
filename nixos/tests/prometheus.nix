@@ -5,13 +5,17 @@ import ./make-test.nix {
     one = { ... }: {
       services.prometheus = {
         enable = true;
-        scrapeConfigs = [{
-          job_name = "prometheus";
-          static_configs = [{
-            targets = [ "127.0.0.1:9090" ];
-            labels = { instance = "localhost"; };
-          }];
-        }];
+        scrapeConfigs = [
+          {
+            job_name = "prometheus";
+            static_configs = [
+              {
+                targets = [ "127.0.0.1:9090" ];
+                labels = { instance = "localhost"; };
+              }
+            ];
+          }
+        ];
         rules = [ ''testrule = count(up{job="prometheus"})'' ];
 
         # a very simple version of the alertmanager configuration just to see if

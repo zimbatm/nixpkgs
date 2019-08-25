@@ -1,6 +1,8 @@
 { stdenv, fetchurl, autoreconfHook, libGLU_combined }:
 
-let version = "1.0"; in
+let
+  version = "1.0";
+in
 
 stdenv.mkDerivation rec {
   name = "libtxc_dxtn_s2tc-${version}";

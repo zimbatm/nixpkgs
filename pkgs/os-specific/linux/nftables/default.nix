@@ -1,7 +1,16 @@
-{ stdenv, fetchurl, pkgconfig, bison, flex
-, libmnl, libnftnl, libpcap
-, gmp, jansson, readline
-, withXtables ? false , iptables
+{ stdenv
+, fetchurl
+, pkgconfig
+, bison
+, flex
+, libmnl
+, libnftnl
+, libpcap
+, gmp
+, jansson
+, readline
+, withXtables ? false
+, iptables
 }:
 
 with stdenv.lib;
@@ -18,14 +27,22 @@ stdenv.mkDerivation rec {
   configureFlags = [
     "--disable-man-doc"
     "--with-json"
-  ] ++ optional withXtables "--with-xtables";
+  ]
+  ++ optional withXtables "--with-xtables"
+  ;
 
   nativeBuildInputs = [ pkgconfig bison flex ];
 
   buildInputs = [
-    libmnl libnftnl libpcap
-    gmp readline jansson
-  ] ++ optional withXtables iptables;
+    libmnl
+    libnftnl
+    libpcap
+    gmp
+    readline
+    jansson
+  ]
+  ++ optional withXtables iptables
+  ;
 
   meta = {
     description = "The project that aims to replace the existing {ip,ip6,arp,eb}tables framework";

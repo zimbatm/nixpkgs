@@ -35,28 +35,35 @@ buildPythonPackage rec {
     sha256 = "191admjvhqsbxpqn73q42i0i8kvlblj0k6p0z9p7n3pcxzl75nsw";
   };
 
-  buildInputs = lib.optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
-    Accelerate CoreFoundation CoreGraphics CoreVideo
-  ]);
+  buildInputs = lib.optionals stdenv.isDarwin (
+    with darwin.apple_sdk.frameworks; [
+      Accelerate
+      CoreFoundation
+      CoreGraphics
+      CoreVideo
+    ]
+  );
 
   propagatedBuildInputs = [
-   blis
-   cython
-   cymem
-   msgpack-numpy
-   msgpack-python
-   preshed
-   numpy
-   murmurhash
-   tqdm
-   cytoolz
-   plac
-   six
-   srsly
-   wrapt
-   dill
-   wasabi
-  ] ++ lib.optional (pythonOlder "3.4") pathlib;
+    blis
+    cython
+    cymem
+    msgpack-numpy
+    msgpack-python
+    preshed
+    numpy
+    murmurhash
+    tqdm
+    cytoolz
+    plac
+    six
+    srsly
+    wrapt
+    dill
+    wasabi
+  ]
+  ++ lib.optional (pythonOlder "3.4") pathlib
+  ;
 
 
   checkInputs = [
@@ -82,5 +89,5 @@ buildPythonPackage rec {
     homepage = https://github.com/explosion/thinc;
     license = licenses.mit;
     maintainers = with maintainers; [ aborsu danieldk sdll ];
-    };
+  };
 }

@@ -7,7 +7,8 @@ let
   }.${stdenv.hostPlatform.system} or (throw "Unsupported system: ${stdenv.hostPlatform.system}");
   libPath = stdenv.lib.makeLibraryPath [ stdenv.cc.libc ];
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "resilio-sync-${version}";
   version = "2.6.3";
 
@@ -15,7 +16,7 @@ in stdenv.mkDerivation rec {
     url = "https://download-cdn.resilio.com/${version}/linux-${arch}/resilio-sync_${arch}.tar.gz";
     sha256 = {
       "x86_64-linux" = "114k7dsxn7lzv6mjq9alsqxypvkah4lmjn5w6brbvgd6m6pdwslz";
-      "i686-linux"   = "1dh0hxbd33bs51xib3qwxw58h9j30v0dc10b4x4rwkbgsj11nc83";
+      "i686-linux" = "1dh0hxbd33bs51xib3qwxw58h9j30v0dc10b4x4rwkbgsj11nc83";
     }.${stdenv.hostPlatform.system};
   };
 
@@ -31,9 +32,9 @@ in stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "Automatically sync files via secure, distributed technology";
-    homepage    = https://www.resilio.com/;
-    license     = licenses.unfreeRedistributable;
-    platforms   = platforms.linux;
+    homepage = https://www.resilio.com/;
+    license = licenses.unfreeRedistributable;
+    platforms = platforms.linux;
     maintainers = with maintainers; [ domenkozar thoughtpolice cwoac ];
   };
 }

@@ -15,7 +15,7 @@ let
   };
 in
 stdenv.mkDerivation rec {
-  name    = "arcanist-${version}";
+  name = "arcanist-${version}";
   version = "20180916";
 
   src = [ arcanist libphutil ];
@@ -50,9 +50,9 @@ stdenv.mkDerivation rec {
 
   meta = {
     description = "Command line interface to Phabricator";
-    homepage    = "http://phabricator.org";
-    license     = stdenv.lib.licenses.asl20;
-    platforms   = stdenv.lib.platforms.unix;
+    homepage = "http://phabricator.org";
+    license = stdenv.lib.licenses.asl20;
+    platforms = stdenv.lib.platforms.unix;
     maintainers = [ stdenv.lib.maintainers.thoughtpolice ];
   };
 }

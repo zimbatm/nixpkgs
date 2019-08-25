@@ -41,7 +41,8 @@ in
 
       serviceConfig = {
         ExecStart = "${pkgs.rng-tools}/sbin/rngd -f"
-          + optionalString cfg.debug " -d";
+          + optionalString cfg.debug " -d"
+          ;
         NoNewPrivileges = true;
         PrivateNetwork = true;
         PrivateTmp = true;

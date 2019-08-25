@@ -1,5 +1,18 @@
-{ stdenv, fetchFromGitHub, mpfr, libxml2, intltool, pkgconfig, doxygen,
-  autoreconfHook, readline, libiconv, icu, curl, gnuplot, gettext }:
+{ stdenv
+, fetchFromGitHub
+, mpfr
+, libxml2
+, intltool
+, pkgconfig
+, doxygen
+, autoreconfHook
+, readline
+, libiconv
+, icu
+, curl
+, gnuplot
+, gettext
+}:
 
 stdenv.mkDerivation rec {
   pname = "libqalculate";
@@ -27,10 +40,12 @@ stdenv.mkDerivation rec {
     substituteInPlace libqalculate/Calculator.cc \
       --replace 'commandline = "gnuplot"' 'commandline = "${gnuplot}/bin/gnuplot"' \
       --replace '"gnuplot - ' '"${gnuplot}/bin/gnuplot - '
-  '' + stdenv.lib.optionalString stdenv.cc.isClang ''
-    substituteInPlace src/qalc.cc \
-      --replace 'printf(_("aborted"))' 'printf("%s", _("aborted"))'
-  '';
+  ''
+  + stdenv.lib.optionalString stdenv.cc.isClang ''
+      substituteInPlace src/qalc.cc \
+        --replace 'printf(_("aborted"))' 'printf("%s", _("aborted"))'
+    ''
+  ;
 
   preBuild = ''
     pushd docs/reference

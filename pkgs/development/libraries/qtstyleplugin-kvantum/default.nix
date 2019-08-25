@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ qmake qttools ];
-  buildInputs = [ qtbase qtsvg qtx11extras kwindowsystem libX11 libXext  ];
+  buildInputs = [ qtbase qtsvg qtx11extras kwindowsystem libX11 libXext ];
 
   sourceRoot = "source/Kvantum";
 

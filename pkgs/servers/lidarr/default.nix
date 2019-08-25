@@ -23,7 +23,10 @@ stdenv.mkDerivation rec {
     makeWrapper "${mono}/bin/mono" $out/bin/Lidarr \
       --add-flags "$out/bin/Lidarr.exe" \
       --prefix LD_LIBRARY_PATH : ${stdenv.lib.makeLibraryPath [
-          curl sqlite libmediainfo ]}
+    curl
+    sqlite
+    libmediainfo
+  ]}
   '';
 
   meta = with stdenv.lib; {

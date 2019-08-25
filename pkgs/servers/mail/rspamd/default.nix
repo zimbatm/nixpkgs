@@ -1,6 +1,23 @@
-{ stdenv, lib, fetchFromGitHub, cmake, perl
-, file, glib, libevent, luajit, openssl, pcre, pkgconfig, sqlite, ragel, icu
-, hyperscan, libfann, gd, jemalloc, openblas
+{ stdenv
+, lib
+, fetchFromGitHub
+, cmake
+, perl
+, file
+, glib
+, libevent
+, luajit
+, openssl
+, pcre
+, pkgconfig
+, sqlite
+, ragel
+, icu
+, hyperscan
+, libfann
+, gd
+, jemalloc
+, openblas
 , withFann ? true
 , withGd ? false
 , withBlas ? true
@@ -9,7 +26,8 @@
 
 assert withHyperscan -> stdenv.isx86_64;
 
-let libmagic = file;  # libmagic provided by file package ATM
+let
+  libmagic = file;  # libmagic provided by file package ATM
 in
 
 stdenv.mkDerivation rec {
@@ -28,7 +46,8 @@ stdenv.mkDerivation rec {
     ++ lib.optional withFann libfann
     ++ lib.optional withGd gd
     ++ lib.optional withHyperscan hyperscan
-    ++ lib.optional withBlas openblas;
+    ++ lib.optional withBlas openblas
+    ;
 
   cmakeFlags = [
     "-DDEBIAN_BUILD=ON"
@@ -37,9 +56,11 @@ stdenv.mkDerivation rec {
     "-DLOGDIR=/var/log/rspamd"
     "-DLOCAL_CONFDIR=/etc/rspamd"
     "-DENABLE_JEMALLOC=ON"
-  ] ++ lib.optional withFann "-DENABLE_FANN=ON"
-    ++ lib.optional withHyperscan "-DENABLE_HYPERSCAN=ON"
-    ++ lib.optional withGd "-DENABLE_GD=ON";
+  ]
+  ++ lib.optional withFann "-DENABLE_FANN=ON"
+  ++ lib.optional withHyperscan "-DENABLE_HYPERSCAN=ON"
+  ++ lib.optional withGd "-DENABLE_GD=ON"
+  ;
 
   meta = with stdenv.lib; {
     homepage = https://rspamd.com;

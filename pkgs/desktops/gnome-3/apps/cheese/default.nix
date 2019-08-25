@@ -1,8 +1,35 @@
-{ stdenv, intltool, fetchurl, wrapGAppsHook, gnome-video-effects, libcanberra-gtk3
-, pkgconfig, gtk3, glib, clutter-gtk, clutter-gst, udev, gst_all_1, itstool
-, libgudev, autoreconfHook, vala, docbook_xml_dtd_43, docbook_xsl, appstream-glib
-, libxslt, yelp-tools, gnome-common, gtk-doc
-, adwaita-icon-theme, librsvg, totem, gdk-pixbuf, gnome3, gnome-desktop, libxml2 }:
+{ stdenv
+, intltool
+, fetchurl
+, wrapGAppsHook
+, gnome-video-effects
+, libcanberra-gtk3
+, pkgconfig
+, gtk3
+, glib
+, clutter-gtk
+, clutter-gst
+, udev
+, gst_all_1
+, itstool
+, libgudev
+, autoreconfHook
+, vala
+, docbook_xml_dtd_43
+, docbook_xsl
+, appstream-glib
+, libxslt
+, yelp-tools
+, gnome-common
+, gtk-doc
+, adwaita-icon-theme
+, librsvg
+, totem
+, gdk-pixbuf
+, gnome3
+, gnome-desktop
+, libxml2
+}:
 
 stdenv.mkDerivation rec {
   name = "cheese-${version}";
@@ -18,15 +45,39 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    pkgconfig intltool itstool vala wrapGAppsHook libxml2 appstream-glib
-    libxslt docbook_xml_dtd_43 docbook_xsl
-    autoreconfHook gtk-doc yelp-tools gnome-common
+    pkgconfig
+    intltool
+    itstool
+    vala
+    wrapGAppsHook
+    libxml2
+    appstream-glib
+    libxslt
+    docbook_xml_dtd_43
+    docbook_xsl
+    autoreconfHook
+    gtk-doc
+    yelp-tools
+    gnome-common
   ];
-  buildInputs = [ gtk3 glib gnome-video-effects
-                  gdk-pixbuf adwaita-icon-theme librsvg udev gst_all_1.gstreamer
-                  gst_all_1.gst-plugins-base gst_all_1.gst-plugins-good gnome-desktop
-                  gst_all_1.gst-plugins-bad clutter-gtk clutter-gst
-                  libcanberra-gtk3 libgudev ];
+  buildInputs = [
+    gtk3
+    glib
+    gnome-video-effects
+    gdk-pixbuf
+    adwaita-icon-theme
+    librsvg
+    udev
+    gst_all_1.gstreamer
+    gst_all_1.gst-plugins-base
+    gst_all_1.gst-plugins-good
+    gnome-desktop
+    gst_all_1.gst-plugins-bad
+    clutter-gtk
+    clutter-gst
+    libcanberra-gtk3
+    libgudev
+  ];
 
   outputs = [ "out" "man" "devdoc" ];
 

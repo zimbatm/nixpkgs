@@ -18,5 +18,3 @@ fetchzip rec {
     license = lib.licenses.ofl;
   };
 }
-
-

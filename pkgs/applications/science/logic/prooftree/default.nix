@@ -10,8 +10,16 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ pkgconfig ];
-  buildInputs = [ ncurses ] ++ (with ocamlPackages; [
-    ocaml findlib camlp5 lablgtk ]);
+  buildInputs = [ ncurses ]
+    ++ (
+         with ocamlPackages; [
+           ocaml
+           findlib
+           camlp5
+           lablgtk
+         ]
+       )
+    ;
 
   dontAddPrefix = true;
   configureFlags = [ "--prefix" "$(out)" ];

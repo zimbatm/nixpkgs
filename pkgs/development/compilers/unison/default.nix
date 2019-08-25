@@ -1,5 +1,9 @@
-{ stdenv, fetchurl, autoPatchelfHook
-, ncurses5, zlib, gmp
+{ stdenv
+, fetchurl
+, autoPatchelfHook
+, ncurses5
+, zlib
+, gmp
 }:
 
 stdenv.mkDerivation rec {

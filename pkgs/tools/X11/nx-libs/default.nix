@@ -1,5 +1,16 @@
-{ stdenv, autoconf, automake, fetchFromGitHub, libgcc, libjpeg_turbo,
-  libpng, libtool, libxml2, pkgconfig, which, xorg }:
+{ stdenv
+, autoconf
+, automake
+, fetchFromGitHub
+, libgcc
+, libjpeg_turbo
+, libpng
+, libtool
+, libxml2
+, pkgconfig
+, which
+, xorg
+}:
 stdenv.mkDerivation rec {
   name = "nx-libs-${version}";
   version = "3.5.99.21";
@@ -10,12 +21,34 @@ stdenv.mkDerivation rec {
     sha256 = "10xid8mhhid5mrap5jb51k9fm63cm03ss4k4sfymc8zsn0wrqnr9";
   };
 
-  nativeBuildInputs = [ autoconf automake libtool pkgconfig which
-    xorg.gccmakedep xorg.imake ];
-  buildInputs = [ libgcc libjpeg_turbo libpng libxml2 xorg.fontutil
-    xorg.libXcomposite xorg.libXdamage xorg.libXdmcp xorg.libXext xorg.libXfont2
-    xorg.libXinerama xorg.libXpm xorg.libXrandr xorg.libXtst xorg.pixman
-    xorg.xkbcomp xorg.xkeyboardconfig ];
+  nativeBuildInputs = [
+    autoconf
+    automake
+    libtool
+    pkgconfig
+    which
+    xorg.gccmakedep
+    xorg.imake
+  ];
+  buildInputs = [
+    libgcc
+    libjpeg_turbo
+    libpng
+    libxml2
+    xorg.fontutil
+    xorg.libXcomposite
+    xorg.libXdamage
+    xorg.libXdmcp
+    xorg.libXext
+    xorg.libXfont2
+    xorg.libXinerama
+    xorg.libXpm
+    xorg.libXrandr
+    xorg.libXtst
+    xorg.pixman
+    xorg.xkbcomp
+    xorg.xkeyboardconfig
+  ];
 
   enableParallelBuilding = true;
 
@@ -25,7 +58,7 @@ stdenv.mkDerivation rec {
     ln -s libNX_X11.so.6.3.0
   '';
 
-  PREFIX=""; # Don't install to $out/usr/local
+  PREFIX = ""; # Don't install to $out/usr/local
   installPhase = ''
     make DESTDIR="$out" install
     # See:

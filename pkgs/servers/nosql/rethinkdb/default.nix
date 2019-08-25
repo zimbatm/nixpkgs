@@ -1,6 +1,17 @@
-{ stdenv, fetchurl, which, m4
-, protobuf, boost, zlib, curl, openssl, icu, jemalloc, libtool
-, python2Packages, makeWrapper
+{ stdenv
+, fetchurl
+, which
+, m4
+, protobuf
+, boost
+, zlib
+, curl
+, openssl
+, icu
+, jemalloc
+, libtool
+, python2Packages
+, makeWrapper
 }:
 
 stdenv.mkDerivation rec {
@@ -13,10 +24,12 @@ stdenv.mkDerivation rec {
   };
 
   patches = [
-    (fetchurl {
+    (
+      fetchurl {
         url = "https://github.com/rethinkdb/rethinkdb/commit/871bd3705a1f29c4ab07a096d562a4b06231a97c.patch";
         sha256 = "05nagixlwnq3x7441fhll5vs70pxppbsciw8qjqp660bdb5m4jm1";
-    })
+      }
+    )
   ];
 
   postPatch = stdenv.lib.optionalString stdenv.isDarwin ''
@@ -38,7 +51,8 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ protobuf boost zlib curl openssl icu makeWrapper ]
     ++ stdenv.lib.optional (!stdenv.isDarwin) jemalloc
-    ++ stdenv.lib.optional stdenv.isDarwin libtool;
+    ++ stdenv.lib.optional stdenv.isDarwin libtool
+    ;
 
   nativeBuildInputs = [ which m4 python2Packages.python ];
 
@@ -57,10 +71,10 @@ stdenv.mkDerivation rec {
       query language that supports really useful queries like table
       joins and group by, and is easy to setup and learn.
     '';
-    homepage    = http://www.rethinkdb.com;
-    license     = stdenv.lib.licenses.agpl3;
-    platforms   = stdenv.lib.platforms.linux;
+    homepage = http://www.rethinkdb.com;
+    license = stdenv.lib.licenses.agpl3;
+    platforms = stdenv.lib.platforms.linux;
     maintainers = with stdenv.lib.maintainers; [ thoughtpolice bluescreen303 ];
-    broken = true;  # broken with openssl 1.1
+    broken = true; # broken with openssl 1.1
   };
 }

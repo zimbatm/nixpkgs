@@ -48,9 +48,9 @@ in
         ExecStart = "/bin/sh -c '${pkgs.cfdyndns}/bin/cfdyndns'";
       };
       environment = {
-        CLOUDFLARE_EMAIL="${cfg.email}";
-        CLOUDFLARE_APIKEY="${cfg.apikey}";
-        CLOUDFLARE_RECORDS="${concatStringsSep "," cfg.records}";
+        CLOUDFLARE_EMAIL = "${cfg.email}";
+        CLOUDFLARE_APIKEY = "${cfg.apikey}";
+        CLOUDFLARE_RECORDS = "${concatStringsSep "," cfg.records}";
       };
     };
 

@@ -17,9 +17,9 @@ in
       package = mkOption {
         type = types.package;
         default = if versionAtLeast config.system.stateVersion "19.09"
-          then pkgs.solr_8
-          else pkgs.solr_7
-        ;
+        then pkgs.solr_8
+        else pkgs.solr_7
+          ;
         defaultText = "pkgs.solr";
         description = ''
           Which Solr package to use. This defaults to version 7.x if
@@ -95,23 +95,29 @@ in
       serviceConfig = {
         User = cfg.user;
         Group = cfg.group;
-        ExecStart="${cfg.package}/bin/solr start -f -a \"${concatStringsSep " " cfg.extraJavaOptions}\"";
-        ExecStop="${cfg.package}/bin/solr stop";
+        ExecStart = "${cfg.package}/bin/solr start -f -a \"${concatStringsSep " " cfg.extraJavaOptions}\"";
+        ExecStop = "${cfg.package}/bin/solr stop";
       };
     };
 
-    users.users = optionalAttrs (cfg.user == "solr") (singleton
-      { name = "solr";
-        group = cfg.group;
-        home = cfg.stateDir;
-        createHome = true;
-        uid = config.ids.uids.solr;
-      });
+    users.users = optionalAttrs (cfg.user == "solr") (
+      singleton
+        {
+          name = "solr";
+          group = cfg.group;
+          home = cfg.stateDir;
+          createHome = true;
+          uid = config.ids.uids.solr;
+        }
+    );
 
-    users.groups = optionalAttrs (cfg.group == "solr") (singleton
-      { name = "solr";
-        gid = config.ids.gids.solr;
-      });
+    users.groups = optionalAttrs (cfg.group == "solr") (
+      singleton
+        {
+          name = "solr";
+          gid = config.ids.gids.solr;
+        }
+    );
 
   };
 

@@ -1,6 +1,7 @@
 { callPackage }:
-  {
-    org = callPackage ({ elpaBuild, fetchurl, lib }:
+{
+  org = callPackage (
+    { elpaBuild, fetchurl, lib }:
       elpaBuild {
         pname = "org";
         ename = "org";
@@ -14,8 +15,10 @@
           homepage = "https://elpa.gnu.org/packages/org.html";
           license = lib.licenses.free;
         };
-      }) {};
-    org-plus-contrib = callPackage ({ elpaBuild, fetchurl, lib }:
+      }
+  ) {};
+  org-plus-contrib = callPackage (
+    { elpaBuild, fetchurl, lib }:
       elpaBuild {
         pname = "org-plus-contrib";
         ename = "org-plus-contrib";
@@ -29,5 +32,6 @@
           homepage = "https://elpa.gnu.org/packages/org-plus-contrib.html";
           license = lib.licenses.free;
         };
-      }) {};
-  }
+      }
+  ) {};
+}

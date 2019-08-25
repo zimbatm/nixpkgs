@@ -40,7 +40,8 @@ let
     isSCSI = diskInterface == "scsi";
     devArgs = "${diskInterface}-hd,drive=${drvId}";
     args = "-drive ${commonArgs},if=none -device lsi53c895a -device ${devArgs}";
-  in if isSCSI then args else "-drive ${commonArgs},if=${diskInterface}";
+  in
+    if isSCSI then args else "-drive ${commonArgs},if=${diskInterface}";
 
   # Shell script to start the VM.
   startVM =
@@ -63,29 +64,31 @@ let
       mkdir -p $TMPDIR/xchg
 
       ${if cfg.useBootLoader then ''
-        # Create a writable copy/snapshot of the boot disk.
-        # A writable boot disk can be booted from automatically.
-        ${qemu}/bin/qemu-img create -f qcow2 -b ${bootDisk}/disk.img $TMPDIR/disk.img || exit 1
+      # Create a writable copy/snapshot of the boot disk.
+      # A writable boot disk can be booted from automatically.
+      ${qemu}/bin/qemu-img create -f qcow2 -b ${bootDisk}/disk.img $TMPDIR/disk.img || exit 1
 
-        ${if cfg.useEFIBoot then ''
-          # VM needs a writable flash BIOS.
-          cp ${bootDisk}/bios.bin $TMPDIR || exit 1
-          chmod 0644 $TMPDIR/bios.bin || exit 1
-        '' else ''
+      ${if cfg.useEFIBoot then ''
+      # VM needs a writable flash BIOS.
+      cp ${bootDisk}/bios.bin $TMPDIR || exit 1
+      chmod 0644 $TMPDIR/bios.bin || exit 1
+    '' else ''
         ''}
-      '' else ''
+    '' else ''
       ''}
 
       cd $TMPDIR
       idx=2
       extraDisks=""
-      ${flip concatMapStrings cfg.emptyDiskImages (size: ''
+      ${flip concatMapStrings cfg.emptyDiskImages (
+      size: ''
         if ! test -e "empty$idx.qcow2"; then
             ${qemu}/bin/qemu-img create -f qcow2 "empty$idx.qcow2" "${toString size}M"
         fi
         extraDisks="$extraDisks ${mkDiskIfaceDriveFlag "$idx" "file=$(pwd)/empty$idx.qcow2,werror=report"}"
         idx=$((idx + 1))
-      '')}
+      ''
+    )}
 
       # Start QEMU.
       exec ${qemuBinary qemu} \
@@ -98,18 +101,18 @@ let
           -virtfs local,path=$TMPDIR/xchg,security_model=none,mount_tag=xchg \
           -virtfs local,path=''${SHARED_DIR:-$TMPDIR/xchg},security_model=none,mount_tag=shared \
           ${if cfg.useBootLoader then ''
-            ${mkDiskIfaceDriveFlag "0" "file=$NIX_DISK_IMAGE,cache=writeback,werror=report"} \
-            ${mkDiskIfaceDriveFlag "1" "file=$TMPDIR/disk.img,media=disk"} \
-            ${if cfg.useEFIBoot then ''
-              -pflash $TMPDIR/bios.bin \
-            '' else ''
+      ${mkDiskIfaceDriveFlag "0" "file=$NIX_DISK_IMAGE,cache=writeback,werror=report"} \
+      ${mkDiskIfaceDriveFlag "1" "file=$TMPDIR/disk.img,media=disk"} \
+      ${if cfg.useEFIBoot then ''
+      -pflash $TMPDIR/bios.bin \
+    '' else ''
             ''}
-          '' else ''
-            ${mkDiskIfaceDriveFlag "0" "file=$NIX_DISK_IMAGE,cache=writeback,werror=report"} \
-            -kernel ${config.system.build.toplevel}/kernel \
-            -initrd ${config.system.build.toplevel}/initrd \
-            -append "$(cat ${config.system.build.toplevel}/kernel-params) init=${config.system.build.toplevel}/init regInfo=${regInfo}/registration ${consoles} $QEMU_KERNEL_PARAMS" \
-          ''} \
+    '' else ''
+      ${mkDiskIfaceDriveFlag "0" "file=$NIX_DISK_IMAGE,cache=writeback,werror=report"} \
+      -kernel ${config.system.build.toplevel}/kernel \
+      -initrd ${config.system.build.toplevel}/initrd \
+      -append "$(cat ${config.system.build.toplevel}/kernel-params) init=${config.system.build.toplevel}/init regInfo=${regInfo}/registration ${consoles} $QEMU_KERNEL_PARAMS" \
+    ''} \
           $extraDisks \
           ${qemuGraphics} \
           ${toString config.virtualisation.qemu.options} \
@@ -127,22 +130,23 @@ let
   bootDisk =
     pkgs.vmTools.runInLinuxVM (
       pkgs.runCommand "nixos-boot-disk"
-        { preVM =
+        {
+          preVM =
             ''
               mkdir $out
               diskImage=$out/disk.img
               bootFlash=$out/bios.bin
               ${qemu}/bin/qemu-img create -f qcow2 $diskImage "40M"
               ${if cfg.useEFIBoot then ''
-                cp ${pkgs.OVMF-CSM.fd}/FV/OVMF.fd $bootFlash
-                chmod 0644 $bootFlash
-              '' else ''
+              cp ${pkgs.OVMF-CSM.fd}/FV/OVMF.fd $bootFlash
+              chmod 0644 $bootFlash
+            '' else ''
               ''}
             '';
           buildInputs = [ pkgs.utillinux ];
           QEMU_OPTS = if cfg.useEFIBoot
-                      then "-pflash $out/bios.bin -nographic -serial pty"
-                      else "-nographic -serial pty";
+          then "-pflash $out/bios.bin -nographic -serial pty"
+          else "-nographic -serial pty";
         }
         ''
           # Create a /boot EFI partition with 40M and arbitrary but fixed GUIDs for reproducibility
@@ -187,7 +191,7 @@ in
 {
   imports = [
     ../profiles/qemu-guest.nix
-   ./docker-preloader.nix
+    ./docker-preloader.nix
   ];
 
   options = {
@@ -251,7 +255,7 @@ in
             Whether to run QEMU with a graphics window, or in nographic mode.
             Serial console will be enabled on both settings, but this will
             change the preferred console.
-            '';
+          '';
       };
 
     virtualisation.cores =
@@ -337,7 +341,8 @@ in
         type = types.listOf types.str;
         default = let
           consoles = [ "${qemuSerialDevice},115200n8" "tty0" ];
-        in if cfg.graphics then consoles else reverseList consoles;
+        in
+          if cfg.graphics then consoles else reverseList consoles;
         example = [ "console=tty1" ];
         description = ''
           The output console devices to pass to the kernel command line via the
@@ -444,11 +449,11 @@ in
         mkdir -p $targetRoot/boot
 
         ${optionalString cfg.writableStore ''
-          echo "mounting overlay filesystem on /nix/store..."
-          mkdir -p 0755 $targetRoot/nix/.rw-store/store $targetRoot/nix/.rw-store/work $targetRoot/nix/store
-          mount -t overlay overlay $targetRoot/nix/store \
-            -o lowerdir=$targetRoot/nix/.ro-store,upperdir=$targetRoot/nix/.rw-store/store,workdir=$targetRoot/nix/.rw-store/work || fail
-        ''}
+        echo "mounting overlay filesystem on /nix/store..."
+        mkdir -p 0755 $targetRoot/nix/.rw-store/store $targetRoot/nix/.rw-store/work $targetRoot/nix/store
+        mount -t overlay overlay $targetRoot/nix/store \
+          -o lowerdir=$targetRoot/nix/.ro-store,upperdir=$targetRoot/nix/.rw-store/store,workdir=$targetRoot/nix/.rw-store/work || fail
+      ''}
       '';
 
     # After booting, register the closure of the paths in
@@ -467,7 +472,8 @@ in
 
     boot.initrd.availableKernelModules =
       optional cfg.writableStore "overlay"
-      ++ optional (cfg.qemu.diskInterface == "scsi") "sym53c8xx";
+      ++ optional (cfg.qemu.diskInterface == "scsi") "sym53c8xx"
+      ;
 
     virtualisation.bootDevice =
       mkDefault (if cfg.qemu.diskInterface == "scsi" then "/dev/sda" else "/dev/vda");
@@ -487,48 +493,60 @@ in
     # attribute should be disregarded for the purpose of building a VM
     # test image (since those filesystems don't exist in the VM).
     fileSystems = mkVMOverride (
-      { "/".device = cfg.bootDevice;
+      {
+        "/".device = cfg.bootDevice;
         ${if cfg.writableStore then "/nix/.ro-store" else "/nix/store"} =
-          { device = "store";
+          {
+            device = "store";
             fsType = "9p";
             options = [ "trans=virtio" "version=9p2000.L" "cache=loose" ];
             neededForBoot = true;
           };
         "/tmp" = mkIf config.boot.tmpOnTmpfs
-          { device = "tmpfs";
+          {
+            device = "tmpfs";
             fsType = "tmpfs";
             neededForBoot = true;
             # Sync with systemd's tmp.mount;
             options = [ "mode=1777" "strictatime" "nosuid" "nodev" ];
           };
         "/tmp/xchg" =
-          { device = "xchg";
+          {
+            device = "xchg";
             fsType = "9p";
             options = [ "trans=virtio" "version=9p2000.L" "cache=loose" ];
             neededForBoot = true;
           };
         "/tmp/shared" =
-          { device = "shared";
+          {
+            device = "shared";
             fsType = "9p";
             options = [ "trans=virtio" "version=9p2000.L" ];
             neededForBoot = true;
           };
-      } // optionalAttrs (cfg.writableStore && cfg.writableStoreUseTmpfs)
-      { "/nix/.rw-store" =
-          { fsType = "tmpfs";
-            options = [ "mode=0755" ];
-            neededForBoot = true;
-          };
-      } // optionalAttrs cfg.useBootLoader
-      { "/boot" =
-          { device = "/dev/vdb2";
-            fsType = "vfat";
-            options = [ "ro" ];
-            noCheck = true; # fsck fails on a r/o filesystem
-          };
-      });
+      }
+      // optionalAttrs (cfg.writableStore && cfg.writableStoreUseTmpfs)
+           {
+             "/nix/.rw-store" =
+               {
+                 fsType = "tmpfs";
+                 options = [ "mode=0755" ];
+                 neededForBoot = true;
+               };
+           }
+      // optionalAttrs cfg.useBootLoader
+           {
+             "/boot" =
+               {
+                 device = "/dev/vdb2";
+                 fsType = "vfat";
+                 options = [ "ro" ];
+                 noCheck = true; # fsck fails on a r/o filesystem
+               };
+           }
+    );
 
-    swapDevices = mkVMOverride [ ];
+    swapDevices = mkVMOverride [];
     boot.initrd.luks.devices = mkVMOverride {};
 
     # Don't run ntpd in the guest.  It should get the correct time from KVM.
@@ -565,7 +583,8 @@ in
     networking.usePredictableInterfaceNames = false;
 
     system.requiredKernelConfig = with config.lib.kernelConfig;
-      [ (isEnabled "VIRTIO_BLK")
+      [
+        (isEnabled "VIRTIO_BLK")
         (isEnabled "VIRTIO_PCI")
         (isEnabled "VIRTIO_NET")
         (isEnabled "EXT4_FS")
@@ -576,10 +595,11 @@ in
         (isYes "NET_CORE")
         (isYes "INET")
         (isYes "NETWORK_FILESYSTEMS")
-      ] ++ optional (!cfg.graphics) [
-        (isYes "SERIAL_8250_CONSOLE")
-        (isYes "SERIAL_8250")
-      ];
+      ]
+      ++ optional (!cfg.graphics) [
+           (isYes "SERIAL_8250_CONSOLE")
+           (isYes "SERIAL_8250")
+         ];
 
   };
 }

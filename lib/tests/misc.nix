@@ -6,7 +6,7 @@ with import ../default.nix;
 runTests {
 
 
-# TRIVIAL
+  # TRIVIAL
 
   testId = {
     expr = id 1;
@@ -31,17 +31,19 @@ runTests {
   };
 
   testFix = {
-    expr = fix (x: {a = if x ? a then "a" else "b";});
-    expected = {a = "a";};
+    expr = fix (x: { a = if x ? a then "a" else "b"; });
+    expected = { a = "a"; };
   };
 
   testComposeExtensions = {
-    expr = let obj = makeExtensible (self: { foo = self.bar; });
-               f = self: super: { bar = false; baz = true; };
-               g = self: super: { bar = super.baz or false; };
-               f_o_g = composeExtensions f g;
-               composed = obj.extend f_o_g;
-           in composed.foo;
+    expr = let
+      obj = makeExtensible (self: { foo = self.bar; });
+      f = self: super: { bar = false; baz = true; };
+      g = self: super: { bar = super.baz or false; };
+      f_o_g = composeExtensions f g;
+      composed = obj.extend f_o_g;
+    in
+      composed.foo;
     expected = true;
   };
 
@@ -60,15 +62,15 @@ runTests {
     expected = 9;
   };
 
-# STRINGS
+  # STRINGS
 
   testConcatMapStrings = {
-    expr = concatMapStrings (x: x + ";") ["a" "b" "c"];
+    expr = concatMapStrings (x: x + ";") [ "a" "b" "c" ];
     expected = "a;b;c;";
   };
 
   testConcatStringsSep = {
-    expr = concatStringsSep "," ["a" "b" "c"];
+    expr = concatStringsSep "," [ "a" "b" "c" ];
     expected = "a,b,c";
   };
 
@@ -102,24 +104,26 @@ runTests {
     expected = [ "2001" "db8" "0" "0042" "" "8a2e" "370" "" ];
   };
 
-  testIsStorePath =  {
+  testIsStorePath = {
     expr =
-      let goodPath =
-            "${builtins.storeDir}/d945ibfx9x185xf04b890y4f9g3cbb63-python-2.7.11";
-      in {
-        storePath = isStorePath goodPath;
-        storePathDerivation = isStorePath (import ../.. {}).hello;
-        storePathAppendix = isStorePath
-          "${goodPath}/bin/python";
-        nonAbsolute = isStorePath (concatStrings (tail (stringToCharacters goodPath)));
-        asPath = isStorePath (/. + goodPath);
-        otherPath = isStorePath "/something/else";
-        otherVals = {
-          attrset = isStorePath {};
-          list = isStorePath [];
-          int = isStorePath 42;
+      let
+        goodPath =
+          "${builtins.storeDir}/d945ibfx9x185xf04b890y4f9g3cbb63-python-2.7.11";
+      in
+        {
+          storePath = isStorePath goodPath;
+          storePathDerivation = isStorePath (import ../.. {}).hello;
+          storePathAppendix = isStorePath
+            "${goodPath}/bin/python";
+          nonAbsolute = isStorePath (concatStrings (tail (stringToCharacters goodPath)));
+          asPath = isStorePath (/. + goodPath);
+          otherPath = isStorePath "/something/else";
+          otherVals = {
+            attrset = isStorePath {};
+            list = isStorePath [];
+            int = isStorePath 42;
+          };
         };
-      };
     expected = {
       storePath = true;
       storePathDerivation = true;
@@ -135,11 +139,11 @@ runTests {
     };
   };
 
-# LISTS
+  # LISTS
 
   testFilter = {
-    expr = filter (x: x != "a") ["a" "b" "c" "a"];
-    expected = ["b" "c"];
+    expr = filter (x: x != "a") [ "a" "b" "c" "a" ];
+    expected = [ "b" "c" ];
   };
 
   testFold =
@@ -149,47 +153,48 @@ runTests {
       assoc = f builtins.add;
       # fold with non-associative operator
       nonAssoc = f builtins.sub;
-    in {
-      expr = {
-        assocRight = assoc foldr;
-        # right fold with assoc operator is same as left fold
-        assocRightIsLeft = assoc foldr == assoc foldl;
-        nonAssocRight = nonAssoc foldr;
-        nonAssocLeft = nonAssoc foldl;
-        # with non-assoc operator the fold results are not the same
-        nonAssocRightIsNotLeft = nonAssoc foldl != nonAssoc foldr;
-        # fold is an alias for foldr
-        foldIsRight = nonAssoc fold == nonAssoc foldr;
+    in
+      {
+        expr = {
+          assocRight = assoc foldr;
+          # right fold with assoc operator is same as left fold
+          assocRightIsLeft = assoc foldr == assoc foldl;
+          nonAssocRight = nonAssoc foldr;
+          nonAssocLeft = nonAssoc foldl;
+          # with non-assoc operator the fold results are not the same
+          nonAssocRightIsNotLeft = nonAssoc foldl != nonAssoc foldr;
+          # fold is an alias for foldr
+          foldIsRight = nonAssoc fold == nonAssoc foldr;
+        };
+        expected = {
+          assocRight = 5050;
+          assocRightIsLeft = true;
+          nonAssocRight = 50;
+          nonAssocLeft = (-5050);
+          nonAssocRightIsNotLeft = true;
+          foldIsRight = true;
+        };
       };
-      expected = {
-        assocRight = 5050;
-        assocRightIsLeft = true;
-        nonAssocRight = 50;
-        nonAssocLeft = (-5050);
-        nonAssocRightIsNotLeft = true;
-        foldIsRight = true;
-      };
-    };
 
   testTake = testAllTrue [
-    ([] == (take 0 [  1 2 3 ]))
-    ([1] == (take 1 [  1 2 3 ]))
-    ([ 1 2 ] == (take 2 [  1 2 3 ]))
-    ([ 1 2 3 ] == (take 3 [  1 2 3 ]))
-    ([ 1 2 3 ] == (take 4 [  1 2 3 ]))
+    ([] == (take 0 [ 1 2 3 ]))
+    ([ 1 ] == (take 1 [ 1 2 3 ]))
+    ([ 1 2 ] == (take 2 [ 1 2 3 ]))
+    ([ 1 2 3 ] == (take 3 [ 1 2 3 ]))
+    ([ 1 2 3 ] == (take 4 [ 1 2 3 ]))
   ];
 
   testFoldAttrs = {
-    expr = foldAttrs (n: a: [n] ++ a) [] [
-    { a = 2; b = 7; }
-    { a = 3;        c = 8; }
+    expr = foldAttrs (n: a: [ n ] ++ a) [] [
+      { a = 2; b = 7; }
+      { a = 3; c = 8; }
     ];
-    expected = { a = [ 2 3 ]; b = [7]; c = [8];};
+    expected = { a = [ 2 3 ]; b = [ 7 ]; c = [ 8 ]; };
   };
 
   testSort = {
     expr = sort builtins.lessThan [ 40 2 30 42 ];
-    expected = [2 30 40 42];
+    expected = [ 2 30 40 42 ];
   };
 
   testToIntShouldConvertStringToInt = {
@@ -203,21 +208,21 @@ runTests {
   };
 
   testHasAttrByPathTrue = {
-    expr = hasAttrByPath ["a" "b"] { a = { b = "yey"; }; };
+    expr = hasAttrByPath [ "a" "b" ] { a = { b = "yey"; }; };
     expected = true;
   };
 
   testHasAttrByPathFalse = {
-    expr = hasAttrByPath ["a" "b"] { a = { c = "yey"; }; };
+    expr = hasAttrByPath [ "a" "b" ] { a = { c = "yey"; }; };
     expected = false;
   };
 
 
-# ATTRSETS
+  # ATTRSETS
 
   # code from the example
   testRecursiveUpdateUntil = {
-    expr = recursiveUpdateUntil (path: l: r: path == ["foo"]) {
+    expr = recursiveUpdateUntil (path: l: r: path == [ "foo" ]) {
       # first attribute set
       foo.bar = 1;
       foo.baz = 2;
@@ -231,8 +236,8 @@ runTests {
     expected = {
       foo.bar = 1; # 'foo.*' from the second set
       foo.quz = 2; #
-      bar = 3;     # 'bar' from the first set
-      baz = 4;     # 'baz' from the second set
+      bar = 3; # 'bar' from the first set
+      baz = 4; # 'baz' from the second set
     };
   };
 
@@ -251,9 +256,9 @@ runTests {
     expected = { a = 1; b = 2; };
   };
 
-# GENERATORS
-# these tests assume attributes are converted to lists
-# in alphabetical order
+  # GENERATORS
+  # these tests assume attributes are converted to lists
+  # in alphabetical order
 
   testMkKeyValueDefault = {
     expr = generators.mkKeyValueDefault {} ":" "f:oo" "bar";
@@ -270,7 +275,8 @@ runTests {
         null = null;
         # float = 42.23; # floats are strange
       };
-      in mapAttrs
+    in
+      mapAttrs
         (const (generators.mkValueStringDefault {}))
         vals;
     expected = {
@@ -345,26 +351,30 @@ runTests {
 
   /* right now only invocation check */
   testToJSONSimple =
-    let val = {
-      foobar = [ "baz" 1 2 3 ];
-    };
-    in {
-      expr = generators.toJSON {} val;
-      # trivial implementation
-      expected = builtins.toJSON val;
-  };
+    let
+      val = {
+        foobar = [ "baz" 1 2 3 ];
+      };
+    in
+      {
+        expr = generators.toJSON {} val;
+        # trivial implementation
+        expected = builtins.toJSON val;
+      };
 
   /* right now only invocation check */
   testToYAMLSimple =
-    let val = {
-      list = [ { one = 1; } { two = 2; } ];
-      all = 42;
-    };
-    in {
-      expr = generators.toYAML {} val;
-      # trivial implementation
-      expected = builtins.toJSON val;
-  };
+    let
+      val = {
+        list = [ { one = 1; } { two = 2; } ];
+        all = 42;
+      };
+    in
+      {
+        expr = generators.toYAML {} val;
+        # trivial implementation
+        expected = builtins.toJSON val;
+      };
 
   testToPretty = {
     expr = mapAttrs (const (generators.toPretty {})) rec {
@@ -397,8 +407,8 @@ runTests {
 
   testToPrettyAllowPrettyValues = {
     expr = generators.toPretty { allowPrettyValues = true; }
-             { __pretty = v: "«" + v + "»"; val = "foo"; };
-    expected  = "«foo»";
+      { __pretty = v: "«" + v + "»"; val = "foo"; };
+    expected = "«foo»";
   };
 
 }

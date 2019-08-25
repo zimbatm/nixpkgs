@@ -1,6 +1,19 @@
-{ stdenv, file, curl, pkgconfig, python, openssl, cmake, zlib
-, makeWrapper, libiconv, cacert, rustPlatform, rustc, libgit2
-, CoreFoundation, Security
+{ stdenv
+, file
+, curl
+, pkgconfig
+, python
+, openssl
+, cmake
+, zlib
+, makeWrapper
+, libiconv
+, cacert
+, rustPlatform
+, rustc
+, libgit2
+, CoreFoundation
+, Security
 }:
 
 rustPlatform.buildRustPackage rec {
@@ -19,7 +32,8 @@ rustPlatform.buildRustPackage rec {
 
   nativeBuildInputs = [ pkgconfig cmake makeWrapper ];
   buildInputs = [ cacert file curl python openssl zlib libgit2 ]
-    ++ stdenv.lib.optionals stdenv.isDarwin [ CoreFoundation Security libiconv ];
+    ++ stdenv.lib.optionals stdenv.isDarwin [ CoreFoundation Security libiconv ]
+    ;
 
   LIBGIT2_SYS_USE_PKG_CONFIG = 1;
 

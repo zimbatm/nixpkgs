@@ -1,5 +1,15 @@
-{ stdenv, fetchurl, unzip, makeWrapper , flex, bison, ncurses, buddy, tecla
-, libsigsegv, gmpxx, cln
+{ stdenv
+, fetchurl
+, unzip
+, makeWrapper
+, flex
+, bison
+, ncurses
+, buddy
+, tecla
+, libsigsegv
+, gmpxx
+, cln
 }:
 
 let
@@ -22,11 +32,21 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [
-    flex bison ncurses buddy tecla gmpxx libsigsegv makeWrapper unzip cln
+    flex
+    bison
+    ncurses
+    buddy
+    tecla
+    gmpxx
+    libsigsegv
+    makeWrapper
+    unzip
+    cln
   ];
 
-  hardeningDisable = [ "stackprotector" ] ++
-    stdenv.lib.optionals stdenv.isi686 [ "pic" "fortify" ];
+  hardeningDisable = [ "stackprotector" ]
+    ++ stdenv.lib.optionals stdenv.isi686 [ "pic" "fortify" ]
+    ;
 
   preConfigure = ''
     configureFlagsArray=(

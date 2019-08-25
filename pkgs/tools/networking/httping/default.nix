@@ -1,5 +1,11 @@
-{ stdenv, fetchurl, gettext, libintl, ncurses, openssl
-, fftw ? null }:
+{ stdenv
+, fetchurl
+, gettext
+, libintl
+, ncurses
+, openssl
+, fftw ? null
+}:
 
 stdenv.mkDerivation rec {
   name = "httping-${version}";

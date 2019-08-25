@@ -1,11 +1,11 @@
 { stdenv
 , fetchurl
 , fetchpatch
-# Excerpt from glpk's INSTALL file:
-# This feature allows the exact simplex solver to use the GNU MP
-# bignum library. If it is disabled, the exact simplex solver uses the
-# GLPK bignum module, which provides the same functionality as GNU MP,
-# however, it is much less efficient.
+  # Excerpt from glpk's INSTALL file:
+  # This feature allows the exact simplex solver to use the GNU MP
+  # bignum library. If it is disabled, the exact simplex solver uses the
+  # GLPK bignum module, which provides the same functionality as GNU MP,
+  # however, it is much less efficient.
 , withGmp ? true
 , gmp
 }:
@@ -40,11 +40,13 @@ stdenv.mkDerivation rec {
     # immediately afterwards anyways.
     # See the sage trac ticket for more details:
     # https://trac.sagemath.org/ticket/20710#comment:18
-    (fetchpatch {
-      name = "error_recovery.patch";
-      url = "https://git.sagemath.org/sage.git/plain/build/pkgs/glpk/patches/error_recovery.patch?id=07d6c37d18811e2b377a9689790a7c5e24da16ba";
-      sha256 = "0z99z9gd31apb6x5n5n26411qzx0ma3s6dnznc4x61x86bhq31qf";
-    })
+    (
+      fetchpatch {
+        name = "error_recovery.patch";
+        url = "https://git.sagemath.org/sage.git/plain/build/pkgs/glpk/patches/error_recovery.patch?id=07d6c37d18811e2b377a9689790a7c5e24da16ba";
+        sha256 = "0z99z9gd31apb6x5n5n26411qzx0ma3s6dnznc4x61x86bhq31qf";
+      }
+    )
   ];
 
   doCheck = true;

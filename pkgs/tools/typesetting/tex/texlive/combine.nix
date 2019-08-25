@@ -1,48 +1,56 @@
 params: with params;
 # combine =
-args@{
-  pkgFilter ? (pkg: pkg.tlType == "run" || pkg.tlType == "bin" || pkg.pname == "core")
-, extraName ? "combined", ...
+args@{ pkgFilter ? (pkg: pkg.tlType == "run" || pkg.tlType == "bin" || pkg.pname == "core")
+, extraName ? "combined"
+, ...
 }:
 let
-  pkgSet = removeAttrs args [ "pkgFilter" "extraName" ] // {
-    # include a fake "core" package
-    core.pkgs = [
-      (bin.core.out // { pname = "core"; tlType = "bin"; })
-      (bin.core.doc // { pname = "core"; tlType = "doc"; })
-    ];
-  };
+  pkgSet = removeAttrs args [ "pkgFilter" "extraName" ]
+    // {
+         # include a fake "core" package
+         core.pkgs = [
+           (bin.core.out // { pname = "core"; tlType = "bin"; })
+           (bin.core.doc // { pname = "core"; tlType = "doc"; })
+         ];
+       }
+    ;
   pkgList = rec {
     all = lib.filter pkgFilter (combinePkgs pkgSet);
     splitBin = builtins.partition (p: p.tlType == "bin") all;
     bin = mkUniqueOutPaths splitBin.right
       ++ lib.optional
-          (lib.any (p: p.tlType == "run" && p.pname == "pdfcrop") splitBin.wrong)
-          (lib.getBin ghostscript);
+           (lib.any (p: p.tlType == "run" && p.pname == "pdfcrop") splitBin.wrong)
+           (lib.getBin ghostscript)
+      ;
     nonbin = mkUniqueOutPaths splitBin.wrong;
 
     # extra interpreters needed for shebangs, based on 2015 schemes "medium" and "tetex"
     # (omitted tk needed in pname == "epspdf", bin/epspdftk)
-    pkgNeedsPython = pkg: pkg.tlType == "run" && lib.elem pkg.pname
-      [ "de-macro" "pythontex" "dviasm" "texliveonfly" ];
+    pkgNeedsPython = pkg: pkg.tlType == "run"
+      && lib.elem pkg.pname
+           [ "de-macro" "pythontex" "dviasm" "texliveonfly" ];
     pkgNeedsRuby = pkg: pkg.tlType == "run" && pkg.pname == "match-parens";
     extraInputs =
       lib.optional (lib.any pkgNeedsPython splitBin.wrong) python
-      ++ lib.optional (lib.any pkgNeedsRuby splitBin.wrong) ruby;
+      ++ lib.optional (lib.any pkgNeedsRuby splitBin.wrong) ruby
+      ;
   };
 
   # TODO: replace by buitin once it exists
   fastUnique = comparator: list: with lib;
-    let un_adj = l: if length l < 2 then l
+    let
+      un_adj = l: if length l < 2 then l
       else optional (head l != elemAt l 1) (head l) ++ un_adj (tail l);
-    in un_adj (lib.sort comparator list);
+    in
+      un_adj (lib.sort comparator list);
 
   uniqueStrings = fastUnique (a: b: a < b);
 
   mkUniqueOutPaths = pkgs: uniqueStrings
     (map (p: p.outPath) (builtins.filter lib.isDerivation pkgs));
 
-in buildEnv {
+in
+buildEnv {
   name = "texlive-${extraName}-${bin.texliveYear}";
 
   extraPrefix = "/share/texmf";
@@ -55,22 +63,22 @@ in buildEnv {
   postBuild = ''
     cd "$out"
     mkdir -p ./bin
-  '' +
-    lib.concatMapStrings
-      (path: ''
-        for f in '${path}'/bin/*; do
-          if [[ -L "$f" ]]; then
-            cp -d "$f" ./bin/
-          else
-            ln -s "$f" ./bin/
-          fi
-        done
-      '')
+  ''
+  + lib.concatMapStrings
+      (
+        path: ''
+          for f in '${path}'/bin/*; do
+            if [[ -L "$f" ]]; then
+              cp -d "$f" ./bin/
+            else
+              ln -s "$f" ./bin/
+            fi
+          done
+        ''
+      )
       pkgList.bin
-    +
-
-    # Patch texlinks.sh back to 2015 version;
-    # otherwise some bin/ links break, e.g. xe(la)tex.
+  + # Patch texlinks.sh back to 2015 version;
+  # otherwise some bin/ links break, e.g. xe(la)tex.
   ''
     (
       cd "$out/share/texmf/scripts/texlive"
@@ -78,19 +86,19 @@ in buildEnv {
       rm texlinks.sh && cp "$target" texlinks.sh
       patch --verbose -R texlinks.sh < '${./texlinks.diff}'
     )
-  '' +
   ''
+  + ''
     export PATH="$out/bin:$out/share/texmf/scripts/texlive:${perl}/bin:$PATH"
     export TEXMFCNF="$out/share/texmf/web2c"
     export TEXMFDIST="$out/share/texmf"
     export TEXMFSYSCONFIG="$out/share/texmf-config"
     export TEXMFSYSVAR="$out/share/texmf-var"
     export PERL5LIB="$out/share/texmf/scripts/texlive"
-  '' +
-    # patch texmf-dist  -> $out/share/texmf
-    # patch texmf-local -> $out/share/texmf-local
-    # TODO: perhaps do lua actions?
-    # tried inspiration from install-tl, sub do_texmf_cnf
+  ''
+  + # patch texmf-dist  -> $out/share/texmf
+  # patch texmf-local -> $out/share/texmf-local
+  # TODO: perhaps do lua actions?
+  # tried inspiration from install-tl, sub do_texmf_cnf
   ''
     patchCnfLua() {
       local cnfLua="$1"
@@ -127,32 +135,34 @@ in buildEnv {
 
       mkdir $out/share/texmf-local
     )
-  '' +
-    # updmap.cfg seems like not needing changes
+  ''
+  + # updmap.cfg seems like not needing changes
 
-    # now filter hyphenation patterns, in a hacky way ATM
-  (let
-    pnames = uniqueStrings (map (p: p.pname) pkgList.splitBin.wrong);
-    script =
-      writeText "hyphens.sed" (
-        # pick up the header
-        "1,/^\% from/p;"
-        # pick up all sections matching packages that we combine
-        + lib.concatMapStrings (pname: "/^\% from ${pname}:$/,/^\%/p;\n") pnames
-      );
-  in ''
-    (
-      cd ./share/texmf/tex/generic/config/
-      for fname in language.dat language.def; do
-        [ -e $fname ] || continue;
-        cnfOrig="$(realpath ./$fname)"
-        rm ./$fname
-        cat "$cnfOrig" | sed -n -f '${script}' > ./$fname
-      done
-    )
-  '') +
-
-  # function to wrap created executables with required env vars
+  # now filter hyphenation patterns, in a hacky way ATM
+  (
+    let
+      pnames = uniqueStrings (map (p: p.pname) pkgList.splitBin.wrong);
+      script =
+        writeText "hyphens.sed" (
+          # pick up the header
+          "1,/^\% from/p;"
+          # pick up all sections matching packages that we combine
+          + lib.concatMapStrings (pname: "/^\% from ${pname}:$/,/^\%/p;\n") pnames
+        );
+    in
+      ''
+        (
+          cd ./share/texmf/tex/generic/config/
+          for fname in language.dat language.def; do
+            [ -e $fname ] || continue;
+            cnfOrig="$(realpath ./$fname)"
+            rm ./$fname
+            cat "$cnfOrig" | sed -n -f '${script}' > ./$fname
+          done
+        )
+      ''
+  )
+  + # function to wrap created executables with required env vars
   ''
     wrapBin() {
     for link in ./bin/*; do
@@ -193,8 +203,8 @@ in buildEnv {
       fi
     done
     }
-  '' +
-  # texlive post-install actions
+  ''
+  + # texlive post-install actions
   ''
     mkdir -p "$out/share/texmf/scripts/texlive/"
     ln -s '${bin.core.out}/share/texmf-dist/scripts/texlive/TeXLive' "$out/share/texmf/scripts/texlive/"
@@ -202,8 +212,8 @@ in buildEnv {
     for tool in updmap; do
       ln -sf "$out/share/texmf/scripts/texlive/$tool."* "$out/bin/$tool"
     done
-  '' +
-    # now hack to preserve "$0" for mktexfmt
+  ''
+  + # now hack to preserve "$0" for mktexfmt
   ''
     cp "$out"/share/texmf/scripts/texlive/fmtutil.pl "$out/bin/fmtutil"
     patchShebangs "$out/bin/fmtutil"
@@ -216,8 +226,8 @@ in buildEnv {
     #texlinks.sh "$out/bin" && wrapBin # do we need to regenerate format links?
     echo y | perl `type -P updmap.pl` --sys --syncwithtrees --force
     perl `type -P mktexlsr.pl` ./share/texmf-* # to make sure
-  '' +
-    # install (wrappers for) scripts, based on a list from upstream texlive
+  ''
+  + # install (wrappers for) scripts, based on a list from upstream texlive
   ''
     (
       cd "$out/share/texmf/scripts"
@@ -229,36 +239,36 @@ in buildEnv {
         ln -sv "$(realpath $s)" "$out/bin/$tName" # wrapped below
       done
     )
-  '' +
-    # A hacky way to provide repstopdf
-    #  * Copy is done to have a correct "$0" so that epstopdf enables the restricted mode
-    #  * ./bin/repstopdf needs to be a symlink to be processed by wrapBin
+  ''
+  + # A hacky way to provide repstopdf
+  #  * Copy is done to have a correct "$0" so that epstopdf enables the restricted mode
+  #  * ./bin/repstopdf needs to be a symlink to be processed by wrapBin
   ''
     if [[ -e ./bin/epstopdf ]]; then
       cp $(realpath ./bin/epstopdf) ./share/texmf/scripts/repstopdf
       ln -s "$out"/share/texmf/scripts/repstopdf ./bin/repstopdf
     fi
-  '' +
-    # finish up the wrappers
+  ''
+  + # finish up the wrappers
   ''
     rm "$out"/bin/*-sys
     wrapBin
-  '' +
-    # Perform a small test to verify that the restricted mode get enabled when
-    # needed (detected by checking if it disallows --gscmd)
+  ''
+  + # Perform a small test to verify that the restricted mode get enabled when
+  # needed (detected by checking if it disallows --gscmd)
   ''
     if [[ -e ./bin/epstopdf ]]; then
       echo "Testing restricted mode for {,r}epstopdf"
       ! (epstopdf --gscmd echo /dev/null 2>&1 || true) | grep forbidden
       (repstopdf --gscmd echo /dev/null 2>&1 || true) | grep forbidden
     fi
-  '' +
-  # TODO: a context trigger https://www.preining.info/blog/2015/06/debian-tex-live-2015-the-new-layout/
-    # http://wiki.contextgarden.net/ConTeXt_Standalone#Unix-like_platforms_.28Linux.2FMacOS_X.2FFreeBSD.2FSolaris.29
+  ''
+  + # TODO: a context trigger https://www.preining.info/blog/2015/06/debian-tex-live-2015-the-new-layout/
+  # http://wiki.contextgarden.net/ConTeXt_Standalone#Unix-like_platforms_.28Linux.2FMacOS_X.2FFreeBSD.2FSolaris.29
 
-    # I would just create links from "$out"/share/{man,info},
-    #   but buildenv has problems with merging symlinks with directories;
-    #   note: it's possible we might need deepen the work-around to man/*.
+  # I would just create links from "$out"/share/{man,info},
+  #   but buildenv has problems with merging symlinks with directories;
+  #   note: it's possible we might need deepen the work-around to man/*.
   ''
     for d in {man,info}; do
       [[ -e "./share/texmf/doc/$d" ]] || continue;
@@ -267,8 +277,8 @@ in buildEnv {
         ln -s -t . ../texmf/doc/"$d"/*
       )
     done
-  '' +
-  # MkIV uses its own lookup mechanism and we need to initialize
+  ''
+  + # MkIV uses its own lookup mechanism and we need to initialize
   # caches for it. Unsetting TEXMFCNF is needed to let mtxrun
   # determine it from kpathsea so that the config path is given with
   # "selfautodir:" as it will be in runtime. This is important because
@@ -281,7 +291,7 @@ in buildEnv {
       )
     fi
   ''
-    + bin.cleanBrokenLinks
+  + bin.cleanBrokenLinks
   ;
 }
 # TODO: make TeX fonts visible by fontconfig: it should be enough to install an appropriate file

@@ -1,16 +1,37 @@
-{ stdenv, lib, fetchurl, fetchpatch
-, pkgconfig, intltool, ninja, meson
-, file, flex, bison, expat, libdrm, xorg, wayland, wayland-protocols, openssl
-, llvmPackages, libffi, libomxil-bellagio, libva-minimal
-, libelf, libvdpau, python3Packages
+{ stdenv
+, lib
+, fetchurl
+, fetchpatch
+, pkgconfig
+, intltool
+, ninja
+, meson
+, file
+, flex
+, bison
+, expat
+, libdrm
+, xorg
+, wayland
+, wayland-protocols
+, openssl
+, llvmPackages
+, libffi
+, libomxil-bellagio
+, libva-minimal
+, libelf
+, libvdpau
+, python3Packages
 , libglvnd
 , enableRadv ? true
-, galliumDrivers ? ["auto"]
-, driDrivers ? ["auto"]
-, vulkanDrivers ? ["auto"]
+, galliumDrivers ? [ "auto" ]
+, driDrivers ? [ "auto" ]
+, vulkanDrivers ? [ "auto" ]
 , eglPlatforms ? [ "x11" ] ++ lib.optionals stdenv.isLinux [ "wayland" "drm" ]
-, OpenGL, Xplugin
-, withValgrind ? stdenv.hostPlatform.isLinux && !stdenv.hostPlatform.isAarch32, valgrind-light
+, OpenGL
+, Xplugin
+, withValgrind ? stdenv.hostPlatform.isLinux && !stdenv.hostPlatform.isAarch32
+, valgrind-light
 }:
 
 /** Packaging design:
@@ -28,14 +49,14 @@ with stdenv.lib;
 
 let
   version = "19.1.3";
-  branch  = head (splitString "." version);
+  branch = head (splitString "." version);
 in
 
 stdenv.mkDerivation rec {
   pname = "mesa";
   inherit version;
 
-  src =  fetchurl {
+  src = fetchurl {
     urls = [
       "ftp://ftp.freedesktop.org/pub/mesa/mesa-${version}.tar.xz"
       "ftp://ftp.freedesktop.org/pub/mesa/${version}/mesa-${version}.tar.xz"
@@ -55,23 +76,30 @@ stdenv.mkDerivation rec {
     ./opencl-install-dir.patch
     ./disk_cache-include-dri-driver-path-in-cache-key.patch
   ] # do not prefix user provided dri-drivers-path
-    ++ lib.optional (lib.versionOlder version "19.0.0") (fetchpatch {
-      url = "https://gitlab.freedesktop.org/mesa/mesa/commit/f6556ec7d126b31da37c08d7cb657250505e01a0.patch";
-      sha256 = "0z6phi8hbrbb32kkp1js7ggzviq7faz1ria36wi4jbc4in2392d9";
-    })
-    ++ lib.optionals (lib.versionOlder version "19.1.0") [
-      # do not prefix user provided d3d-drivers-path
-      (fetchpatch {
-        url = "https://gitlab.freedesktop.org/mesa/mesa/commit/dcc48664197c7e44684ccfb970a4ae083974d145.patch";
-        sha256 = "1nhs0xpx3hiy8zfb5gx1zd7j7xha6h0hr7yingm93130a5902lkb";
-      })
+  ++ lib.optional (lib.versionOlder version "19.0.0") (
+       fetchpatch {
+         url = "https://gitlab.freedesktop.org/mesa/mesa/commit/f6556ec7d126b31da37c08d7cb657250505e01a0.patch";
+         sha256 = "0z6phi8hbrbb32kkp1js7ggzviq7faz1ria36wi4jbc4in2392d9";
+       }
+     )
+  ++ lib.optionals (lib.versionOlder version "19.1.0") [
+       # do not prefix user provided d3d-drivers-path
+       (
+         fetchpatch {
+           url = "https://gitlab.freedesktop.org/mesa/mesa/commit/dcc48664197c7e44684ccfb970a4ae083974d145.patch";
+           sha256 = "1nhs0xpx3hiy8zfb5gx1zd7j7xha6h0hr7yingm93130a5902lkb";
+         }
+       )
 
-      # don't build libGLES*.so with GLVND
-      (fetchpatch {
-        url = "https://gitlab.freedesktop.org/mesa/mesa/commit/b01524fff05eef66e8cd24f1c5aacefed4209f03.patch";
-        sha256 = "1pszr6acx2xw469zq89n156p3bf3xf84qpbjw5fr1sj642lbyh7c";
-      })
-    ];
+       # don't build libGLES*.so with GLVND
+       (
+         fetchpatch {
+           url = "https://gitlab.freedesktop.org/mesa/mesa/commit/b01524fff05eef66e8cd24f1c5aacefed4209f03.patch";
+           sha256 = "1pszr6acx2xw469zq89n156p3bf3xf84qpbjw5fr1sj642lbyh7c";
+         }
+       )
+     ]
+  ;
 
   outputs = [ "out" "dev" "drivers" "osmesa" ];
 
@@ -97,30 +125,54 @@ stdenv.mkDerivation rec {
     "-Domx-libs-path=${placeholder "drivers"}/lib/bellagio"
     "-Dva-libs-path=${placeholder "drivers"}/lib/dri"
     "-Dd3d-drivers-path=${placeholder "drivers"}/lib/d3d"
-  ] ++ optionals stdenv.isLinux [
-    "-Dglvnd=true"
-    "-Dosmesa=gallium" # used by wine
-    "-Dgallium-nine=true" # Direct3D in Wine
-  ];
+  ]
+  ++ optionals stdenv.isLinux [
+       "-Dglvnd=true"
+       "-Dosmesa=gallium" # used by wine
+       "-Dgallium-nine=true" # Direct3D in Wine
+     ]
+  ;
 
   buildInputs = with xorg; [
-    expat llvmPackages.llvm libglvnd xorgproto
-    libX11 libXext libxcb libXt libXfixes libxshmfence libXrandr
-    libffi libvdpau libelf libXvMC
-    libpthreadstubs openssl /*or another sha1 provider*/
-  ] ++ lib.optionals (elem "wayland" eglPlatforms) [ wayland wayland-protocols ]
+    expat
+    llvmPackages.llvm
+    libglvnd
+    xorgproto
+    libX11
+    libXext
+    libxcb
+    libXt
+    libXfixes
+    libxshmfence
+    libXrandr
+    libffi
+    libvdpau
+    libelf
+    libXvMC
+    libpthreadstubs
+    openssl /*or another sha1 provider*/
+  ]
+    ++ lib.optionals (elem "wayland" eglPlatforms) [ wayland wayland-protocols ]
     ++ lib.optionals stdenv.isLinux [ libomxil-bellagio libva-minimal ]
     ++ lib.optional withValgrind valgrind-light;
 
   nativeBuildInputs = [
-    pkgconfig meson ninja
-    intltool bison flex file
-    python3Packages.python python3Packages.Mako
+    pkgconfig
+    meson
+    ninja
+    intltool
+    bison
+    flex
+    file
+    python3Packages.python
+    python3Packages.Mako
   ];
 
   propagatedBuildInputs = with xorg; [
-    libXdamage libXxf86vm
-  ] ++ optional stdenv.isLinux libdrm
+    libXdamage
+    libXxf86vm
+  ]
+    ++ optional stdenv.isLinux libdrm
     ++ optionals stdenv.isDarwin [ OpenGL Xplugin ];
 
   enableParallelBuilding = true;
@@ -129,35 +181,37 @@ stdenv.mkDerivation rec {
   postInstall = ''
     # Some installs don't have any drivers so this directory is never created.
     mkdir -p $drivers $osmesa
-  '' + optionalString stdenv.isLinux ''
-    mkdir -p $drivers/lib
+  ''
+  + optionalString stdenv.isLinux ''
+      mkdir -p $drivers/lib
 
-    # move gallium-related stuff to $drivers, so $out doesn't depend on LLVM
-    mv -t $drivers/lib       \
-      $out/lib/libxatracker* \
-      $out/lib/libvulkan_*
+      # move gallium-related stuff to $drivers, so $out doesn't depend on LLVM
+      mv -t $drivers/lib       \
+        $out/lib/libxatracker* \
+        $out/lib/libvulkan_*
 
-    # Move other drivers to a separate output
-    mv $out/lib/lib*_mesa* $drivers/lib
+      # Move other drivers to a separate output
+      mv $out/lib/lib*_mesa* $drivers/lib
 
-    # move libOSMesa to $osmesa, as it's relatively big
-    mkdir -p $osmesa/lib
-    mv -t $osmesa/lib/ $out/lib/libOSMesa*
+      # move libOSMesa to $osmesa, as it's relatively big
+      mkdir -p $osmesa/lib
+      mv -t $osmesa/lib/ $out/lib/libOSMesa*
 
-    # move vendor files
-    mv $out/share/ $drivers/
+      # move vendor files
+      mv $out/share/ $drivers/
 
-    # Update search path used by glvnd
-    for js in $drivers/share/glvnd/egl_vendor.d/*.json; do
-      substituteInPlace "$js" --replace '"libEGL_' '"'"$drivers/lib/libEGL_"
-    done
+      # Update search path used by glvnd
+      for js in $drivers/share/glvnd/egl_vendor.d/*.json; do
+        substituteInPlace "$js" --replace '"libEGL_' '"'"$drivers/lib/libEGL_"
+      done
 
-    # Update search path used by Vulkan (it's pointing to $out but
-    # drivers are in $drivers)
-    for js in $drivers/share/vulkan/icd.d/*.json; do
-      substituteInPlace "$js" --replace "$out" "$drivers"
-    done
-  '';
+      # Update search path used by Vulkan (it's pointing to $out but
+      # drivers are in $drivers)
+      for js in $drivers/share/vulkan/icd.d/*.json; do
+        substituteInPlace "$js" --replace "$out" "$drivers"
+      done
+    ''
+  ;
 
   # TODO:
   #  check $out doesn't depend on llvm: builder failures are ignored

@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, unzip, file, licenseFile ? null, optgamsFile ? null}:
+{ stdenv, fetchurl, unzip, file, licenseFile ? null, optgamsFile ? null }:
 
 assert licenseFile != null;
 
@@ -18,10 +18,12 @@ stdenv.mkDerivation rec {
     cp -a * "$out/share/gams"
 
     cp ${licenseFile} $out/share/gams/gamslice.txt
-  '' + stdenv.lib.optionalString (optgamsFile != null) ''
-    cp ${optgamsFile} $out/share/gams/optgams.def
-    ln -s $out/share/gams/optgams.def $out/bin/optgams.def
-  '';
+  ''
+  + stdenv.lib.optionalString (optgamsFile != null) ''
+      cp ${optgamsFile} $out/share/gams/optgams.def
+      ln -s $out/share/gams/optgams.def $out/bin/optgams.def
+    ''
+  ;
 
   postFixup = ''
     for f in $out/share/gams/*; do
@@ -47,4 +49,3 @@ stdenv.mkDerivation rec {
     platforms = platforms.linux;
   };
 }
-

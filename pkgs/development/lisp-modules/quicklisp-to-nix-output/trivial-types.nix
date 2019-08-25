@@ -5,7 +5,7 @@ rec {
 
   description = ''Trivial type definitions'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/trivial-types/2012-04-07/trivial-types-20120407-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "trivial-types";
 
-  asdFilesToKeep = ["trivial-types.asd"];
+  asdFilesToKeep = [ "trivial-types.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM trivial-types DESCRIPTION Trivial type definitions SHA256

@@ -32,7 +32,8 @@ let
       ln -s '${cfg.package}/share/man' "$out/share/"
     '';
   };
-in {
+in
+{
   options = {
     services.knot = {
       enable = mkEnableOption "Knot authoritative-only DNS server";
@@ -69,7 +70,7 @@ in {
       description = cfg.package.meta.description;
       wantedBy = [ "multi-user.target" ];
       wants = [ "network.target" ];
-      after = ["network.target" ];
+      after = [ "network.target" ];
 
       serviceConfig = {
         Type = "notify";
@@ -92,4 +93,3 @@ in {
     environment.systemPackages = [ knot-cli-wrappers ];
   };
 }
-

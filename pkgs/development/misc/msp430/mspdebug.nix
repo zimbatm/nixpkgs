@@ -2,7 +2,8 @@
 
 let
   version = "0.25";
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "mspdebug-${version}";
   src = fetchFromGitHub {
     owner = "dlbeer";
@@ -12,8 +13,9 @@ in stdenv.mkDerivation {
   };
 
   buildInputs = [ libusb readline ];
-  makeFlags = [ "PREFIX=$(out)" "INSTALL=install" ] ++
-    (if readline == null then [ "WITHOUT_READLINE=1" ] else []);
+  makeFlags = [ "PREFIX=$(out)" "INSTALL=install" ]
+    ++ (if readline == null then [ "WITHOUT_READLINE=1" ] else [])
+    ;
 
   meta = with stdenv.lib; {
     description = "A free programmer, debugger, and gdb proxy for MSP430 MCUs";

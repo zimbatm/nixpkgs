@@ -28,38 +28,41 @@ in
           corresponding attribute name.
         '';
         example = literalExample ''
-        {
-          foo = {
-            server = "192.0.2.1";
-            extraConfig = "-v";
+          {
+            foo = {
+              server = "192.0.2.1";
+              extraConfig = "-v";
+            }
           }
-        }
         '';
-        type = types.attrsOf (types.submodule (
-        {
-          options = {
-            server = mkOption {
-              type = types.str;
-              default = "";
-              description = "IP address of server running hans";
-              example = "192.0.2.1";
-            };
+        type = types.attrsOf (
+          types.submodule (
+            {
+              options = {
+                server = mkOption {
+                  type = types.str;
+                  default = "";
+                  description = "IP address of server running hans";
+                  example = "192.0.2.1";
+                };
 
-            extraConfig = mkOption {
-              type = types.str;
-              default = "";
-              description = "Additional command line parameters";
-              example = "-v";
-            };
+                extraConfig = mkOption {
+                  type = types.str;
+                  default = "";
+                  description = "Additional command line parameters";
+                  example = "-v";
+                };
 
-            passwordFile = mkOption {
-              type = types.str;
-              default = "";
-              description = "File that containts password";
-            };
+                passwordFile = mkOption {
+                  type = types.str;
+                  default = "";
+                  description = "File that containts password";
+                };
 
-          };
-        }));
+              };
+            }
+          )
+        );
       };
 
       server = {
@@ -109,31 +112,32 @@ in
     boot.kernelModules = [ "tun" ];
 
     systemd.services =
-    let
-      createHansClientService = name: cfg:
-      {
-        description = "hans client - ${name}";
-        after = [ "network.target" ];
-        wantedBy = [ "multi-user.target" ];
-        script = "${pkgs.hans}/bin/hans -f -u ${hansUser} ${cfg.extraConfig} -c ${cfg.server} ${optionalString (cfg.passwordFile != "") "-p $(cat \"${cfg.passwordFile}\")"}";
-        serviceConfig = {
-          RestartSec = "30s";
-          Restart = "always";
-        };
-      };
-    in
-    listToAttrs (
-      mapAttrsToList
-        (name: value: nameValuePair "hans-${name}" (createHansClientService name value))
-        cfg.clients
-    ) // {
-      hans = mkIf (cfg.server.enable) {
-        description = "hans, ip over icmp server daemon";
-        after = [ "network.target" ];
-        wantedBy = [ "multi-user.target" ];
-        script = "${pkgs.hans}/bin/hans -f -u ${hansUser} ${cfg.server.extraConfig} -s ${cfg.server.ip} ${optionalString cfg.server.respondToSystemPings "-r"} ${optionalString (cfg.server.passwordFile != "") "-p $(cat \"${cfg.server.passwordFile}\")"}";
-      };
-    };
+      let
+        createHansClientService = name: cfg:
+          {
+            description = "hans client - ${name}";
+            after = [ "network.target" ];
+            wantedBy = [ "multi-user.target" ];
+            script = "${pkgs.hans}/bin/hans -f -u ${hansUser} ${cfg.extraConfig} -c ${cfg.server} ${optionalString (cfg.passwordFile != "") "-p $(cat \"${cfg.passwordFile}\")"}";
+            serviceConfig = {
+              RestartSec = "30s";
+              Restart = "always";
+            };
+          };
+      in
+        listToAttrs (
+          mapAttrsToList
+            (name: value: nameValuePair "hans-${name}" (createHansClientService name value))
+            cfg.clients
+        )
+        // {
+             hans = mkIf (cfg.server.enable) {
+               description = "hans, ip over icmp server daemon";
+               after = [ "network.target" ];
+               wantedBy = [ "multi-user.target" ];
+               script = "${pkgs.hans}/bin/hans -f -u ${hansUser} ${cfg.server.extraConfig} -s ${cfg.server.ip} ${optionalString cfg.server.respondToSystemPings "-r"} ${optionalString (cfg.server.passwordFile != "") "-p $(cat \"${cfg.server.passwordFile}\")"}";
+             };
+           };
 
     users.users = singleton {
       name = hansUser;

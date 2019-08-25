@@ -4,7 +4,8 @@ let
 
   inherit (builtins) toFile;
   inherit (lib) concatMapStringsSep concatStringsSep mapAttrsToList
-                mkIf mkEnableOption mkOption types;
+    mkIf mkEnableOption mkOption types
+    ;
 
   cfg = config.services.strongswan;
 
@@ -12,27 +13,28 @@ let
     concatMapStringsSep "\n" (f: "include ${f}") secrets
   );
 
-  ipsecConf = {setup, connections, ca}:
+  ipsecConf = { setup, connections, ca }:
     let
       # https://wiki.strongswan.org/projects/strongswan/wiki/IpsecConf
       makeSections = type: sections: concatStringsSep "\n\n" (
-        mapAttrsToList (sec: attrs:
-          "${type} ${sec}\n" +
-            (concatStringsSep "\n" ( mapAttrsToList (k: v: "  ${k}=${v}") attrs ))
+        mapAttrsToList (
+          sec: attrs:
+            "${type} ${sec}\n"
+            + (concatStringsSep "\n" (mapAttrsToList (k: v: "  ${k}=${v}") attrs))
         ) sections
       );
-      setupConf       = makeSections "config" { inherit setup; };
+      setupConf = makeSections "config" { inherit setup; };
       connectionsConf = makeSections "conn" connections;
-      caConf          = makeSections "ca" ca;
+      caConf = makeSections "ca" ca;
 
     in
-    builtins.toFile "ipsec.conf" ''
-      ${setupConf}
-      ${connectionsConf}
-      ${caConf}
-    '';
+      builtins.toFile "ipsec.conf" ''
+        ${setupConf}
+        ${connectionsConf}
+        ${caConf}
+      '';
 
-  strongswanConf = {setup, connections, ca, secretsFile, managePlugins, enabledPlugins}: toFile "strongswan.conf" ''
+  strongswanConf = { setup, connections, ca, secretsFile, managePlugins, enabledPlugins }: toFile "strongswan.conf" ''
     charon {
       ${if managePlugins then "load_modular = no" else ""}
       ${if managePlugins then ("load = " + (concatStringsSep " " enabledPlugins)) else ""}
@@ -85,11 +87,11 @@ in
           keyingtries = "1";
         };
         roadwarrior = {
-          auto       = "add";
-          leftcert   = "/run/keys/moonCert.pem";
-          leftid     = "@moon.strongswan.org";
+          auto = "add";
+          leftcert = "/run/keys/moonCert.pem";
+          leftid = "@moon.strongswan.org";
           leftsubnet = "10.1.0.0/16";
-          right      = "%any";
+          right = "%any";
         };
       };
       description = ''
@@ -103,7 +105,7 @@ in
       default = {};
       example = {
         strongswan = {
-          auto   = "add";
+          auto = "add";
           cacert = "/run/keys/strongswanCert.pem";
           crluri = "http://crl2.strongswan.org/strongswan.crl";
         };
@@ -137,33 +139,32 @@ in
 
 
   config = with cfg;
-  let
-    secretsFile = ipsecSecrets cfg.secrets;
-  in
-  mkIf enable
-    {
+    let
+      secretsFile = ipsecSecrets cfg.secrets;
+    in
+      mkIf enable
+        {
 
-    # here we should use the default strongswan ipsec.secrets and
-    # append to it (default one is empty so not a pb for now)
-    environment.etc."ipsec.secrets".source = secretsFile;
+          # here we should use the default strongswan ipsec.secrets and
+          # append to it (default one is empty so not a pb for now)
+          environment.etc."ipsec.secrets".source = secretsFile;
 
-    systemd.services.strongswan = {
-      description = "strongSwan IPSec Service";
-      wantedBy = [ "multi-user.target" ];
-      path = with pkgs; [ kmod iproute iptables utillinux ]; # XXX Linux
-      wants = [ "keys.target" ];
-      after = [ "network-online.target" "keys.target" ];
-      environment = {
-        STRONGSWAN_CONF = strongswanConf { inherit setup connections ca secretsFile managePlugins enabledPlugins; };
-      };
-      serviceConfig = {
-        ExecStart  = "${pkgs.strongswan}/sbin/ipsec start --nofork";
-      };
-      preStart = ''
-        # with 'nopeerdns' setting, ppp writes into this folder
-        mkdir -m 700 -p /etc/ppp
-      '';
-    };
-  };
+          systemd.services.strongswan = {
+            description = "strongSwan IPSec Service";
+            wantedBy = [ "multi-user.target" ];
+            path = with pkgs; [ kmod iproute iptables utillinux ]; # XXX Linux
+            wants = [ "keys.target" ];
+            after = [ "network-online.target" "keys.target" ];
+            environment = {
+              STRONGSWAN_CONF = strongswanConf { inherit setup connections ca secretsFile managePlugins enabledPlugins; };
+            };
+            serviceConfig = {
+              ExecStart = "${pkgs.strongswan}/sbin/ipsec start --nofork";
+            };
+            preStart = ''
+              # with 'nopeerdns' setting, ppp writes into this folder
+              mkdir -m 700 -p /etc/ppp
+            '';
+          };
+        };
 }
-

@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
 
     makeWrapper ${jre}/bin/java $out/bin/mediathek \
       --add-flags "-cp '$out/lib/*' -jar $out/MediathekView.jar"
-    '';
+  '';
 
   meta = with stdenv.lib; {
     description = "Offers access to the Mediathek of different tv stations (ARD, ZDF, Arte, etc.)";

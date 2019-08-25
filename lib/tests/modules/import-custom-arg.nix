@@ -2,5 +2,6 @@
 
 {
   imports = []
-  ++ lib.optional custom ./define-enable-force.nix;
+    ++ lib.optional custom ./define-enable-force.nix
+    ;
 }

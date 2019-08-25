@@ -2,7 +2,8 @@
 
 let
   version = "2.5.1";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "libgnurx-${version}";
   src = fetchurl {
     url = "mirror://sourceforge/mingw/Other/UserContributed/regex/mingw-regex-${version}/mingw-${name}-src.tar.gz";

@@ -1,7 +1,22 @@
-{ luarocks, lib , stdenv,  readline,  makeWrapper,
-  less, ncurses, cmake, coreutils, fetchgit, libuuid, czmq, openssl,
-  gnuplot, lua, src, libjpeg, libpng
-} :
+{ luarocks
+, lib
+, stdenv
+, readline
+, makeWrapper
+, less
+, ncurses
+, cmake
+, coreutils
+, fetchgit
+, libuuid
+, czmq
+, openssl
+, gnuplot
+, lua
+, src
+, libjpeg
+, libpng
+}:
 
 let
 
@@ -24,68 +39,79 @@ let
       inherit lua;
     };
 
-    buildLuaRocks = { rockspec ? "", luadeps ? [] , buildInputs ? []
-                    , preBuild ? "" , postInstall ? ""
-                    , runtimeDeps ? [] ,  ... }@args :
-      let
+    buildLuaRocks =
+      { rockspec ? ""
+      , luadeps ? []
+      , buildInputs ? []
+      , preBuild ? ""
+      , postInstall ? ""
+      , runtimeDeps ? []
+      , ...
+      }@args:
+        let
 
-        luadeps_ =
-          luadeps ++
-          (lib.concatMap (d : if d ? luadeps then d.luadeps else []) luadeps);
+          luadeps_ =
+            luadeps
+            ++ (lib.concatMap (d: if d ? luadeps then d.luadeps else []) luadeps)
+            ;
 
-        runtimeDeps_ =
-          runtimeDeps ++
-          (lib.concatMap (d : if d ? runtimeDeps then d.runtimeDeps else []) luadeps) ++
-          [ lua coreutils ];
+          runtimeDeps_ =
+            runtimeDeps
+            ++ (lib.concatMap (d: if d ? runtimeDeps then d.runtimeDeps else []) luadeps)
+            ++ [ lua coreutils ]
+            ;
 
-        mkcfg = ''
-          export LUAROCKS_CONFIG=config.lua
-          cat >config.lua <<EOF
-            rocks_trees = {
-                 { name = [[system]], root = [[${luarocks}]] }
-               ${lib.concatImapStrings (i : dep :  ", { name = [[dep${toString i}]], root = [[${dep}]] }") luadeps_}
-            };
+          mkcfg = ''
+            export LUAROCKS_CONFIG=config.lua
+            cat >config.lua <<EOF
+              rocks_trees = {
+                   { name = [[system]], root = [[${luarocks}]] }
+                 ${lib.concatImapStrings (i: dep: ", { name = [[dep${toString i}]], root = [[${dep}]] }") luadeps_}
+              };
 
-            variables = {
-              LUA_BINDIR = "$out/bin";
-              LUA_INCDIR = "$out/include";
-              LUA_LIBDIR = "$out/lib/lua/${lua.luaversion}";
-            };
-          EOF
-        '';
+              variables = {
+                LUA_BINDIR = "$out/bin";
+                LUA_INCDIR = "$out/include";
+                LUA_LIBDIR = "$out/lib/lua/${lua.luaversion}";
+              };
+            EOF
+          '';
 
-      in
-      stdenv.mkDerivation (args // {
+        in
+          stdenv.mkDerivation (
+            args
+            // {
 
-        name = "${args.name}-${lua.luaversion}";
+                 name = "${args.name}-${lua.luaversion}";
 
-        inherit preBuild postInstall;
+                 inherit preBuild postInstall;
 
-        inherit luadeps runtimeDeps;
+                 inherit luadeps runtimeDeps;
 
-        phases = [ "unpackPhase" "patchPhase" "buildPhase"];
+                 phases = [ "unpackPhase" "patchPhase" "buildPhase" ];
 
-        buildInputs = runtimeDeps ++ buildInputs ++ [ makeWrapper lua ];
+                 buildInputs = runtimeDeps ++ buildInputs ++ [ makeWrapper lua ];
 
-        buildPhase = ''
-          eval "$preBuild"
-          ${mkcfg}
-          eval "`${luarocks}/bin/luarocks --deps-mode=all --tree=$out path`"
-          ${luarocks}/bin/luarocks make --deps-mode=all --tree=$out ${rockspec}
+                 buildPhase = ''
+                   eval "$preBuild"
+                   ${mkcfg}
+                   eval "`${luarocks}/bin/luarocks --deps-mode=all --tree=$out path`"
+                   ${luarocks}/bin/luarocks make --deps-mode=all --tree=$out ${rockspec}
 
-          for p in $out/bin/*; do
-            wrapProgram $p \
-              --suffix LD_LIBRARY_PATH ';' "${lib.makeLibraryPath runtimeDeps_}" \
-              --suffix PATH ';' "${lib.makeBinPath runtimeDeps_}" \
-              --suffix LUA_PATH ';' "\"$LUA_PATH\"" \
-              --suffix LUA_PATH ';' "\"$out/share/lua/${lua.luaversion}/?.lua;$out/share/lua/${lua.luaversion}/?/init.lua\"" \
-              --suffix LUA_CPATH ';' "\"$LUA_CPATH\"" \
-              --suffix LUA_CPATH ';' "\"$out/lib/lua/${lua.luaversion}/?.so;$out/lib/lua/${lua.luaversion}/?/init.so\""
-          done
+                   for p in $out/bin/*; do
+                     wrapProgram $p \
+                       --suffix LD_LIBRARY_PATH ';' "${lib.makeLibraryPath runtimeDeps_}" \
+                       --suffix PATH ';' "${lib.makeBinPath runtimeDeps_}" \
+                       --suffix LUA_PATH ';' "\"$LUA_PATH\"" \
+                       --suffix LUA_PATH ';' "\"$out/share/lua/${lua.luaversion}/?.lua;$out/share/lua/${lua.luaversion}/?/init.lua\"" \
+                       --suffix LUA_CPATH ';' "\"$LUA_CPATH\"" \
+                       --suffix LUA_CPATH ';' "\"$out/lib/lua/${lua.luaversion}/?.so;$out/lib/lua/${lua.luaversion}/?/init.so\""
+                   done
 
-          eval "$postInstall"
-        '';
-      });
+                   eval "$postInstall"
+                 '';
+               }
+          );
 
     # FIXME: doesn't installs lua-files for some reason
     # lua-cjson = buildLuaPackage {
@@ -102,7 +128,7 @@ let
         makeFlags="PREFIX=$out LUA_LIBRARY=$out/lib/lua"
       '';
 
-      buildInputs = [lua];
+      buildInputs = [ lua ];
 
       installPhase = ''
         make install-extra $makeFlags
@@ -113,14 +139,14 @@ let
     luafilesystem = buildLuaRocks {
       name = "filesystem";
       src = "${distro_src}/extra/luafilesystem";
-      luadeps = [lua-cjson];
+      luadeps = [ lua-cjson ];
       rockspec = "rockspecs/luafilesystem-1.6.3-1.rockspec";
     };
 
     penlight = buildLuaRocks {
       name = "penlight";
       src = "${distro_src}/extra/penlight";
-      luadeps = [luafilesystem];
+      luadeps = [ luafilesystem ];
     };
 
     luaffifb = buildLuaRocks {
@@ -145,7 +171,7 @@ let
     paths = buildLuaRocks rec {
       name = "paths";
       src = "${distro_src}/pkg/paths";
-      buildInputs = [cmake];
+      buildInputs = [ cmake ];
       rockspec = "rocks/${name}-scm-1.rockspec";
     };
 
@@ -160,29 +186,31 @@ let
           --replace '"sys >= 1.0"' ' '
         export LUA_PATH="$src/?.lua;$LUA_PATH"
       '';
-      meta = common_meta // {
-        description = "Torch is a machine-learning library";
-        longDescription = ''
-          Torch is the main package in [Torch7](http://torch.ch) where data
-          structures for multi-dimensional tensors and mathematical operations
-          over these are defined. Additionally, it provides many utilities for
-          accessing files, serializing objects of arbitrary types and other
-          useful utilities.
-        '';
-      };
+      meta = common_meta
+        // {
+             description = "Torch is a machine-learning library";
+             longDescription = ''
+               Torch is the main package in [Torch7](http://torch.ch) where data
+               structures for multi-dimensional tensors and mathematical operations
+               over these are defined. Additionally, it provides many utilities for
+               accessing files, serializing objects of arbitrary types and other
+               useful utilities.
+             '';
+           }
+        ;
     };
 
     dok = buildLuaRocks rec {
       name = "dok";
       src = "${distro_src}/pkg/dok";
-      luadeps = [sundown];
+      luadeps = [ sundown ];
       rockspec = "rocks/${name}-scm-1.rockspec";
     };
 
     sys = buildLuaRocks rec {
       name = "sys";
-      luadeps = [torch];
-      buildInputs = [readline cmake];
+      luadeps = [ torch ];
+      buildInputs = [ readline cmake ];
       src = "${distro_src}/pkg/sys";
       rockspec = "sys-1.1-0.rockspec";
       preBuild = ''
@@ -192,15 +220,15 @@ let
 
     xlua = buildLuaRocks rec {
       name = "xlua";
-      luadeps = [torch sys];
+      luadeps = [ torch sys ];
       src = "${distro_src}/pkg/xlua";
       rockspec = "xlua-1.0-0.rockspec";
     };
 
     nn = buildLuaRocks rec {
       name = "nn";
-      luadeps = [torch luaffifb];
-      buildInputs = [cmake];
+      luadeps = [ torch luaffifb ];
+      buildInputs = [ cmake ];
       src = "${distro_src}/extra/nn";
       rockspec = "rocks/nn-scm-1.rockspec";
       preBuild = ''
@@ -211,7 +239,7 @@ let
     graph = buildLuaRocks rec {
       name = "graph";
       luadeps = [ torch ];
-      buildInputs = [cmake];
+      buildInputs = [ cmake ];
       src = "${distro_src}/extra/graph";
       rockspec = "rocks/graph-scm-1.rockspec";
       preBuild = ''
@@ -222,7 +250,7 @@ let
     nngraph = buildLuaRocks rec {
       name = "nngraph";
       luadeps = [ torch nn graph ];
-      buildInputs = [cmake];
+      buildInputs = [ cmake ];
       src = "${distro_src}/extra/nngraph";
       preBuild = ''
         export Torch_DIR=${torch}/share/cmake/torch
@@ -232,7 +260,7 @@ let
     image = buildLuaRocks rec {
       name = "image";
       luadeps = [ torch dok sys xlua ];
-      buildInputs = [cmake libjpeg libpng];
+      buildInputs = [ cmake libjpeg libpng ];
       src = "${distro_src}/pkg/image";
       rockspec = "image-1.1.alpha-0.rockspec";
       preBuild = ''
@@ -243,7 +271,7 @@ let
     optim = buildLuaRocks rec {
       name = "optim";
       luadeps = [ torch ];
-      buildInputs = [cmake];
+      buildInputs = [ cmake ];
       src = "${distro_src}/pkg/optim";
       rockspec = "optim-1.0.5-0.rockspec";
       preBuild = ''
@@ -277,12 +305,14 @@ let
 
     trepl = buildLuaRocks rec {
       name = "trepl";
-      luadeps = [torch gnuplot paths penlight graph nn nngraph image gnuplot optim sys dok unsup];
+      luadeps = [ torch gnuplot paths penlight graph nn nngraph image gnuplot optim sys dok unsup ];
       runtimeDeps = [ ncurses readline ];
       src = "${distro_src}/exe/trepl";
-      meta = common_meta // {
-        description = "A pure Lua REPL for Lua(JIT), with heavy support for Torch types.";
-      };
+      meta = common_meta
+        // {
+             description = "A pure Lua REPL for Lua(JIT), with heavy support for Torch types.";
+           }
+        ;
     };
 
     lbase64 = buildLuaRocks rec {
@@ -306,7 +336,7 @@ let
         cmakeFlags="-DLUA_LIBRARY=${lua}/lib/lua/${lua.luaversion} -DINSTALL_CMOD=$out/lib/lua/${lua.luaversion} -DINSTALL_MOD=$out/lib/lua/${lua.luaversion}"
       '';
 
-      buildInputs = [cmake libuuid lua];
+      buildInputs = [ cmake libuuid lua ];
       meta = {
         # FIXME: set the exact revision for src
         broken = true;
@@ -316,9 +346,24 @@ let
     # Doesn't work due to missing deps (according to luarocs).
     itorch = buildLuaRocks rec {
       name = "itorch";
-      luadeps = [torch gnuplot paths penlight graph nn nngraph image gnuplot
-                  optim sys dok lbase64 lua-cjson luuid];
-      buildInputs = [czmq openssl];
+      luadeps = [
+        torch
+        gnuplot
+        paths
+        penlight
+        graph
+        nn
+        nngraph
+        image
+        gnuplot
+        optim
+        sys
+        dok
+        lbase64
+        lua-cjson
+        luuid
+      ];
+      buildInputs = [ czmq openssl ];
       src = "${distro_src}/extra/iTorch";
       meta = {
         # FIXME: figure out whats wrong with deps
@@ -332,5 +377,3 @@ let
 in
 
 luapkgs
-
-

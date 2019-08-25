@@ -1,5 +1,17 @@
-{ stdenv, fetchurl, pkgconfig, gnused_422, perl, python2, zip, libffi, readline, icu, zlib, buildPackages
-, libobjc }:
+{ stdenv
+, fetchurl
+, pkgconfig
+, gnused_422
+, perl
+, python2
+, zip
+, libffi
+, readline
+, icu
+, zlib
+, buildPackages
+, libobjc
+}:
 
 with stdenv.lib;
 
@@ -13,7 +25,8 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [ libffi readline icu zlib ]
-               ++ stdenv.lib.optional stdenv.isDarwin libobjc;
+    ++ stdenv.lib.optional stdenv.isDarwin libobjc
+    ;
   nativeBuildInputs = [ pkgconfig perl python2 zip gnused_422 ];
 
   postUnpack = "sourceRoot=\${sourceRoot}/js/src";
@@ -36,12 +49,14 @@ stdenv.mkDerivation rec {
     # not be good defaults for other uses.
     "--enable-gcgenerational"
     "--enable-shared-js"
-  ] ++ optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
-    # Spidermonkey seems to use different host/build terminology for cross
-    # compilation here.
-    "--host=${stdenv.buildPlatform.config}"
-    "--target=${stdenv.hostPlatform.config}"
-  ];
+  ]
+  ++ optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
+       # Spidermonkey seems to use different host/build terminology for cross
+       # compilation here.
+       "--host=${stdenv.buildPlatform.config}"
+       "--target=${stdenv.hostPlatform.config}"
+     ]
+  ;
 
   configurePlatforms = [];
 

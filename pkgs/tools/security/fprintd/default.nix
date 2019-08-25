@@ -1,6 +1,17 @@
 { thinkpad ? false
-, stdenv, fetchurl, pkgconfig, intltool, libfprint-thinkpad ? null
-, libfprint ? null, glib, dbus-glib, polkit, nss, pam, systemd }:
+, stdenv
+, fetchurl
+, pkgconfig
+, intltool
+, libfprint-thinkpad ? null
+, libfprint ? null
+, glib
+, dbus-glib
+, polkit
+, nss
+, pam
+, systemd
+}:
 
 stdenv.mkDerivation rec {
   pname = "fprintd" + stdenv.lib.optionalString thinkpad "-thinkpad";
@@ -13,14 +24,15 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ glib dbus-glib polkit nss pam systemd ]
     ++ stdenv.lib.optional thinkpad libfprint-thinkpad
-    ++ stdenv.lib.optional (!thinkpad) libfprint;
+    ++ stdenv.lib.optional (!thinkpad) libfprint
+    ;
 
   nativeBuildInputs = [ pkgconfig intltool ];
 
-  configureFlags = [ 
-    "--with-systemdsystemunitdir=${placeholder "out"}/lib/systemd/system" 
-    "--localstatedir=/var" 
-    "--sysconfdir=${placeholder "out"}/etc" 
+  configureFlags = [
+    "--with-systemdsystemunitdir=${placeholder "out"}/lib/systemd/system"
+    "--localstatedir=/var"
+    "--sysconfdir=${placeholder "out"}/etc"
   ];
 
   meta = with stdenv.lib; {

@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
     exec = "pharo %F";
     icon = "pharo";
     terminal = "false";
-    type="Application";
+    type = "Application";
     startupNotify = "false";
     categories = "Development;";
     mimeType = "application/x-pharo-image";
@@ -54,9 +54,10 @@ stdenv.mkDerivation rec {
     maintainers = [ stdenv.lib.maintainers.lukego ];
     # Pharo VM sources are packaged separately for darwin (OS X)
     platforms = stdenv.lib.filter
-      (system: with stdenv.lib.systems.elaborate { inherit system; };
-         isUnix && !isDarwin)
+      (
+        system: with stdenv.lib.systems.elaborate { inherit system; };
+        isUnix && !isDarwin
+      )
       stdenv.lib.platforms.mesaPlatforms;
   };
 }
-

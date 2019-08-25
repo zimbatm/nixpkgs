@@ -10,10 +10,13 @@ stdenv.mkDerivation rec {
   };
 
   patches =
-    [ (fetchurl {
-        url = "https://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/app-misc/bfr/files/bfr-1.6-perl.patch?revision=1.1";
-        sha256 = "1pk9jm3c1qzs727lh0bw61w3qbykaqg4jblywf9pvq5bypk88qfj";
-      })
+    [
+      (
+        fetchurl {
+          url = "https://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/app-misc/bfr/files/bfr-1.6-perl.patch?revision=1.1";
+          sha256 = "1pk9jm3c1qzs727lh0bw61w3qbykaqg4jblywf9pvq5bypk88qfj";
+        }
+      )
     ];
 
   buildInputs = [ perl ];

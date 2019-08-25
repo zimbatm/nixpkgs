@@ -1,16 +1,26 @@
-{ stdenv, fetchurl, readline, pam ? null, openldap ? null
-, popt, iniparser, libunwind
-, fam ? null , acl ? null, cups ? null
-, useKerberos ? false, kerberos ? null, winbind ? true
+{ stdenv
+, fetchurl
+, readline
+, pam ? null
+, openldap ? null
+, popt
+, iniparser
+, libunwind
+, fam ? null
+, acl ? null
+, cups ? null
+, useKerberos ? false
+, kerberos ? null
+, winbind ? true
 
-# Eg. smbclient and smbspool require a smb.conf file.
-# If you set configDir to "" an empty configuration file
-# $out/lib/smb.conf is is created for you.
-#
-# configDir defaults to "/etc/samba" so that smbpassword picks up
-# the location of its passwd db files from the system configuration file
-# /etc/samba/smb.conf. That's why nixos touches /etc/samba/smb.conf even if you
-# don't enable the samba upstart service.
+  # Eg. smbclient and smbspool require a smb.conf file.
+  # If you set configDir to "" an empty configuration file
+  # $out/lib/smb.conf is is created for you.
+  #
+  # configDir defaults to "/etc/samba" so that smbpassword picks up
+  # the location of its passwd db files from the system configuration file
+  # /etc/samba/smb.conf. That's why nixos touches /etc/samba/smb.conf even if you
+  # don't enable the samba upstart service.
 , configDir ? "/etc/samba"
 
 }:
@@ -25,14 +35,20 @@ stdenv.mkDerivation rec {
     sha256 = "0l9pz2m67vf398q3c2dwn8jwdxsjb20igncf4byhv6yq5dzqlb4g";
   };
 
-  patches = [(fetchurl {
-    url = "https://download.samba.org/pub/samba/patches/security/"
-        + "samba-3.6.25-security-2015-12-16.patch";
-    sha256 = "00dcjcn577825mfdwdp76jfy5kcrqw3s4d5c41gqdq5gfcdbmqdb";
-  })];
+  patches = [
+    (
+      fetchurl {
+        url = "https://download.samba.org/pub/samba/patches/security/"
+          + "samba-3.6.25-security-2015-12-16.patch"
+          ;
+        sha256 = "00dcjcn577825mfdwdp76jfy5kcrqw3s4d5c41gqdq5gfcdbmqdb";
+      }
+    )
+  ];
 
   buildInputs = [ readline pam openldap popt iniparser libunwind fam acl cups ]
-    ++ stdenv.lib.optional useKerberos kerberos;
+    ++ stdenv.lib.optional useKerberos kerberos
+    ;
 
   enableParallelBuilding = true;
 
@@ -51,14 +67,16 @@ stdenv.mkDerivation rec {
 
   configureFlags =
     stdenv.lib.optionals (pam != null) [ "--with-pam" "--with-pam_smbpass" ]
-    ++ [ "--with-aio-support"
+    ++ [
+         "--with-aio-support"
          "--disable-swat"
          "--with-configdir=${configDir}"
          "--with-fhs"
          "--localstatedir=/var"
        ]
     ++ (stdenv.lib.optional winbind "--with-winbind")
-    ++ (stdenv.lib.optional (stdenv.cc.libc != null) "--with-libiconv=${stdenv.cc.libc}");
+    ++ (stdenv.lib.optional (stdenv.cc.libc != null) "--with-libiconv=${stdenv.cc.libc}")
+    ;
 
   # Need to use a DESTDIR because `make install' tries to write in /var and /etc.
   installFlags = "DESTDIR=$(TMPDIR)/inst";
@@ -85,7 +103,8 @@ stdenv.mkDerivation rec {
       (cd "$out/lib" && ln -s libnss_winbind.so libnss_winbind.so.2)
       (cd "$out/lib" && ln -s libnss_wins.so libnss_wins.so.2)
     '' # */
-    + stdenv.lib.optionalString (configDir == "") "touch $out/lib/smb.conf";
+    + stdenv.lib.optionalString (configDir == "") "touch $out/lib/smb.conf"
+  ;
 
   meta = with stdenv.lib; {
     homepage = https://www.samba.org/;

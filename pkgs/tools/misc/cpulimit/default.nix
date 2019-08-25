@@ -1,4 +1,4 @@
-{stdenv, fetchurl}:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   name = "cpulimit-${version}";
@@ -21,6 +21,6 @@ stdenv.mkDerivation rec {
     description = "A tool to throttle the CPU usage of programs";
     platforms = with platforms; linux ++ freebsd;
     license = licenses.gpl2;
-    maintainers = [maintainers.rycee];
+    maintainers = [ maintainers.rycee ];
   };
 }

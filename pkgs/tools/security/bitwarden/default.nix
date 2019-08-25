@@ -36,7 +36,8 @@ let
 
     src = fetchurl {
       url = "https://github.com/bitwarden/desktop/releases/download/"
-      + "v${version}/Bitwarden-${version}-amd64.deb";
+        + "v${version}/Bitwarden-${version}-amd64.deb"
+        ;
       inherit sha256;
     };
 
@@ -82,6 +83,7 @@ let
     '';
   };
 
-in if stdenv.isDarwin
+in
+if stdenv.isDarwin
 then throw "Bitwarden has not been packaged for macOS yet"
 else linux

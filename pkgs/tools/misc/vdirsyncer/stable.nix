@@ -12,7 +12,9 @@ python3Packages.buildPythonApplication rec {
   };
 
   propagatedBuildInputs = with python3Packages; [
-    click click-log click-threading
+    click
+    click-log
+    click-threading
     requests_toolbelt
     requests
     requests_oauthlib # required for google oauth sync
@@ -25,10 +27,12 @@ python3Packages.buildPythonApplication rec {
 
   patches = [
     # Fixes for hypothesis: https://github.com/pimutils/vdirsyncer/pull/779
-    (fetchpatch {
-      url = https://github.com/pimutils/vdirsyncer/commit/22ad88a6b18b0979c5d1f1d610c1d2f8f87f4b89.patch;
-      sha256 = "0dbzj6jlxhdidnm3i21a758z83sdiwzhpd45pbkhycfhgmqmhjpl";
-    })
+    (
+      fetchpatch {
+        url = https://github.com/pimutils/vdirsyncer/commit/22ad88a6b18b0979c5d1f1d610c1d2f8f87f4b89.patch;
+        sha256 = "0dbzj6jlxhdidnm3i21a758z83sdiwzhpd45pbkhycfhgmqmhjpl";
+      }
+    )
   ];
 
   postPatch = ''

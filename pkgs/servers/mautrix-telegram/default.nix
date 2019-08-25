@@ -36,11 +36,15 @@ buildPythonPackage rec {
   #
   # Hence we need to patch away `alembic` from `mautrix-telegram` and create an `alembic`
   # which has `mautrix-telegram` in its environment.
-  passthru.alembic = alembic.overrideAttrs (old: {
-    propagatedBuildInputs = old.propagatedBuildInputs ++ [
-      mautrix-telegram
-    ];
-  });
+  passthru.alembic = alembic.overrideAttrs (
+    old: {
+      propagatedBuildInputs = old.propagatedBuildInputs
+        ++ [
+             mautrix-telegram
+           ]
+        ;
+    }
+  );
 
   checkInputs = [
     pytest

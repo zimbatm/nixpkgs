@@ -1,4 +1,5 @@
-{ stdenv, fetchFromGitHub
+{ stdenv
+, fetchFromGitHub
 , python3Packages
 }:
 
@@ -22,16 +23,18 @@ stdenv.mkDerivation rec {
     patchPythonScript $out/share/ibus-uniemoji/uniemoji.py
   '';
 
-  makeFlags = [ "PREFIX=$(out)" "SYSCONFDIR=$(out)/etc"
-                "PYTHON=${python3Packages.python.interpreter}"
-              ];
+  makeFlags = [
+    "PREFIX=$(out)"
+    "SYSCONFDIR=$(out)/etc"
+    "PYTHON=${python3Packages.python.interpreter}"
+  ];
 
   meta = with stdenv.lib; {
     isIbusEngine = true;
-    description  = "Input method (ibus) for entering unicode symbols and emoji by name";
-    homepage     = "https://github.com/salty-horse/ibus-uniemoji";
-    license      = with licenses; [ gpl3 mit ];
-    platforms    = platforms.linux;
-    maintainers  = with maintainers; [ aske ];
+    description = "Input method (ibus) for entering unicode symbols and emoji by name";
+    homepage = "https://github.com/salty-horse/ibus-uniemoji";
+    license = with licenses; [ gpl3 mit ];
+    platforms = platforms.linux;
+    maintainers = with maintainers; [ aske ];
   };
 }

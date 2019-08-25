@@ -1,5 +1,10 @@
-{ stdenv, fetchFromGitHub,
-  bzip2, nix, perl, perlPackages,
+{ stdenv
+, fetchFromGitHub
+, bzip2
+, nix
+, perl
+, perlPackages
+,
 }:
 
 with stdenv.lib;
@@ -19,7 +24,8 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [ bzip2 perl nix nix.perl-bindings ]
-    ++ (with perlPackages; [ DBI DBDSQLite Plack Starman ]);
+    ++ (with perlPackages; [ DBI DBDSQLite Plack Starman ])
+    ;
 
   dontBuild = true;
 

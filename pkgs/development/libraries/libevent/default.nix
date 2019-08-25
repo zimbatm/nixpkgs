@@ -1,5 +1,9 @@
-{ stdenv, fetchurl, findutils, fixDarwinDylibNames
-, sslSupport? true, openssl
+{ stdenv
+, fetchurl
+, findutils
+, fixDarwinDylibNames
+, sslSupport ? true
+, openssl
 }:
 
 assert sslSupport -> openssl != null;

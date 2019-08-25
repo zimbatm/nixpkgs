@@ -1,4 +1,6 @@
-{ lib, stdenv, fetchurl
+{ lib
+, stdenv
+, fetchurl
 , enableLargeConfig ? false # doc: https://github.com/ivmai/bdwgc/blob/v7.6.6/doc/README.macros#L179
 }:
 
@@ -28,7 +30,8 @@ stdenv.mkDerivation rec {
   configureFlags =
     [ "--enable-cplusplus" "--with-libatomic-ops=none" ]
     ++ lib.optional enableLargeConfig "--enable-large-config"
-    ++ lib.optional (stdenv.hostPlatform.libc == "musl") "--disable-static";
+    ++ lib.optional (stdenv.hostPlatform.libc == "musl") "--disable-static"
+    ;
 
   doCheck = true; # not cross;
 
@@ -59,7 +62,7 @@ stdenv.mkDerivation rec {
     # non-copyleft, X11-style license
     license = http://hboehm.info/gc/license.txt;
 
-    maintainers = [ ];
+    maintainers = [];
     platforms = stdenv.lib.platforms.all;
   };
 }

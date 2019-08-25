@@ -1,8 +1,18 @@
-{ stdenv, fetchurl
+{ stdenv
+, fetchurl
 , # required for both
-  unzip, libjpeg, zlib, libvorbis, curl
+  unzip
+, libjpeg
+, zlib
+, libvorbis
+, curl
 , # glx
-  libX11, libGLU_combined, libXpm, libXext, libXxf86vm, alsaLib
+  libX11
+, libGLU_combined
+, libXpm
+, libXext
+, libXxf86vm
+, alsaLib
 , # sdl
   SDL2
 }:
@@ -17,12 +27,20 @@ stdenv.mkDerivation rec {
 
   buildInputs = [
     # required for both
-    unzip libjpeg
+    unzip
+    libjpeg
     # glx
-    libX11 libGLU_combined libXpm libXext libXxf86vm alsaLib
+    libX11
+    libGLU_combined
+    libXpm
+    libXext
+    libXxf86vm
+    alsaLib
     # sdl
     SDL2
-    zlib libvorbis curl
+    zlib
+    libvorbis
+    curl
   ];
 
   sourceRoot = "Xonotic/source/darkplaces";

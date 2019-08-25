@@ -1,6 +1,8 @@
 { stdenv, fetchurl, kernel }:
 
-let base = "batman-adv-2019.2"; in
+let
+  base = "batman-adv-2019.2";
+in
 
 stdenv.mkDerivation rec {
   name = "${base}-${kernel.version}";

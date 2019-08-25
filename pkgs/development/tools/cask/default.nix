@@ -11,8 +11,19 @@ stdenv.mkDerivation rec {
 
   doCheck = true;
   buildInputs = with emacsPackagesNg; [
-    s f dash ansi ecukes servant ert-runner el-mock
-    noflet ert-async shell-split-string git package-build
+    s
+    f
+    dash
+    ansi
+    ecukes
+    servant
+    ert-runner
+    el-mock
+    noflet
+    ert-async
+    shell-split-string
+    git
+    package-build
   ];
   buildPhase = ''
     emacs --batch -L . -f batch-byte-compile cask.el cask-cli.el

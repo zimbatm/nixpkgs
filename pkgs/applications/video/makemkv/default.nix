@@ -1,5 +1,12 @@
-{ stdenv, mkDerivation, fetchurl, autoPatchelfHook
-, ffmpeg, openssl, qtbase, zlib, pkgconfig
+{ stdenv
+, mkDerivation
+, fetchurl
+, autoPatchelfHook
+, ffmpeg
+, openssl
+, qtbase
+, zlib
+, pkgconfig
 }:
 
 let
@@ -19,7 +26,8 @@ let
     ];
     sha256 = "0n1nlq17dxcbgk9xqf7nv6zykvh91yhsjqdhq55947wc11fxjqa0";
   };
-in mkDerivation {
+in
+mkDerivation {
   pname = "makemkv";
   inherit version;
 

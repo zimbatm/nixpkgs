@@ -1,6 +1,16 @@
-{ stdenv, fetchurl, pkgconfig, intltool, xtrans, dbus-glib, systemd,
-  libSM, libXtst, gtk3, hicolor-icon-theme, mate,
-  wrapGAppsHook
+{ stdenv
+, fetchurl
+, pkgconfig
+, intltool
+, xtrans
+, dbus-glib
+, systemd
+, libSM
+, libXtst
+, gtk3
+, hicolor-icon-theme
+, mate
+, wrapGAppsHook
 }:
 
 stdenv.mkDerivation rec {

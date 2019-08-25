@@ -10,14 +10,18 @@ buildPythonPackage rec {
   };
 
   patches = [
-    (fetchpatch {
-      url = https://github.com/arvydas/blinkstick-python/commit/a9227d0.patch;
-      sha256 = "1mcmxlnkbfxwp84qz32l5rlc7r9anh9yhnqaj1y8rny5s13jb01f";
-    })
-    (fetchpatch {
-      url = https://github.com/arvydas/blinkstick-python/pull/54.patch;
-      sha256 = "1gjq6xbai794bbdyrv82i96l1a7qkwvlhzd6sa937dy5ivv6s6hl";
-    })
+    (
+      fetchpatch {
+        url = https://github.com/arvydas/blinkstick-python/commit/a9227d0.patch;
+        sha256 = "1mcmxlnkbfxwp84qz32l5rlc7r9anh9yhnqaj1y8rny5s13jb01f";
+      }
+    )
+    (
+      fetchpatch {
+        url = https://github.com/arvydas/blinkstick-python/pull/54.patch;
+        sha256 = "1gjq6xbai794bbdyrv82i96l1a7qkwvlhzd6sa937dy5ivv6s6hl";
+      }
+    )
   ];
 
   propagatedBuildInputs = [ pyusb ];

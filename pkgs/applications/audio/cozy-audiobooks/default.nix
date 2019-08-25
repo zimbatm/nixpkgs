@@ -1,4 +1,5 @@
-{ stdenv, fetchFromGitHub
+{ stdenv
+, fetchFromGitHub
 , ninja
 , meson
 , pkgconfig
@@ -35,7 +36,9 @@ python3Packages.buildPythonApplication rec {
   };
 
   nativeBuildInputs = [
-    meson ninja pkgconfig
+    meson
+    ninja
+    pkgconfig
     wrapGAppsHook
     appstream-glib
     desktop-file-utils
@@ -47,12 +50,16 @@ python3Packages.buildPythonApplication rec {
     cairo
     gettext
     gnome3.adwaita-icon-theme
-  ] ++ (with gst_all_1; [
-    gstreamer
-    gst-plugins-good
-    gst-plugins-ugly
-    gst-plugins-base
-  ]);
+  ]
+  ++ (
+       with gst_all_1; [
+         gstreamer
+         gst-plugins-good
+         gst-plugins-ugly
+         gst-plugins-base
+       ]
+     )
+  ;
 
   propagatedBuildInputs = with python3Packages; [
     gst-python

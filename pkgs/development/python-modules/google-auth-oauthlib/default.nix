@@ -20,11 +20,16 @@ buildPythonPackage rec {
   };
 
   checkInputs = [
-    click mock pytest
-  ] ++ lib.optionals (!isPy3k) [ futures ];
+    click
+    mock
+    pytest
+  ]
+  ++ lib.optionals (!isPy3k) [ futures ]
+  ;
 
   propagatedBuildInputs = [
-    google_auth requests_oauthlib
+    google_auth
+    requests_oauthlib
   ];
 
   checkPhase = ''

@@ -34,14 +34,19 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [
-    libX11 libXt
-  ] ++ stdenv.lib.optionals withJpegSupport [
-    libjpeg
-  ] ++ stdenv.lib.optionals withPngSupport [
-    libpng
-  ] ++ stdenv.lib.optionals withTiffSupport [
-    libtiff
-  ];
+    libX11
+    libXt
+  ]
+  ++ stdenv.lib.optionals withJpegSupport [
+       libjpeg
+     ]
+  ++ stdenv.lib.optionals withPngSupport [
+       libpng
+     ]
+  ++ stdenv.lib.optionals withTiffSupport [
+       libtiff
+     ]
+  ;
 
   # NOTE: we patch the build-info script so that it never detects the utilities
   # it's trying to find; one of the Debian patches adds support for
@@ -83,6 +88,6 @@ stdenv.mkDerivation rec {
     license = stdenv.lib.licenses.gpl2Plus;
 
     maintainers = with stdenv.lib.maintainers; [ andrew-d ];
-    platforms = stdenv.lib.platforms.linux;  # arbitrary choice
+    platforms = stdenv.lib.platforms.linux; # arbitrary choice
   };
 }

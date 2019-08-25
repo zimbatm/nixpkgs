@@ -44,7 +44,8 @@ let
   installed_testdir = "${placeholder "installedTests"}/libexec/installed-tests/flatpak-builder";
   installed_test_metadir = "${placeholder "installedTests"}/share/installed-tests/flatpak-builder";
   version = "1.0.8";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "flatpak-builder-${version}";
 
   outputs = [ "out" "doc" "man" "installedTests" ];
@@ -86,28 +87,32 @@ in stdenv.mkDerivation rec {
   patches = [
     # patch taken from gtk_doc
     ./respect-xml-catalog-files-var.patch
-    (substituteAll {
-      src = ./fix-paths.patch;
-      bzr = "${bazaar}/bin/bzr";
-      cp = "${coreutils}/bin/cp";
-      patch = "${patch}/bin/patch";
-      tar = "${gnutar}/bin/tar";
-      unzip = "${unzip}/bin/unzip";
-      rpm2cpio = "${rpm}/bin/rpm2cpio";
-      cpio = "${cpio}/bin/cpio";
-      git = "${gitMinimal}/bin/git";
-      rofilesfuse = "${ostree}/bin/rofiles-fuse";
-      strip = "${binutils}/bin/strip";
-      eustrip = "${elfutils}/bin/eu-strip";
-      euelfcompress = "${elfutils}/bin/eu-elfcompress";
-    })
+    (
+      substituteAll {
+        src = ./fix-paths.patch;
+        bzr = "${bazaar}/bin/bzr";
+        cp = "${coreutils}/bin/cp";
+        patch = "${patch}/bin/patch";
+        tar = "${gnutar}/bin/tar";
+        unzip = "${unzip}/bin/unzip";
+        rpm2cpio = "${rpm}/bin/rpm2cpio";
+        cpio = "${cpio}/bin/cpio";
+        git = "${gitMinimal}/bin/git";
+        rofilesfuse = "${ostree}/bin/rofiles-fuse";
+        strip = "${binutils}/bin/strip";
+        eustrip = "${elfutils}/bin/eu-strip";
+        euelfcompress = "${elfutils}/bin/eu-elfcompress";
+      }
+    )
 
     # The test scripts in Flatpak repo were updated so we are basing
     # this on our patch for Flatpak 0.99.
-    (substituteAll {
-      src = ./fix-test-paths.patch;
-      inherit glibcLocales python2;
-    })
+    (
+      substituteAll {
+        src = ./fix-test-paths.patch;
+        inherit glibcLocales python2;
+      }
+    )
   ];
 
   configureFlags = [

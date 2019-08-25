@@ -2,7 +2,9 @@
 
 assert jdk != null;
 
-let version = "3.6.1"; in
+let
+  version = "3.6.1";
+in
 stdenv.mkDerivation rec {
   name = "apache-maven-${version}";
 

@@ -2,22 +2,26 @@
 
 rec {
   bridge_stp_helper =
-    { name = "bridge-stp-helper";
+    {
+      name = "bridge-stp-helper";
       patch = ./bridge-stp-helper.patch;
     };
 
   p9_fixes =
-    { name = "p9-fixes";
+    {
+      name = "p9-fixes";
       patch = ./p9-fixes.patch;
     };
 
   modinst_arg_list_too_long =
-    { name = "modinst-arglist-too-long";
+    {
+      name = "modinst-arglist-too-long";
       patch = ./modinst-arg-list-too-long.patch;
     };
 
   genksyms_fix_segfault =
-    { name = "genksyms-fix-segfault";
+    {
+      name = "genksyms-fix-segfault";
       patch = ./genksyms-fix-segfault.patch;
     };
 

@@ -1,5 +1,13 @@
-{ stdenv, fetchurl, coreutils, gnugrep, utillinux, kmod
-, procps, kbd, dbus }:
+{ stdenv
+, fetchurl
+, coreutils
+, gnugrep
+, utillinux
+, kmod
+, procps
+, kbd
+, dbus
+}:
 
 let
 

@@ -1,6 +1,6 @@
 { stdenv, fetchurl, pkgconfig, glib, intltool }:
 let
-  p_name  = "libxfce4util";
+  p_name = "libxfce4util";
   ver_maj = "4.12";
   ver_min = "1";
 in

@@ -64,13 +64,17 @@ stdenv.mkDerivation rec {
     systemd
     tracker
     shared-mime-info
-  ] ++ (with gst_all_1; [
-    gstreamer
-    gst-plugins-base
-    gst-plugins-good
-    gst-plugins-bad
-    gst-plugins-ugly
-  ]);
+  ]
+  ++ (
+       with gst_all_1; [
+         gstreamer
+         gst-plugins-base
+         gst-plugins-good
+         gst-plugins-bad
+         gst-plugins-ugly
+       ]
+     )
+  ;
 
   mesonFlags = [
     "-Dsystemd-user-units-dir=${placeholder "out"}/lib/systemd/user"

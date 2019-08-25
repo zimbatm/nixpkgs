@@ -1,16 +1,59 @@
-{ stdenv, fetchurl, meson, ninja, wrapGAppsHook, pkgconfig, gettext, itstool, libvirt-glib
-, glib, gobject-introspection, libxml2, gtk3, gtk-vnc, freerdp, libvirt, spice-gtk, python3
-, spice-protocol, libsoup, libosinfo, systemd, tracker, tracker-miners, vala
-, libcap, yajl, gmp, gdbm, cyrus_sasl, gnome3, librsvg, desktop-file-utils
-, mtools, cdrkit, libcdio, libusb, libarchive, acl, libgudev, libsecret
-, libcap_ng, numactl, xen, libapparmor, json-glib, webkitgtk, vte
+{ stdenv
+, fetchurl
+, meson
+, ninja
+, wrapGAppsHook
+, pkgconfig
+, gettext
+, itstool
+, libvirt-glib
+, glib
+, gobject-introspection
+, libxml2
+, gtk3
+, gtk-vnc
+, freerdp
+, libvirt
+, spice-gtk
+, python3
+, spice-protocol
+, libsoup
+, libosinfo
+, systemd
+, tracker
+, tracker-miners
+, vala
+, libcap
+, yajl
+, gmp
+, gdbm
+, cyrus_sasl
+, gnome3
+, librsvg
+, desktop-file-utils
+, mtools
+, cdrkit
+, libcdio
+, libusb
+, libarchive
+, acl
+, libgudev
+, libsecret
+, libcap_ng
+, numactl
+, xen
+, libapparmor
+, json-glib
+, webkitgtk
+, vte
 }:
 
 # TODO: ovirt (optional)
 
 let
   version = "3.32.1";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "gnome-boxes-${version}";
 
   src = fetchurl {
@@ -21,18 +64,55 @@ in stdenv.mkDerivation rec {
   doCheck = true;
 
   nativeBuildInputs = [
-    meson ninja vala pkgconfig gettext itstool wrapGAppsHook gobject-introspection desktop-file-utils python3
+    meson
+    ninja
+    vala
+    pkgconfig
+    gettext
+    itstool
+    wrapGAppsHook
+    gobject-introspection
+    desktop-file-utils
+    python3
   ];
 
   # Required for USB redirection PolicyKit rules file
   propagatedUserEnvPkgs = [ spice-gtk ];
 
   buildInputs = [
-    libvirt-glib glib gtk3 gtk-vnc freerdp libxml2
-    libvirt spice-gtk spice-protocol libsoup json-glib webkitgtk libosinfo systemd
-    tracker tracker-miners libcap yajl gmp gdbm cyrus_sasl libusb libarchive
-    gnome3.adwaita-icon-theme librsvg acl libgudev libsecret
-    libcap_ng numactl xen libapparmor vte
+    libvirt-glib
+    glib
+    gtk3
+    gtk-vnc
+    freerdp
+    libxml2
+    libvirt
+    spice-gtk
+    spice-protocol
+    libsoup
+    json-glib
+    webkitgtk
+    libosinfo
+    systemd
+    tracker
+    tracker-miners
+    libcap
+    yajl
+    gmp
+    gdbm
+    cyrus_sasl
+    libusb
+    libarchive
+    gnome3.adwaita-icon-theme
+    librsvg
+    acl
+    libgudev
+    libsecret
+    libcap_ng
+    numactl
+    xen
+    libapparmor
+    vte
   ];
 
   preFixup = ''

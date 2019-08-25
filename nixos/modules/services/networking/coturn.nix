@@ -4,39 +4,40 @@ let
   cfg = config.services.coturn;
   pidfile = "/run/turnserver/turnserver.pid";
   configFile = pkgs.writeText "turnserver.conf" ''
-listening-port=${toString cfg.listening-port}
-tls-listening-port=${toString cfg.tls-listening-port}
-alt-listening-port=${toString cfg.alt-listening-port}
-alt-tls-listening-port=${toString cfg.alt-tls-listening-port}
-${concatStringsSep "\n" (map (x: "listening-ip=${x}") cfg.listening-ips)}
-${concatStringsSep "\n" (map (x: "relay-ip=${x}") cfg.relay-ips)}
-min-port=${toString cfg.min-port}
-max-port=${toString cfg.max-port}
-${lib.optionalString cfg.lt-cred-mech "lt-cred-mech"}
-${lib.optionalString cfg.no-auth "no-auth"}
-${lib.optionalString cfg.use-auth-secret "use-auth-secret"}
-${lib.optionalString (cfg.static-auth-secret != null) ("static-auth-secret=${cfg.static-auth-secret}")}
-realm=${cfg.realm}
-${lib.optionalString cfg.no-udp "no-udp"}
-${lib.optionalString cfg.no-tcp "no-tcp"}
-${lib.optionalString cfg.no-tls "no-tls"}
-${lib.optionalString cfg.no-dtls "no-dtls"}
-${lib.optionalString cfg.no-udp-relay "no-udp-relay"}
-${lib.optionalString cfg.no-tcp-relay "no-tcp-relay"}
-${lib.optionalString (cfg.cert != null) "cert=${cfg.cert}"}
-${lib.optionalString (cfg.pkey != null) "pkey=${cfg.pkey}"}
-${lib.optionalString (cfg.dh-file != null) ("dh-file=${cfg.dh-file}")}
-no-stdout-log
-syslog
-pidfile=${pidfile}
-${lib.optionalString cfg.secure-stun "secure-stun"}
-${lib.optionalString cfg.no-cli "no-cli"}
-cli-ip=${cfg.cli-ip}
-cli-port=${toString cfg.cli-port}
-${lib.optionalString (cfg.cli-password != null) ("cli-password=${cfg.cli-password}")}
-${cfg.extraConfig}
-'';
-in {
+    listening-port=${toString cfg.listening-port}
+    tls-listening-port=${toString cfg.tls-listening-port}
+    alt-listening-port=${toString cfg.alt-listening-port}
+    alt-tls-listening-port=${toString cfg.alt-tls-listening-port}
+    ${concatStringsSep "\n" (map (x: "listening-ip=${x}") cfg.listening-ips)}
+    ${concatStringsSep "\n" (map (x: "relay-ip=${x}") cfg.relay-ips)}
+    min-port=${toString cfg.min-port}
+    max-port=${toString cfg.max-port}
+    ${lib.optionalString cfg.lt-cred-mech "lt-cred-mech"}
+    ${lib.optionalString cfg.no-auth "no-auth"}
+    ${lib.optionalString cfg.use-auth-secret "use-auth-secret"}
+    ${lib.optionalString (cfg.static-auth-secret != null) ("static-auth-secret=${cfg.static-auth-secret}")}
+    realm=${cfg.realm}
+    ${lib.optionalString cfg.no-udp "no-udp"}
+    ${lib.optionalString cfg.no-tcp "no-tcp"}
+    ${lib.optionalString cfg.no-tls "no-tls"}
+    ${lib.optionalString cfg.no-dtls "no-dtls"}
+    ${lib.optionalString cfg.no-udp-relay "no-udp-relay"}
+    ${lib.optionalString cfg.no-tcp-relay "no-tcp-relay"}
+    ${lib.optionalString (cfg.cert != null) "cert=${cfg.cert}"}
+    ${lib.optionalString (cfg.pkey != null) "pkey=${cfg.pkey}"}
+    ${lib.optionalString (cfg.dh-file != null) ("dh-file=${cfg.dh-file}")}
+    no-stdout-log
+    syslog
+    pidfile=${pidfile}
+    ${lib.optionalString cfg.secure-stun "secure-stun"}
+    ${lib.optionalString cfg.no-cli "no-cli"}
+    cli-ip=${cfg.cli-ip}
+    cli-port=${toString cfg.cli-port}
+    ${lib.optionalString (cfg.cli-password != null) ("cli-password=${cfg.cli-password}")}
+    ${cfg.extraConfig}
+  '';
+in
+{
   options = {
     services.coturn = {
       enable = mkEnableOption "coturn TURN server";
@@ -295,15 +296,19 @@ in {
 
   config = mkIf cfg.enable {
     users.users = [
-      { name = "turnserver";
+      {
+        name = "turnserver";
         uid = config.ids.uids.turnserver;
         description = "coturn TURN server user";
-      } ];
+      }
+    ];
     users.groups = [
-      { name = "turnserver";
+      {
+        name = "turnserver";
         gid = config.ids.gids.turnserver;
         members = [ "turnserver" ];
-      } ];
+      }
+    ];
 
     systemd.services.coturn = {
       description = "coturn TURN server";
@@ -323,11 +328,11 @@ in {
         Group = "turnserver";
         AmbientCapabilities =
           mkIf (
-            cfg.listening-port < 1024 ||
-            cfg.alt-listening-port < 1024 ||
-            cfg.tls-listening-port < 1024 ||
-            cfg.alt-tls-listening-port < 1024 ||
-            cfg.min-port < 1024
+            cfg.listening-port < 1024
+            || cfg.alt-listening-port < 1024
+            || cfg.tls-listening-port < 1024
+            || cfg.alt-tls-listening-port < 1024
+            || cfg.min-port < 1024
           ) "cap_net_bind_service";
         Restart = "on-abort";
       };

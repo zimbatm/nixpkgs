@@ -12,8 +12,8 @@ in
       enable = mkEnableOption "herbstluftwm";
 
       configFile = mkOption {
-        default     = null;
-        type        = with types; nullOr path;
+        default = null;
+        type = with types; nullOr path;
         description = ''
           Path to the herbstluftwm configuration file.  If left at the
           default value, $XDG_CONFIG_HOME/herbstluftwm/autostart will
@@ -27,11 +27,13 @@ in
     services.xserver.windowManager.session = singleton {
       name = "herbstluftwm";
       start =
-        let configFileClause = optionalString
+        let
+          configFileClause = optionalString
             (cfg.configFile != null)
             ''-c "${cfg.configFile}"''
             ;
-        in "${pkgs.herbstluftwm}/bin/herbstluftwm ${configFileClause}";
+        in
+          "${pkgs.herbstluftwm}/bin/herbstluftwm ${configFileClause}";
     };
     environment.systemPackages = [ pkgs.herbstluftwm ];
   };

@@ -1,9 +1,34 @@
-{ buildPythonApplication, lib, fetchFromGitHub
-, wrapGAppsHook, gobject-introspection, gnome-desktop, libnotify, libgnome-keyring, pango
-, gdk-pixbuf, atk, webkitgtk, gst_all_1
-, evdev, pyyaml, pygobject3, requests, pillow
-, xrandr, pciutils, psmisc, glxinfo, vulkan-tools, xboxdrv, pulseaudio, p7zip, xgamma
-, libstrangle, wine, fluidsynth, xorgserver
+{ buildPythonApplication
+, lib
+, fetchFromGitHub
+, wrapGAppsHook
+, gobject-introspection
+, gnome-desktop
+, libnotify
+, libgnome-keyring
+, pango
+, gdk-pixbuf
+, atk
+, webkitgtk
+, gst_all_1
+, evdev
+, pyyaml
+, pygobject3
+, requests
+, pillow
+, xrandr
+, pciutils
+, psmisc
+, glxinfo
+, vulkan-tools
+, xboxdrv
+, pulseaudio
+, p7zip
+, xgamma
+, libstrangle
+, wine
+, fluidsynth
+, xorgserver
 }:
 
 let
@@ -25,11 +50,16 @@ let
   ];
 
   gstDeps = with gst_all_1; [
-    gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugins-ugly
+    gstreamer
+    gst-plugins-base
+    gst-plugins-good
+    gst-plugins-bad
+    gst-plugins-ugly
     gst-libav
   ];
 
-in buildPythonApplication rec {
+in
+buildPythonApplication rec {
   name = "lutris-original-${version}";
   version = "0.5.2.1";
 
@@ -41,16 +71,29 @@ in buildPythonApplication rec {
   };
 
   buildInputs = [
-    wrapGAppsHook gobject-introspection gnome-desktop libnotify libgnome-keyring pango
-    gdk-pixbuf atk webkitgtk
-  ] ++ gstDeps;
+    wrapGAppsHook
+    gobject-introspection
+    gnome-desktop
+    libnotify
+    libgnome-keyring
+    pango
+    gdk-pixbuf
+    atk
+    webkitgtk
+  ]
+  ++ gstDeps
+  ;
 
   makeWrapperArgs = [
     "--prefix PATH : ${binPath}"
   ];
 
   propagatedBuildInputs = [
-    evdev pyyaml pygobject3 requests pillow
+    evdev
+    pyyaml
+    pygobject3
+    requests
+    pillow
   ];
 
   preCheck = "export HOME=$PWD";
@@ -63,4 +106,3 @@ in buildPythonApplication rec {
     platforms = platforms.linux;
   };
 }
-

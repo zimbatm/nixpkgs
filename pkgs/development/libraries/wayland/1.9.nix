@@ -1,5 +1,9 @@
-{ lib, stdenv, fetchurl, pkgconfig
-, libffi, libxml2
+{ lib
+, stdenv
+, fetchurl
+, pkgconfig
+, libffi
+, libxml2
 , expat ? null # Build wayland-scanner (currently cannot be disabled as of 1.7.0)
 }:
 
@@ -23,9 +27,9 @@ stdenv.mkDerivation rec {
 
   meta = {
     description = "Reference implementation of the wayland protocol";
-    homepage    = https://wayland.freedesktop.org/;
-    license     = lib.licenses.mit;
-    platforms   = lib.platforms.linux;
+    homepage = https://wayland.freedesktop.org/;
+    license = lib.licenses.mit;
+    platforms = lib.platforms.linux;
     maintainers = with lib.maintainers; [ codyopel ];
   };
 

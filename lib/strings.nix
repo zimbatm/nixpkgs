@@ -2,7 +2,7 @@
 { lib }:
 let
 
-inherit (builtins) length;
+  inherit (builtins) length;
 
 in
 
@@ -54,9 +54,9 @@ rec {
     separator:
     # Input list
     list:
-    if list == [] || length list == 1
-    then list
-    else tail (lib.concatMap (x: [separator x]) list);
+      if list == [] || length list == 1
+      then list
+      else tail (lib.concatMap (x: [ separator x ]) list);
 
   /* Concatenate a list of strings with a separator between each element
 
@@ -66,8 +66,10 @@ rec {
         concatStringsSep "/" ["usr" "local" "bin"]
         => "usr/local/bin"
   */
-  concatStringsSep = builtins.concatStringsSep or (separator: list:
-    concatStrings (intersperse separator list));
+  concatStringsSep = builtins.concatStringsSep or (
+    separator: list:
+      concatStrings (intersperse separator list)
+  );
 
   /* Maps a function over a list of strings and then concatenates the
      result with the specified separator interspersed between
@@ -120,7 +122,7 @@ rec {
     subDir:
     # List of base paths
     paths:
-    concatStringsSep ":" (map (path: path + "/" + subDir) (builtins.filter (x: x != null) paths));
+      concatStringsSep ":" (map (path: path + "/" + subDir) (builtins.filter (x: x != null) paths));
 
   /* Construct a Unix-style search path by appending the given
      `subDir` to the specified `output` of each of the packages. If no
@@ -210,11 +212,12 @@ rec {
     suffix:
     # Input string
     content:
-    let
-      lenContent = stringLength content;
-      lenSuffix = stringLength suffix;
-    in lenContent >= lenSuffix &&
-       substring (lenContent - lenSuffix) lenContent content == suffix;
+      let
+        lenContent = stringLength content;
+        lenSuffix = stringLength suffix;
+      in
+        lenContent >= lenSuffix
+        && substring (lenContent - lenSuffix) lenContent content == suffix;
 
   /* Determine whether a string contains the given infix
 
@@ -233,7 +236,8 @@ rec {
   hasInfix = infix: content:
     let
       drop = x: substring 1 (stringLength x) x;
-    in hasPrefix infix content
+    in
+      hasPrefix infix content
       || content != "" && hasInfix infix (drop content);
 
   /* Convert a string to a list of characters (i.e. singleton strings).
@@ -293,7 +297,7 @@ rec {
        escapeShellArg "esc'ape\nme"
        => "'esc'\\''ape\nme'"
   */
-  escapeShellArg = arg: "'${replaceStrings ["'"] ["'\\''"] (toString arg)}'";
+  escapeShellArg = arg: "'${replaceStrings [ "'" ] [ "'\\''" ] (toString arg)}'";
 
   /* Quote all arguments to be safely passed to the Bourne shell.
 
@@ -313,21 +317,24 @@ rec {
        escapeNixString "hello\${}\n"
        => "\"hello\\\${}\\n\""
   */
-  escapeNixString = s: escape ["$"] (builtins.toJSON s);
+  escapeNixString = s: escape [ "$" ] (builtins.toJSON s);
 
   # Obsolete - use replaceStrings instead.
   replaceChars = builtins.replaceStrings or (
     del: new: s:
-    let
-      substList = lib.zipLists del new;
-      subst = c:
-        let found = lib.findFirst (sub: sub.fst == c) null substList; in
-        if found == null then
-          c
-        else
-          found.snd;
-    in
-      stringAsChars subst s);
+      let
+        substList = lib.zipLists del new;
+        subst = c:
+          let
+            found = lib.findFirst (sub: sub.fst == c) null substList;
+          in
+            if found == null then
+              c
+            else
+              found.snd;
+      in
+        stringAsChars subst s
+  );
 
   # Case conversion utilities.
   lowerChars = stringToCharacters "abcdefghijklmnopqrstuvwxyz";
@@ -390,15 +397,19 @@ rec {
         substring startAt sepLen s == sep;
 
       recurse = index: startAt:
-        let cutUntil = i: [(substring startAt (i - startAt) s)]; in
-        if index <= lastSearch then
-          if startWithSep index then
-            let restartAt = index + sepLen; in
-            cutUntil index ++ recurse restartAt restartAt
+        let
+          cutUntil = i: [ (substring startAt (i - startAt) s) ];
+        in
+          if index <= lastSearch then
+            if startWithSep index then
+              let
+                restartAt = index + sepLen;
+              in
+                cutUntil index ++ recurse restartAt restartAt
+            else
+              recurse (index + 1) startAt
           else
-            recurse (index + 1) startAt
-        else
-          cutUntil sLen;
+            cutUntil sLen;
     in
       recurse 0 0;
 
@@ -417,14 +428,14 @@ rec {
     prefix:
     # Input string
     str:
-    let
-      preLen = stringLength prefix;
-      sLen = stringLength str;
-    in
-      if hasPrefix prefix str then
-        substring preLen (sLen - preLen) str
-      else
-        str;
+      let
+        preLen = stringLength prefix;
+        sLen = stringLength str;
+      in
+        if hasPrefix prefix str then
+          substring preLen (sLen - preLen) str
+        else
+          str;
 
   /* Return a string without the specified suffix, if the suffix matches.
 
@@ -441,14 +452,14 @@ rec {
     suffix:
     # Input string
     str:
-    let
-      sufLen = stringLength suffix;
-      sLen = stringLength str;
-    in
-      if sufLen <= sLen && suffix == substring (sLen - sufLen) sufLen str then
-        substring 0 (sLen - sufLen) str
-      else
-        str;
+      let
+        sufLen = stringLength suffix;
+        sLen = stringLength str;
+      in
+        if sufLen <= sLen && suffix == substring (sLen - sufLen) sufLen str then
+          substring 0 (sLen - sufLen) str
+        else
+          str;
 
   /* Return true if string v1 denotes a version older than v2.
 
@@ -483,9 +494,10 @@ rec {
        => "2016.01.01"
   */
   getVersion = x:
-   let
-     parse = drv: (builtins.parseDrvName drv).version;
-   in if isString x
+    let
+      parse = drv: (builtins.parseDrvName drv).version;
+    in
+      if isString x
       then parse x
       else x.version or (parse x.name);
 
@@ -503,7 +515,8 @@ rec {
       components = splitString "/" url;
       filename = lib.last components;
       name = builtins.head (splitString sep filename);
-    in assert name != filename; name;
+    in
+      assert name != filename; name;
 
   /* Create an --{enable,disable}-<feat> string that can be passed to
      standard GNU Autoconf scripts.
@@ -568,8 +581,8 @@ rec {
     in
       assert lib.assertMsg (strw <= width)
         "fixedWidthString: requested string length (${
-          toString width}) must not be shorter than actual length (${
-            toString strw})";
+        toString width}) must not be shorter than actual length (${
+        toString strw})";
       if strw == width then str else filler + fixedWidthString reqWidth filler str;
 
   /* Format a number adding leading zeroes up to fixed width.
@@ -582,10 +595,10 @@ rec {
 
   /* Check whether a value can be coerced to a string */
   isCoercibleToString = x:
-    builtins.elem (builtins.typeOf x) [ "path" "string" "null" "int" "float" "bool" ] ||
-    (builtins.isList x && lib.all isCoercibleToString x) ||
-    x ? outPath ||
-    x ? __toString;
+    builtins.elem (builtins.typeOf x) [ "path" "string" "null" "int" "float" "bool" ]
+    || (builtins.isList x && lib.all isCoercibleToString x)
+    || x ? outPath
+    || x ? __toString;
 
   /* Check whether a value is a store path.
 
@@ -601,9 +614,11 @@ rec {
   */
   isStorePath = x:
     if isCoercibleToString x then
-      let str = toString x; in
-      builtins.substring 0 1 str == "/"
-      && dirOf str == builtins.storeDir
+      let
+        str = toString x;
+      in
+        builtins.substring 0 1 str == "/"
+        && dirOf str == builtins.storeDir
     else
       false;
 
@@ -621,10 +636,12 @@ rec {
   */
   # Obviously, it is a bit hacky to use fromJSON this way.
   toInt = str:
-    let may_be_int = builtins.fromJSON str; in
-    if builtins.isInt may_be_int
-    then may_be_int
-    else throw "Could not convert ${str} to int.";
+    let
+      may_be_int = builtins.fromJSON str;
+    in
+      if builtins.isInt may_be_int
+      then may_be_int
+      else throw "Could not convert ${str} to int.";
 
   /* Read a list of paths from `file`, relative to the `rootPath`.
      Lines beginning with `#` are treated as comments and ignored.

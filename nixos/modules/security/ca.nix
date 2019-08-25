@@ -11,11 +11,13 @@ let
   };
 
   caCertificates = pkgs.runCommand "ca-certificates.crt"
-    { files =
-        cfg.certificateFiles ++
-        [ (builtins.toFile "extra.crt" (concatStringsSep "\n" cfg.certificates)) ];
+    {
+      files =
+        cfg.certificateFiles
+        ++ [ (builtins.toFile "extra.crt" (concatStringsSep "\n" cfg.certificates)) ]
+        ;
       preferLocalBuild = true;
-     }
+    }
     ''
       cat $files > $out
     '';
@@ -63,7 +65,8 @@ in
       type = types.listOf types.str;
       default = [];
       example = [
-        "WoSign" "WoSign China"
+        "WoSign"
+        "WoSign China"
         "CA WoSign ECC Root"
         "Certification Authority of WoSign G2"
       ];

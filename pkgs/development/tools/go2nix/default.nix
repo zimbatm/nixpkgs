@@ -1,5 +1,12 @@
-{ stdenv, buildGoPackage, go-bindata, gotools, nix-prefetch-git, git, makeWrapper,
-  fetchFromGitHub }:
+{ stdenv
+, buildGoPackage
+, go-bindata
+, gotools
+, nix-prefetch-git
+, git
+, makeWrapper
+, fetchFromGitHub
+}:
 
 buildGoPackage rec {
   name = "go2nix-${version}";

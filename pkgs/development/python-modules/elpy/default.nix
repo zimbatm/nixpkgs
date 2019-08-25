@@ -19,7 +19,8 @@ buildPythonPackage rec {
   };
 
   propagatedBuildInputs = [ flake8 autopep8 jedi importmagic ]
-    ++ stdenv.lib.optionals isPy27 [ rope ];
+    ++ stdenv.lib.optionals isPy27 [ rope ]
+    ;
 
   doCheck = false; # there are no tests
 

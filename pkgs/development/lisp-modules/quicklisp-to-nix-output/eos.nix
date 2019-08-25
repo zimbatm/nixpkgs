@@ -7,7 +7,7 @@ rec {
 
   description = ''UNMAINTAINED fork of 5AM, a test framework'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/eos/2015-06-08/eos-20150608-git.tgz'';
@@ -16,7 +16,7 @@ rec {
 
   packageName = "eos";
 
-  asdFilesToKeep = ["eos.asd"];
+  asdFilesToKeep = [ "eos.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM eos DESCRIPTION UNMAINTAINED fork of 5AM, a test framework SHA256

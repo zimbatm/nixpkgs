@@ -12,32 +12,40 @@ let
   # as you use, but with another kernel
   # !!! fix this
   cloner = inheritParent: list:
-    map (childConfig:
-      (import ../../../lib/eval-config.nix {
-        inherit baseModules;
-        modules =
-           (optionals inheritParent modules)
-        ++ [ ./no-clone.nix ]
-        ++ [ childConfig ];
-      }).config.system.build.toplevel
+    map (
+      childConfig:
+        (
+          import ../../../lib/eval-config.nix {
+            inherit baseModules;
+            modules =
+              (optionals inheritParent modules)
+              ++ [ ./no-clone.nix ]
+              ++ [ childConfig ]
+              ;
+          }
+        ).config.system.build.toplevel
     ) list;
 
   children =
-     cloner false config.nesting.children
-  ++ cloner true config.nesting.clone;
+    cloner false config.nesting.children
+    ++ cloner true config.nesting.clone
+    ;
 
   systemBuilder =
     let
-      kernelPath = "${config.boot.kernelPackages.kernel}/" +
-        "${config.system.boot.loader.kernelFile}";
-      initrdPath = "${config.system.build.initialRamdisk}/" +
-        "${config.system.boot.loader.initrdFile}";
-    in ''
-      mkdir $out
+      kernelPath = "${config.boot.kernelPackages.kernel}/"
+        + "${config.system.boot.loader.kernelFile}"
+        ;
+      initrdPath = "${config.system.build.initialRamdisk}/"
+        + "${config.system.boot.loader.initrdFile}"
+        ;
+    in
+      ''
+        mkdir $out
 
-      # Containers don't have their own kernel or initrd.  They boot
-      # directly into stage 2.
-      ${optionalString (!config.boot.isContainer) ''
+        # Containers don't have their own kernel or initrd.  They boot
+        # directly into stage 2.
+        ${optionalString (!config.boot.isContainer) ''
         if [ ! -f ${kernelPath} ]; then
           echo "The bootloader cannot find the proper kernel image."
           echo "(Expecting ${kernelPath})"
@@ -47,8 +55,8 @@ let
         ln -s ${kernelPath} $out/kernel
         ln -s ${config.system.modulesTree} $out/kernel-modules
         ${optionalString (config.hardware.deviceTree.package != null) ''
-          ln -s ${config.hardware.deviceTree.package} $out/dtbs
-        ''}
+        ln -s ${config.hardware.deviceTree.package} $out/dtbs
+      ''}
 
         echo -n "$kernelParams" > $out/kernel-params
 
@@ -59,39 +67,39 @@ let
         ln -s ${config.hardware.firmware}/lib/firmware $out/firmware
       ''}
 
-      echo "$activationScript" > $out/activate
-      substituteInPlace $out/activate --subst-var out
-      chmod u+x $out/activate
-      unset activationScript
+        echo "$activationScript" > $out/activate
+        substituteInPlace $out/activate --subst-var out
+        chmod u+x $out/activate
+        unset activationScript
 
-      cp ${config.system.build.bootStage2} $out/init
-      substituteInPlace $out/init --subst-var-by systemConfig $out
+        cp ${config.system.build.bootStage2} $out/init
+        substituteInPlace $out/init --subst-var-by systemConfig $out
 
-      ln -s ${config.system.build.etc}/etc $out/etc
-      ln -s ${config.system.path} $out/sw
-      ln -s "$systemd" $out/systemd
+        ln -s ${config.system.build.etc}/etc $out/etc
+        ln -s ${config.system.path} $out/sw
+        ln -s "$systemd" $out/systemd
 
-      echo -n "$configurationName" > $out/configuration-name
-      echo -n "systemd ${toString config.systemd.package.interfaceVersion}" > $out/init-interface-version
-      echo -n "$nixosLabel" > $out/nixos-version
-      echo -n "${pkgs.stdenv.hostPlatform.system}" > $out/system
+        echo -n "$configurationName" > $out/configuration-name
+        echo -n "systemd ${toString config.systemd.package.interfaceVersion}" > $out/init-interface-version
+        echo -n "$nixosLabel" > $out/nixos-version
+        echo -n "${pkgs.stdenv.hostPlatform.system}" > $out/system
 
-      mkdir $out/fine-tune
-      childCount=0
-      for i in $children; do
-        childCount=$(( childCount + 1 ))
-        ln -s $i $out/fine-tune/child-$childCount
-      done
+        mkdir $out/fine-tune
+        childCount=0
+        for i in $children; do
+          childCount=$(( childCount + 1 ))
+          ln -s $i $out/fine-tune/child-$childCount
+        done
 
-      mkdir $out/bin
-      export localeArchive="${config.i18n.glibcLocales}/lib/locale/locale-archive"
-      substituteAll ${./switch-to-configuration.pl} $out/bin/switch-to-configuration
-      chmod +x $out/bin/switch-to-configuration
+        mkdir $out/bin
+        export localeArchive="${config.i18n.glibcLocales}/lib/locale/locale-archive"
+        substituteAll ${./switch-to-configuration.pl} $out/bin/switch-to-configuration
+        chmod +x $out/bin/switch-to-configuration
 
-      echo -n "${toString config.system.extraDependencies}" > $out/extra-dependencies
+        echo -n "${toString config.system.extraDependencies}" > $out/extra-dependencies
 
-      ${config.system.extraSystemBuilderCmds}
-    '';
+        ${config.system.extraSystemBuilderCmds}
+      '';
 
   # Putting it all together.  This builds a store path containing
   # symlinks to the various parts of the built configuration (the
@@ -99,9 +107,11 @@ let
   # `switch-to-configuration' that activates the configuration and
   # makes it bootable.
   baseSystem = pkgs.stdenvNoCC.mkDerivation {
-    name = let hn = config.networking.hostName;
-               nn = if (hn != "") then hn else "unnamed";
-        in "nixos-system-${nn}-${config.system.nixos.label}";
+    name = let
+      hn = config.networking.hostName;
+      nn = if (hn != "") then hn else "unnamed";
+    in
+      "nixos-system-${nn}-${config.system.nixos.label}";
     preferLocalBuild = true;
     allowSubstitutes = false;
     buildCommand = systemBuilder;
@@ -115,7 +125,7 @@ let
     kernelParams = config.boot.kernelParams;
     installBootLoader =
       config.system.build.installBootLoader
-      or "echo 'Warning: do not know how to make this configuration bootable; please enable a boot loader.' 1>&2; true";
+        or "echo 'Warning: do not know how to make this configuration bootable; please enable a boot loader.' 1>&2; true";
     activationScript = config.system.activationScripts.script;
     nixosLabel = config.system.nixos.label;
 
@@ -131,13 +141,14 @@ let
   failedAssertions = map (x: x.message) (filter (x: !x.assertion) config.assertions);
 
   baseSystemAssertWarn = if failedAssertions != []
-    then throw "\nFailed assertions:\n${concatStringsSep "\n" (map (x: "- ${x}") failedAssertions)}"
-    else showWarnings config.warnings baseSystem;
+  then throw "\nFailed assertions:\n${concatStringsSep "\n" (map (x: "- ${x}") failedAssertions)}"
+  else showWarnings config.warnings baseSystem;
 
   # Replace runtime dependencies
-  system = fold ({ oldDependency, newDependency }: drv:
+  system = fold (
+    { oldDependency, newDependency }: drv:
       pkgs.replaceDependency { inherit oldDependency newDependency drv; }
-    ) baseSystemAssertWarn config.system.replaceRuntimeDependencies;
+  ) baseSystemAssertWarn config.system.replaceRuntimeDependencies;
 
 in
 
@@ -235,23 +246,27 @@ in
     system.replaceRuntimeDependencies = mkOption {
       default = [];
       example = lib.literalExample "[ ({ original = pkgs.openssl; replacement = pkgs.callPackage /path/to/openssl { }; }) ]";
-      type = types.listOf (types.submodule (
-        { ... }: {
-          options.original = mkOption {
-            type = types.package;
-            description = "The original package to override.";
-          };
+      type = types.listOf (
+        types.submodule (
+          { ... }: {
+            options.original = mkOption {
+              type = types.package;
+              description = "The original package to override.";
+            };
 
-          options.replacement = mkOption {
-            type = types.package;
-            description = "The replacement package.";
-          };
-        })
+            options.replacement = mkOption {
+              type = types.package;
+              description = "The replacement package.";
+            };
+          }
+        )
       );
-      apply = map ({ original, replacement, ... }: {
-        oldDependency = original;
-        newDependency = replacement;
-      });
+      apply = map (
+        { original, replacement, ... }: {
+          oldDependency = original;
+          newDependency = replacement;
+        }
+      );
       description = ''
         List of packages to override without doing a full rebuild.
         The original derivation and replacement derivation must have the same

@@ -14,7 +14,8 @@
 , libunity
 , miniupnpc
 , openssl
-, wrapGAppsHook }:
+, wrapGAppsHook
+}:
 
 stdenv.mkDerivation rec {
   pname = "torrential";

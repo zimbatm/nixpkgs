@@ -3,7 +3,8 @@
 let
   version = "22-1.1ubuntu1"; # Zesty
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "kmod-blacklist-${version}";
 
   src = fetchurl {

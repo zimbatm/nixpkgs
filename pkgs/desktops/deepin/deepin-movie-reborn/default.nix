@@ -1,6 +1,21 @@
-{ stdenv, mkDerivation, fetchFromGitHub, cmake, pkgconfig, qttools, qtx11extras,
-  dtkcore, dtkwidget, ffmpeg, ffmpegthumbnailer, mpv, pulseaudio,
-  libdvdnav, libdvdread, xorg, deepin }:
+{ stdenv
+, mkDerivation
+, fetchFromGitHub
+, cmake
+, pkgconfig
+, qttools
+, qtx11extras
+, dtkcore
+, dtkwidget
+, ffmpeg
+, ffmpegthumbnailer
+, mpv
+, pulseaudio
+, libdvdnav
+, libdvdread
+, xorg
+, deepin
+}:
 
 mkDerivation rec {
   name = "${pname}-${version}";

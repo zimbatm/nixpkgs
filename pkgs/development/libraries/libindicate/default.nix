@@ -1,20 +1,36 @@
 # TODO: Resolve the issues with the Mono bindings.
 
-{ stdenv, fetchurl, lib, file
-, pkgconfig, autoconf
-, glib, dbus-glib, libdbusmenu
-, gtkVersion ? "3", gtk2 ? null, gtk3 ? null
-, pythonPackages, gobject-introspection, vala, gnome-doc-utils
-, monoSupport ? false, mono ? null, gtk-sharp-2_0 ? null
- }:
+{ stdenv
+, fetchurl
+, lib
+, file
+, pkgconfig
+, autoconf
+, glib
+, dbus-glib
+, libdbusmenu
+, gtkVersion ? "3"
+, gtk2 ? null
+, gtk3 ? null
+, pythonPackages
+, gobject-introspection
+, vala
+, gnome-doc-utils
+, monoSupport ? false
+, mono ? null
+, gtk-sharp-2_0 ? null
+}:
 
 with lib;
 
 let
   inherit (pythonPackages) python pygobject2 pygtk;
-in stdenv.mkDerivation rec {
-  name = let postfix = if gtkVersion == "2" && monoSupport then "sharp" else "gtk${gtkVersion}";
-          in "libindicate-${postfix}-${version}";
+in
+stdenv.mkDerivation rec {
+  name = let
+    postfix = if gtkVersion == "2" && monoSupport then "sharp" else "gtk${gtkVersion}";
+  in
+    "libindicate-${postfix}-${version}";
   version = "${versionMajor}.${versionMinor}";
   versionMajor = "12.10";
   versionMinor = "1";
@@ -27,11 +43,19 @@ in stdenv.mkDerivation rec {
   nativeBuildInputs = [ pkgconfig autoconf gobject-introspection vala gnome-doc-utils ];
 
   buildInputs = [
-    glib dbus-glib libdbusmenu
-    python pygobject2 pygtk
-  ] ++ (if gtkVersion == "2"
-    then [ gtk2 ] ++ optionals monoSupport [ mono gtk-sharp-2_0 ]
-    else [ gtk3 ]);
+    glib
+    dbus-glib
+    libdbusmenu
+    python
+    pygobject2
+    pygtk
+  ]
+  ++ (
+       if gtkVersion == "2"
+       then [ gtk2 ] ++ optionals monoSupport [ mono gtk-sharp-2_0 ]
+       else [ gtk3 ]
+     )
+  ;
 
   postPatch = ''
     substituteInPlace configure.ac \

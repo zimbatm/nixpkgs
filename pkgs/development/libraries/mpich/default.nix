@@ -1,8 +1,12 @@
-{ stdenv, fetchurl, perl, gfortran
-,  openssh, hwloc
-} :
+{ stdenv
+, fetchurl
+, perl
+, gfortran
+, openssh
+, hwloc
+}:
 
-stdenv.mkDerivation  rec {
+stdenv.mkDerivation rec {
   name = "mpich-${version}";
   version = "3.3.1";
 
@@ -29,12 +33,13 @@ stdenv.mkDerivation  rec {
     sed -i 's:FC="gfortran":FC=${gfortran}/bin/gfortran:' $out/bin/mpifort
   ''
   + stdenv.lib.optionalString (!stdenv.isDarwin) ''
-    # /tmp/nix-build... ends up in the RPATH, fix it manually
-    for entry in $out/bin/mpichversion $out/bin/mpivars; do
-      echo "fix rpath: $entry"
-      patchelf --set-rpath "$out/lib" $entry
-    done
-    '';
+      # /tmp/nix-build... ends up in the RPATH, fix it manually
+      for entry in $out/bin/mpichversion $out/bin/mpivars; do
+        echo "fix rpath: $entry"
+        patchelf --set-rpath "$out/lib" $entry
+      done
+    ''
+  ;
 
   meta = with stdenv.lib; {
     description = "Implementation of the Message Passing Interface (MPI) standard";

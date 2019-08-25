@@ -14,7 +14,7 @@ mkXfceDerivation rec {
   # See https://github.com/NixOS/nixpkgs/issues/36468
   NIX_CFLAGS_COMPILE = "-I${glib.dev}/include/gio-unix-2.0";
 
-  meta =  {
+  meta = {
     description = "Session manager for Xfce";
   };
 }

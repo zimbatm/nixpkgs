@@ -3,7 +3,8 @@
 let
   version = "1.2";
   pname = "norwester";
-in fetchzip rec {
+in
+fetchzip rec {
   name = "${pname}-${version}";
 
   url = "http://jamiewilson.io/norwester/assets/norwester.zip";

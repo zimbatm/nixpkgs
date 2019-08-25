@@ -31,13 +31,13 @@ let
     ctrl_interface_group=${cfg.group}
 
     ${optionalString cfg.wpa ''
-      wpa=2
-      wpa_passphrase=${cfg.wpaPassphrase}
-    ''}
+    wpa=2
+    wpa_passphrase=${cfg.wpaPassphrase}
+  ''}
     ${optionalString cfg.noScan "noscan=1"}
 
     ${cfg.extraConfig}
-  '' ;
+  '';
 
 in
 
@@ -150,7 +150,7 @@ in
           auth_algo=0
           ieee80211n=1
           ht_capab=[HT40-][SHORT-GI-40][DSSS_CCK-40]
-          '';
+        '';
         type = types.lines;
         description = "Extra configuration options to put in hostapd.conf.";
       };
@@ -162,10 +162,11 @@ in
 
   config = mkIf cfg.enable {
 
-    environment.systemPackages =  [ pkgs.hostapd ];
+    environment.systemPackages = [ pkgs.hostapd ];
 
     systemd.services.hostapd =
-      { description = "hostapd wireless AP";
+      {
+        description = "hostapd wireless AP";
 
         path = [ pkgs.hostapd ];
         after = [ "sys-subsystem-net-devices-${escapedInterface}.device" ];
@@ -174,7 +175,8 @@ in
         wantedBy = [ "multi-user.target" ];
 
         serviceConfig =
-          { ExecStart = "${pkgs.hostapd}/bin/hostapd ${configFile}";
+          {
+            ExecStart = "${pkgs.hostapd}/bin/hostapd ${configFile}";
             Restart = "always";
           };
       };

@@ -27,22 +27,24 @@ stdenv.mkDerivation rec {
     moveToOutput $out/lib/cmake $dev
   '';
 
-  meta = src.meta // {
-    description = "A trivial implementation of libpulse PulseAudio library API";
-    longDescription = ''
-      libcardiacarrest is a trivial implementation of libpulse
-      PulseAudio library API that unconditionally (but gracefully)
-      fails to connect to the PulseAudio daemon and does nothing else.
+  meta = src.meta
+    // {
+         description = "A trivial implementation of libpulse PulseAudio library API";
+         longDescription = ''
+           libcardiacarrest is a trivial implementation of libpulse
+           PulseAudio library API that unconditionally (but gracefully)
+           fails to connect to the PulseAudio daemon and does nothing else.
 
-      apulse and pressureaudio (which uses apulse internally) are an
-      inspiration for this but unlike those two projects
-      libcardiacarrest is not an emulation layer, all it does is it
-      gracefully fails to provide the requested PulseAudio service
-      hoping the application would try something else (e.g. ALSA or
-      JACK).
-    '';
-    license = libpulseaudio.meta.license; # "same as PA headers"
-    maintainers = [ maintainers.oxij ]; # also the author
-  };
+           apulse and pressureaudio (which uses apulse internally) are an
+           inspiration for this but unlike those two projects
+           libcardiacarrest is not an emulation layer, all it does is it
+           gracefully fails to provide the requested PulseAudio service
+           hoping the application would try something else (e.g. ALSA or
+           JACK).
+         '';
+         license = libpulseaudio.meta.license; # "same as PA headers"
+         maintainers = [ maintainers.oxij ]; # also the author
+       }
+    ;
 
 }

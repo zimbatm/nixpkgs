@@ -5,9 +5,9 @@ stdenv.mkDerivation rec {
   version = "1.7.13";
 
   src = fetchFromGitHub {
-    owner  = "major";
-    repo   = "MySQLTuner-perl";
-    rev    = version;
+    owner = "major";
+    repo = "MySQLTuner-perl";
+    rev = version;
     sha256 = "0zxm2hjvgznbbmsqb8bpcgzc0yq1ikxz1gckirp95ibxid3jdham";
   };
 

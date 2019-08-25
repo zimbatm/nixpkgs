@@ -7,8 +7,10 @@
 
 let
   globWith = stdenv.lib.concatMapStringsSep "\n";
-  rmNoise = noiseGlobs: globWith (f:
-    ''rm -rf ${f}'') noiseGlobs;
+  rmNoise = noiseGlobs: globWith (
+    f:
+      ''rm -rf ${f}''
+  ) noiseGlobs;
   mvDoc = docGlobs: globWith
     (f: ''mv ${f} "$DOCDIR" 2>/dev/null || true'')
     docGlobs;
@@ -17,21 +19,23 @@ let
   # $1 is the doc directory (will be created).
   # Best used in conjunction with checkForRemainingFiles
   commonFileActions =
-    { # list of fileglobs that are removed from the source dir
+    {
+      # list of fileglobs that are removed from the source dir
       noiseFiles
       # files that are moved to the doc directory ($1)
       # TODO(Profpatsch): allow to set target dir with
       # { glob = …; to = "html" } (relative to docdir)
-    , docFiles }:
-    writeScript "common-file-actions.sh" ''
-      #!${stdenv.shell}
-      set -e
-      DOCDIR="$1"
-      shopt -s globstar extglob nullglob
-      ${rmNoise noiseFiles}
-      mkdir -p "$DOCDIR"
-      ${mvDoc docFiles}
-    '';
+    , docFiles
+    }:
+      writeScript "common-file-actions.sh" ''
+        #!${stdenv.shell}
+        set -e
+        DOCDIR="$1"
+        shopt -s globstar extglob nullglob
+        ${rmNoise noiseFiles}
+        mkdir -p "$DOCDIR"
+        ${mvDoc docFiles}
+      '';
 
   # Shell script to check whether the build directory is empty.
   # If there are still files remaining, exit 1 with a helpful
@@ -48,6 +52,7 @@ let
     fi
   '';
 
-in {
+in
+{
   inherit commonFileActions checkForRemainingFiles;
 }

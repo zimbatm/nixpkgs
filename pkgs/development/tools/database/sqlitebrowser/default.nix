@@ -1,14 +1,21 @@
-{ mkDerivation, lib, fetchFromGitHub, cmake, antlr
-, qtbase, qttools, sqlite }:
+{ mkDerivation
+, lib
+, fetchFromGitHub
+, cmake
+, antlr
+, qtbase
+, qttools
+, sqlite
+}:
 
 mkDerivation rec {
   version = "3.11.2";
   pname = "sqlitebrowser";
 
   src = fetchFromGitHub {
-    repo   = pname;
-    owner  = pname;
-    rev    = "v${version}";
+    repo = pname;
+    owner = pname;
+    rev = "v${version}";
     sha256 = "0ydd5fg76d5d23byac1f7f8mzx3brmd0cnnkd58qpmlzi7p9hcvx";
   };
 

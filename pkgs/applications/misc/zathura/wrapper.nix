@@ -3,7 +3,8 @@
 let
   pluginsPath = lib.makeSearchPath "lib/zathura" plugins;
 
-in symlinkJoin {
+in
+symlinkJoin {
   name = "zathura-with-plugins-${zathura_core.version}";
 
   paths = with zathura_core; [ man dev out ];

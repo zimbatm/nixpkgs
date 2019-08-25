@@ -1,18 +1,24 @@
-{ stdenv, fetchurl, callPackage, makeWrapper
-, clang, llvm, which, libcgroup
+{ stdenv
+, fetchurl
+, callPackage
+, makeWrapper
+, clang
+, llvm
+, which
+, libcgroup
 }:
 
 let
   afl-qemu = callPackage ./qemu.nix { inherit afl; };
   qemu-exe-name = if stdenv.hostPlatform.system == "x86_64-linux" then "qemu-x86_64"
-    else if stdenv.hostPlatform.system == "i686-linux" then "qemu-i386"
-    else throw "afl: no support for ${stdenv.hostPlatform.system}!";
+  else if stdenv.hostPlatform.system == "i686-linux" then "qemu-i386"
+  else throw "afl: no support for ${stdenv.hostPlatform.system}!";
   afl = stdenv.mkDerivation rec {
-    name    = "afl-${version}";
+    name = "afl-${version}";
     version = "2.52b";
 
     src = fetchurl {
-      url    = "http://lcamtuf.coredump.cx/afl/releases/${name}.tgz";
+      url = "http://lcamtuf.coredump.cx/afl/releases/${name}.tgz";
       sha256 = "0ig0ij4n1pwry5dw1hk4q88801jzzy2cric6y2gd6560j55lnqa3";
     };
     enableParallelBuilding = true;
@@ -66,10 +72,11 @@ let
         also useful for seeding other, more labor or resource-intensive
         testing regimes down the road.
       '';
-      homepage    = "http://lcamtuf.coredump.cx/afl/";
-      license     = stdenv.lib.licenses.asl20;
-      platforms   = ["x86_64-linux" "i686-linux"];
+      homepage = "http://lcamtuf.coredump.cx/afl/";
+      license = stdenv.lib.licenses.asl20;
+      platforms = [ "x86_64-linux" "i686-linux" ];
       maintainers = with stdenv.lib.maintainers; [ thoughtpolice ris ];
     };
   };
-in afl
+in
+afl

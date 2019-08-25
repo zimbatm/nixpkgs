@@ -1,13 +1,24 @@
-{ stdenv, lib, fetchurl, autoreconfHook, pkgconfig
-, netcat-gnu, gnutls, gsasl, libidn2, Security
-, withKeyring ? true, libsecret ? null
-, systemd ? null }:
+{ stdenv
+, lib
+, fetchurl
+, autoreconfHook
+, pkgconfig
+, netcat-gnu
+, gnutls
+, gsasl
+, libidn2
+, Security
+, withKeyring ? true
+, libsecret ? null
+, systemd ? null
+}:
 
 let
   tester = "n"; # {x| |p|P|n|s}
   journal = if stdenv.isLinux then "y" else "n";
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   pname = "msmtp";
   version = "1.8.5";
 
@@ -22,7 +33,8 @@ in stdenv.mkDerivation rec {
 
   buildInputs = [ gnutls gsasl libidn2 ]
     ++ stdenv.lib.optional stdenv.isDarwin Security
-    ++ stdenv.lib.optional withKeyring libsecret;
+    ++ stdenv.lib.optional withKeyring libsecret
+    ;
 
   nativeBuildInputs = [ autoreconfHook pkgconfig ];
 

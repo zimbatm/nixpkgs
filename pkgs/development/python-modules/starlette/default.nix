@@ -36,10 +36,10 @@ buildPythonPackage rec {
   ];
 
   checkPhase = ''
-    ${python.interpreter} -c """
-from starlette.applications import Starlette
-app = Starlette(debug=True)
-"""
+        ${python.interpreter} -c """
+    from starlette.applications import Starlette
+    app = Starlette(debug=True)
+    """
   '';
 
   meta = with lib; {

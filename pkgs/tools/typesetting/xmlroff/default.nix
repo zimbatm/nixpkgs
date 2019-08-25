@@ -1,5 +1,18 @@
-{ stdenv, fetchurl, pkgconfig, libxml2, libxslt, popt, perl
-, glib, pango, pangoxsl, gtk2, libtool, autoconf, automake }:
+{ stdenv
+, fetchurl
+, pkgconfig
+, libxml2
+, libxslt
+, popt
+, perl
+, glib
+, pango
+, pangoxsl
+, gtk2
+, libtool
+, autoconf
+, automake
+}:
 
 stdenv.mkDerivation rec {
   name = "xmlroff-${version}";
@@ -40,7 +53,7 @@ stdenv.mkDerivation rec {
 
   sourceRoot = "${name}/xmlroff/";
 
-  patches = [./xmlroff.patch];
+  patches = [ ./xmlroff.patch ];
 
   meta = {
     platforms = stdenv.lib.platforms.unix;

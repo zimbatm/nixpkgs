@@ -31,14 +31,17 @@ buildPythonPackage rec {
   outputs = [ "out" "dev" ];
 
   buildInputs = [ openssl ]
-             ++ stdenv.lib.optional stdenv.isDarwin darwin.apple_sdk.frameworks.Security;
+    ++ stdenv.lib.optional stdenv.isDarwin darwin.apple_sdk.frameworks.Security
+    ;
   propagatedBuildInputs = [
     asn1crypto
     packaging
     six
-  ] ++ stdenv.lib.optional (pythonOlder "3.4") enum34
+  ]
+  ++ stdenv.lib.optional (pythonOlder "3.4") enum34
   ++ stdenv.lib.optional (pythonOlder "3.3") ipaddress
-  ++ stdenv.lib.optional (!isPyPy) cffi;
+  ++ stdenv.lib.optional (!isPyPy) cffi
+  ;
 
   checkInputs = [
     cryptography_vectors

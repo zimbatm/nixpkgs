@@ -1,4 +1,6 @@
-{ stdenv, fetchFromGitHub, pkgconfig
+{ stdenv
+, fetchFromGitHub
+, pkgconfig
 , libelf
 }:
 
@@ -9,9 +11,9 @@ stdenv.mkDerivation rec {
   version = "0.0.3pre114_${substring 0 7 src.rev}";
 
   src = fetchFromGitHub {
-    owner  = "libbpf";
-    repo   = "libbpf";
-    rev    = "672ae75b66fd8780a4214fe7b116c427e0809a52";
+    owner = "libbpf";
+    repo = "libbpf";
+    rev = "672ae75b66fd8780a4214fe7b116c427e0809a52";
     sha256 = "1bdw1hc4m95irmybqlwax85b6m856g07p2slcw8b7jw3k4j9x075";
   };
 
@@ -35,9 +37,9 @@ stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "Upstream mirror of libbpf";
-    homepage    = "https://github.com/libbpf/libbpf";
-    license     = with licenses; [ lgpl21 /* or */ bsd2 ];
+    homepage = "https://github.com/libbpf/libbpf";
+    license = with licenses; [ lgpl21 /* or */ bsd2 ];
     maintainers = with maintainers; [ thoughtpolice ];
-    platforms   = platforms.linux;
+    platforms = platforms.linux;
   };
 }

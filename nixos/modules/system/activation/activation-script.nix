@@ -5,20 +5,24 @@ with lib;
 
 let
 
-  addAttributeName = mapAttrs (a: v: v // {
-    text = ''
-      #### Activation script snippet ${a}:
-      _localstatus=0
-      ${v.text}
+  addAttributeName = mapAttrs (
+    a: v: v
+    // {
+         text = ''
+           #### Activation script snippet ${a}:
+           _localstatus=0
+           ${v.text}
 
-      if (( _localstatus > 0 )); then
-        printf "Activation script snippet '%s' failed (%s)\n" "${a}" "$_localstatus"
-      fi
-    '';
-  });
+           if (( _localstatus > 0 )); then
+             printf "Activation script snippet '%s' failed (%s)\n" "${a}" "$_localstatus"
+           fi
+         '';
+       }
+  );
 
   path = with pkgs; map getBin
-    [ coreutils
+    [
+      coreutils
       gnugrep
       findutils
       getent
@@ -83,11 +87,12 @@ in
             umask 0022
 
             ${
-              let
-                set' = mapAttrs (n: v: if isString v then noDepEntry v else v) set;
-                withHeadlines = addAttributeName set';
-              in textClosureMap id (withHeadlines) (attrNames withHeadlines)
-            }
+          let
+            set' = mapAttrs (n: v: if isString v then noDepEntry v else v) set;
+            withHeadlines = addAttributeName set';
+          in
+            textClosureMap id (withHeadlines) (attrNames withHeadlines)
+          }
 
             # Make this configuration the current configuration.
             # The readlink is there to ensure that when $systemConfig = /system
@@ -138,11 +143,12 @@ in
           trap "_status=1 _localstatus=\$?" ERR
 
           ${
-            let
-              set' = mapAttrs (n: v: if isString v then noDepEntry v else v) set;
-              withHeadlines = addAttributeName set';
-            in textClosureMap id (withHeadlines) (attrNames withHeadlines)
-          }
+        let
+          set' = mapAttrs (n: v: if isString v then noDepEntry v else v) set;
+          withHeadlines = addAttributeName set';
+        in
+          textClosureMap id (withHeadlines) (attrNames withHeadlines)
+        }
 
           exit $_status
         '';
@@ -188,15 +194,15 @@ in
       '';
 
     system.activationScripts.usrbinenv = if config.environment.usrbinenv != null
-      then ''
-        mkdir -m 0755 -p /usr/bin
-        ln -sfn ${config.environment.usrbinenv} /usr/bin/.env.tmp
-        mv /usr/bin/.env.tmp /usr/bin/env # atomically replace /usr/bin/env
-      ''
-      else ''
-        rm -f /usr/bin/env
-        rmdir --ignore-fail-on-non-empty /usr/bin /usr
-      '';
+    then ''
+      mkdir -m 0755 -p /usr/bin
+      ln -sfn ${config.environment.usrbinenv} /usr/bin/.env.tmp
+      mv /usr/bin/.env.tmp /usr/bin/env # atomically replace /usr/bin/env
+    ''
+    else ''
+      rm -f /usr/bin/env
+      rmdir --ignore-fail-on-non-empty /usr/bin /usr
+    '';
 
     system.activationScripts.specialfs =
       ''

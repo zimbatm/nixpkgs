@@ -106,8 +106,18 @@ buildPythonPackage rec {
   '';
 
   propagatedBuildInputs = [
-    alembic ipython jinja2 pamela python-oauth2 requests sqlalchemy tornado
-    traitlets prometheus_client async_generator notebook
+    alembic
+    ipython
+    jinja2
+    pamela
+    python-oauth2
+    requests
+    sqlalchemy
+    tornado
+    traitlets
+    prometheus_client
+    async_generator
+    notebook
   ];
 
   # Disable tests because they take an excessive amount of time to complete.

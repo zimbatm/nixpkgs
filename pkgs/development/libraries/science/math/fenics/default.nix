@@ -22,7 +22,8 @@
 , zlib ? null
 , docs ? false
 , pythonBindings ? false
-, doCheck ? true }:
+, doCheck ? true
+}:
 
 assert pythonBindings -> python != null && ply != null && swig != null;
 
@@ -132,30 +133,62 @@ stdenv.mkDerivation {
   };
   propagatedBuildInputs = [ dijitso fiat numpy six ufl ];
   buildInputs = [
-    boost cmake dijitso doxygen eigen ffc fiat gtest hdf5 instant mpi
-    numpy pkgconfig six sphinx suitesparse sympy ufl vtk zlib
-    ] ++ stdenv.lib.optionals pythonBindings [ ply python numpy swig ];
+    boost
+    cmake
+    dijitso
+    doxygen
+    eigen
+    ffc
+    fiat
+    gtest
+    hdf5
+    instant
+    mpi
+    numpy
+    pkgconfig
+    six
+    sphinx
+    suitesparse
+    sympy
+    ufl
+    vtk
+    zlib
+  ]
+  ++ stdenv.lib.optionals pythonBindings [ ply python numpy swig ]
+  ;
   patches = [ ./unicode.patch ];
   cmakeFlags = "-DDOLFIN_CXX_FLAGS=-std=c++11"
     + " -DDOLFIN_AUTO_DETECT_MPI=OFF"
-    + " -DDOLFIN_ENABLE_CHOLMOD=" + (if suitesparse != null then "ON" else "OFF")
-    + " -DDOLFIN_ENABLE_DOCS=" + (if docs then "ON" else "OFF")
-    + " -DDOLFIN_ENABLE_GTEST=" + (if gtest != null then "ON" else "OFF")
-    + " -DDOLFIN_ENABLE_HDF5=" + (if hdf5 != null then "ON" else "OFF")
-    + " -DDOLFIN_ENABLE_MPI=" + (if mpi != null then "ON" else "OFF")
+    + " -DDOLFIN_ENABLE_CHOLMOD="
+    + (if suitesparse != null then "ON" else "OFF")
+    + " -DDOLFIN_ENABLE_DOCS="
+    + (if docs then "ON" else "OFF")
+    + " -DDOLFIN_ENABLE_GTEST="
+    + (if gtest != null then "ON" else "OFF")
+    + " -DDOLFIN_ENABLE_HDF5="
+    + (if hdf5 != null then "ON" else "OFF")
+    + " -DDOLFIN_ENABLE_MPI="
+    + (if mpi != null then "ON" else "OFF")
     + " -DDOLFIN_ENABLE_PARMETIS=OFF"
     + " -DDOLFIN_ENABLE_PETSC4PY=OFF"
     + " -DDOLFIN_ENABLE_PETSC=OFF"
-    + " -DDOLFIN_ENABLE_PYTHON=" + (if pythonBindings then "ON" else "OFF")
+    + " -DDOLFIN_ENABLE_PYTHON="
+    + (if pythonBindings then "ON" else "OFF")
     + " -DDOLFIN_ENABLE_SCOTCH=OFF"
     + " -DDOLFIN_ENABLE_SLEPC4PY=OFF"
     + " -DDOLFIN_ENABLE_SLEPC=OFF"
-    + " -DDOLFIN_ENABLE_SPHINX=" + (if sphinx != null then "ON" else "OFF")
-    + " -DDOLFIN_ENABLE_TESTING=" + (if doCheck then "ON" else "OFF")
+    + " -DDOLFIN_ENABLE_SPHINX="
+    + (if sphinx != null then "ON" else "OFF")
+    + " -DDOLFIN_ENABLE_TESTING="
+    + (if doCheck then "ON" else "OFF")
     + " -DDOLFIN_ENABLE_TRILINOS=OFF"
-    + " -DDOLFIN_ENABLE_UMFPACK=" + (if suitesparse != null then "ON" else "OFF")
-    + " -DDOLFIN_ENABLE_VTK=" + (if vtk != null then "ON" else "OFF")
-    + " -DDOLFIN_ENABLE_ZLIB=" + (if zlib != null then "ON" else "OFF");
+    + " -DDOLFIN_ENABLE_UMFPACK="
+    + (if suitesparse != null then "ON" else "OFF")
+    + " -DDOLFIN_ENABLE_VTK="
+    + (if vtk != null then "ON" else "OFF")
+    + " -DDOLFIN_ENABLE_ZLIB="
+    + (if zlib != null then "ON" else "OFF")
+    ;
   checkPhase = ''
     make runtests
   '';

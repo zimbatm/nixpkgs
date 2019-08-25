@@ -4,7 +4,7 @@ with lib;
 
 let
 
-  cfg  = config.services.salt.minion;
+  cfg = config.services.salt.minion;
 
   fullConfig = lib.recursiveUpdate {
     # Provide defaults for some directories to allow an immutable config dir
@@ -64,4 +64,3 @@ in
     };
   };
 }
-

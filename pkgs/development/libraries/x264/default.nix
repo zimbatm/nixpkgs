@@ -23,15 +23,16 @@ stdenv.mkDerivation rec {
   '';
 
   configureFlags = [ "--enable-shared" ]
-    ++ stdenv.lib.optional (!stdenv.isi686) "--enable-pic";
+    ++ stdenv.lib.optional (!stdenv.isi686) "--enable-pic"
+    ;
 
   nativeBuildInputs = [ nasm ];
 
   meta = with stdenv.lib; {
     description = "Library for encoding H264/AVC video streams";
-    homepage    = http://www.videolan.org/developers/x264.html;
-    license     = licenses.gpl2;
-    platforms   = platforms.unix;
+    homepage = http://www.videolan.org/developers/x264.html;
+    license = licenses.gpl2;
+    platforms = platforms.unix;
     maintainers = with maintainers; [ spwhitt tadeokondrak ];
   };
 }

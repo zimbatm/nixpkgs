@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
   doCheck = true;
 
   nativeBuildInputs = [ autoreconfHook ];
-  buildInputs = [ ];
+  buildInputs = [];
 
   meta = {
     homepage = http://www.snapraid.it/;

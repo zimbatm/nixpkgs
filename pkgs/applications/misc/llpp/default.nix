@@ -1,5 +1,17 @@
-{ stdenv, lib, substituteAll, makeWrapper, fetchgit, ocaml, mupdf, libX11,
-libGLU_combined, freetype, xclip, inotify-tools, procps }:
+{ stdenv
+, lib
+, substituteAll
+, makeWrapper
+, fetchgit
+, ocaml
+, mupdf
+, libX11
+, libGLU_combined
+, freetype
+, xclip
+, inotify-tools
+, procps
+}:
 
 assert lib.versionAtLeast (lib.getVersion ocaml) "4.07";
 
@@ -14,10 +26,12 @@ stdenv.mkDerivation rec {
     fetchSubmodules = false;
   };
 
-  patches = (substituteAll {
-    inherit version;
-    src = ./fix-build-bash.patch;
-  });
+  patches = (
+    substituteAll {
+      inherit version;
+      src = ./fix-build-bash.patch;
+    }
+  );
 
   nativeBuildInputs = [ makeWrapper ];
   buildInputs = [ ocaml mupdf libX11 libGLU_combined freetype ];

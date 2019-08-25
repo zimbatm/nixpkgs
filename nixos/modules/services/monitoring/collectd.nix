@@ -16,14 +16,17 @@ let
       NotifyLevel "OKAY"
     </Plugin>
 
-    ${concatMapStrings (f: ''
-    Include "${f}"
-    '') cfg.include}
+    ${concatMapStrings (
+    f: ''
+      Include "${f}"
+    ''
+  ) cfg.include}
 
     ${cfg.extraConfig}
   '';
 
-in {
+in
+{
   options.services.collectd = with types; {
     enable = mkEnableOption "collectd agent";
 

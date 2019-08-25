@@ -4,7 +4,8 @@ with lib;
 
 let
   cfg = config.services.interception-tools;
-in {
+in
+{
   options.services.interception-tools = {
     enable = mkOption {
       type = types.bool;
@@ -50,8 +51,8 @@ in {
         ExecStart = ''
           ${pkgs.interception-tools}/bin/udevmon -c \
           ${if builtins.typeOf cfg.udevmonConfig == "path"
-          then cfg.udevmonConfig
-          else pkgs.writeText "udevmon.yaml" cfg.udevmonConfig}
+        then cfg.udevmonConfig
+        else pkgs.writeText "udevmon.yaml" cfg.udevmonConfig}
         '';
         Nice = -20;
       };

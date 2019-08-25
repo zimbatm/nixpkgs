@@ -45,10 +45,12 @@ stdenv.mkDerivation rec {
   ];
 
   patches = [
-    (substituteAll {
-      src = ./lspci-path.patch;
-      inherit pciutils;
-    })
+    (
+      substituteAll {
+        src = ./lspci-path.patch;
+        inherit pciutils;
+      }
+    )
     ./remove-update-button.patch
   ];
 

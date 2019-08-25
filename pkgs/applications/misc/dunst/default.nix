@@ -1,7 +1,24 @@
-{ stdenv, lib, fetchFromGitHub, makeWrapper
-, pkgconfig, which, perl, libXrandr
-, cairo, dbus, systemd, gdk-pixbuf, glib, libX11, libXScrnSaver
-, libXinerama, libnotify, pango, xorgproto, librsvg, dunstify ? false
+{ stdenv
+, lib
+, fetchFromGitHub
+, makeWrapper
+, pkgconfig
+, which
+, perl
+, libXrandr
+, cairo
+, dbus
+, systemd
+, gdk-pixbuf
+, glib
+, libX11
+, libXScrnSaver
+, libXinerama
+, libnotify
+, pango
+, xorgproto
+, librsvg
+, dunstify ? false
 }:
 
 stdenv.mkDerivation rec {
@@ -18,8 +35,18 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ perl pkgconfig which systemd makeWrapper ];
 
   buildInputs = [
-    cairo dbus gdk-pixbuf glib libX11 libXScrnSaver
-    libXinerama libnotify pango xorgproto librsvg libXrandr
+    cairo
+    dbus
+    gdk-pixbuf
+    glib
+    libX11
+    libXScrnSaver
+    libXinerama
+    libnotify
+    pango
+    xorgproto
+    librsvg
+    libXrandr
   ];
 
   outputs = [ "out" "man" ];
@@ -35,10 +62,12 @@ stdenv.mkDerivation rec {
 
   postInstall = lib.optionalString dunstify ''
     install -Dm755 dunstify $out/bin
-  '' + ''
+  ''
+  + ''
     wrapProgram $out/bin/dunst \
       --set GDK_PIXBUF_MODULE_FILE "$GDK_PIXBUF_MODULE_FILE"
-  '';
+  ''
+  ;
 
   meta = with lib; {
     description = "Lightweight and customizable notification daemon";

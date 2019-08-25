@@ -6,9 +6,10 @@ let
   self = {
     zeroad-unwrapped = callPackage ./game.nix { inherit wxGTK; };
 
-    zeroad-data = callPackage ./data.nix { };
+    zeroad-data = callPackage ./data.nix {};
 
-    zeroad = callPackage ./wrapper.nix { };
+    zeroad = callPackage ./wrapper.nix {};
   };
 
-in self
+in
+self

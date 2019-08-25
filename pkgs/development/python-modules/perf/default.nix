@@ -22,10 +22,12 @@ buildPythonPackage rec {
     sha256 = "1vrv83v8rhyl51yaxlqzw567vz5a9qwkymk3vqvcl5sa2yd3mzgp";
   };
 
-  checkInputs = [ nose psutil ] ++
-    lib.optionals isPy27 [ contextlib2 mock unittest2 ];
-  propagatedBuildInputs = [ six ] ++
-    lib.optionals (pythonOlder "3.4") [ statistics ];
+  checkInputs = [ nose psutil ]
+    ++ lib.optionals isPy27 [ contextlib2 mock unittest2 ]
+    ;
+  propagatedBuildInputs = [ six ]
+    ++ lib.optionals (pythonOlder "3.4") [ statistics ]
+    ;
 
   # tests not included in pypi repository
   doCheck = false;

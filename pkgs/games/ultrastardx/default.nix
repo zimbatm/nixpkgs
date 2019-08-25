@@ -1,16 +1,47 @@
-{ stdenv, autoreconfHook, fetchFromGitHub, pkgconfig
-, lua, fpc, pcre, portaudio, freetype, libpng
-, SDL2, SDL2_image, SDL2_gfx, SDL2_mixer, SDL2_net, SDL2_ttf
-, ffmpeg, sqlite, zlib, libX11, libGLU_combined }:
+{ stdenv
+, autoreconfHook
+, fetchFromGitHub
+, pkgconfig
+, lua
+, fpc
+, pcre
+, portaudio
+, freetype
+, libpng
+, SDL2
+, SDL2_image
+, SDL2_gfx
+, SDL2_mixer
+, SDL2_net
+, SDL2_ttf
+, ffmpeg
+, sqlite
+, zlib
+, libX11
+, libGLU_combined
+}:
 
 let
   sharedLibs = [
-    pcre portaudio freetype
-    SDL2 SDL2_image SDL2_gfx SDL2_mixer SDL2_net SDL2_ttf
-    sqlite lua zlib libX11 libGLU_combined ffmpeg
+    pcre
+    portaudio
+    freetype
+    SDL2
+    SDL2_image
+    SDL2_gfx
+    SDL2_mixer
+    SDL2_net
+    SDL2_ttf
+    sqlite
+    lua
+    zlib
+    libX11
+    libGLU_combined
+    ffmpeg
   ];
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "ultrastardx-${version}";
   version = "2017.8.0";
   src = fetchFromGitHub {
@@ -31,10 +62,12 @@ in stdenv.mkDerivation rec {
   '';
 
   preBuild = with stdenv.lib;
-    let items = concatMapStringsSep " " (x: "-rpath ${getLib x}/lib") sharedLibs;
-    in ''
-      export NIX_LDFLAGS="$NIX_LDFLAGS ${items}"
-    '';
+    let
+      items = concatMapStringsSep " " (x: "-rpath ${getLib x}/lib") sharedLibs;
+    in
+      ''
+        export NIX_LDFLAGS="$NIX_LDFLAGS ${items}"
+      '';
 
   # dlopened libgcc requires the rpath not to be shrinked
   dontPatchELF = true;

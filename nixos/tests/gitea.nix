@@ -1,6 +1,6 @@
-{ system ? builtins.currentSystem,
-  config ? {},
-  pkgs ? import ../.. { inherit system config; }
+{ system ? builtins.currentSystem
+, config ? {}
+, pkgs ? import ../.. { inherit system config; }
 }:
 
 with import ../lib/testing.nix { inherit system pkgs; };
@@ -13,9 +13,10 @@ with pkgs.lib;
 
     machine =
       { config, pkgs, ... }:
-      { services.gitea.enable = true;
-        services.gitea.database.type = "mysql";
-      };
+        {
+          services.gitea.enable = true;
+          services.gitea.database.type = "mysql";
+        };
 
     testScript = ''
       startAll;
@@ -32,9 +33,10 @@ with pkgs.lib;
 
     machine =
       { config, pkgs, ... }:
-      { services.gitea.enable = true;
-        services.gitea.database.type = "postgres";
-      };
+        {
+          services.gitea.enable = true;
+          services.gitea.database.type = "postgres";
+        };
 
     testScript = ''
       startAll;
@@ -51,9 +53,10 @@ with pkgs.lib;
 
     machine =
       { config, pkgs, ... }:
-      { services.gitea.enable = true;
-        services.gitea.disableRegistration = true;
-      };
+        {
+          services.gitea.enable = true;
+          services.gitea.disableRegistration = true;
+        };
 
     testScript = ''
       startAll;

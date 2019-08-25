@@ -3,7 +3,8 @@
 let
   binPath = lib.makeBinPath [ coreutils openresolv systemd ];
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "update-resolv-conf-2017-06-21";
 
   src = fetchFromGitHub {

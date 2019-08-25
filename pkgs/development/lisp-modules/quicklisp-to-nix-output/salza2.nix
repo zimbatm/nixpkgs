@@ -6,7 +6,7 @@ rec {
   description = ''Create compressed data in the ZLIB, DEFLATE, or GZIP
   data formats'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/salza2/2013-07-20/salza2-2.0.9.tgz'';
@@ -15,7 +15,7 @@ rec {
 
   packageName = "salza2";
 
-  asdFilesToKeep = ["salza2.asd"];
+  asdFilesToKeep = [ "salza2.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM salza2 DESCRIPTION

@@ -133,7 +133,7 @@ in
       inherit group;
     };
 
-    users.groups.${group} = { };
+    users.groups.${group} = {};
 
     systemd.services."zabbix-agent" = {
       description = "Zabbix Agent";

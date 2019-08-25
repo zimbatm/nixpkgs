@@ -12,7 +12,7 @@ let
   );
 
   riemannConfig = concatStringsSep "\n" (
-    [cfg.config] ++ (map (f: ''(load-file "${f}")'') cfg.configFiles)
+    [ cfg.config ] ++ (map (f: ''(load-file "${f}")'') cfg.configFiles)
   );
 
   launcher = writeScriptBin "riemann" ''
@@ -22,7 +22,8 @@ let
       riemann.bin ${cfg.configFile}
   '';
 
-in {
+in
+{
 
   options = {
 

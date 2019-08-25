@@ -1,8 +1,18 @@
-{
-  mkDerivation, lib, kdepimTeam,
-  extra-cmake-modules, kdoctools,
-  akonadi, akonadi-mime, kcalcore, kcmutils, kcontacts, kcoreaddons, kmime,
-  krunner, qtbase, xapian
+{ mkDerivation
+, lib
+, kdepimTeam
+, extra-cmake-modules
+, kdoctools
+, akonadi
+, akonadi-mime
+, kcalcore
+, kcmutils
+, kcontacts
+, kcoreaddons
+, kmime
+, krunner
+, qtbase
+, xapian
 }:
 
 mkDerivation {
@@ -14,7 +24,13 @@ mkDerivation {
   nativeBuildInputs = [ extra-cmake-modules kdoctools ];
   buildInputs = [ kcmutils krunner xapian ];
   propagatedBuildInputs = [
-    akonadi akonadi-mime kcalcore kcontacts kcoreaddons kmime qtbase
+    akonadi
+    akonadi-mime
+    kcalcore
+    kcontacts
+    kcoreaddons
+    kmime
+    qtbase
   ];
   outputs = [ "out" "dev" ];
 }

@@ -1,13 +1,54 @@
-{ lib, stdenv, fetchurl, pkgconfig, gtk2, pango, perl, python, zip
-, libIDL, libjpeg, zlib, dbus, dbus-glib, bzip2, xorg
-, freetype, fontconfig, file, nspr, nss, libnotify
-, yasm, libGLU_combined, sqlite, unzip
-, hunspell, libevent, libstartup_notification
-, icu, libpng, jemalloc
-, autoconf213, which, m4
-, writeScript, xidel, common-updater-scripts, coreutils, gnused, gnugrep, curl, runtimeShell
-, cargo, rustc, llvmPackages
-, enableGTK3 ? false, gtk3, gnome3, wrapGAppsHook, makeWrapper
+{ lib
+, stdenv
+, fetchurl
+, pkgconfig
+, gtk2
+, pango
+, perl
+, python
+, zip
+, libIDL
+, libjpeg
+, zlib
+, dbus
+, dbus-glib
+, bzip2
+, xorg
+, freetype
+, fontconfig
+, file
+, nspr
+, nss
+, libnotify
+, yasm
+, libGLU_combined
+, sqlite
+, unzip
+, hunspell
+, libevent
+, libstartup_notification
+, icu
+, libpng
+, jemalloc
+, autoconf213
+, which
+, m4
+, writeScript
+, xidel
+, common-updater-scripts
+, coreutils
+, gnused
+, gnugrep
+, curl
+, runtimeShell
+, cargo
+, rustc
+, llvmPackages
+, enableGTK3 ? false
+, gtk3
+, gnome3
+, wrapGAppsHook
+, makeWrapper
 , enableCalendar ? true
 , debugBuild ? false
 , # If you want the resulting program to call itself "Thunderbird" instead
@@ -22,7 +63,8 @@
 let
   wrapperTool = if enableGTK3 then wrapGAppsHook else makeWrapper;
   gcc = if stdenv.cc.isGNU then stdenv.cc.cc else stdenv.cc.cc.gcc;
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "thunderbird-${version}";
   version = "60.8.0";
 
@@ -33,16 +75,44 @@ in stdenv.mkDerivation rec {
 
   # from firefox, but without sound libraries
   buildInputs =
-    [ gtk2 zip libIDL libjpeg zlib bzip2
-      dbus dbus-glib pango freetype fontconfig xorg.libXi
-      xorg.libX11 xorg.libXrender xorg.libXft xorg.libXt file
-      nspr nss libnotify xorg.pixman yasm libGLU_combined
-      xorg.libXScrnSaver xorg.xorgproto
-      xorg.libXext sqlite unzip
-      hunspell libevent libstartup_notification /* cairo */
-      icu libpng jemalloc
+    [
+      gtk2
+      zip
+      libIDL
+      libjpeg
+      zlib
+      bzip2
+      dbus
+      dbus-glib
+      pango
+      freetype
+      fontconfig
+      xorg.libXi
+      xorg.libX11
+      xorg.libXrender
+      xorg.libXft
+      xorg.libXt
+      file
+      nspr
+      nss
+      libnotify
+      xorg.pixman
+      yasm
+      libGLU_combined
+      xorg.libXScrnSaver
+      xorg.xorgproto
+      xorg.libXext
+      sqlite
+      unzip
+      hunspell
+      libevent
+      libstartup_notification /* cairo */
+      icu
+      libpng
+      jemalloc
     ]
-    ++ lib.optionals enableGTK3 [ gtk3 gnome3.adwaita-icon-theme ];
+    ++ lib.optionals enableGTK3 [ gtk3 gnome3.adwaita-icon-theme ]
+  ;
 
   # from firefox + m4 + wrapperTool
   nativeBuildInputs = [ m4 autoconf213 which gnused pkgconfig perl python wrapperTool cargo rustc ];
@@ -52,16 +122,20 @@ in stdenv.mkDerivation rec {
     ./no-buildconfig.patch
 
     # Needed on older branches since rustc: 1.32.0 -> 1.33.0
-    (fetchurl {
-      name = "missing-documentation.patch";
-      url = "https://aur.archlinux.org/cgit/aur.git/plain/deny_missing_docs.patch"
-          + "?h=firefox-esr&id=03bdd01f9cf";
-      sha256 = "1i33n3fgwc8d0v7j4qn7lbdax0an6swar12gay3q2nwrhg3ic4fb";
-    })
+    (
+      fetchurl {
+        name = "missing-documentation.patch";
+        url = "https://aur.archlinux.org/cgit/aur.git/plain/deny_missing_docs.patch"
+          + "?h=firefox-esr&id=03bdd01f9cf"
+          ;
+        sha256 = "1i33n3fgwc8d0v7j4qn7lbdax0an6swar12gay3q2nwrhg3ic4fb";
+      }
+    )
   ];
 
   configureFlags =
-    [ # from firefox, but without sound libraries (alsa, libvpx, pulseaudio)
+    [
+      # from firefox, but without sound libraries (alsa, libvpx, pulseaudio)
       "--enable-application=comm/mail"
       "--disable-alsa"
       "--disable-pulseaudio"
@@ -90,17 +164,24 @@ in stdenv.mkDerivation rec {
       "--enable-default-toolkit=cairo-gtk${if enableGTK3 then "3" else "2"}"
       "--enable-js-shell"
     ]
-      ++ lib.optional enableCalendar "--enable-calendar"
-      ++ (if debugBuild then [ "--enable-debug" "--enable-profiling"]
-                        else [ "--disable-debug" "--enable-release"
-                               "--disable-debug-symbols"
-                               "--enable-optimize" "--enable-strip" ])
-      ++ lib.optional enableOfficialBranding "--enable-official-branding"
-      ++ lib.optionals (lib.versionAtLeast version "56" && !stdenv.hostPlatform.isi686) [
-        # on i686-linux: --with-libclang-path is not available in this configuration
-        "--with-libclang-path=${llvmPackages.libclang}/lib"
-        "--with-clang-path=${llvmPackages.clang}/bin/clang"
-      ];
+    ++ lib.optional enableCalendar "--enable-calendar"
+    ++ (
+         if debugBuild then [ "--enable-debug" "--enable-profiling" ]
+         else [
+           "--disable-debug"
+           "--enable-release"
+           "--disable-debug-symbols"
+           "--enable-optimize"
+           "--enable-strip"
+         ]
+       )
+    ++ lib.optional enableOfficialBranding "--enable-official-branding"
+    ++ lib.optionals (lib.versionAtLeast version "56" && !stdenv.hostPlatform.isi686) [
+         # on i686-linux: --with-libclang-path is not available in this configuration
+         "--with-libclang-path=${llvmPackages.libclang}/lib"
+         "--with-clang-path=${llvmPackages.clang}/bin/clang"
+       ]
+  ;
 
   enableParallelBuilding = true;
 
@@ -136,45 +217,48 @@ in stdenv.mkDerivation rec {
         --set MOZ_APP_LAUNCHER thunderbird
       )
       ${
-        # We wrap manually because wrapGAppsHook does not detect the symlink
-        # To mimic wrapGAppsHook, we run it with dontWrapGApps, so
-        # gappsWrapperArgs gets defined correctly
-        lib.optionalString enableGTK3 "wrapGAppsHook"
-      }
+    # We wrap manually because wrapGAppsHook does not detect the symlink
+    # To mimic wrapGAppsHook, we run it with dontWrapGApps, so
+    # gappsWrapperArgs gets defined correctly
+    lib.optionalString enableGTK3 "wrapGAppsHook"
+    }
 
       # "$binary" is a symlink, replace it by the wrapper
       rm "$binary"
       makeWrapper "$target" "$binary" "''${gappsWrapperArgs[@]}"
 
-      ${ let desktopItem = makeDesktopItem {
-          name = "thunderbird";
-          exec = "thunderbird %U";
-          desktopName = "Thunderbird";
-          icon = "$out/lib/thunderbird/chrome/icons/default/default256.png";
-          genericName = "Mail Reader";
-          categories = "Application;Network";
-          mimeType = stdenv.lib.concatStringsSep ";" [
-            # Email
-            "x-scheme-handler/mailto"
-            "message/rfc822"
-            # Newsgroup
-            "x-scheme-handler/news"
-            "x-scheme-handler/snews"
-            "x-scheme-handler/nntp"
-            # Feed
-            "x-scheme-handler/feed"
-            "application/rss+xml"
-            "application/x-extension-rss"
-          ];
-        }; in desktopItem.buildCommand
-      }
+      ${ let
+      desktopItem = makeDesktopItem {
+        name = "thunderbird";
+        exec = "thunderbird %U";
+        desktopName = "Thunderbird";
+        icon = "$out/lib/thunderbird/chrome/icons/default/default256.png";
+        genericName = "Mail Reader";
+        categories = "Application;Network";
+        mimeType = stdenv.lib.concatStringsSep ";" [
+          # Email
+          "x-scheme-handler/mailto"
+          "message/rfc822"
+          # Newsgroup
+          "x-scheme-handler/news"
+          "x-scheme-handler/snews"
+          "x-scheme-handler/nntp"
+          # Feed
+          "x-scheme-handler/feed"
+          "application/rss+xml"
+          "application/x-extension-rss"
+        ];
+      };
+    in
+      desktopItem.buildCommand
+    }
     '';
 
   postFixup =
     # Fix notifications. LibXUL uses dlopen for this, unfortunately; see #18712.
     ''
       patchelf --set-rpath "${lib.getLib libnotify
-        }/lib:$(patchelf --print-rpath "$out"/lib/thunderbird*/libxul.so)" \
+    }/lib:$(patchelf --print-rpath "$out"/lib/thunderbird*/libxul.so)" \
           "$out"/lib/thunderbird*/libxul.so
     '';
 

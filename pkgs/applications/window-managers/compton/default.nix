@@ -1,22 +1,48 @@
-{ stdenv, lib, fetchFromGitHub, pkgconfig, uthash, asciidoc, docbook_xml_dtd_45
-, docbook_xsl, libxslt, libxml2, makeWrapper, meson, ninja
-, xorgproto, libxcb ,xcbutilrenderutil, xcbutilimage, pixman, libev
-, dbus, libconfig, libdrm, libGL, pcre, libX11
-, libXinerama, libXext, xwininfo, libxdg_basedir }:
+{ stdenv
+, lib
+, fetchFromGitHub
+, pkgconfig
+, uthash
+, asciidoc
+, docbook_xml_dtd_45
+, docbook_xsl
+, libxslt
+, libxml2
+, makeWrapper
+, meson
+, ninja
+, xorgproto
+, libxcb
+, xcbutilrenderutil
+, xcbutilimage
+, pixman
+, libev
+, dbus
+, libconfig
+, libdrm
+, libGL
+, pcre
+, libX11
+, libXinerama
+, libXext
+, xwininfo
+, libxdg_basedir
+}:
 stdenv.mkDerivation rec {
   pname = "compton";
   version = "7.2";
 
   src = fetchFromGitHub {
-    owner  = "yshui";
-    repo   = "compton";
-    rev    = "v${version}";
+    owner = "yshui";
+    repo = "compton";
+    rev = "v${version}";
     sha256 = "1vwa5f0nifc1913diqd6cp5k1dlfyc2ijxbcdj1s37ywpx6c63c3";
     fetchSubmodules = true;
   };
 
   nativeBuildInputs = [
-    meson ninja
+    meson
+    ninja
     pkgconfig
     uthash
     asciidoc
@@ -26,11 +52,22 @@ stdenv.mkDerivation rec {
   ];
 
   buildInputs = [
-    dbus libX11 libXext
+    dbus
+    libX11
+    libXext
     xorgproto
-    libXinerama libdrm pcre libxml2 libxslt libconfig libGL
-    libxcb xcbutilrenderutil xcbutilimage
-    pixman libev
+    libXinerama
+    libdrm
+    pcre
+    libxml2
+    libxslt
+    libconfig
+    libGL
+    libxcb
+    xcbutilrenderutil
+    xcbutilimage
+    pixman
+    libev
     libxdg_basedir
   ];
 

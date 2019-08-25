@@ -1,30 +1,32 @@
 # Test whether `avahi-daemon' and `libnss-mdns' work as expected.
-import ./make-test.nix ({ pkgs, ... } : {
-  name = "avahi";
-  meta = with pkgs.stdenv.lib.maintainers; {
-    maintainers = [ eelco ];
-  };
-
-  nodes = let
-    cfg = { ... }: {
-      services.avahi = {
-        enable = true;
-        nssmdns = true;
-        publish.addresses = true;
-        publish.domain = true;
-        publish.enable = true;
-        publish.userServices = true;
-        publish.workstation = true;
-        extraServiceFiles.ssh = "${pkgs.avahi}/etc/avahi/services/ssh.service";
-      };
+import ./make-test.nix (
+  { pkgs, ... }: {
+    name = "avahi";
+    meta = with pkgs.stdenv.lib.maintainers; {
+      maintainers = [ eelco ];
     };
-  in {
-    one = cfg;
-    two = cfg;
-  };
 
-  testScript =
-    '' startAll;
+    nodes = let
+      cfg = { ... }: {
+        services.avahi = {
+          enable = true;
+          nssmdns = true;
+          publish.addresses = true;
+          publish.domain = true;
+          publish.enable = true;
+          publish.userServices = true;
+          publish.workstation = true;
+          extraServiceFiles.ssh = "${pkgs.avahi}/etc/avahi/services/ssh.service";
+        };
+      };
+    in
+      {
+        one = cfg;
+        two = cfg;
+      };
+
+    testScript =
+      '' startAll;
 
        # mDNS.
        $one->waitForUnit("network.target");
@@ -64,4 +66,5 @@ import ./make-test.nix ({ pkgs, ... } : {
        $two->succeed("avahi-browse -r -t _ssh._tcp | tee out >&2");
        $two->succeed("test `wc -l < out` -gt 0");
     '';
-})
+  }
+)

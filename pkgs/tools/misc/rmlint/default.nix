@@ -1,6 +1,14 @@
-{ stdenv, fetchFromGitHub
-, gettext, pkgconfig, scons
-, glib, json-glib, libelf, sphinx, utillinux }:
+{ stdenv
+, fetchFromGitHub
+, gettext
+, pkgconfig
+, scons
+, glib
+, json-glib
+, libelf
+, sphinx
+, utillinux
+}:
 
 with stdenv.lib;
 stdenv.mkDerivation rec {
@@ -14,14 +22,20 @@ stdenv.mkDerivation rec {
     sha256 = "1gc7gbnh0qg1kl151cv1ld87vhpm1v3pnkn7prhscdcc21jrg8nz";
   };
 
-  CFLAGS="-I${stdenv.lib.getDev utillinux}/include";
+  CFLAGS = "-I${stdenv.lib.getDev utillinux}/include";
 
   nativeBuildInputs = [
-    pkgconfig sphinx gettext scons
+    pkgconfig
+    sphinx
+    gettext
+    scons
   ];
 
   buildInputs = [
-    glib json-glib libelf utillinux
+    glib
+    json-glib
+    libelf
+    utillinux
   ];
 
   prefixKey = "--prefix=";

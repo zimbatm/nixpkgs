@@ -1,5 +1,9 @@
-{ stdenv, fetchFromGitHub, perl, zlib
-, withCryptodev ? false, cryptodev
+{ stdenv
+, fetchFromGitHub
+, perl
+, zlib
+, withCryptodev ? false
+, cryptodev
 }:
 
 with stdenv.lib;
@@ -32,10 +36,12 @@ stdenv.mkDerivation rec {
     "enable-gost"
     "--libdir=lib"
     "--openssldir=etc/ssl"
-  ] ++ stdenv.lib.optionals withCryptodev [
-    "-DHAVE_CRYPTODEV"
-    "-DUSE_CRYPTODEV_DIGESTS"
-  ];
+  ]
+  ++ stdenv.lib.optionals withCryptodev [
+       "-DHAVE_CRYPTODEV"
+       "-DUSE_CRYPTODEV_DIGESTS"
+     ]
+  ;
 
   makeFlags = [
     "MANDIR=$(man)/share/man"

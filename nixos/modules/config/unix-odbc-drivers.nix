@@ -12,7 +12,8 @@ let
     Driver = ${pkg}/${pkg.driver}
   '';
 
-in {
+in
+{
   ###### interface
 
   options = {

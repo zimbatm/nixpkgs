@@ -1,11 +1,20 @@
-{ stdenv, fetchurl, pkgconfig
+{ stdenv
+, fetchurl
+, pkgconfig
 
-# Optional Dependencies
-, openssl ? null, libev ? null, zlib ? null, c-ares ? null
-, enableHpack ? false, jansson ? null
-, enableAsioLib ? false, boost ? null
-, enableGetAssets ? false, libxml2 ? null
-, enableJemalloc ? false, jemalloc ? null
+  # Optional Dependencies
+, openssl ? null
+, libev ? null
+, zlib ? null
+, c-ares ? null
+, enableHpack ? false
+, jansson ? null
+, enableAsioLib ? false
+, boost ? null
+, enableGetAssets ? false
+, libxml2 ? null
+, enableJemalloc ? false
+, jemalloc ? null
 , enableApp ? !stdenv.hostPlatform.isWindows
 }:
 
@@ -14,7 +23,9 @@ assert enableAsioLib -> boost != null;
 assert enableGetAssets -> libxml2 != null;
 assert enableJemalloc -> jemalloc != null;
 
-let inherit (stdenv.lib) optional; in
+let
+  inherit (stdenv.lib) optional;
+in
 
 stdenv.mkDerivation rec {
   pname = "nghttp2";
@@ -32,7 +43,8 @@ stdenv.mkDerivation rec {
     ++ optional enableHpack jansson
     ++ optional enableAsioLib boost
     ++ optional enableGetAssets libxml2
-    ++ optional enableJemalloc jemalloc;
+    ++ optional enableJemalloc jemalloc
+    ;
 
   enableParallelBuilding = true;
 
@@ -41,7 +53,9 @@ stdenv.mkDerivation rec {
     "--disable-examples"
     "--disable-python-bindings"
     (stdenv.lib.enableFeature enableApp "app")
-  ] ++ optional enableAsioLib "--enable-asio-lib --with-boost-libdir=${boost}/lib";
+  ]
+  ++ optional enableAsioLib "--enable-asio-lib --with-boost-libdir=${boost}/lib"
+  ;
 
   #doCheck = true;  # requires CUnit ; currently failing at test_util_localtime_date in util_test.cc
 

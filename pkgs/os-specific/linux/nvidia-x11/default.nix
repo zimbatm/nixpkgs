@@ -2,21 +2,26 @@
 
 let
 
-generic = args:
-if ((!lib.versionOlder args.version "391")
-    && stdenv.hostPlatform.system != "x86_64-linux") then null
-  else callPackage (import ./generic.nix args) { };
+  generic = args:
+    if (
+      (!lib.versionOlder args.version "391")
+      && stdenv.hostPlatform.system != "x86_64-linux"
+    ) then null
+    else callPackage (import ./generic.nix args) {};
   kernel = callPackage # a hacky way of extracting parameters from callPackage
-    ({ kernel, libsOnly ? false }: if libsOnly then { } else kernel) { };
+    ({ kernel, libsOnly ? false }: if libsOnly then {} else kernel) {};
 
   maybePatch_drm_legacy =
     lib.optional (lib.versionOlder "4.14" (kernel.version or "0"))
-      (fetchurl {
-        url = "https://raw.githubusercontent.com/MilhouseVH/LibreELEC.tv/b5d2d6a1"
+      (
+        fetchurl {
+          url = "https://raw.githubusercontent.com/MilhouseVH/LibreELEC.tv/b5d2d6a1"
             + "/packages/x11/driver/xf86-video-nvidia-legacy/patches/"
-            + "xf86-video-nvidia-legacy-0010-kernel-4.14.patch";
-        sha256 = "18clfpw03g8dxm61bmdkmccyaxir3gnq451z6xqa2ilm3j820aa5";
-      });
+            + "xf86-video-nvidia-legacy-0010-kernel-4.14.patch"
+            ;
+          sha256 = "18clfpw03g8dxm61bmdkmccyaxir3gnq451z6xqa2ilm3j820aa5";
+        }
+      );
 in
 rec {
   # Policy: use the highest stable version as the default (on our master).
@@ -41,15 +46,19 @@ rec {
     persistencedSha256 = "02v76202qcnh8hvg4y9wmk9swdlv7z39ppfd1c850nlv158vn5nf";
 
     patches = [
-      (fetchurl {
-        url = "https://git.archlinux.org/svntogit/packages.git/plain/trunk/kernel-4.16.patch?h=2ad07241ea525a6b6b555b6cb96a97634a4b2cb0";
-        sha256 = "11b3dp0na496rn13v5q4k66bf61174800g36rcwj42r0xj9cfak2";
-      })
+      (
+        fetchurl {
+          url = "https://git.archlinux.org/svntogit/packages.git/plain/trunk/kernel-4.16.patch?h=2ad07241ea525a6b6b555b6cb96a97634a4b2cb0";
+          sha256 = "11b3dp0na496rn13v5q4k66bf61174800g36rcwj42r0xj9cfak2";
+        }
+      )
 
-      (fetchurl {
-        url = "https://git.archlinux.org/svntogit/packages.git/plain/trunk/kernel-5.1.patch?h=42d50ef8d6048608d18bdf2c296dd335260c5a1a";
-        sha256 = "03v46ym2bcckg9q2xrilkg21hfiwypr6gl4jmly2q3m4yza9ja6r";
-      })
+      (
+        fetchurl {
+          url = "https://git.archlinux.org/svntogit/packages.git/plain/trunk/kernel-5.1.patch?h=42d50ef8d6048608d18bdf2c296dd335260c5a1a";
+          sha256 = "03v46ym2bcckg9q2xrilkg21hfiwypr6gl4jmly2q3m4yza9ja6r";
+        }
+      )
     ];
   };
 
@@ -77,7 +86,8 @@ rec {
     prePatch = let
       debPatches = fetchurl {
         url = "mirror://debian/pool/non-free/n/nvidia-graphics-drivers-legacy-304xx/"
-            + "nvidia-graphics-drivers-legacy-304xx_304.137-5.debian.tar.xz";
+          + "nvidia-graphics-drivers-legacy-304xx_304.137-5.debian.tar.xz"
+          ;
         sha256 = "0n8512mfcnvklfbg8gv4lzbkm3z6nncwj6ix2b8ngdkmc04f3b6l";
       };
       prefix = "debian/module/debian/patches";
@@ -87,7 +97,8 @@ rec {
           sed 's|^\([+-]\{3\} [ab]\)/|\1/kernel/|' -i ${prefix}/*.patch
           patches="$patches ${lib.concatMapStringsSep " " (pname: "${prefix}/${pname}.patch") pnames}"
         '';
-    in applyPatches [ "fix-typos" ];
+    in
+      applyPatches [ "fix-typos" ];
     patches = maybePatch_drm_legacy;
     broken = stdenv.lib.versionAtLeast kernel.version "4.18";
   };

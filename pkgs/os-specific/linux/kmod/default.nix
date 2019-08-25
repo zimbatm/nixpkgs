@@ -1,11 +1,19 @@
-{ stdenv, lib, fetchurl, autoreconfHook, pkgconfig
-, libxslt, xz, elf-header }:
+{ stdenv
+, lib
+, fetchurl
+, autoreconfHook
+, pkgconfig
+, libxslt
+, xz
+, elf-header
+}:
 
 let
   systems = [ "/run/current-system/kernel-modules" "/run/booted-system/kernel-modules" "" ];
   modulesDirs = lib.concatMapStringsSep ":" (x: "${x}/lib/modules") systems;
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   pname = "kmod";
   version = "26";
 
@@ -24,7 +32,8 @@ in stdenv.mkDerivation rec {
   ];
 
   patches = [ ./module-dir.patch ]
-    ++ lib.optional stdenv.isDarwin ./darwin.patch;
+    ++ lib.optional stdenv.isDarwin ./darwin.patch
+    ;
 
   postInstall = ''
     for prog in rmmod insmod lsmod modinfo modprobe depmod; do

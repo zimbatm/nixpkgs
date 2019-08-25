@@ -14,18 +14,29 @@ python3Packages.buildPythonApplication rec {
   };
 
   patches = [
-    (fetchpatch {
-      # TODO: Remove with next pgcli release. Fixes TypeError in tests
-      # https://github.com/dbcli/pgcli/pull/1006
-      url = https://github.com/dbcli/pgcli/commit/351135b61ef9ad3184c49a406544708daf589fe3.patch;
-      sha256 = "08131y0lv1v760i0ypcx2hljx066ks93kp96xkv3bycxnavvcl53";
-      excludes = [ "changelog.rst" ];
-    })
+    (
+      fetchpatch {
+        # TODO: Remove with next pgcli release. Fixes TypeError in tests
+        # https://github.com/dbcli/pgcli/pull/1006
+        url = https://github.com/dbcli/pgcli/commit/351135b61ef9ad3184c49a406544708daf589fe3.patch;
+        sha256 = "08131y0lv1v760i0ypcx2hljx066ks93kp96xkv3bycxnavvcl53";
+        excludes = [ "changelog.rst" ];
+      }
+    )
   ];
 
   propagatedBuildInputs = with python3Packages; [
-    cli-helpers click configobj humanize prompt_toolkit psycopg2
-    pygments sqlparse pgspecial setproctitle keyring
+    cli-helpers
+    click
+    configobj
+    humanize
+    prompt_toolkit
+    psycopg2
+    pygments
+    sqlparse
+    pgspecial
+    setproctitle
+    keyring
   ];
 
   checkInputs = with python3Packages; [ pytest mock ];

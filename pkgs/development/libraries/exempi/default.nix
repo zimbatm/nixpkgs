@@ -12,11 +12,13 @@ stdenv.mkDerivation rec {
     # CVE-2018-12648
     # https://gitlab.freedesktop.org/libopenraw/exempi/issues/9
     # remove with exempi > 2.4.5
-    (fetchpatch {
-      name = "CVE-2018-12648.patch";
-      url = https://gitlab.freedesktop.org/libopenraw/exempi/commit/8ed2f034705fd2d032c81383eee8208fd4eee0ac.patch;
-      sha256 = "1nh8irk5p26868875wq5n8g92xp4crfb8fdd8gyna76ldyzqqx9q";
-    })
+    (
+      fetchpatch {
+        name = "CVE-2018-12648.patch";
+        url = https://gitlab.freedesktop.org/libopenraw/exempi/commit/8ed2f034705fd2d032c81383eee8208fd4eee0ac.patch;
+        sha256 = "1nh8irk5p26868875wq5n8g92xp4crfb8fdd8gyna76ldyzqqx9q";
+      }
+    )
   ];
 
   configureFlags = [
@@ -24,7 +26,8 @@ stdenv.mkDerivation rec {
   ];
 
   buildInputs = [ expat zlib boost ]
-    ++ stdenv.lib.optionals stdenv.isDarwin [ libiconv darwin.apple_sdk.frameworks.CoreServices ];
+    ++ stdenv.lib.optionals stdenv.isDarwin [ libiconv darwin.apple_sdk.frameworks.CoreServices ]
+    ;
 
   doCheck = stdenv.isLinux;
 

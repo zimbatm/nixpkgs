@@ -8,7 +8,8 @@ let
     genericName = "Munt synthesiser";
     categories = "Audio;AudioVideo;";
   };
-in mkDerivation rec {
+in
+mkDerivation rec {
   version = "2.3.0";
   pname = "munt";
 

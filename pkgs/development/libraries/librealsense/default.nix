@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, cmake, libusb, ninja, pkgconfig}:
+{ stdenv, fetchFromGitHub, cmake, libusb, ninja, pkgconfig }:
 
 stdenv.mkDerivation rec {
   name = "librealsense-${version}";
@@ -28,6 +28,6 @@ stdenv.mkDerivation rec {
     homepage = https://github.com/IntelRealSense/librealsense;
     license = licenses.asl20;
     maintainers = with maintainers; [ brian-dawn ];
-    platforms = ["i686-linux" "x86_64-linux" "x86_64-darwin"];
+    platforms = [ "i686-linux" "x86_64-linux" "x86_64-darwin" ];
   };
 }

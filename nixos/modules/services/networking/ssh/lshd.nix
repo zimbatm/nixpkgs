@@ -115,7 +115,7 @@ in
 
   config = mkIf cfg.enable {
 
-    services.lshd.subsystems = [ ["sftp" "${pkgs.lsh}/sbin/sftp-server"] ];
+    services.lshd.subsystems = [ [ "sftp" "${pkgs.lsh}/sbin/sftp-server" ] ];
 
     systemd.services.lshd = {
       description = "GNU lshd SSH2 daemon";
@@ -153,8 +153,12 @@ in
           --password-helper="${lsh}/sbin/lsh-pam-checkpw" \
           -p ${toString portNumber} \
           ${if interfaces == [] then ""
-            else (concatStrings (map (i: "--interface=\"${i}\"")
-                                     interfaces))} \
+      else (
+        concatStrings (
+          map (i: "--interface=\"${i}\"")
+            interfaces
+        )
+      )} \
           -h "${hostKey}" \
           ${if !syslog then "--no-syslog" else ""} \
           ${if passwordAuthentication then "--password" else "--no-password" } \
@@ -165,9 +169,13 @@ in
           ${if !tcpForwarding then "--no-tcpip-forward" else "--tcpip-forward"} \
           ${if x11Forwarding then "--x11-forward" else "--no-x11-forward" } \
           --subsystems=${concatStringsSep ","
-                                          (map (pair: (head pair) + "=" +
-                                                      (head (tail pair)))
-                                               subsystems)}
+        (
+          map (
+            pair: (head pair) + "="
+            + (head (tail pair))
+          )
+            subsystems
+        )}
       '';
     };
 

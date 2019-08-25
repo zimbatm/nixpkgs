@@ -1,10 +1,32 @@
-{ wxGTK, lib, stdenv, fetchFromGitHub, cmake, libGLU_combined, zlib
-, libX11, gettext, glew, glm, cairo, curl, openssl, boost, pkgconfig
-, doxygen, pcre, libpthreadstubs, libXdmcp
+{ wxGTK
+, lib
+, stdenv
+, fetchFromGitHub
+, cmake
+, libGLU_combined
+, zlib
+, libX11
+, gettext
+, glew
+, glm
+, cairo
+, curl
+, openssl
+, boost
+, pkgconfig
+, doxygen
+, pcre
+, libpthreadstubs
+, libXdmcp
 
-, oceSupport ? true, opencascade
-, ngspiceSupport ? true, libngspice
-, scriptingSupport ? true, swig, python, wxPython
+, oceSupport ? true
+, opencascade
+, ngspiceSupport ? true
+, libngspice
+, scriptingSupport ? true
+, swig
+, python
+, wxPython
 }:
 
 assert ngspiceSupport -> libngspice != null;
@@ -30,21 +52,36 @@ stdenv.mkDerivation rec {
     optionals (oceSupport) [ "-DKICAD_USE_OCE=ON" "-DOCE_DIR=${opencascade}" ]
     ++ optional (ngspiceSupport) "-DKICAD_SPICE=ON"
     ++ optionals (scriptingSupport) [
-      "-DKICAD_SCRIPTING=ON"
-      "-DKICAD_SCRIPTING_MODULES=ON"
-      "-DKICAD_SCRIPTING_WXPYTHON=ON"
-      # nix installs wxPython headers in wxPython package, not in wxwidget
-      # as assumed. We explicitely set the header location.
-      "-DCMAKE_CXX_FLAGS=-I${wxPython}/include/wx-3.0"
-    ];
+         "-DKICAD_SCRIPTING=ON"
+         "-DKICAD_SCRIPTING_MODULES=ON"
+         "-DKICAD_SCRIPTING_WXPYTHON=ON"
+         # nix installs wxPython headers in wxPython package, not in wxwidget
+         # as assumed. We explicitely set the header location.
+         "-DCMAKE_CXX_FLAGS=-I${wxPython}/include/wx-3.0"
+       ]
+    ;
 
   nativeBuildInputs = [ cmake doxygen pkgconfig ];
   buildInputs = [
-    libGLU_combined zlib libX11 wxGTK pcre libXdmcp gettext glew glm libpthreadstubs
-    cairo curl openssl boost
-  ] ++ optional (oceSupport) opencascade
-    ++ optional (ngspiceSupport) libngspice
-    ++ optionals (scriptingSupport) [ swig python wxPython ];
+    libGLU_combined
+    zlib
+    libX11
+    wxGTK
+    pcre
+    libXdmcp
+    gettext
+    glew
+    glm
+    libpthreadstubs
+    cairo
+    curl
+    openssl
+    boost
+  ]
+  ++ optional (oceSupport) opencascade
+  ++ optional (ngspiceSupport) libngspice
+  ++ optionals (scriptingSupport) [ swig python wxPython ]
+  ;
 
   meta = {
     description = "Free Software EDA Suite, Nightly Development Build";

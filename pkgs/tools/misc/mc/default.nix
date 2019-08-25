@@ -1,5 +1,20 @@
-{ stdenv, fetchurl, pkgconfig, glib, gpm, file, e2fsprogs
-, libX11, libICE, perl, zip, unzip, gettext, slang, libssh2, openssl}:
+{ stdenv
+, fetchurl
+, pkgconfig
+, glib
+, gpm
+, file
+, e2fsprogs
+, libX11
+, libICE
+, perl
+, zip
+, unzip
+, gettext
+, slang
+, libssh2
+, openssl
+}:
 
 stdenv.mkDerivation rec {
   name = "mc-${version}";
@@ -13,8 +28,20 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ pkgconfig ];
 
   buildInputs = [
-    perl glib slang zip unzip file gettext libX11 libICE libssh2 openssl
-  ] ++ stdenv.lib.optionals (!stdenv.isDarwin) [ e2fsprogs gpm ];
+    perl
+    glib
+    slang
+    zip
+    unzip
+    file
+    gettext
+    libX11
+    libICE
+    libssh2
+    openssl
+  ]
+  ++ stdenv.lib.optionals (!stdenv.isDarwin) [ e2fsprogs gpm ]
+  ;
 
   enableParallelBuilding = true;
 

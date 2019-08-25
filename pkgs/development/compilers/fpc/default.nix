@@ -1,6 +1,8 @@
 { stdenv, fetchurl, gawk }:
 
-let startFPC = import ./binary.nix { inherit stdenv fetchurl; }; in
+let
+  startFPC = import ./binary.nix { inherit stdenv fetchurl; };
+in
 
 stdenv.mkDerivation rec {
   version = "3.0.0";

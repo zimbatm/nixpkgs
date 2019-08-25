@@ -21,8 +21,15 @@ buildPythonPackage rec {
     sha256 = "241c7f6032d01b0d78f5c0d13ea691935ddce9f8fce991319cc4fe860d61a7c4";
   };
 
-  propagatedBuildInputs = [ mozprofile mozversion browsermob-proxy moztest 
-    wptserve manifestparser marionette_driver ]; 
+  propagatedBuildInputs = [
+    mozprofile
+    mozversion
+    browsermob-proxy
+    moztest
+    wptserve
+    manifestparser
+    marionette_driver
+  ];
 
   meta = {
     description = "Mozilla Marionette protocol test automation harness";

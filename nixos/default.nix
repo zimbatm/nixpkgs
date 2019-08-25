@@ -10,20 +10,25 @@ let
   };
 
   # This is for `nixos-rebuild build-vm'.
-  vmConfig = (import ./lib/eval-config.nix {
-    inherit system;
-    modules = [ configuration ./modules/virtualisation/qemu-vm.nix ];
-  }).config;
+  vmConfig = (
+    import ./lib/eval-config.nix {
+      inherit system;
+      modules = [ configuration ./modules/virtualisation/qemu-vm.nix ];
+    }
+  ).config;
 
   # This is for `nixos-rebuild build-vm-with-bootloader'.
-  vmWithBootLoaderConfig = (import ./lib/eval-config.nix {
-    inherit system;
-    modules =
-      [ configuration
-        ./modules/virtualisation/qemu-vm.nix
-        { virtualisation.useBootLoader = true; }
-      ];
-  }).config;
+  vmWithBootLoaderConfig = (
+    import ./lib/eval-config.nix {
+      inherit system;
+      modules =
+        [
+          configuration
+          ./modules/virtualisation/qemu-vm.nix
+          { virtualisation.useBootLoader = true; }
+        ];
+    }
+  ).config;
 
 in
 

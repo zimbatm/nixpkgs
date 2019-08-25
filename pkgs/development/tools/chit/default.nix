@@ -1,4 +1,8 @@
-{ stdenv, fetchFromGitHub, rustPlatform, pkgconfig, openssl
+{ stdenv
+, fetchFromGitHub
+, rustPlatform
+, pkgconfig
+, openssl
 , darwin
 }:
 
@@ -19,9 +23,9 @@ buildRustPackage rec {
 
   nativeBuildInputs = stdenv.lib.optionals stdenv.isLinux [ pkgconfig ];
   buildInputs = []
-  ++ stdenv.lib.optionals stdenv.isLinux [ openssl ]
-  ++ stdenv.lib.optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [ CoreFoundation CoreServices Security ])
-  ;
+    ++ stdenv.lib.optionals stdenv.isLinux [ openssl ]
+    ++ stdenv.lib.optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [ CoreFoundation CoreServices Security ])
+    ;
 
   meta = with stdenv.lib; {
     description = "Crate help in terminal: A tool for looking up details about rust crates without going to crates.io";

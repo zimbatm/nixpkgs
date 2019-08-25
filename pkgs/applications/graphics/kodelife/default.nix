@@ -36,12 +36,13 @@ stdenv.mkDerivation rec {
       libGLU_combined
       xorg.libX11
     ];
-  in ''
-    patchelf \
-      --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
-      --set-rpath "${libPath}" \
-      $out/bin/KodeLife
-  '';
+  in
+    ''
+      patchelf \
+        --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
+        --set-rpath "${libPath}" \
+        $out/bin/KodeLife
+    '';
 
   meta = with stdenv.lib; {
     homepage = "https://hexler.net/products/kodelife";

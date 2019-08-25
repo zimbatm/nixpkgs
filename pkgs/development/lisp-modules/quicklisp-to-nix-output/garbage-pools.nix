@@ -5,7 +5,7 @@ rec {
 
   description = '''';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/garbage-pools/2013-07-20/garbage-pools-20130720-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "garbage-pools";
 
-  asdFilesToKeep = ["garbage-pools.asd"];
+  asdFilesToKeep = [ "garbage-pools.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM garbage-pools DESCRIPTION NIL SHA256

@@ -24,12 +24,13 @@ stdenv.mkDerivation rec {
       url = "https://salsa.debian.org/debian-gis-team/hdf4/raw/debian/${patchRev}/debian/patches/${name}";
     };
 
-  in [
-    (getPatch "64bit"                     "1xqk9zpch4m6ipa0f3x2cm8rwaz4p0ppp1vqglvz18j6q91p8b5y")
-    (getPatch "hdfi.h"                    "01fr9csylnvk9jd9jn9y23bvxy192s07p32pr76mm3gwhgs9h7r4")
-    (getPatch "hdf-4.2.10-aarch64.patch"  "1hl0xw5pd9xhpq49xpwgg7c4z6vv5p19x6qayixw0myvgwj1r4zn")
-    (getPatch "reproducible-builds.patch" "02j639w26xkxpxx3pdhbi18ywz8w3qmjpqjb83n47gq29y4g13hc")
-  ];
+  in
+    [
+      (getPatch "64bit" "1xqk9zpch4m6ipa0f3x2cm8rwaz4p0ppp1vqglvz18j6q91p8b5y")
+      (getPatch "hdfi.h" "01fr9csylnvk9jd9jn9y23bvxy192s07p32pr76mm3gwhgs9h7r4")
+      (getPatch "hdf-4.2.10-aarch64.patch" "1hl0xw5pd9xhpq49xpwgg7c4z6vv5p19x6qayixw0myvgwj1r4zn")
+      (getPatch "reproducible-builds.patch" "02j639w26xkxpxx3pdhbi18ywz8w3qmjpqjb83n47gq29y4g13hc")
+    ];
 
   buildInputs = [
     cmake
@@ -50,18 +51,22 @@ stdenv.mkDerivation rec {
     "-DHDF4_ENABLE_Z_LIB_SUPPORT=ON"
     "-DHDF4_BUILD_FORTRAN=OFF"
     "-DJPEG_DIR=${libjpeg}"
-  ] ++ stdenv.lib.optionals (szip != null) [
-    "-DHDF4_ENABLE_SZIP_ENCODING=ON"
-    "-DHDF4_ENABLE_SZIP_SUPPORT=ON"
-  ];
+  ]
+  ++ stdenv.lib.optionals (szip != null) [
+       "-DHDF4_ENABLE_SZIP_ENCODING=ON"
+       "-DHDF4_ENABLE_SZIP_SUPPORT=ON"
+     ]
+  ;
 
   doCheck = true;
 
   preCheck = ''
     export LD_LIBRARY_PATH=$(pwd)/bin
-  '' + stdenv.lib.optionalString (stdenv.isDarwin) ''
-    export DYLD_LIBRARY_PATH=$(pwd)/bin
-  '';
+  ''
+  + stdenv.lib.optionalString (stdenv.isDarwin) ''
+      export DYLD_LIBRARY_PATH=$(pwd)/bin
+    ''
+  ;
 
   excludedTests = stdenv.lib.optionals stdenv.isDarwin [
     "MFHDF_TEST-hdftest"
@@ -70,13 +75,16 @@ stdenv.mkDerivation rec {
     "NC_TEST-nctest"
   ];
 
-  checkPhase = let excludedTestsRegex = if (excludedTests != [])
+  checkPhase = let
+    excludedTestsRegex = if (excludedTests != [])
     then "(" + (stdenv.lib.concatStringsSep "|" excludedTests) + ")"
-    else ""; in ''
-    runHook preCheck
-    ctest -E "${excludedTestsRegex}" --output-on-failure
-    runHook postCheck
-  '';
+    else "";
+  in
+    ''
+      runHook preCheck
+      ctest -E "${excludedTestsRegex}" --output-on-failure
+      runHook postCheck
+    '';
 
   outputs = [ "bin" "dev" "out" ];
 

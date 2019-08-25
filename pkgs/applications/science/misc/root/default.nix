@@ -1,6 +1,24 @@
-{ stdenv, fetchurl, cmake, pcre, pkgconfig, python2
-, libX11, libXpm, libXft, libXext, libGLU_combined, zlib, libxml2, lz4, lzma, gsl, xxHash
-, Cocoa, OpenGL, noSplash ? false }:
+{ stdenv
+, fetchurl
+, cmake
+, pcre
+, pkgconfig
+, python2
+, libX11
+, libXpm
+, libXft
+, libXext
+, libGLU_combined
+, zlib
+, libxml2
+, lz4
+, lzma
+, gsl
+, xxHash
+, Cocoa
+, OpenGL
+, noSplash ? false
+}:
 
 stdenv.mkDerivation rec {
   name = "root-${version}";
@@ -23,9 +41,11 @@ stdenv.mkDerivation rec {
 
   preConfigure = ''
     patchShebangs build/unix/
-  '' + stdenv.lib.optionalString noSplash ''
-    substituteInPlace rootx/src/rootx.cxx --replace "gNoLogo = false" "gNoLogo = true"
-  '';
+  ''
+  + stdenv.lib.optionalString noSplash ''
+      substituteInPlace rootx/src/rootx.cxx --replace "gNoLogo = false" "gNoLogo = true"
+    ''
+  ;
 
   cmakeFlags = [
     "-Drpath=ON"
@@ -61,7 +81,8 @@ stdenv.mkDerivation rec {
     "-Dxrootd=OFF"
   ]
   ++ stdenv.lib.optional (stdenv.cc.libc != null) "-DC_INCLUDE_DIRS=${stdenv.lib.getDev stdenv.cc.libc}/include"
-  ++ stdenv.lib.optional stdenv.isDarwin "-DOPENGL_INCLUDE_DIR=${OpenGL}/Library/Frameworks";
+  ++ stdenv.lib.optional stdenv.isDarwin "-DOPENGL_INCLUDE_DIR=${OpenGL}/Library/Frameworks"
+  ;
 
   enableParallelBuilding = true;
 

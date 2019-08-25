@@ -12,11 +12,14 @@ let
         let
           p = removePrefix "p" tail;
           isPosInt = num:
-            0 == stringLength
-              (replaceStrings
-              ["0" "1" "2" "3" "4" "5" "6" "7" "8" "9"]
-              [""  ""  ""  ""  ""  ""  ""  ""  ""  "" ]
-              num);
+            0
+            == stringLength
+                 (
+                   replaceStrings
+                     [ "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" ]
+                     [ "" "" "" "" "" "" "" "" "" "" ]
+                     num
+                 );
         in
           if hasPrefix "p" tail && isPosInt p then p
           else null;
@@ -52,12 +55,14 @@ let
 
       # Implements the builtins.toString interface.
       __toString = self:
-        self.majMinTiny + (
-          if self.patchLevel != null then
-            "-p${self.patchLevel}"
-          else if self.tail != "" then
-            "-${self.tail}"
-          else "");
+        self.majMinTiny
+        + (
+            if self.patchLevel != null then
+              "-p${self.patchLevel}"
+            else if self.tail != "" then
+              "-${self.tail}"
+            else ""
+          );
     };
 in
-  rubyVersion
+rubyVersion

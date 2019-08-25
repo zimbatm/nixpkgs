@@ -14,7 +14,9 @@ let
   plugins = [
     "${pkgs.netdata}/libexec/netdata/plugins.d"
     "${wrappedPlugins}/libexec/netdata/plugins.d"
-  ] ++ cfg.extraPluginPaths;
+  ]
+  ++ cfg.extraPluginPaths
+  ;
 
   localConfig = {
     global = {
@@ -30,7 +32,8 @@ let
 
   defaultUser = "netdata";
 
-in {
+in
+{
   options = {
     services.netdata = {
       enable = mkEnableOption "netdata";
@@ -86,7 +89,7 @@ in {
 
       extraPluginPaths = mkOption {
         type = types.listOf types.path;
-        default = [ ];
+        default = [];
         example = literalExample ''
           [ "/path/to/plugins.d" ]
         '';
@@ -113,13 +116,15 @@ in {
             "error log" = "syslog";
           };
         '';
-        };
       };
     };
+  };
 
   config = mkIf cfg.enable {
     assertions =
-      [ { assertion = cfg.config != {} -> cfg.configText == null ;
+      [
+        {
+          assertion = cfg.config != {} -> cfg.configText == null;
           message = "Cannot specify both config and configText";
         }
       ];
@@ -138,10 +143,12 @@ in {
       description = "Real time performance monitoring";
       after = [ "network.target" ];
       wantedBy = [ "multi-user.target" ];
-      path = (with pkgs; [ gawk curl ]) ++ lib.optional cfg.python.enable
-        (pkgs.python3.withPackages cfg.python.extraPackages);
+      path = (with pkgs; [ gawk curl ])
+        ++ lib.optional cfg.python.enable
+             (pkgs.python3.withPackages cfg.python.extraPackages)
+        ;
       serviceConfig = {
-        Environment="PYTHONPATH=${pkgs.netdata}/libexec/netdata/python.d/python_modules";
+        Environment = "PYTHONPATH=${pkgs.netdata}/libexec/netdata/python.d/python_modules";
         ExecStart = "${pkgs.netdata}/bin/netdata -P /run/netdata/netdata.pid -D -c ${configFile}";
         ExecReload = "${pkgs.utillinux}/bin/kill -s HUP -s USR1 -s USR2 $MAINPID";
         TimeoutStopSec = 60;

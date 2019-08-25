@@ -13,8 +13,8 @@ stdenv.mkDerivation {
   };
 
   sourceRoot = if stdenv.cc.isClang
-    then "astyle/build/clang"
-    else "astyle/build/gcc";
+  then "astyle/build/clang"
+  else "astyle/build/gcc";
 
   # -s option is obsolete on Darwin and breaks build
   postPatch = if stdenv.isDarwin then ''

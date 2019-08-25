@@ -1,6 +1,8 @@
 { stdenv, fetchurl }:
 
-let version = "1.8.5"; in
+let
+  version = "1.8.5";
+in
 
 stdenv.mkDerivation rec {
   name = "libspatialindex-${version}";

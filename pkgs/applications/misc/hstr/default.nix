@@ -1,14 +1,20 @@
-{ stdenv, fetchFromGitHub, readline, ncurses
-, autoreconfHook, pkgconfig, gettext }:
+{ stdenv
+, fetchFromGitHub
+, readline
+, ncurses
+, autoreconfHook
+, pkgconfig
+, gettext
+}:
 
 stdenv.mkDerivation rec {
-  name    = "hstr-${version}";
+  name = "hstr-${version}";
   version = "2.0";
 
   src = fetchFromGitHub {
-    owner  = "dvorka";
-    repo   = "hstr";
-    rev    = version;
+    owner = "dvorka";
+    repo = "hstr";
+    rev = version;
     sha256 = "1y9vsfbg07gbic0daqy569d9pb9i1d07fym3q7a0a99hbng85s20";
   };
 

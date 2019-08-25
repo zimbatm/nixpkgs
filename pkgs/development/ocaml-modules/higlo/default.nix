@@ -25,5 +25,3 @@ stdenv.mkDerivation rec {
     maintainers = with maintainers; [ regnat ];
   };
 }
-
-

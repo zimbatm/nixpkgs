@@ -4,25 +4,26 @@ with lib;
 
 let
 
-cfg = config.services.tlp;
+  cfg = config.services.tlp;
 
-enableRDW = config.networking.networkmanager.enable;
+  enableRDW = config.networking.networkmanager.enable;
 
-tlp = pkgs.tlp.override {
-  inherit enableRDW;
-};
+  tlp = pkgs.tlp.override {
+    inherit enableRDW;
+  };
 
-# XXX: We can't use writeTextFile + readFile here because it triggers
-# TLP build to get the .drv (even on --dry-run).
-confFile = pkgs.runCommand "tlp"
-  { config = cfg.extraConfig;
-    passAsFile = [ "config" ];
-    preferLocalBuild = true;
-  }
-  ''
-    cat ${tlp}/etc/default/tlp > $out
-    cat $configPath >> $out
-  '';
+  # XXX: We can't use writeTextFile + readFile here because it triggers
+  # TLP build to get the .drv (even on --dry-run).
+  confFile = pkgs.runCommand "tlp"
+    {
+      config = cfg.extraConfig;
+      passAsFile = [ "config" ];
+      preferLocalBuild = true;
+    }
+    ''
+      cat ${tlp}/etc/default/tlp > $out
+      cat $configPath >> $out
+    '';
 
 in
 
@@ -103,13 +104,17 @@ in
 
     services.udev.packages = [ tlp ];
 
-    environment.etc = [{ source = confFile;
-                         target = "default/tlp";
-                       }
-                      ] ++ optional enableRDW {
-                        source = "${tlp}/etc/NetworkManager/dispatcher.d/99tlp-rdw-nm";
-                        target = "NetworkManager/dispatcher.d/99tlp-rdw-nm";
-                      };
+    environment.etc = [
+      {
+        source = confFile;
+        target = "default/tlp";
+      }
+    ]
+    ++ optional enableRDW {
+         source = "${tlp}/etc/NetworkManager/dispatcher.d/99tlp-rdw-nm";
+         target = "NetworkManager/dispatcher.d/99tlp-rdw-nm";
+       }
+    ;
 
     environment.systemPackages = [ tlp ];
 

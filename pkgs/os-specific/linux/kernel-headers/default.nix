@@ -1,5 +1,8 @@
-{ stdenvNoCC, lib, buildPackages
-, fetchurl, perl
+{ stdenvNoCC
+, lib
+, buildPackages
+, fetchurl
+, perl
 , elf-header
 }:
 
@@ -17,7 +20,7 @@ let
     # `elf-header` is null when libc provides `elf.h`.
     nativeBuildInputs = [ perl elf-header ];
 
-    extraIncludeDirs = lib.optional stdenvNoCC.hostPlatform.isPowerPC ["ppc"];
+    extraIncludeDirs = lib.optional stdenvNoCC.hostPlatform.isPowerPC [ "ppc" ];
 
     inherit patches;
 
@@ -44,7 +47,8 @@ let
     # for darwin cross. @Ericson2314 has no idea why.
     + ''
       make headers_install $makeFlags
-    '';
+    ''
+    ;
 
     checkPhase = ''
       make headers_check $makeFlags
@@ -61,7 +65,8 @@ let
     # tools run-time dependency.
     + ''
       find "$out" -name '..install.cmd' -print0 | xargs -0 rm
-    '';
+    ''
+    ;
 
     meta = with lib; {
       description = "Header files and scripts for Linux kernel";
@@ -69,10 +74,13 @@ let
       platforms = platforms.linux;
     };
   };
-in {
+in
+{
   inherit makeLinuxHeaders;
 
-  linuxHeaders = let version = "4.19.16"; in
+  linuxHeaders = let
+    version = "4.19.16";
+  in
     makeLinuxHeaders {
       inherit version;
       src = fetchurl {
@@ -80,8 +88,8 @@ in {
         sha256 = "1pqvn6dsh0xhdpawz4ag27vkw1abvb6sn3869i4fbrz33ww8i86q";
       };
       patches = [
-         ./no-relocs.patch # for building x86 kernel headers on non-ELF platforms
-         ./no-dynamic-cc-version-check.patch # so we can use `stdenvNoCC`, see `makeFlags` above
+        ./no-relocs.patch # for building x86 kernel headers on non-ELF platforms
+        ./no-dynamic-cc-version-check.patch # so we can use `stdenvNoCC`, see `makeFlags` above
       ];
     };
 }

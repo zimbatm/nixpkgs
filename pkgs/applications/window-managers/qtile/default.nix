@@ -1,6 +1,7 @@
 { stdenv, fetchFromGitHub, python37Packages, glib, cairo, pango, pkgconfig, libxcb, xcbutilcursor }:
 
-let cairocffi-xcffib = python37Packages.cairocffi.override {
+let
+  cairocffi-xcffib = python37Packages.cairocffi.override {
     withXcffib = true;
   };
 in

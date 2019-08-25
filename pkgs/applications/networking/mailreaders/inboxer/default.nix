@@ -1,6 +1,26 @@
-{ stdenv, fetchurl, binutils, patchelf, makeWrapper
-, expat, xorg, gdk-pixbuf, glib, gnome2, cairo, atk, freetype
-, fontconfig, dbus, nss, nspr, gtk2-x11, alsaLib, cups, libpulseaudio, udev }:
+{ stdenv
+, fetchurl
+, binutils
+, patchelf
+, makeWrapper
+, expat
+, xorg
+, gdk-pixbuf
+, glib
+, gnome2
+, cairo
+, atk
+, freetype
+, fontconfig
+, dbus
+, nss
+, nspr
+, gtk2-x11
+, alsaLib
+, cups
+, libpulseaudio
+, udev
+}:
 
 stdenv.mkDerivation rec {
   name = "inboxer-${version}";
@@ -8,10 +28,10 @@ stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "Unofficial, free and open-source Google Inbox Desktop App";
-    homepage    = "https://denysdovhan.com/inboxer";
+    homepage = "https://denysdovhan.com/inboxer";
     maintainers = [ maintainers.mgttlinger ];
-    license     = licenses.mit;
-    platforms   = [ "x86_64-linux" ];
+    license = licenses.mit;
+    platforms = [ "x86_64-linux" ];
   };
 
   src = fetchurl {
@@ -58,21 +78,22 @@ stdenv.mkDerivation rec {
       libpulseaudio
       udev
     ];
-  in ''
-    patchelf \
-      --set-rpath "$out/opt/Inboxer:${lpath}" \
-      $out/opt/Inboxer/libnode.so
-    patchelf \
-      --set-rpath "$out/opt/Inboxer:${lpath}" \
-      $out/opt/Inboxer/libffmpeg.so
+  in
+    ''
+      patchelf \
+        --set-rpath "$out/opt/Inboxer:${lpath}" \
+        $out/opt/Inboxer/libnode.so
+      patchelf \
+        --set-rpath "$out/opt/Inboxer:${lpath}" \
+        $out/opt/Inboxer/libffmpeg.so
 
-    patchelf \
-      --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
-      --set-rpath "$out/opt/Inboxer:${lpath}" \
-      $out/opt/Inboxer/inboxer
+      patchelf \
+        --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
+        --set-rpath "$out/opt/Inboxer:${lpath}" \
+        $out/opt/Inboxer/inboxer
 
-    wrapProgram $out/opt/Inboxer/inboxer --set LD_LIBRARY_PATH "${xorg.libxkbfile}/lib:${lpath}"
-  '';
+      wrapProgram $out/opt/Inboxer/inboxer --set LD_LIBRARY_PATH "${xorg.libxkbfile}/lib:${lpath}"
+    '';
 
   installPhase = ''
     mkdir -p $out/bin

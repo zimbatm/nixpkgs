@@ -10,18 +10,19 @@ stdenv.mkDerivation rec {
     sha256 = "0jmc1cmdz1rcvqc9ilzib1kilpwap6v0d331l6q53wsibdzsz3ss";
   };
 
-  nativeBuildInputs = [ pkgs.unzip patchelf makeWrapper];
+  nativeBuildInputs = [ pkgs.unzip patchelf makeWrapper ];
 
   installPhase = let
     gameDir = "$out/openarena-$version";
     interpreter = "$(< \"$NIX_CC/nix-support/dynamic-linker\")";
     libPath = stdenv.lib.makeLibraryPath [ SDL libglvnd libogg libvorbis curl openal ];
-  in ''
-    mkdir -pv $out/bin
-    cd $out
-    unzip $src
+  in
+    ''
+      mkdir -pv $out/bin
+      cd $out
+      unzip $src
 
-    ${if stdenv.hostPlatform.system == "x86_64-linux" then ''
+      ${if stdenv.hostPlatform.system == "x86_64-linux" then ''
       patchelf --set-interpreter "${interpreter}" "${gameDir}/openarena.x86_64"
       makeWrapper "${gameDir}/openarena.x86_64" "$out/bin/openarena" \
         --prefix LD_LIBRARY_PATH : "${libPath}"
@@ -30,7 +31,7 @@ stdenv.mkDerivation rec {
       makeWrapper "${gameDir}/openarena.i386" "$out/bin/openarena" \
         --prefix LD_LIBRARY_PATH : "${libPath}"
     ''}
-  '';
+    '';
 
   meta = {
     description = "Crossplatform openarena client";

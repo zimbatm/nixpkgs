@@ -2,7 +2,8 @@
 
 let
   pythonPackages = python3Packages;
-in pythonPackages.buildPythonApplication rec {
+in
+pythonPackages.buildPythonApplication rec {
   pname = "picard";
   version = "2.1.3";
 

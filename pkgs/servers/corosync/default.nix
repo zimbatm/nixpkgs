@@ -1,5 +1,14 @@
-{ stdenv, fetchurl, makeWrapper, pkgconfig, nss, nspr, libqb
-, dbus, rdma-core, libstatgrab, net_snmp
+{ stdenv
+, fetchurl
+, makeWrapper
+, pkgconfig
+, nss
+, nspr
+, libqb
+, dbus
+, rdma-core
+, libstatgrab
+, net_snmp
 , enableDbus ? false
 , enableInfiniBandRdma ? false
 , enableMonitoring ? false
@@ -19,11 +28,15 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ makeWrapper pkgconfig ];
 
   buildInputs = [
-    nss nspr libqb
-  ] ++ optional enableDbus dbus
-    ++ optional enableInfiniBandRdma rdma-core
-    ++ optional enableMonitoring libstatgrab
-    ++ optional enableSnmp net_snmp;
+    nss
+    nspr
+    libqb
+  ]
+  ++ optional enableDbus dbus
+  ++ optional enableInfiniBandRdma rdma-core
+  ++ optional enableMonitoring libstatgrab
+  ++ optional enableSnmp net_snmp
+  ;
 
   configureFlags = [
     "--sysconfdir=/etc"
@@ -31,10 +44,12 @@ stdenv.mkDerivation rec {
     "--with-logdir=/var/log/corosync"
     "--enable-watchdog"
     "--enable-qdevices"
-  ] ++ optional enableDbus "--enable-dbus"
-    ++ optional enableInfiniBandRdma "--enable-rdma"
-    ++ optional enableMonitoring "--enable-monitoring"
-    ++ optional enableSnmp "--enable-snmp";
+  ]
+  ++ optional enableDbus "--enable-dbus"
+  ++ optional enableInfiniBandRdma "--enable-rdma"
+  ++ optional enableMonitoring "--enable-monitoring"
+  ++ optional enableSnmp "--enable-snmp"
+  ;
 
   installFlags = [
     "sysconfdir=$(out)/etc"

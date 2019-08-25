@@ -1,9 +1,20 @@
-{ stdenv, fetchurl, rpmextract, autoPatchelfHook
-, xorg, gtk2, gnome2, nss, alsaLib, udev, libnotify }:
+{ stdenv
+, fetchurl
+, rpmextract
+, autoPatchelfHook
+, xorg
+, gtk2
+, gnome2
+, nss
+, alsaLib
+, udev
+, libnotify
+}:
 
 let
   version = "4.0.1";
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "vk-messenger-${version}";
   src = {
     i686-linux = fetchurl {
@@ -17,11 +28,21 @@ in stdenv.mkDerivation {
   }.${stdenv.system} or (throw "Unsupported system: ${stdenv.system}");
 
   nativeBuildInputs = [ rpmextract autoPatchelfHook ];
-  buildInputs = (with xorg; [
-    libXdamage libXtst libXScrnSaver libxkbfile
-  ]) ++ [
-    gtk2 gnome2.GConf nss alsaLib
-  ];
+  buildInputs = (
+    with xorg; [
+      libXdamage
+      libXtst
+      libXScrnSaver
+      libxkbfile
+    ]
+  )
+  ++ [
+       gtk2
+       gnome2.GConf
+       nss
+       alsaLib
+     ]
+  ;
   runtimeDependencies = [ udev.lib libnotify ];
 
   unpackPhase = ''
@@ -47,7 +68,7 @@ in stdenv.mkDerivation {
     homepage = https://vk.com/messenger;
     license = licenses.unfree;
     maintainers = [ maintainers.gnidorah ];
-    platforms = ["i686-linux" "x86_64-linux"];
+    platforms = [ "i686-linux" "x86_64-linux" ];
     hydraPlatforms = [];
   };
 }

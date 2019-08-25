@@ -5,8 +5,8 @@ let
 
   cfg = config.programs.tmux;
 
-  defaultKeyMode  = "emacs";
-  defaultResize   = 5;
+  defaultKeyMode = "emacs";
+  defaultResize = 5;
   defaultShortcut = "b";
   defaultTerminal = "screen";
 
@@ -22,7 +22,7 @@ let
     ${if cfg.reverseSplit then ''
     bind v split-window -h
     bind s split-window -v
-    '' else ""}
+  '' else ""}
 
     set -g status-keys ${cfg.keyMode}
     set -g mode-keys   ${cfg.keyMode}
@@ -37,7 +37,7 @@ let
     bind -r J resize-pane -D ${toString cfg.resizeAmount}
     bind -r K resize-pane -U ${toString cfg.resizeAmount}
     bind -r L resize-pane -R ${toString cfg.resizeAmount}
-    '' else ""}
+  '' else ""}
 
     ${if (cfg.shortcut != defaultShortcut) then ''
     # rebind main key: C-${cfg.shortcut}
@@ -45,7 +45,7 @@ let
     set -g prefix C-${cfg.shortcut}
     bind ${cfg.shortcut} send-prefix
     bind C-${cfg.shortcut} last-window
-    '' else ""}
+  '' else ""}
 
     setw -g aggressive-resize ${boolToStr cfg.aggressiveResize}
     setw -g clock-mode-style  ${if cfg.clock24 then "24" else "12"}
@@ -55,7 +55,8 @@ let
     ${cfg.extraTmuxConf}
   '';
 
-in {
+in
+{
   ###### interface
 
   options = {

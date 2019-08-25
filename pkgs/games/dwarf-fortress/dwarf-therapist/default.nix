@@ -1,5 +1,11 @@
-{ stdenv, fetchFromGitHub, qtbase
-, qtdeclarative, cmake, texlive, ninja }:
+{ stdenv
+, fetchFromGitHub
+, qtbase
+, qtdeclarative
+, cmake
+, texlive
+, ninja
+}:
 
 stdenv.mkDerivation rec {
   name = "dwarf-therapist-${version}";

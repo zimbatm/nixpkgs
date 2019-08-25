@@ -18,11 +18,13 @@ stdenv.mkDerivation rec {
     [ perl python flex bison ]
     ++ stdenv.lib.optional (qt4 != null) qt4
     ++ stdenv.lib.optional stdenv.isSunOS libiconv
-    ++ stdenv.lib.optionals stdenv.isDarwin [ CoreServices libiconv ];
+    ++ stdenv.lib.optionals stdenv.isDarwin [ CoreServices libiconv ]
+    ;
 
   cmakeFlags =
-    [ "-DICONV_INCLUDE_DIR=${libiconv}/include" ] ++
-    stdenv.lib.optional (qt4 != null) "-Dbuild_wizard=YES";
+    [ "-DICONV_INCLUDE_DIR=${libiconv}/include" ]
+    ++ stdenv.lib.optional (qt4 != null) "-Dbuild_wizard=YES"
+    ;
 
   NIX_CFLAGS_COMPILE =
     stdenv.lib.optional stdenv.isDarwin "-mmacosx-version-min=10.9";

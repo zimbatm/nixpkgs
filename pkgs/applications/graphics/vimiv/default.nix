@@ -1,8 +1,17 @@
-{ lib, python3Packages, fetchFromGitHub, imagemagick, librsvg, gtk3, jhead
-, hicolor-icon-theme, gnome3
+{ lib
+, python3Packages
+, fetchFromGitHub
+, imagemagick
+, librsvg
+, gtk3
+, jhead
+, hicolor-icon-theme
+, gnome3
 
-# Test requirements
-, dbus, xvfb_run, xdotool
+  # Test requirements
+, dbus
+, xvfb_run
+, xdotool
 }:
 
 python3Packages.buildPythonApplication rec {

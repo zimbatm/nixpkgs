@@ -1,6 +1,8 @@
 { lib, pythonPackages, fetchFromGitHub }:
 
-let version = "0.1.2"; in
+let
+  version = "0.1.2";
+in
 pythonPackages.buildPythonApplication {
   name = "nixbang-${version}";
   namePrefix = "";

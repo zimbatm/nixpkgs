@@ -79,9 +79,11 @@ in
         db_dir=/var/cache/minidlna
         log_level=${cfg.loglevel}
         inotify=yes
-        ${concatMapStrings (dir: ''
+        ${concatMapStrings (
+        dir: ''
           media_dir=${dir}
-        '') cfg.mediaDirs}
+        ''
+      ) cfg.mediaDirs}
       '';
 
     users.users.minidlna = {
@@ -93,20 +95,23 @@ in
     users.groups.minidlna.gid = config.ids.gids.minidlna;
 
     systemd.services.minidlna =
-      { description = "MiniDLNA Server";
+      {
+        description = "MiniDLNA Server";
 
         wantedBy = [ "multi-user.target" ];
         after = [ "network.target" "local-fs.target" ];
 
         serviceConfig =
-          { User = "minidlna";
+          {
+            User = "minidlna";
             Group = "minidlna";
             CacheDirectory = "minidlna";
             RuntimeDirectory = "minidlna";
             PIDFile = "/run/minidlna/pid";
             ExecStart =
-              "${pkgs.minidlna}/sbin/minidlnad -S -P /run/minidlna/pid" +
-              " -f ${pkgs.writeText "minidlna.conf" cfg.config}";
+              "${pkgs.minidlna}/sbin/minidlnad -S -P /run/minidlna/pid"
+              + " -f ${pkgs.writeText "minidlna.conf" cfg.config}"
+              ;
           };
       };
   };

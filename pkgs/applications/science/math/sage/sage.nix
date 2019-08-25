@@ -14,9 +14,11 @@
 let
   # generate kernel spec + default kernels
   kernel-specs = jupyter-kernel.create {
-    definitions = jupyter-kernel.default // {
-      sagemath = jupyter-kernel-definition;
-    };
+    definitions = jupyter-kernel.default
+      // {
+           sagemath = jupyter-kernel-definition;
+         }
+      ;
   };
 in
 stdenv.mkDerivation rec {
@@ -40,8 +42,8 @@ stdenv.mkDerivation rec {
     mkdir -p "$out/bin"
     makeWrapper "${sage-with-env}/bin/sage" "$out/bin/sage" \
       --set SAGE_DOC_SRC_OVERRIDE "${src}/src/doc" ${
-        stdenv.lib.optionalString withDoc "--set SAGE_DOC_OVERRIDE ${sagedoc}/share/doc/sage"
-      } \
+  stdenv.lib.optionalString withDoc "--set SAGE_DOC_OVERRIDE ${sagedoc}/share/doc/sage"
+  } \
       --prefix JUPYTER_PATH : "${kernel-specs}"
   '';
 

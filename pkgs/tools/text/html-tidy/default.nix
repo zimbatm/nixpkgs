@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
     sha256 = "0w175c5d1babq0w1zzdzw9gl6iqbgyq58v8587s7srp05y3hwy9k";
   };
 
-  nativeBuildInputs = [ cmake libxslt/*manpage*/ ];
+  nativeBuildInputs = [ cmake libxslt /*manpage*/ ];
 
   cmakeFlags = [];
 

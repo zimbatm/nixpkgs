@@ -1,5 +1,10 @@
-{ stdenv, fetchFromGitHub, buildDotnetPackage, dotnetPackages, gtksharp,
-  gettext }:
+{ stdenv
+, fetchFromGitHub
+, buildDotnetPackage
+, dotnetPackages
+, gtksharp
+, gettext
+}:
 
 let
   mono-addins = dotnetPackages.MonoAddins;
@@ -38,9 +43,10 @@ buildDotnetPackage rec {
     ];
 
     stripVersion = name: file: let
-        match = ''<Reference Include="${name}([ ,][^"]*)?"'';
-        replace = ''<Reference Include="${name}"'';
-      in "sed -i -re 's/${match}/${replace}/g' ${file}\n";
+      match = ''<Reference Include="${name}([ ,][^"]*)?"'';
+      replace = ''<Reference Include="${name}"'';
+    in
+      "sed -i -re 's/${match}/${replace}/g' ${file}\n";
 
     # Map all possible pairs of two lists
     map2 = f: listA: listB: concatMap (a: map (f a) listB) listA;
@@ -77,7 +83,7 @@ buildDotnetPackage rec {
     homepage = http://www.pinta-project.com/;
     description = "Drawing/editing program modeled after Paint.NET";
     license = stdenv.lib.licenses.mit;
-    maintainers = with stdenv.lib.maintainers; [ ];
+    maintainers = with stdenv.lib.maintainers; [];
     platforms = with stdenv.lib.platforms; linux;
   };
 }

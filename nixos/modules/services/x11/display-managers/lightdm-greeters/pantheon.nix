@@ -8,10 +8,12 @@ let
   ldmcfg = dmcfg.lightdm;
   cfg = ldmcfg.greeters.pantheon;
 
-  xgreeters = pkgs.linkFarm "pantheon-greeter-xgreeters" [{
-    path = "${pkgs.pantheon.elementary-greeter}/share/xgreeters/io.elementary.greeter.desktop";
-    name = "io.elementary.greeter.desktop";
-  }];
+  xgreeters = pkgs.linkFarm "pantheon-greeter-xgreeters" [
+    {
+      path = "${pkgs.pantheon.elementary-greeter}/share/xgreeters/io.elementary.greeter.desktop";
+      name = "io.elementary.greeter.desktop";
+    }
+  ];
 
 in
 {

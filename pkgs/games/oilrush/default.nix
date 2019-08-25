@@ -1,21 +1,34 @@
-{ stdenv, config, fetchurl, libX11, libXext, libXinerama, libXrandr
-, libXrender, fontconfig, freetype, openal, runtimeShell }:
+{ stdenv
+, config
+, fetchurl
+, libX11
+, libXext
+, libXinerama
+, libXrandr
+, libXrender
+, fontconfig
+, freetype
+, openal
+, runtimeShell
+}:
 
-let inherit (stdenv.lib) makeLibraryPath; in
+let
+  inherit (stdenv.lib) makeLibraryPath;
+in
 
 stdenv.mkDerivation {
   name = "oilrush";
   src =
-  let
-    url = config.oilrush.url or null;
-    sha256 = config.oilrush.sha256 or null;
-  in
-    assert url != null && sha256 != null;
-    fetchurl { inherit url sha256; };
+    let
+      url = config.oilrush.url or null;
+      sha256 = config.oilrush.sha256 or null;
+    in
+      assert url != null && sha256 != null;
+      fetchurl { inherit url sha256; };
   shell = stdenv.shell;
   arch = if stdenv.hostPlatform.system == "x86_64-linux" then "x64"
-         else if stdenv.hostPlatform.system == "i686-linux" then "x86"
-         else "";
+  else if stdenv.hostPlatform.system == "i686-linux" then "x86"
+  else "";
   unpackPhase = ''
     mkdir oilrush
     cd oilrush

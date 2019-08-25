@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
   buildInputs = [ python2Packages.pygtk gnome-menus ];
 
   pythonPath = [ python2Packages.pygtk ];
-    
+
   installPhase = ''
     mkdir -p $out/bin $out/share/applications
     ./install.sh $out

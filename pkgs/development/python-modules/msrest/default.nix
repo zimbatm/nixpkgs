@@ -31,13 +31,19 @@ buildPythonPackage rec {
   };
 
   propagatedBuildInputs = [
-    requests requests_oauthlib isodate certifi
-  ] ++ lib.optionals (!isPy3k) [ enum34 typing ]
-    ++ lib.optionals isPy3k [ aiohttp aiodns ];
+    requests
+    requests_oauthlib
+    isodate
+    certifi
+  ]
+  ++ lib.optionals (!isPy3k) [ enum34 typing ]
+  ++ lib.optionals isPy3k [ aiohttp aiodns ]
+  ;
 
   checkInputs = [ pytest httpretty ]
     ++ lib.optionals (!isPy3k) [ mock futures ]
-    ++ lib.optional isPy3k trio;
+    ++ lib.optional isPy3k trio
+    ;
 
   # Deselected tests require network access
   checkPhase = ''

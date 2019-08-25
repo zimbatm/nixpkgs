@@ -1,5 +1,11 @@
-{ lib, fetchFromGitHub, rustPlatform, pkgconfig
-, libsodium, libarchive, openssl }:
+{ lib
+, fetchFromGitHub
+, rustPlatform
+, pkgconfig
+, libsodium
+, libarchive
+, openssl
+}:
 
 with rustPlatform;
 
@@ -20,7 +26,7 @@ buildRustPackage rec {
 
   nativeBuildInputs = [ pkgconfig ];
 
-  cargoBuildFlags = ["--package hab"];
+  cargoBuildFlags = [ "--package hab" ];
 
   checkPhase = ''
     runHook preCheck

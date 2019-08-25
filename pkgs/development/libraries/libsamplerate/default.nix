@@ -3,7 +3,8 @@
 let
   inherit (stdenv.lib) optionals optionalString;
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "libsamplerate-0.1.9";
 
   src = fetchurl {
@@ -13,7 +14,8 @@ in stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ libsndfile ]
-    ++ optionals stdenv.isDarwin [ ApplicationServices CoreServices ];
+    ++ optionals stdenv.isDarwin [ ApplicationServices CoreServices ]
+    ;
 
   configureFlags = [ "--disable-fftw" ];
 
@@ -29,9 +31,9 @@ in stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "Sample Rate Converter for audio";
-    homepage    = http://www.mega-nerd.com/SRC/index.html;
-    license     = licenses.bsd2;
+    homepage = http://www.mega-nerd.com/SRC/index.html;
+    license = licenses.bsd2;
     maintainers = with maintainers; [ lovek323 ];
-    platforms   = platforms.all;
+    platforms = platforms.all;
   };
 }

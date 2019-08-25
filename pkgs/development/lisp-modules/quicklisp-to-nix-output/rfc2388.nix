@@ -5,7 +5,7 @@ rec {
 
   description = ''Implementation of RFC 2388'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/rfc2388/2018-08-31/rfc2388-20180831-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "rfc2388";
 
-  asdFilesToKeep = ["rfc2388.asd"];
+  asdFilesToKeep = [ "rfc2388.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM rfc2388 DESCRIPTION Implementation of RFC 2388 SHA256

@@ -37,14 +37,16 @@ stdenv.mkDerivation rec {
 
   installPhase =
     # FreeBSD's stdenv doesn't use Coreutils.
-    let dashD = if stdenv.isFreeBSD then "" else "-D"; in
-    (stdenv.lib.optionalString stdenv.isFreeBSD "mkdir -p $out/lib ;")
-    + ''
-    install ${dashD} -m755 libblas.a "$out/lib/libblas.a"
-    install ${dashD} -m755 libblas.so.${version} "$out/lib/libblas.so.${version}"
-    ln -s libblas.so.${version} "$out/lib/libblas.so.3"
-    ln -s libblas.so.${version} "$out/lib/libblas.so"
-  '';
+    let
+      dashD = if stdenv.isFreeBSD then "" else "-D";
+    in
+      (stdenv.lib.optionalString stdenv.isFreeBSD "mkdir -p $out/lib ;")
+      + ''
+        install ${dashD} -m755 libblas.a "$out/lib/libblas.a"
+        install ${dashD} -m755 libblas.so.${version} "$out/lib/libblas.so.${version}"
+        ln -s libblas.so.${version} "$out/lib/libblas.so.3"
+        ln -s libblas.so.${version} "$out/lib/libblas.so"
+      '';
 
   preFixup = stdenv.lib.optionalString stdenv.isDarwin ''
     for fn in $(find $out/lib -name "*.so*"); do

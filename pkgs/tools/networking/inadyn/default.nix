@@ -1,5 +1,11 @@
-{ stdenv, fetchFromGitHub, autoreconfHook, pkgconfig
-, gnutls, libite, libconfuse }:
+{ stdenv
+, fetchFromGitHub
+, autoreconfHook
+, pkgconfig
+, gnutls
+, libite
+, libconfuse
+}:
 
 stdenv.mkDerivation rec {
   name = "inadyn-${version}";
@@ -22,7 +28,7 @@ stdenv.mkDerivation rec {
     homepage = http://troglobit.com/project/inadyn/;
     description = "Free dynamic DNS client";
     license = licenses.gpl2Plus;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
     platforms = platforms.linux;
   };
 }

@@ -1,9 +1,31 @@
-{ stdenv, fetchurl, cmake, gettext
-, libjpeg, libtiff, libungif, libpng, imlib, expat
-, freetype, fontconfig, pkgconfig, gdk-pixbuf
-, mkfontdir, libX11, libXft, libXext, libXinerama
-, libXrandr, libICE, libSM, libXpm, libXdmcp, libxcb
-, libpthreadstubs, pcre }:
+{ stdenv
+, fetchurl
+, cmake
+, gettext
+, libjpeg
+, libtiff
+, libungif
+, libpng
+, imlib
+, expat
+, freetype
+, fontconfig
+, pkgconfig
+, gdk-pixbuf
+, mkfontdir
+, libX11
+, libXft
+, libXext
+, libXinerama
+, libXrandr
+, libICE
+, libSM
+, libXpm
+, libXdmcp
+, libxcb
+, libpthreadstubs
+, pcre
+}:
 
 with stdenv.lib;
 stdenv.mkDerivation rec {
@@ -11,10 +33,33 @@ stdenv.mkDerivation rec {
   version = "1.4.2";
 
   buildInputs =
-  [ cmake gettext libjpeg libtiff libungif libpng imlib expat
-    freetype fontconfig pkgconfig gdk-pixbuf mkfontdir libX11
-    libXft libXext libXinerama libXrandr libICE libSM libXpm
-    libXdmcp libxcb libpthreadstubs pcre ];
+    [
+      cmake
+      gettext
+      libjpeg
+      libtiff
+      libungif
+      libpng
+      imlib
+      expat
+      freetype
+      fontconfig
+      pkgconfig
+      gdk-pixbuf
+      mkfontdir
+      libX11
+      libXft
+      libXext
+      libXinerama
+      libXrandr
+      libICE
+      libSM
+      libXpm
+      libXdmcp
+      libxcb
+      libpthreadstubs
+      pcre
+    ];
 
   src = fetchurl {
     url = "https://github.com/bbidulock/icewm/archive/${version}.tar.gz";
@@ -25,8 +70,9 @@ stdenv.mkDerivation rec {
     export cmakeFlags="-DPREFIX=$out -DCFGDIR=/etc/icewm"
   '';
 
-  patches = [ ./fix-strlcat_strlcpy.patch ] ++
-    stdenv.lib.optional stdenv.hostPlatform.isMusl ./musl.patch;
+  patches = [ ./fix-strlcat_strlcpy.patch ]
+    ++ stdenv.lib.optional stdenv.hostPlatform.isMusl ./musl.patch
+    ;
 
   patchFlags = [ "-p0" ];
 

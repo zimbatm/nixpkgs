@@ -6,15 +6,15 @@ stdenv.mkDerivation rec {
 
   src =
     requireFile {
-      name = "${builtins.replaceStrings ["."] ["-"] version}_MegaCLI.zip";
+      name = "${builtins.replaceStrings [ "." ] [ "-" ] version}_MegaCLI.zip";
       url = https://docs.broadcom.com/docs/12351587;
       sha256 = "1sdn58fbmd3fj4nzbajq3gcyw71ilgdh45r5p4sa6xmb7np55cfr";
     };
 
-  buildInputs = [rpmextract ncurses5 unzip];
+  buildInputs = [ rpmextract ncurses5 unzip ];
   libPath =
     stdenv.lib.makeLibraryPath
-       [ stdenv.cc.cc stdenv.cc.libc ncurses5 ];
+      [ stdenv.cc.cc stdenv.cc.libc ncurses5 ];
 
   buildCommand = ''
     unzip ${src}

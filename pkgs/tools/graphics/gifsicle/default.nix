@@ -14,7 +14,8 @@ stdenv.mkDerivation rec {
   buildInputs = optional gifview [ xorgproto libXt libX11 ];
 
   configureFlags = []
-    ++ optional (!gifview) [ "--disable-gifview" ];
+    ++ optional (!gifview) [ "--disable-gifview" ]
+    ;
 
   LDFLAGS = optional static "-static";
 

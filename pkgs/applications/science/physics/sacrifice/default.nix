@@ -20,8 +20,9 @@ stdenv.mkDerivation rec {
     substituteInPlace configure --replace HAVE_LCG=yes HAVE_LCG=no
   ''
   + stdenv.lib.optionalString stdenv.isDarwin ''
-    substituteInPlace configure --replace LIB_SUFFIX=\"so\" LIB_SUFFIX=\"dylib\"
-  '';
+      substituteInPlace configure --replace LIB_SUFFIX=\"so\" LIB_SUFFIX=\"dylib\"
+    ''
+  ;
 
   configureFlags = [
     "--with-HepMC=${hepmc2}"
@@ -39,9 +40,9 @@ stdenv.mkDerivation rec {
 
   meta = {
     description = "A standalone contribution to AGILe for steering Pythia 8";
-    license     = stdenv.lib.licenses.gpl2;
-    homepage    = https://agile.hepforge.org/trac/wiki/Sacrifice;
-    platforms   = stdenv.lib.platforms.unix;
+    license = stdenv.lib.licenses.gpl2;
+    homepage = https://agile.hepforge.org/trac/wiki/Sacrifice;
+    platforms = stdenv.lib.platforms.unix;
     maintainers = with stdenv.lib.maintainers; [ veprbl ];
   };
 }

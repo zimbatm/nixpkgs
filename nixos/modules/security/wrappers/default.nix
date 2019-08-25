@@ -6,14 +6,16 @@ let
   parentWrapperDir = dirOf wrapperDir;
 
   programs =
-    (lib.mapAttrsToList
-      (n: v: (if v ? "program" then v else v // {program=n;}))
-      wrappers);
+    (
+      lib.mapAttrsToList
+        (n: v: (if v ? "program" then v else v // { program = n; }))
+        wrappers
+    );
 
   securityWrapper = pkgs.stdenv.mkDerivation {
-    name            = "security-wrapper";
-    phases          = [ "installPhase" "fixupPhase" ];
-    buildInputs     = [ pkgs.libcap pkgs.libcap_ng pkgs.linuxHeaders ];
+    name = "security-wrapper";
+    phases = [ "installPhase" "fixupPhase" ];
+    buildInputs = [ pkgs.libcap pkgs.libcap_ng pkgs.linuxHeaders ];
     hardeningEnable = [ "pie" ];
     installPhase = ''
       mkdir -p $out/bin
@@ -27,70 +29,79 @@ let
     { program
     , capabilities
     , source
-    , owner  ? "nobody"
-    , group  ? "nogroup"
+    , owner ? "nobody"
+    , group ? "nogroup"
     , permissions ? "u+rx,g+x,o+x"
     , ...
     }:
-    assert (lib.versionAtLeast (lib.getVersion config.boot.kernelPackages.kernel) "4.3");
-    ''
-      cp ${securityWrapper}/bin/security-wrapper $wrapperDir/${program}
-      echo -n "${source}" > $wrapperDir/${program}.real
+      assert (lib.versionAtLeast (lib.getVersion config.boot.kernelPackages.kernel) "4.3");
+      ''
+        cp ${securityWrapper}/bin/security-wrapper $wrapperDir/${program}
+        echo -n "${source}" > $wrapperDir/${program}.real
 
-      # Prevent races
-      chmod 0000 $wrapperDir/${program}
-      chown ${owner}.${group} $wrapperDir/${program}
+        # Prevent races
+        chmod 0000 $wrapperDir/${program}
+        chown ${owner}.${group} $wrapperDir/${program}
 
-      # Set desired capabilities on the file plus cap_setpcap so
-      # the wrapper program can elevate the capabilities set on
-      # its file into the Ambient set.
-      ${pkgs.libcap.out}/bin/setcap "cap_setpcap,${capabilities}" $wrapperDir/${program}
+        # Set desired capabilities on the file plus cap_setpcap so
+        # the wrapper program can elevate the capabilities set on
+        # its file into the Ambient set.
+        ${pkgs.libcap.out}/bin/setcap "cap_setpcap,${capabilities}" $wrapperDir/${program}
 
-      # Set the executable bit
-      chmod ${permissions} $wrapperDir/${program}
-    '';
+        # Set the executable bit
+        chmod ${permissions} $wrapperDir/${program}
+      '';
 
   ###### Activation script for the setuid wrappers
   mkSetuidProgram =
     { program
     , source
-    , owner  ? "nobody"
-    , group  ? "nogroup"
+    , owner ? "nobody"
+    , group ? "nogroup"
     , setuid ? false
     , setgid ? false
     , permissions ? "u+rx,g+x,o+x"
     , ...
     }:
-    ''
-      cp ${securityWrapper}/bin/security-wrapper $wrapperDir/${program}
-      echo -n "${source}" > $wrapperDir/${program}.real
+      ''
+        cp ${securityWrapper}/bin/security-wrapper $wrapperDir/${program}
+        echo -n "${source}" > $wrapperDir/${program}.real
 
-      # Prevent races
-      chmod 0000 $wrapperDir/${program}
-      chown ${owner}.${group} $wrapperDir/${program}
+        # Prevent races
+        chmod 0000 $wrapperDir/${program}
+        chown ${owner}.${group} $wrapperDir/${program}
 
-      chmod "u${if setuid then "+" else "-"}s,g${if setgid then "+" else "-"}s,${permissions}" $wrapperDir/${program}
-    '';
+        chmod "u${if setuid then "+" else "-"}s,g${if setgid then "+" else "-"}s,${permissions}" $wrapperDir/${program}
+      '';
 
   mkWrappedPrograms =
     builtins.map
-      (s: if (s ? "capabilities")
-          then mkSetcapProgram
-                 ({ owner = "root";
-                    group = "root";
-                  } // s)
-          else if
-             (s ? "setuid" && s.setuid) ||
-             (s ? "setgid" && s.setgid) ||
-             (s ? "permissions")
-          then mkSetuidProgram s
-          else mkSetuidProgram
-                 ({ owner  = "root";
-                    group  = "root";
-                    setuid = true;
-                    setgid = false;
-                    permissions = "u+rx,g+x,o+x";
-                  } // s)
+      (
+        s: if (s ? "capabilities")
+        then mkSetcapProgram
+          (
+            {
+              owner = "root";
+              group = "root";
+            }
+            // s
+          )
+        else if
+          (s ? "setuid" && s.setuid)
+          || (s ? "setgid" && s.setgid)
+          || (s ? "permissions")
+        then mkSetuidProgram s
+        else mkSetuidProgram
+          (
+            {
+              owner = "root";
+              group = "root";
+              setuid = true;
+              setgid = false;
+              permissions = "u+rx,g+x,o+x";
+            }
+            // s
+          )
       ) programs;
 in
 {
@@ -142,9 +153,9 @@ in
     };
 
     security.wrapperDir = lib.mkOption {
-      type        = lib.types.path;
-      default     = "/run/wrappers/bin";
-      internal    = true;
+      type = lib.types.path;
+      default = "/run/wrappers/bin";
+      internal = true;
       description = ''
         This option defines the path to the wrapper programs. It
         should not be overriden.

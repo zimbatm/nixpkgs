@@ -1,5 +1,11 @@
-{ stdenv, lib, buildPythonApplication, fetchFromGitHub
-, vdf, wine, winetricks, zenity
+{ stdenv
+, lib
+, buildPythonApplication
+, fetchFromGitHub
+, vdf
+, wine
+, winetricks
+, zenity
 }:
 
 buildPythonApplication rec {

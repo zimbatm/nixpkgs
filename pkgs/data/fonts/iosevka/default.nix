@@ -1,13 +1,19 @@
-{
-  stdenv, lib,
-  fetchFromGitHub, fetchurl,
-  nodejs, ttfautohint-nox, otfcc,
-
-  # Custom font set options.
+{ stdenv
+, lib
+, fetchFromGitHub
+, fetchurl
+, nodejs
+, ttfautohint-nox
+, otfcc
+, # Custom font set options.
   # See https://github.com/be5invis/Iosevka#build-your-own-style
-  design ? [], upright ? [], italic ? [], oblique ? [],
-  family ? null, weights ? [],
-  # Custom font set name. Required if any custom settings above.
+  design ? []
+, upright ? []
+, italic ? []
+, oblique ? []
+, family ? null
+, weights ? []
+, # Custom font set name. Required if any custom settings above.
   set ? null
 }:
 
@@ -22,82 +28,90 @@ let
   installPackageLock = import ./package-lock.nix { inherit fetchurl lib; };
 in
 
-let pname = if set != null then "iosevka-${set}" else "iosevka"; in
-
 let
-  version = "1.14.3";
-  name = "${pname}-${version}";
-  src = fetchFromGitHub {
-    owner = "be5invis";
-    repo ="Iosevka";
-    rev = "v${version}";
-    sha256 = "0ba8hwxi88bp2jb9xfhk95nnlv8ykl74cv62xr4ybzm3b8ahpwqf";
-  };
+  pname = if set != null then "iosevka-${set}" else "iosevka";
 in
 
-with lib;
-let unwords = concatStringsSep " "; in
+  let
+    version = "1.14.3";
+    name = "${pname}-${version}";
+    src = fetchFromGitHub {
+      owner = "be5invis";
+      repo = "Iosevka";
+      rev = "v${version}";
+      sha256 = "0ba8hwxi88bp2jb9xfhk95nnlv8ykl74cv62xr4ybzm3b8ahpwqf";
+    };
+  in
 
-let
-  param = name: options:
-    if options != [] then "${name}='${unwords options}'" else null;
-  config = unwords (lib.filter (x: x != null) [
-    (param "design" design)
-    (param "upright" upright)
-    (param "italic" italic)
-    (param "oblique" oblique)
-    (if family != null then "family='${family}'" else null)
-    (param "weights" weights)
-  ]);
-  custom = design != [] || upright != [] || italic != [] || oblique != []
-    || family != null || weights != [];
-in
+    with lib;
+    let
+      unwords = concatStringsSep " ";
+    in
 
-stdenv.mkDerivation {
-  inherit name pname version src;
+      let
+        param = name: options:
+          if options != [] then "${name}='${unwords options}'" else null;
+        config = unwords (
+          lib.filter (x: x != null) [
+            (param "design" design)
+            (param "upright" upright)
+            (param "italic" italic)
+            (param "oblique" oblique)
+            (if family != null then "family='${family}'" else null)
+            (param "weights" weights)
+          ]
+        );
+        custom = design != [] || upright != [] || italic != [] || oblique != []
+          || family != null
+          || weights != []
+          ;
+      in
 
-  nativeBuildInputs = [ nodejs ttfautohint-nox otfcc ];
+        stdenv.mkDerivation {
+          inherit name pname version src;
 
-  passAsFile = [ "installPackageLock" ];
-  installPackageLock = installPackageLock ./package-lock.json;
+          nativeBuildInputs = [ nodejs ttfautohint-nox otfcc ];
 
-  preConfigure = ''
-    HOME=$TMPDIR
-    source "$installPackageLockPath";
-    npm --offline rebuild
-  '';
+          passAsFile = [ "installPackageLock" ];
+          installPackageLock = installPackageLock ./package-lock.json;
 
-  configurePhase = ''
-    runHook preConfigure
+          preConfigure = ''
+            HOME=$TMPDIR
+            source "$installPackageLockPath";
+            npm --offline rebuild
+          '';
 
-    ${optionalString custom ''make custom-config set=${set} ${config}''}
+          configurePhase = ''
+            runHook preConfigure
 
-    runHook postConfigure
-  '';
+            ${optionalString custom ''make custom-config set=${set} ${config}''}
 
-  makeFlags = lib.optionals custom [ "custom" "set=${set}" ];
+            runHook postConfigure
+          '';
 
-  installPhase = ''
-    runHook preInstall
+          makeFlags = lib.optionals custom [ "custom" "set=${set}" ];
 
-    fontdir="$out/share/fonts/$pname"
-    install -d "$fontdir"
-    install "dist/$pname/ttf"/* "$fontdir"
+          installPhase = ''
+            runHook preInstall
 
-    runHook postInstall
-  '';
+            fontdir="$out/share/fonts/$pname"
+            install -d "$fontdir"
+            install "dist/$pname/ttf"/* "$fontdir"
 
-  enableParallelBuilding = true;
+            runHook postInstall
+          '';
 
-  meta = with stdenv.lib; {
-    homepage = https://be5invis.github.io/Iosevka/;
-    downloadPage = "https://github.com/be5invis/Iosevka/releases";
-    description = ''
-      Slender monospace sans-serif and slab-serif typeface inspired by Pragmata
-      Pro, M+ and PF DIN Mono, designed to be the ideal font for programming.
-    '';
-    license = licenses.ofl;
-    platforms = platforms.all;
-    maintainers = with maintainers; [ cstrahan jfrankenau ttuegel ];
-  };
-}
+          enableParallelBuilding = true;
+
+          meta = with stdenv.lib; {
+            homepage = https://be5invis.github.io/Iosevka/;
+            downloadPage = "https://github.com/be5invis/Iosevka/releases";
+            description = ''
+              Slender monospace sans-serif and slab-serif typeface inspired by Pragmata
+              Pro, M+ and PF DIN Mono, designed to be the ideal font for programming.
+            '';
+            license = licenses.ofl;
+            platforms = platforms.all;
+            maintainers = with maintainers; [ cstrahan jfrankenau ttuegel ];
+          };
+        }

@@ -1,4 +1,4 @@
-{ stdenv, rustPlatform , fetchFromGitHub, Security }:
+{ stdenv, rustPlatform, fetchFromGitHub, Security }:
 rustPlatform.buildRustPackage rec {
   name = "whitebox_tools-${version}";
   version = "0.9.0";

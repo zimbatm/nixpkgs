@@ -14,16 +14,19 @@ stdenv.mkDerivation rec {
   # Fix building on macOS (patch from Homebrew)
   # https://bugs.launchpad.net/libmemcached/+bug/1245562
   patches = stdenv.lib.optional stdenv.isLinux ./libmemcached-fix-linking-with-libpthread.patch
-    ++ stdenv.lib.optional stdenv.isDarwin (fetchpatch {
-      url = "https://raw.githubusercontent.com/Homebrew/homebrew/bfd4a0a4626b61c2511fdf573bcbbc6bbe86340e/Library/Formula/libmemcached.rb";
-      sha256 = "1gjf3vd7hiyzxjvlg2zfc3y2j0lyr6nhbws4xb5dmin3csyp8qb8";
-    })
-    ++ stdenv.lib.optional stdenv.hostPlatform.isMusl ./musl-fixes.patch;
+    ++ stdenv.lib.optional stdenv.isDarwin (
+         fetchpatch {
+           url = "https://raw.githubusercontent.com/Homebrew/homebrew/bfd4a0a4626b61c2511fdf573bcbbc6bbe86340e/Library/Formula/libmemcached.rb";
+           sha256 = "1gjf3vd7hiyzxjvlg2zfc3y2j0lyr6nhbws4xb5dmin3csyp8qb8";
+         }
+       )
+    ++ stdenv.lib.optional stdenv.hostPlatform.isMusl ./musl-fixes.patch
+    ;
 
   buildInputs = [ libevent ];
   propagatedBuildInputs = [ cyrus_sasl ];
 
-  NIX_CFLAGS_COMPILE = [ "-fpermissive"/*gcc7*/ ];
+  NIX_CFLAGS_COMPILE = [ "-fpermissive" /*gcc7*/ ];
 
   meta = with stdenv.lib; {
     homepage = https://libmemcached.org;

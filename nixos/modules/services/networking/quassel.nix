@@ -88,44 +88,55 @@ in
 
   config = mkIf cfg.enable {
     assertions = [
-      { assertion = cfg.requireSSL -> cfg.certificateFile != null;
+      {
+        assertion = cfg.requireSSL -> cfg.certificateFile != null;
         message = "Quassel needs a certificate file in order to require SSL";
-      }];
+      }
+    ];
 
     users.users = mkIf (cfg.user == null) [
-      { name = "quassel";
+      {
+        name = "quassel";
         description = "Quassel IRC client daemon";
         group = "quassel";
         uid = config.ids.uids.quassel;
-      }];
+      }
+    ];
 
     users.groups = mkIf (cfg.user == null) [
-      { name = "quassel";
+      {
+        name = "quassel";
         gid = config.ids.gids.quassel;
-      }];
+      }
+    ];
 
     systemd.tmpfiles.rules = [
       "d '${cfg.dataDir}' - ${user} - - -"
     ];
 
     systemd.services.quassel =
-      { description = "Quassel IRC client daemon";
+      {
+        description = "Quassel IRC client daemon";
 
         wantedBy = [ "multi-user.target" ];
         after = [ "network.target" ] ++ optional config.services.postgresql.enable "postgresql.service"
-                                     ++ optional config.services.mysql.enable "mysql.service";
+          ++ optional config.services.mysql.enable "mysql.service"
+          ;
 
         serviceConfig =
-        {
-          ExecStart = concatStringsSep " " ([
-            "${quassel}/bin/quasselcore"
-            "--listen=${concatStringsSep "," cfg.interfaces}"
-            "--port=${toString cfg.portNumber}"
-            "--configdir=${cfg.dataDir}"
-          ] ++ optional cfg.requireSSL "--require-ssl"
-            ++ optional (cfg.certificateFile != null) "--ssl-cert=${cfg.certificateFile}");
-          User = user;
-        };
+          {
+            ExecStart = concatStringsSep " " (
+              [
+                "${quassel}/bin/quasselcore"
+                "--listen=${concatStringsSep "," cfg.interfaces}"
+                "--port=${toString cfg.portNumber}"
+                "--configdir=${cfg.dataDir}"
+              ]
+              ++ optional cfg.requireSSL "--require-ssl"
+              ++ optional (cfg.certificateFile != null) "--ssl-cert=${cfg.certificateFile}"
+            );
+            User = user;
+          };
       };
 
   };

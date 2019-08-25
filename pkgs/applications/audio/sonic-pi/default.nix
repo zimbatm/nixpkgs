@@ -19,7 +19,8 @@ let
     fftw = fftwSinglePrec;
   };
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   version = "3.1.0";
   name = "sonic-pi-${version}";
 

@@ -1,6 +1,15 @@
-{ stdenv, fetchgit
+{ stdenv
+, fetchgit
 , cmake
-, libav, netcdf, qscintilla, zlib, boost, git, fftw, hdf5, libssh
+, libav
+, netcdf
+, qscintilla
+, zlib
+, boost
+, git
+, fftw
+, hdf5
+, libssh
 , pythonPackages
 }:
 
@@ -28,6 +37,6 @@ stdenv.mkDerivation rec {
     maintainers = [ maintainers.costrouc ];
     # ensures not built on hydra
     # https://github.com/NixOS/nixpkgs/pull/46846#issuecomment-436388048
-    hydraPlatforms = [ ];
+    hydraPlatforms = [];
   };
 }

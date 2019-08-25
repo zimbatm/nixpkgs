@@ -2,14 +2,15 @@
 
 let
   version = "0.8.9.0";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "libmodplug-${version}";
 
   meta = with stdenv.lib; {
     description = "MOD playing library";
-    homepage    = "http://modplug-xmms.sourceforge.net/";
-    license     = licenses.publicDomain;
-    platforms   = platforms.unix;
+    homepage = "http://modplug-xmms.sourceforge.net/";
+    license = licenses.publicDomain;
+    platforms = platforms.unix;
     maintainers = with maintainers; [ raskin ];
   };
 

@@ -1,5 +1,13 @@
-{ stdenv, fetchFromGitHub, mcpp, bzip2, expat, openssl, db5
-, darwin, libiconv, Security
+{ stdenv
+, fetchFromGitHub
+, mcpp
+, bzip2
+, expat
+, openssl
+, db5
+, darwin
+, libiconv
+, Security
 }:
 
 stdenv.mkDerivation rec {
@@ -16,7 +24,8 @@ stdenv.mkDerivation rec {
   patches = [ ./makefile.patch ];
 
   buildInputs = [ mcpp bzip2 expat openssl db5 ]
-    ++ stdenv.lib.optionals stdenv.isDarwin [ darwin.cctools libiconv Security ];
+    ++ stdenv.lib.optionals stdenv.isDarwin [ darwin.cctools libiconv Security ]
+    ;
 
   postUnpack = ''
     sourceRoot=$sourceRoot/cpp

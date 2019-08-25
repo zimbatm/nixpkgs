@@ -1,6 +1,6 @@
-{ system ? builtins.currentSystem,
-  config ? {},
-  pkgs ? import ../.. { inherit system config; }
+{ system ? builtins.currentSystem
+, config ? {}
+, pkgs ? import ../.. { inherit system config; }
 }:
 
 with import ../lib/testing.nix { inherit system pkgs; };
@@ -39,8 +39,8 @@ let
       $machine->log($machine->succeed("curl http://localhost:11334/auth"));
       $machine->log($machine->succeed("curl http://127.0.0.1:11334/auth"));
       ${optionalString enableIPv6 ''
-        $machine->log($machine->succeed("curl http://[::1]:11334/auth"));
-      ''}
+      $machine->log($machine->succeed("curl http://[::1]:11334/auth"));
+    ''}
     '';
   };
 in
@@ -52,18 +52,22 @@ in
     machine = {
       services.rspamd = {
         enable = true;
-        workers.normal.bindSockets = [{
-          socket = "/run/rspamd.sock";
-          mode = "0600";
-          owner = "root";
-          group = "root";
-        }];
-        workers.controller.bindSockets = [{
-          socket = "/run/rspamd-worker.sock";
-          mode = "0666";
-          owner = "root";
-          group = "root";
-        }];
+        workers.normal.bindSockets = [
+          {
+            socket = "/run/rspamd.sock";
+            mode = "0600";
+            owner = "root";
+            group = "root";
+          }
+        ];
+        workers.controller.bindSockets = [
+          {
+            socket = "/run/rspamd-worker.sock";
+            mode = "0666";
+            owner = "root";
+            group = "root";
+          }
+        ];
       };
     };
 
@@ -85,18 +89,22 @@ in
     machine = {
       services.rspamd = {
         enable = true;
-        workers.normal.bindSockets = [{
-          socket = "/run/rspamd.sock";
-          mode = "0600";
-          owner = "root";
-          group = "root";
-        }];
-        workers.controller.bindSockets = [{
-          socket = "/run/rspamd-worker.sock";
-          mode = "0666";
-          owner = "root";
-          group = "root";
-        }];
+        workers.normal.bindSockets = [
+          {
+            socket = "/run/rspamd.sock";
+            mode = "0600";
+            owner = "root";
+            group = "root";
+          }
+        ];
+        workers.controller.bindSockets = [
+          {
+            socket = "/run/rspamd-worker.sock";
+            mode = "0666";
+            owner = "root";
+            group = "root";
+          }
+        ];
         workers.controller2 = {
           type = "controller";
           bindSockets = [ "0.0.0.0:11335" ];
@@ -145,7 +153,8 @@ in
       services.rspamd = {
         enable = true;
         locals = {
-          "antivirus.conf" = mkIf false { text = ''
+          "antivirus.conf" = mkIf false {
+            text = ''
               clamav {
                 action = "reject";
                 symbol = "CLAM_VIRUS";
@@ -153,7 +162,8 @@ in
                 log_clean = true;
                 servers = "/run/clamav/clamd.ctl";
               }
-            '';};
+            '';
+          };
           "redis.conf" = {
             enable = false;
             text = ''
@@ -172,28 +182,28 @@ in
           '';
         };
         localLuaRules = pkgs.writeText "rspamd.local.lua" ''
-          local rspamd_logger = require "rspamd_logger"
-          rspamd_config.NO_MUH = {
-            callback = function (task)
-              local parts = task:get_text_parts()
-              if parts then
-                for _,part in ipairs(parts) do
-                  local content = tostring(part:get_content())
-                  rspamd_logger.infox(rspamd_config, 'Found content %s', content)
-                  local found = string.find(content, "Muh");
-                  rspamd_logger.infox(rspamd_config, 'Found muh %s', tostring(found))
-                  if found then
-                    return true
-                  end
-                end
-              end
-              return false
-            end,
-            score = 5.0,
-	          description = 'Allow no cows',
-            group = "cows",
-          }
-          rspamd_logger.infox(rspamd_config, 'Work dammit!!!')
+                    local rspamd_logger = require "rspamd_logger"
+                    rspamd_config.NO_MUH = {
+                      callback = function (task)
+                        local parts = task:get_text_parts()
+                        if parts then
+                          for _,part in ipairs(parts) do
+                            local content = tostring(part:get_content())
+                            rspamd_logger.infox(rspamd_config, 'Found content %s', content)
+                            local found = string.find(content, "Muh");
+                            rspamd_logger.infox(rspamd_config, 'Found muh %s', tostring(found))
+                            if found then
+                              return true
+                            end
+                          end
+                        end
+                        return false
+                      end,
+                      score = 5.0,
+          	          description = 'Allow no cows',
+                      group = "cows",
+                    }
+                    rspamd_logger.infox(rspamd_config, 'Work dammit!!!')
         '';
       };
     };
@@ -240,7 +250,7 @@ in
       users.users.tester.password = "test";
       services.postfix = {
         enable = true;
-        destination = ["example.com"];
+        destination = [ "example.com" ];
       };
       services.rspamd = {
         enable = true;

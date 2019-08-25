@@ -23,7 +23,15 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ pkgconfig ];
   buildInputs = [
-    cmake libpfm zlib python2Packages.python python2Packages.pexpect which procps gdb capnproto
+    cmake
+    libpfm
+    zlib
+    python2Packages.python
+    python2Packages.pexpect
+    which
+    procps
+    gdb
+    capnproto
   ];
   cmakeFlags = [
     "-DCMAKE_C_FLAGS_RELEASE:STRING="

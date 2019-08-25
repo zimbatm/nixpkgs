@@ -6,7 +6,8 @@ stdenv.mkDerivation rec {
 
   src = fetchurl {
     url = "https://bitbucket.org/acoustid/acoustid-fingerprinter/downloads/"
-        + "${name}.tar.gz";
+      + "${name}.tar.gz"
+      ;
     sha256 = "0ckglwy95qgqvl2l6yd8ilwpd6qs7yzmj8g7lnxb50d12115s5n0";
   };
 
@@ -16,10 +17,12 @@ stdenv.mkDerivation rec {
   cmakeFlags = [ "-DTAGLIB_MIN_VERSION=${(builtins.parseDrvName taglib.name).version}" ];
 
   patches = [
-    (fetchpatch {
-      url = "https://bitbucket.org/acoustid/acoustid-fingerprinter/commits/632e87969c3a5562a5d4842b03613267ba6236b2/raw";
-      sha256 = "15hm9knrpqn3yqrwyjz4zh2aypwbcycd0c5svrsy1fb2h2rh05jk";
-    })
+    (
+      fetchpatch {
+        url = "https://bitbucket.org/acoustid/acoustid-fingerprinter/commits/632e87969c3a5562a5d4842b03613267ba6236b2/raw";
+        sha256 = "15hm9knrpqn3yqrwyjz4zh2aypwbcycd0c5svrsy1fb2h2rh05jk";
+      }
+    )
     ./ffmpeg.patch
   ];
 

@@ -1,5 +1,11 @@
-{stdenv, pkgs, fetchurl, graphviz, fontconfig, liberation_ttf,
- experimentalKernel ? true}:
+{ stdenv
+, pkgs
+, fetchurl
+, graphviz
+, fontconfig
+, liberation_ttf
+, experimentalKernel ? true
+}:
 
 let
   pname = "hol4";
@@ -13,23 +19,25 @@ let
   kernelFlag = if experimentalKernel then "-expk" else "-stdknl";
 in
 
-let
-  polymlEnableShared = with pkgs; lib.overrideDerivation polyml (attrs: {
-    configureFlags = [ "--enable-shared" ];
-  });
-in
+  let
+    polymlEnableShared = with pkgs; lib.overrideDerivation polyml (
+      attrs: {
+        configureFlags = [ "--enable-shared" ];
+      }
+    );
+  in
 
-stdenv.mkDerivation {
-  name = "${pname}-${version}";
+    stdenv.mkDerivation {
+      name = "${pname}-${version}";
 
-  src = fetchurl {
-    url = "mirror://sourceforge/hol/hol/${longVersion}/${holsubdir}.tar.gz";
-    sha256 = "0x2wxksr305h1lrbklf6p42lp09rbhb4rsh74g0l70sgapyiac9b";
-  };
+      src = fetchurl {
+        url = "mirror://sourceforge/hol/hol/${longVersion}/${holsubdir}.tar.gz";
+        sha256 = "0x2wxksr305h1lrbklf6p42lp09rbhb4rsh74g0l70sgapyiac9b";
+      };
 
-  buildInputs = [polymlEnableShared graphviz fontconfig liberation_ttf];
+      buildInputs = [ polymlEnableShared graphviz fontconfig liberation_ttf ];
 
-  buildCommand = ''
+      buildCommand = ''
 
     mkdir chroot-fontconfig
     cat ${fontconfig.out}/etc/fonts/fonts.conf > chroot-fontconfig/fonts.conf
@@ -65,24 +73,24 @@ stdenv.mkDerivation {
     # ln -s $out/src/hol4.${version}/bin $out/bin
   '';
 
-  meta = with stdenv.lib; {
-    description = "Interactive theorem prover based on Higher-Order Logic";
-    longDescription = ''
-      HOL4 is the latest version of the HOL interactive proof
-      assistant for higher order logic: a programming environment in
-      which theorems can be proved and proof tools
-      implemented. Built-in decision procedures and theorem provers
-      can automatically establish many simple theorems (users may have
-      to prove the hard theorems themselves!) An oracle mechanism
-      gives access to external programs such as SMT and BDD
-      engines. HOL4 is particularly suitable as a platform for
-      implementing combinations of deduction, execution and property
-      checking.
-    '';
-    homepage = http://hol.sourceforge.net/;
-    license = licenses.bsd3;
-    maintainers = with maintainers; [ mudri ];
-    platforms = with platforms; linux;
-    broken = true;
-  };
-}
+      meta = with stdenv.lib; {
+        description = "Interactive theorem prover based on Higher-Order Logic";
+        longDescription = ''
+          HOL4 is the latest version of the HOL interactive proof
+          assistant for higher order logic: a programming environment in
+          which theorems can be proved and proof tools
+          implemented. Built-in decision procedures and theorem provers
+          can automatically establish many simple theorems (users may have
+          to prove the hard theorems themselves!) An oracle mechanism
+          gives access to external programs such as SMT and BDD
+          engines. HOL4 is particularly suitable as a platform for
+          implementing combinations of deduction, execution and property
+          checking.
+        '';
+        homepage = http://hol.sourceforge.net/;
+        license = licenses.bsd3;
+        maintainers = with maintainers; [ mudri ];
+        platforms = with platforms; linux;
+        broken = true;
+      };
+    }

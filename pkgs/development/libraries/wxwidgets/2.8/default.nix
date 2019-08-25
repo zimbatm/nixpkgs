@@ -1,9 +1,24 @@
-{ stdenv, fetchurl, pkgconfig, gtk2, libXinerama, libSM, libXxf86vm, xorgproto
-, gstreamer, gst-plugins-base, GConf, libX11, cairo
+{ stdenv
+, fetchurl
+, pkgconfig
+, gtk2
+, libXinerama
+, libSM
+, libXxf86vm
+, xorgproto
+, gstreamer
+, gst-plugins-base
+, GConf
+, libX11
+, cairo
 , libGLSupported ? stdenv.lib.elem stdenv.hostPlatform.system stdenv.lib.platforms.mesaPlatforms
 , withMesa ? stdenv.lib.elem stdenv.hostPlatform.system stdenv.lib.platforms.mesaPlatforms
-, libGLU ? null, libGL ? null
-, compat24 ? false, compat26 ? true, unicode ? true,
+, libGLU ? null
+, libGL ? null
+, compat24 ? false
+, compat26 ? true
+, unicode ? true
+,
 }:
 
 assert withMesa -> libGLU != null && libGL != null;
@@ -20,7 +35,8 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [ gtk2 libXinerama libSM libXxf86vm xorgproto gstreamer gst-plugins-base GConf libX11 cairo ]
-    ++ optional withMesa libGLU;
+    ++ optional withMesa libGLU
+    ;
 
   nativeBuildInputs = [ pkgconfig ];
 
@@ -34,14 +50,17 @@ stdenv.mkDerivation rec {
     (if unicode then "--enable-unicode" else "")
     "--enable-mediactrl"
     "--enable-graphics_ctx"
-  ] ++ optional withMesa "--with-opengl";
+  ]
+  ++ optional withMesa "--with-opengl"
+  ;
 
   # These variables are used by configure to find some dependencies.
   SEARCH_INCLUDE =
     "${libXinerama.dev}/include ${libSM.dev}/include ${libXxf86vm.dev}/include";
   SEARCH_LIB =
     "${libXinerama.out}/lib ${libSM.out}/lib ${libXxf86vm.out}/lib "
-    + optionalString withMesa "${libGLU.out}/lib ${libGL.out}/lib ";
+    + optionalString withMesa "${libGLU.out}/lib ${libGL.out}/lib "
+    ;
 
   # Work around a bug in configure.
   NIX_CFLAGS_COMPILE = [ "-DHAVE_X11_XLIB_H=1" "-lX11" "-lcairo" "-Wno-narrowing" ];

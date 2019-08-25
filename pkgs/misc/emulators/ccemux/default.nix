@@ -1,4 +1,8 @@
-{ stdenv, fetchurl, makeDesktopItem, makeWrapper, jre
+{ stdenv
+, fetchurl
+, makeDesktopItem
+, makeWrapper
+, jre
 , useCCTweaked ? true
 }:
 
@@ -22,7 +26,7 @@ let
     url = "https://github.com/CCEmuX/CCEmuX/raw/${rev}/src/main/resources/img/icon.png";
     sha256 = "1vmb6rg9k2y99j8xqfgbsvfgfi3g985rmqwrd7w3y54ffr2r99c2";
   };
-  desktopItem =  makeDesktopItem {
+  desktopItem = makeDesktopItem {
     name = "CCEmuX";
     exec = "ccemux";
     icon = "${desktopIcon}";

@@ -1,10 +1,18 @@
-{ stdenv, fetchFromGitHub, qmake
-, coreutils, xdg_utils, bash
-, makeWrapper, perlPackages, mkDerivation }:
+{ stdenv
+, fetchFromGitHub
+, qmake
+, coreutils
+, xdg_utils
+, bash
+, makeWrapper
+, perlPackages
+, mkDerivation
+}:
 
 let
   version = "1.6";
-in mkDerivation rec {
+in
+mkDerivation rec {
   name = "qdirstat-${version}";
 
   src = fetchFromGitHub {

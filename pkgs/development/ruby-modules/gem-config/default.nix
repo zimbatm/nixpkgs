@@ -17,15 +17,79 @@
 # This seperates "what to build" (the exact gem versions) from "how to build"
 # (to make gems behave if necessary).
 
-{ lib, fetchurl, writeScript, ruby, kerberos, libxml2, libxslt, python, stdenv, which
-, libiconv, postgresql, v8_3_16_14, clang, sqlite, zlib, imagemagick
-, pkgconfig , ncurses, xapian_1_2_22, gpgme, utillinux, fetchpatch, tzdata, icu, libffi
-, cmake, libssh2, openssl, mysql, darwin, git, perl, pcre, gecode_3, curl
-, msgpack, qt59, libsodium, snappy, libossp_uuid, lxc, libpcap, xorg, gtk2, buildRubyGem
-, cairo, re2, rake, gobject-introspection, gdk-pixbuf, zeromq, czmq, graphicsmagick, libcxx
-, file, libvirt, glib, vips, taglib, libopus, linux-pam, libidn, protobuf, fribidi, harfbuzz
-, bison, flex, pango, python3, patchelf
-, libselinux ? null, libsepol ? null
+{ lib
+, fetchurl
+, writeScript
+, ruby
+, kerberos
+, libxml2
+, libxslt
+, python
+, stdenv
+, which
+, libiconv
+, postgresql
+, v8_3_16_14
+, clang
+, sqlite
+, zlib
+, imagemagick
+, pkgconfig
+, ncurses
+, xapian_1_2_22
+, gpgme
+, utillinux
+, fetchpatch
+, tzdata
+, icu
+, libffi
+, cmake
+, libssh2
+, openssl
+, mysql
+, darwin
+, git
+, perl
+, pcre
+, gecode_3
+, curl
+, msgpack
+, qt59
+, libsodium
+, snappy
+, libossp_uuid
+, lxc
+, libpcap
+, xorg
+, gtk2
+, buildRubyGem
+, cairo
+, re2
+, rake
+, gobject-introspection
+, gdk-pixbuf
+, zeromq
+, czmq
+, graphicsmagick
+, libcxx
+, file
+, libvirt
+, glib
+, vips
+, taglib
+, libopus
+, linux-pam
+, libidn
+, protobuf
+, fribidi
+, harfbuzz
+, bison
+, flex
+, pango
+, python3
+, patchelf
+, libselinux ? null
+, libsepol ? null
 }@args:
 
 let
@@ -49,21 +113,22 @@ in
   bundler = attrs:
     let
       templates = "${attrs.ruby.gemPath}/gems/${attrs.gemName}-${attrs.version}/lib/bundler/templates/";
-    in {
-      # patching shebangs would fail on the templates/Executable file, so we
-      # temporarily remove the executable flag.
-      preFixup  = "chmod -x $out/${templates}/Executable";
-      postFixup = ''
-        chmod +x $out/${templates}/Executable
+    in
+      {
+        # patching shebangs would fail on the templates/Executable file, so we
+        # temporarily remove the executable flag.
+        preFixup = "chmod -x $out/${templates}/Executable";
+        postFixup = ''
+          chmod +x $out/${templates}/Executable
 
-        # Allows to load another bundler version
-        sed -i -e "s/activate_bin_path/bin_path/g" $out/bin/bundle
-      '';
-    };
+          # Allows to load another bundler version
+          sed -i -e "s/activate_bin_path/bin_path/g" $out/bin/bundle
+        '';
+      };
 
   cairo = attrs: {
     nativeBuildInputs = [ pkgconfig ];
-    buildInputs = [ gtk2 pcre xorg.libpthreadstubs xorg.libXdmcp];
+    buildInputs = [ gtk2 pcre xorg.libpthreadstubs xorg.libXdmcp ];
   };
 
   cairo-gobject = attrs: {
@@ -316,7 +381,9 @@ in
       "--with-xslt-include=${libxslt.dev}/include"
       "--with-exslt-lib=${libxslt.out}/lib"
       "--with-exslt-include=${libxslt.dev}/include"
-    ] ++ lib.optional stdenv.isDarwin "--with-iconv-dir=${libiconv}";
+    ]
+    ++ lib.optional stdenv.isDarwin "--with-iconv-dir=${libiconv}"
+    ;
   };
 
   opus-ruby = attrs: {
@@ -525,8 +592,8 @@ in
     postPatch =
       let
         path = if lib.versionAtLeast attrs.version "2.0"
-               then "lib/tzinfo/data_sources/zoneinfo_data_source.rb"
-               else "lib/tzinfo/zoneinfo_data_source.rb";
+        then "lib/tzinfo/data_sources/zoneinfo_data_source.rb"
+        else "lib/tzinfo/zoneinfo_data_source.rb";
       in
         ''
           substituteInPlace ${path} \

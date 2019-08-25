@@ -12,14 +12,16 @@ in
   };
 
   config = mkIf cfg.enable {
-    services.xserver.windowManager.session = [{
-      name = "qtile";
-      start = ''
-        ${pkgs.qtile}/bin/qtile &
-        waitPID=$!
-      '';
-    }];
-    
+    services.xserver.windowManager.session = [
+      {
+        name = "qtile";
+        start = ''
+          ${pkgs.qtile}/bin/qtile &
+          waitPID=$!
+        '';
+      }
+    ];
+
     environment.systemPackages = [ pkgs.qtile ];
   };
 }

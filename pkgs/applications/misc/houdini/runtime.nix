@@ -3,28 +3,30 @@
 let
   ld_library_path = builtins.concatStringsSep ":" [
     "${stdenv.cc.cc.lib}/lib64"
-    (stdenv.lib.makeLibraryPath [
-      libGLU
-      libGL
-      xorg.libXmu
-      xorg.libXi
-      xorg.libXext
-      xorg.libX11
-      xorg.libXrender
-      xorg.libXcursor
-      xorg.libXfixes
-      xorg.libXrender
-      xorg.libXcomposite
-      xorg.libXdamage
-      xorg.libXtst
-      alsaLib
-      fontconfig
-      libSM
-      libICE
-      zlib
-      libpng
-      dbus
-    ])
+    (
+      stdenv.lib.makeLibraryPath [
+        libGLU
+        libGL
+        xorg.libXmu
+        xorg.libXi
+        xorg.libXext
+        xorg.libX11
+        xorg.libXrender
+        xorg.libXcursor
+        xorg.libXfixes
+        xorg.libXrender
+        xorg.libXcomposite
+        xorg.libXdamage
+        xorg.libXtst
+        alsaLib
+        fontconfig
+        libSM
+        libICE
+        zlib
+        libpng
+        dbus
+      ]
+    )
   ];
   license_dir = "~/.config/houdini";
 in
@@ -83,4 +85,3 @@ stdenv.mkDerivation rec {
     maintainers = [ stdenv.lib.maintainers.canndrew ];
   };
 }
-

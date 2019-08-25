@@ -13,10 +13,12 @@ stdenv.mkDerivation rec {
 
   patches = [
     # To be removed after a version newer than 1.9 is released
-    (fetchpatch {
-      url = "https://github.com/zeux/pugixml/pull/193.patch";
-      sha256 = "0s4anqlr2ppfibxyl29nrqbcprrg89k7il6303dm91s6620ydmka";
-    })
+    (
+      fetchpatch {
+        url = "https://github.com/zeux/pugixml/pull/193.patch";
+        sha256 = "0s4anqlr2ppfibxyl29nrqbcprrg89k7il6303dm91s6620ydmka";
+      }
+    )
   ];
 
   nativeBuildInputs = [ cmake ];

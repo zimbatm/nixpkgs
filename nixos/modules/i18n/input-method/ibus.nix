@@ -5,10 +5,12 @@ with lib;
 let
   cfg = config.i18n.inputMethod.ibus;
   ibusPackage = pkgs.ibus-with-plugins.override { plugins = cfg.engines; };
-  ibusEngine = types.package // {
-    name  = "ibus-engine";
-    check = x: (lib.types.package.check x) && (attrByPath ["meta" "isIbusEngine"] false x);
-  };
+  ibusEngine = types.package
+    // {
+         name = "ibus-engine";
+         check = x: (lib.types.package.check x) && (attrByPath [ "meta" "isIbusEngine" ] false x);
+       }
+    ;
 
   impanel =
     if cfg.panel != null
@@ -30,7 +32,7 @@ in
   options = {
     i18n.inputMethod.ibus = {
       engines = mkOption {
-        type    = with types; listOf ibusEngine;
+        type = with types; listOf ibusEngine;
         default = [];
         example = literalExample "with pkgs.ibus-engines; [ mozc hangul ]";
         description =
@@ -55,7 +57,8 @@ in
 
     # Without dconf enabled it is impossible to use IBus
     environment.systemPackages = with pkgs; [
-      gnome3.dconf ibusAutostart
+      gnome3.dconf
+      ibusAutostart
     ];
 
     environment.variables = {

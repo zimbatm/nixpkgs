@@ -1,8 +1,19 @@
-{ stdenv, fetchurl, pkgconfig, libtool
-, xlibsWrapper, xbitmaps, libXrender, libXmu, libXt
-, expat, libjpeg, libpng, libiconv
+{ stdenv
+, fetchurl
+, pkgconfig
+, libtool
+, xlibsWrapper
+, xbitmaps
+, libXrender
+, libXmu
+, libXt
+, expat
+, libjpeg
+, libpng
+, libiconv
 , flex
-, libXp, libXau
+, libXp
+, libXau
 , demoSupport ? false
 }:
 # refer to the gentoo package
@@ -18,8 +29,15 @@ stdenv.mkDerivation rec {
 
   buildInputs = [
     libtool
-    xlibsWrapper xbitmaps libXrender libXmu libXt
-    expat libjpeg libpng libiconv
+    xlibsWrapper
+    xbitmaps
+    libXrender
+    libXmu
+    libXt
+    expat
+    libjpeg
+    libpng
+    libiconv
   ];
 
   nativeBuildInputs = [ pkgconfig flex ];
@@ -32,20 +50,23 @@ stdenv.mkDerivation rec {
 
   prePatch = ''
     rm lib/Xm/Xm.h
-  '' + stdenv.lib.optionalString (!demoSupport) ''
-    sed '/^SUBDIRS =,^$/s/\<demos\>//' -i Makefile.{am,in}
-  '';
+  ''
+  + stdenv.lib.optionalString (!demoSupport) ''
+      sed '/^SUBDIRS =,^$/s/\<demos\>//' -i Makefile.{am,in}
+    ''
+  ;
 
-  patches = [ ./Remove-unsupported-weak-refs-on-darwin.patch
-              ./Use-correct-header-for-malloc.patch
-              ./Add-X.Org-to-bindings-file.patch
-            ];
+  patches = [
+    ./Remove-unsupported-weak-refs-on-darwin.patch
+    ./Use-correct-header-for-malloc.patch
+    ./Add-X.Org-to-bindings-file.patch
+  ];
 
   meta = with stdenv.lib; {
     homepage = https://motif.ics.com;
     description = "Unix standard widget-toolkit and window-manager";
     platforms = with platforms; linux ++ darwin;
     license = with licenses; [ lgpl21 ];
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
   };
 }

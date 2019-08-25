@@ -1,6 +1,7 @@
 { stdenv, fetchurl }: let
   version = "1.2.0";
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "long-shebang-${version}";
 
   src = fetchurl {

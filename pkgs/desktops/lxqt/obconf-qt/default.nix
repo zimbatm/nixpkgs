@@ -1,5 +1,16 @@
-{ stdenv, fetchFromGitHub, cmake, pkgconfig, pcre, qtbase, qttools,
-  qtx11extras, xorg, lxqt-build-tools, openbox, hicolor-icon-theme }:
+{ stdenv
+, fetchFromGitHub
+, cmake
+, pkgconfig
+, pcre
+, qtbase
+, qttools
+, qtx11extras
+, xorg
+, lxqt-build-tools
+, openbox
+, hicolor-icon-theme
+}:
 
 stdenv.mkDerivation rec {
   pname = "obconf-qt";

@@ -12,10 +12,12 @@ stdenv.mkDerivation {
   };
 
   buildInputs = [ freetype ]
-    ++ (if stdenv.isDarwin then
-      [ OpenGL ]
-    else
-      [ libGLU_combined ])
+    ++ (
+         if stdenv.isDarwin then
+           [ OpenGL ]
+         else
+           [ libGLU_combined ]
+       )
     ;
 
   enableParallelBuilding = true;

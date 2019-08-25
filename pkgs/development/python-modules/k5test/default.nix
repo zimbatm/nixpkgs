@@ -18,13 +18,15 @@ buildPythonPackage rec {
   };
 
   patches = [
-    (substituteAll {
-      src = ./fix-paths.patch;
-      inherit findutils krb5Full;
-      # krb5-config is in dev output
-      krb5FullDev = krb5Full.dev;
-      which = "${which}/bin/which";
-    })
+    (
+      substituteAll {
+        src = ./fix-paths.patch;
+        inherit findutils krb5Full;
+        # krb5-config is in dev output
+        krb5FullDev = krb5Full.dev;
+        which = "${which}/bin/which";
+      }
+    )
   ];
 
   propagatedBuildInputs = [
@@ -38,6 +40,6 @@ buildPythonPackage rec {
     description = "Library for setting up self-contained Kerberos 5 environment";
     homepage = https://github.com/pythongssapi/k5test;
     license = licenses.mit;
-    maintainers = [ ];
+    maintainers = [];
   };
 }

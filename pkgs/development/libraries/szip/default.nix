@@ -1,5 +1,5 @@
 { stdenv, fetchurl }:
-    
+
 stdenv.mkDerivation rec {
   name = "szip-${version}";
   version = "2.1.1";

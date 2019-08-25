@@ -13,10 +13,10 @@
 , nose
 , mock
 , funcsigs
-} :
+}:
 
 buildPythonPackage rec {
-  pname   = "elasticsearch-curator";
+  pname = "elasticsearch-curator";
   version = "5.7.6";
 
   src = fetchPypi {

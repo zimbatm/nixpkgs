@@ -1,6 +1,11 @@
-{ stdenv, fetchFromGitHub
-, cmake, pkgconfig
-, libva, libpciaccess, intel-gmmlib, libX11
+{ stdenv
+, fetchFromGitHub
+, cmake
+, pkgconfig
+, libva
+, libpciaccess
+, intel-gmmlib
+, libX11
 }:
 
 stdenv.mkDerivation rec {
@@ -8,9 +13,9 @@ stdenv.mkDerivation rec {
   version = "19.2";
 
   src = fetchFromGitHub {
-    owner  = "intel";
-    repo   = "media-driver";
-    rev    = "intel-media-${version}";
+    owner = "intel";
+    repo = "media-driver";
+    rev = "intel-media-${version}";
     sha256 = "118cg1grzm62lppaygvh7mgxn23bicjkwjwpxhbyqs9g6yhdj3p8";
   };
 

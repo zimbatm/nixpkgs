@@ -3,7 +3,8 @@
 let
   pname = "nautilus-sendto";
   version = "3.8.6";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "${pname}-${version}";
 
 

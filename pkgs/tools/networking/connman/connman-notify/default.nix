@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
 
   preFixup = ''
     wrapProgram $out/bin/connman-notify --prefix PYTHONPATH : "$PYTHONPATH"
-  '';  
+  '';
 
   meta = with stdenv.lib; {
     description = "Desktop notification integration for connman";

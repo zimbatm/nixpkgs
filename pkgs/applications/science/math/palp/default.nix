@@ -24,8 +24,8 @@ stdenv.mkDerivation rec {
   '';
 
   preBuild = ''
-      echo Building PALP optimized for ${dim} dimensions
-      sed -i "s/^#define[^a-zA-Z]*POLY_Dmax.*/#define POLY_Dmax ${dim}/" Global.h
+    echo Building PALP optimized for ${dim} dimensions
+    sed -i "s/^#define[^a-zA-Z]*POLY_Dmax.*/#define POLY_Dmax ${dim}/" Global.h
   '';
 
   # palp has no tests of its own. This test is an adapted sage test that failed
@@ -45,12 +45,14 @@ stdenv.mkDerivation rec {
     for file in poly class cws nef mori; do
         cp -p $file.x "$out/bin/$file-${dim}d.x"
     done
-  '' + stdenv.lib.optionalString doSymlink ''
-    cd "$out/bin"
-    for file in poly class cws nef mori; do
-        ln -sf $file-6d.x $file.x
-    done
-  '';
+  ''
+  + stdenv.lib.optionalString doSymlink ''
+      cd "$out/bin"
+      for file in poly class cws nef mori; do
+          ln -sf $file-6d.x $file.x
+      done
+    ''
+  ;
 
   meta = with stdenv.lib; {
     description = "A Package for Analyzing Lattice Polytopes";

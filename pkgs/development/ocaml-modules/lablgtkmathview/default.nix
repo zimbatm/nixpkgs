@@ -1,4 +1,4 @@
-{stdenv, fetchurl, pkgconfig, ocaml, findlib, gmetadom, gtkmathview, lablgtk }:
+{ stdenv, fetchurl, pkgconfig, ocaml, findlib, gmetadom, gtkmathview, lablgtk }:
 
 let
   pname = "lablgtkmathview";
@@ -14,11 +14,11 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ pkgconfig ];
-  buildInputs = [ ocaml findlib gmetadom gtkmathview lablgtk];
+  buildInputs = [ ocaml findlib gmetadom gtkmathview lablgtk ];
 
   createFindlibDestdir = true;
 
-  propagatedBuildInputs = [gtkmathview];
+  propagatedBuildInputs = [ gtkmathview ];
 
   prePatch = ''
     substituteInPlace Makefile.in --replace "PROPCC = @OCAML_LIB_DIR@" "PROPCC = ${lablgtk}/lib/ocaml/${ocaml.version}/site-lib"

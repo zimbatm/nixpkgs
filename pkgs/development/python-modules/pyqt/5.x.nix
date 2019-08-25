@@ -1,33 +1,43 @@
-{ lib, fetchurl, pythonPackages, pkgconfig
+{ lib
+, fetchurl
+, pythonPackages
+, pkgconfig
 , dbus
-, qmake, lndir
+, qmake
+, lndir
 , qtbase
 , qtsvg
 , qtdeclarative
 , qtwebchannel
-, withConnectivity ? false, qtconnectivity
-, withWebKit ? false, qtwebkit
-, withWebSockets ? false, qtwebsockets
+, withConnectivity ? false
+, qtconnectivity
+, withWebKit ? false
+, qtwebkit
+, withWebSockets ? false
+, qtwebsockets
 }:
 
 let
 
   inherit (pythonPackages) buildPythonPackage python isPy3k dbus-python enum34;
 
-  sip = (pythonPackages.sip.override { sip-module = "PyQt5.sip"; }).overridePythonAttrs(oldAttrs: {
-    # If we install sip in another folder, then we need to create a __init__.py as well
-    # if we want to be able to import it with Python 2.
-    # Python 3 could rely on it being an implicit namespace package, however,
-    # PyQt5 we made an explicit namespace package so sip should be as well.
-    postInstall = ''
-      cat << EOF > $out/${python.sitePackages}/PyQt5/__init__.py
-      from pkgutil import extend_path
-      __path__ = extend_path(__path__, __name__)
-      EOF
-    '';
-  });
+  sip = (pythonPackages.sip.override { sip-module = "PyQt5.sip"; }).overridePythonAttrs (
+    oldAttrs: {
+      # If we install sip in another folder, then we need to create a __init__.py as well
+      # if we want to be able to import it with Python 2.
+      # Python 3 could rely on it being an implicit namespace package, however,
+      # PyQt5 we made an explicit namespace package so sip should be as well.
+      postInstall = ''
+        cat << EOF > $out/${python.sitePackages}/PyQt5/__init__.py
+        from pkgutil import extend_path
+        __path__ = extend_path(__path__, __name__)
+        EOF
+      '';
+    }
+  );
 
-in buildPythonPackage rec {
+in
+buildPythonPackage rec {
   pname = "pyqt";
   version = "5.13.0";
   format = "other";
@@ -49,9 +59,9 @@ in buildPythonPackage rec {
     qtdeclarative
     qtwebchannel
   ]
-    ++ lib.optional withConnectivity qtconnectivity
-    ++ lib.optional withWebKit qtwebkit
-    ++ lib.optional withWebSockets qtwebsockets
+  ++ lib.optional withConnectivity qtconnectivity
+  ++ lib.optional withWebKit qtwebkit
+  ++ lib.optional withWebSockets qtwebsockets
   ;
 
   buildInputs = [
@@ -60,15 +70,17 @@ in buildPythonPackage rec {
     qtsvg
     qtdeclarative
   ]
-    ++ lib.optional withConnectivity qtconnectivity
-    ++ lib.optional withWebKit qtwebkit
-    ++ lib.optional withWebSockets qtwebsockets
+  ++ lib.optional withConnectivity qtconnectivity
+  ++ lib.optional withWebKit qtwebkit
+  ++ lib.optional withWebSockets qtwebsockets
   ;
 
   propagatedBuildInputs = [
     dbus-python
     sip
-  ] ++ lib.optional (!isPy3k) enum34;
+  ]
+  ++ lib.optional (!isPy3k) enum34
+  ;
 
   patches = [
     # Fix some wrong assumptions by ./configure.py
@@ -124,10 +136,11 @@ in buildPythonPackage rec {
     ++ lib.optional withConnectivity "PyQt5.QtConnectivity"
     ;
     imports = lib.concatMapStrings (module: "import ${module};") modules;
-  in ''
-    echo "Checking whether modules can be imported..."
-    ${python.interpreter} -c "${imports}"
-  '';
+  in
+    ''
+      echo "Checking whether modules can be imported..."
+      ${python.interpreter} -c "${imports}"
+    '';
 
   doCheck = true;
 
@@ -135,9 +148,9 @@ in buildPythonPackage rec {
 
   meta = with lib; {
     description = "Python bindings for Qt5";
-    homepage    = http://www.riverbankcomputing.co.uk;
-    license     = licenses.gpl3;
-    platforms   = platforms.mesaPlatforms;
+    homepage = http://www.riverbankcomputing.co.uk;
+    license = licenses.gpl3;
+    platforms = platforms.mesaPlatforms;
     maintainers = with maintainers; [ sander ];
   };
 }

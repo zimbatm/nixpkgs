@@ -1,14 +1,16 @@
 { stdenv, bash, which, autoconf, automake, fetchzip, coq }:
 
-let params =
-  if stdenv.lib.versionAtLeast coq.coq-version "8.7" then {
-    version = "3.2.0";
-    sha256 = "15bi36x7zj0glsb3s2gwqd4wswhfzh36rbp7imbyff53a7nna95l";
-  } else {
-    version = "2.6.1";
-    sha256 = "1y4czkfrd8p37vwv198nns4hz1brfv71na17pxsidwpxy7qnyfw1";
-  }
-; in
+let
+  params =
+    if stdenv.lib.versionAtLeast coq.coq-version "8.7" then {
+      version = "3.2.0";
+      sha256 = "15bi36x7zj0glsb3s2gwqd4wswhfzh36rbp7imbyff53a7nna95l";
+    } else {
+      version = "2.6.1";
+      sha256 = "1y4czkfrd8p37vwv198nns4hz1brfv71na17pxsidwpxy7qnyfw1";
+    }
+    ;
+in
 
 stdenv.mkDerivation rec {
 
@@ -21,9 +23,14 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ bash which autoconf automake ];
-  buildInputs = [ coq ] ++ (with coq.ocamlPackages; [
-    ocaml camlp5
-  ]);
+  buildInputs = [ coq ]
+    ++ (
+         with coq.ocamlPackages; [
+           ocaml
+           camlp5
+         ]
+       )
+    ;
 
   buildPhase = ''
     ${bash}/bin/bash autogen.sh

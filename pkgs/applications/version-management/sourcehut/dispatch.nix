@@ -1,6 +1,12 @@
-{ stdenv, fetchgit, buildPythonPackage
+{ stdenv
+, fetchgit
+, buildPythonPackage
 , python
-, srht, pyyaml, PyGithub, cryptography }:
+, srht
+, pyyaml
+, PyGithub
+, cryptography
+}:
 
 buildPythonPackage rec {
   pname = "dispatchsrht";

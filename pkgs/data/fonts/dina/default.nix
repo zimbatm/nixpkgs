@@ -2,7 +2,8 @@
 
 let
   version = "2.92";
-in fetchzip rec {
+in
+fetchzip rec {
   name = "dina-font-${version}";
 
   # `meta.homepage` has no direct download link

@@ -1,17 +1,31 @@
-{ stdenv, fetchFromGitHub, cmake, pkgconfig
-, libpng, libtiff, lcms2, jpylyzer
+{ stdenv
+, fetchFromGitHub
+, cmake
+, pkgconfig
+, libpng
+, libtiff
+, lcms2
+, jpylyzer
 , mj2Support ? true # MJ2 executables
 , jpwlLibSupport ? true # JPWL library & executables
 , jpipLibSupport ? false # JPIP library & executables
-, jpipServerSupport ? false, curl ? null, fcgi ? null # JPIP Server
-#, opjViewerSupport ? false, wxGTK ? null # OPJViewer executable
+, jpipServerSupport ? false
+, curl ? null
+, fcgi ? null # JPIP Server
+  #, opjViewerSupport ? false, wxGTK ? null # OPJViewer executable
 , openjpegJarSupport ? false # Openjpeg jar (Java)
 , jp3dSupport ? true # # JP3D comp
 , thirdPartySupport ? false # Third party libraries - OFF: only build when found, ON: always build
 , testsSupport ? true
 , jdk ? null
-# Inherit generics
-, branch, version, revision, sha256, patches ? [], extraFlags ? [], ...
+  # Inherit generics
+, branch
+, version
+, revision
+, sha256
+, patches ? []
+, extraFlags ? []
+, ...
 }:
 
 assert jpipServerSupport -> jpipLibSupport && curl != null && fcgi != null;
@@ -51,14 +65,17 @@ stdenv.mkDerivation rec {
     (mkFlag jp3dSupport "BUILD_JP3D")
     (mkFlag thirdPartySupport "BUILD_THIRDPARTY")
     (mkFlag testsSupport "BUILD_TESTING")
-  ] ++ extraFlags;
+  ]
+  ++ extraFlags
+  ;
 
   nativeBuildInputs = [ cmake pkgconfig ];
 
-  buildInputs = [ ]
+  buildInputs = []
     ++ optionals jpipServerSupport [ curl fcgi ]
-    #++ optional opjViewerSupport wxGTK
-    ++ optional (openjpegJarSupport || jpipLibSupport) jdk;
+  #++ optional opjViewerSupport wxGTK
+    ++ optional (openjpegJarSupport || jpipLibSupport) jdk
+    ;
 
   propagatedBuildInputs = [ libpng libtiff lcms2 ];
 

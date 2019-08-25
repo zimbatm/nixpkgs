@@ -15,7 +15,8 @@ rustPlatform.buildRustPackage rec {
 
   nativeBuildInputs = [ cmake pkgconfig ];
   buildInputs = [ openssl ]
-    ++ stdenv.lib.optional stdenv.isDarwin CoreServices;
+    ++ stdenv.lib.optional stdenv.isDarwin CoreServices
+    ;
 
   postInstall = ''
     install -D -m 444 completions/zola.bash \

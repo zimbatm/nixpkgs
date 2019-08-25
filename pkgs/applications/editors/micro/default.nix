@@ -1,6 +1,6 @@
 { stdenv, buildGoPackage, fetchFromGitHub }:
 
-buildGoPackage  rec {
+buildGoPackage rec {
   name = "micro-${version}";
   version = "1.4.1";
 
@@ -25,4 +25,3 @@ buildGoPackage  rec {
     maintainers = with maintainers; [ dtzWill ];
   };
 }
-

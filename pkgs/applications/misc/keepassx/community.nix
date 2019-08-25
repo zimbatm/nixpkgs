@@ -1,4 +1,8 @@
-{ stdenv, fetchFromGitHub, cmake, makeWrapper, qttools
+{ stdenv
+, fetchFromGitHub
+, cmake
+, makeWrapper
+, qttools
 
 , curl
 , glibcLocales
@@ -69,7 +73,8 @@ stdenv.mkDerivation rec {
   ++ (optional withKeePassKeeShare "-DWITH_XC_KEESHARE=ON")
   ++ (optional withKeePassKeeShareSecure "-DWITH_XC_KEESHARE_SECURE=ON")
   ++ (optional withKeePassNetworking "-DWITH_XC_NETWORKING=ON")
-  ++ (optional withKeePassSSHAgent "-DWITH_XC_SSHAGENT=ON");
+  ++ (optional withKeePassSSHAgent "-DWITH_XC_SSHAGENT=ON")
+  ;
 
   doCheck = true;
   checkPhase = ''
@@ -101,7 +106,8 @@ stdenv.mkDerivation rec {
     zlib
   ]
   ++ stdenv.lib.optional withKeePassKeeShareSecure quazip
-  ++ stdenv.lib.optional stdenv.isDarwin qtmacextras;
+  ++ stdenv.lib.optional stdenv.isDarwin qtmacextras
+  ;
 
   preFixup = optionalString stdenv.isDarwin ''
     # Make it work without Qt in PATH.

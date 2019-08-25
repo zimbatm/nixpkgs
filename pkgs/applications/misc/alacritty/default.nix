@@ -1,35 +1,33 @@
-{ stdenv,
-  lib,
-  fetchFromGitHub,
-  rustPlatform,
-
-  cmake,
-  gzip,
-  makeWrapper,
-  ncurses,
-  pkgconfig,
-  python3,
-
-  expat,
-  fontconfig,
-  freetype,
-  libGL,
-  libX11,
-  libXcursor,
-  libXi,
-  libXrandr,
-  libXxf86vm,
-  libxcb,
-  libxkbcommon,
-  wayland,
-
-  # Darwin Frameworks
-  AppKit,
-  CoreGraphics,
-  CoreServices,
-  CoreText,
-  Foundation,
-  OpenGL }:
+{ stdenv
+, lib
+, fetchFromGitHub
+, rustPlatform
+, cmake
+, gzip
+, makeWrapper
+, ncurses
+, pkgconfig
+, python3
+, expat
+, fontconfig
+, freetype
+, libGL
+, libX11
+, libXcursor
+, libXi
+, libXrandr
+, libXxf86vm
+, libxcb
+, libxkbcommon
+, wayland
+, # Darwin Frameworks
+  AppKit
+, CoreGraphics
+, CoreServices
+, CoreText
+, Foundation
+, OpenGL
+}:
 
 with rustPlatform;
 
@@ -45,11 +43,14 @@ let
     libXrandr
     libXxf86vm
     libxcb
-  ] ++ lib.optionals stdenv.isLinux [
-    libxkbcommon
-    wayland
-  ];
-in buildRustPackage rec {
+  ]
+  ++ lib.optionals stdenv.isLinux [
+       libxkbcommon
+       wayland
+     ]
+  ;
+in
+buildRustPackage rec {
   pname = "alacritty";
   version = "0.3.3";
 
@@ -72,7 +73,8 @@ in buildRustPackage rec {
   ];
 
   buildInputs = rpathLibs
-    ++ lib.optionals stdenv.isDarwin [ AppKit CoreGraphics CoreServices CoreText Foundation OpenGL ];
+    ++ lib.optionals stdenv.isDarwin [ AppKit CoreGraphics CoreServices CoreText Foundation OpenGL ]
+    ;
 
   outputs = [ "out" "terminfo" ];
 
@@ -83,14 +85,18 @@ in buildRustPackage rec {
 
     install -D target/release/alacritty $out/bin/alacritty
 
-  '' + (if stdenv.isDarwin then ''
-    mkdir $out/Applications
-    cp -r target/release/osx/Alacritty.app $out/Applications/Alacritty.app
-  '' else ''
-    install -D extra/linux/alacritty.desktop -t $out/share/applications/
-    install -D extra/logo/alacritty-term.svg $out/share/icons/hicolor/scalable/apps/Alacritty.svg
-    patchelf --set-rpath "${stdenv.lib.makeLibraryPath rpathLibs}" $out/bin/alacritty
-  '') + ''
+  ''
+  + (
+      if stdenv.isDarwin then ''
+        mkdir $out/Applications
+        cp -r target/release/osx/Alacritty.app $out/Applications/Alacritty.app
+      '' else ''
+        install -D extra/linux/alacritty.desktop -t $out/share/applications/
+        install -D extra/logo/alacritty-term.svg $out/share/icons/hicolor/scalable/apps/Alacritty.svg
+        patchelf --set-rpath "${stdenv.lib.makeLibraryPath rpathLibs}" $out/bin/alacritty
+      ''
+    )
+  + ''
 
     install -D extra/completions/_alacritty -t "$out/share/zsh/site-functions/"
     install -D extra/completions/alacritty.bash -t "$out/etc/bash_completion.d/"
@@ -105,7 +111,8 @@ in buildRustPackage rec {
     echo "$terminfo" >> $out/nix-support/propagated-user-env-packages
 
     runHook postInstall
-  '';
+  ''
+  ;
 
   dontPatchELF = true;
 

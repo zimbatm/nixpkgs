@@ -1,6 +1,8 @@
 { stdenv, fetchFromGitHub, glib, pkgconfig, xorg, dbus }:
 
-let rev = "1.0.0"; in
+let
+  rev = "1.0.0";
+in
 
 stdenv.mkDerivation {
   name = "xssproxy-${rev}";

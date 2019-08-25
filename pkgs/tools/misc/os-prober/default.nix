@@ -1,11 +1,18 @@
-{ stdenv, fetchurl, makeWrapper,
-# optional dependencies, the command(s) they provide
-coreutils,  # mktemp
-grub2,      # grub-mount and grub-probe
-cryptsetup, # cryptsetup
-libuuid,    # blkid and blockdev
-udev,    # udevadm udevinfo
-ntfs3g      # ntfs3g
+{ stdenv
+, fetchurl
+, makeWrapper
+, # optional dependencies, the command(s) they provide
+  coreutils
+, # mktemp
+  grub2
+, # grub-mount and grub-probe
+  cryptsetup
+, # cryptsetup
+  libuuid
+, # blkid and blockdev
+  udev
+, # udevadm udevinfo
+  ntfs3g      # ntfs3g
 }:
 
 stdenv.mkDerivation rec {

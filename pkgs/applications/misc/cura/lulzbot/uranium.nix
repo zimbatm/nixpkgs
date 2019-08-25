@@ -1,5 +1,20 @@
-{ stdenv, callPackage, fetchurl, fetchgit, buildPythonPackage, fetchFromGitHub, python, cmake
-, pyqt5, numpy, scipy, shapely, libarcusLulzbot, doxygen, gettext, pythonOlder }:
+{ stdenv
+, callPackage
+, fetchurl
+, fetchgit
+, buildPythonPackage
+, fetchFromGitHub
+, python
+, cmake
+, pyqt5
+, numpy
+, scipy
+, shapely
+, libarcusLulzbot
+, doxygen
+, gettext
+, pythonOlder
+}:
 
 buildPythonPackage rec {
   version = "3.6.18";
@@ -38,4 +53,3 @@ buildPythonPackage rec {
     maintainers = with maintainers; [ chaduffy ];
   };
 }
-

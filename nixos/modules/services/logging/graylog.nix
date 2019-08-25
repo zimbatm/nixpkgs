@@ -115,7 +115,7 @@ in
 
       plugins = mkOption {
         description = "Extra graylog plugins";
-        default = [ ];
+        default = [];
         type = types.listOf types.package;
       };
 
@@ -161,7 +161,7 @@ in
         done
       '';
       serviceConfig = {
-        User="${cfg.user}";
+        User = "${cfg.user}";
         StateDirectory = "graylog";
         ExecStart = "${cfg.package}/bin/graylogctl run";
       };

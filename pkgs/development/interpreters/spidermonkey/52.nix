@@ -2,7 +2,8 @@
 
 let
   version = "52.9.0";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "spidermonkey-${version}";
 
   src = fetchurl {
@@ -24,14 +25,16 @@ in stdenv.mkDerivation rec {
 
   patches = [
     # needed to build gnome3.gjs
-    (fetchpatch {
-      name = "mozjs52-disable-mozglue.patch";
-      url = https://git.archlinux.org/svntogit/packages.git/plain/trunk/mozjs52-disable-mozglue.patch?h=packages/js52&id=4279d2e18d9a44f6375f584911f63d13de7704be;
-      sha256 = "18wkss0agdyff107p5lfflk72qiz350xqw2yqc353alkx4fsfpz0";
-    })
+    (
+      fetchpatch {
+        name = "mozjs52-disable-mozglue.patch";
+        url = https://git.archlinux.org/svntogit/packages.git/plain/trunk/mozjs52-disable-mozglue.patch?h=packages/js52&id=4279d2e18d9a44f6375f584911f63d13de7704be;
+        sha256 = "18wkss0agdyff107p5lfflk72qiz350xqw2yqc353alkx4fsfpz0";
+      }
+    )
   ];
 
-  configurePlatforms = [ ];
+  configurePlatforms = [];
 
   preConfigure = ''
     export CXXFLAGS="-fpermissive"
@@ -51,11 +54,13 @@ in stdenv.mkDerivation rec {
     "--with-intl-api"
     "--enable-readline"
     "--enable-shared-js"
-  ] ++ stdenv.lib.optional stdenv.hostPlatform.isMusl "--disable-jemalloc"
-    ++ stdenv.lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
-    "--host=${stdenv.buildPlatform.config}"
-    "--target=${stdenv.hostPlatform.config}"
-  ];
+  ]
+  ++ stdenv.lib.optional stdenv.hostPlatform.isMusl "--disable-jemalloc"
+  ++ stdenv.lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
+       "--host=${stdenv.buildPlatform.config}"
+       "--target=${stdenv.hostPlatform.config}"
+     ]
+  ;
 
   makeFlags = [
     "HOST_CC=${buildPackages.stdenv.cc}/bin/cc"

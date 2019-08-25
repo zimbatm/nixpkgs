@@ -6,7 +6,8 @@ let
     url = "https://github.com/googleapis/googleapis/archive/${googleapis_rev}.tar.gz";
     sha256 = "1kxi27r034p7jfldhvgpbn6rqqqddycnja47m6jyjxj4rcmrp2kb";
   };
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   pname = "google-cloud-cpp";
   version = "0.11.0";
 

@@ -1,6 +1,18 @@
-{ stdenv, buildPythonPackage, fetchPypi, pythonOlder
-, mock, pytest, pytestrunner
-, configparser, enum34, mccabe, pycodestyle, pyflakes, entrypoints, functools32, typing
+{ stdenv
+, buildPythonPackage
+, fetchPypi
+, pythonOlder
+, mock
+, pytest
+, pytestrunner
+, configparser
+, enum34
+, mccabe
+, pycodestyle
+, pyflakes
+, entrypoints
+, functools32
+, typing
 }:
 
 buildPythonPackage rec {
@@ -16,7 +28,8 @@ buildPythonPackage rec {
   propagatedBuildInputs = [ entrypoints pyflakes pycodestyle mccabe ]
     ++ stdenv.lib.optionals (pythonOlder "3.2") [ configparser functools32 ]
     ++ stdenv.lib.optionals (pythonOlder "3.4") [ enum34 ]
-    ++ stdenv.lib.optionals (pythonOlder "3.5") [ typing ];
+    ++ stdenv.lib.optionals (pythonOlder "3.5") [ typing ]
+    ;
 
   checkPhase = ''
     py.test tests
@@ -26,6 +39,6 @@ buildPythonPackage rec {
     description = "Code checking using pep8 and pyflakes";
     homepage = https://pypi.python.org/pypi/flake8;
     license = licenses.mit;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
   };
 }

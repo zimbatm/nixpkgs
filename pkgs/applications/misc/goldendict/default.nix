@@ -1,6 +1,24 @@
-{ mkDerivation, lib, fetchFromGitHub, pkgconfig, libXtst, libvorbis, hunspell
-, libao, ffmpeg, libeb, lzo, xz, libtiff, opencc
-, qtbase, qtsvg, qtwebkit, qtx11extras, qttools, qmake }:
+{ mkDerivation
+, lib
+, fetchFromGitHub
+, pkgconfig
+, libXtst
+, libvorbis
+, hunspell
+, libao
+, ffmpeg
+, libeb
+, lzo
+, xz
+, libtiff
+, opencc
+, qtbase
+, qtsvg
+, qtwebkit
+, qtx11extras
+, qttools
+, qmake
+}:
 mkDerivation rec {
 
   name = "goldendict-2019-08-01";
@@ -13,8 +31,21 @@ mkDerivation rec {
 
   nativeBuildInputs = [ pkgconfig qmake ];
   buildInputs = [
-    qtbase qtsvg qtwebkit qtx11extras qttools
-    libXtst libvorbis hunspell libao ffmpeg libeb lzo xz libtiff opencc
+    qtbase
+    qtsvg
+    qtwebkit
+    qtx11extras
+    qttools
+    libXtst
+    libvorbis
+    hunspell
+    libao
+    ffmpeg
+    libeb
+    lzo
+    xz
+    libtiff
+    opencc
   ];
 
   qmakeFlags = [

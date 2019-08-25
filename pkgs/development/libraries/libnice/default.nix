@@ -14,17 +14,24 @@ stdenv.mkDerivation rec {
     # Fix generating data
     # Note: upstream is not willing to merge our fix
     # https://gitlab.freedesktop.org/libnice/libnice/merge_requests/35#note_98871
-    (fetchpatch {
-      url = https://gitlab.freedesktop.org/libnice/libnice/commit/d470c4bf4f2449f7842df26ca1ce1efb63452bc6.patch;
-      sha256 = "0z74vizf92flfw1m83p7yz824vfykmnm0xbnk748bnnyq186i6mg";
-    })
+    (
+      fetchpatch {
+        url = https://gitlab.freedesktop.org/libnice/libnice/commit/d470c4bf4f2449f7842df26ca1ce1efb63452bc6.patch;
+        sha256 = "0z74vizf92flfw1m83p7yz824vfykmnm0xbnk748bnnyq186i6mg";
+      }
+    )
   ];
 
   nativeBuildInputs = [
-    meson ninja pkgconfig python3 gobject-introspection
+    meson
+    ninja
+    pkgconfig
+    python3
+    gobject-introspection
     gtk-doc
     # Without these, enabling the 'gtk_doc' gives us `FAILED: meson-install`
-    docbook_xsl docbook_xml_dtd_412
+    docbook_xsl
+    docbook_xml_dtd_412
   ];
   buildInputs = [ gst_all_1.gstreamer gst_all_1.gst-plugins-base gnutls ];
   propagatedBuildInputs = [ glib gupnp-igd ];

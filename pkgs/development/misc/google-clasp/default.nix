@@ -2,10 +2,12 @@
 let
   version = "2.2.1";
 in
-(import ./google-clasp.nix {
-  inherit pkgs;
-  inherit (stdenv.hostPlatform) system;
-})."@google/clasp-${version}".override rec {
+(
+  import ./google-clasp.nix {
+    inherit pkgs;
+    inherit (stdenv.hostPlatform) system;
+  }
+)."@google/clasp-${version}".override rec {
   preRebuild = ''
     patch -p1 <<<"${builtins.readFile ./dotf.patch}"
   '';

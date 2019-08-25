@@ -17,7 +17,14 @@ buildPythonApplication rec {
   patches = [ ./fix-tests.patch ];
 
   propagatedBuildInputs = [
-    pymysql configobj sqlparse prompt_toolkit pygments click pycrypto cli-helpers
+    pymysql
+    configobj
+    sqlparse
+    prompt_toolkit
+    pygments
+    click
+    pycrypto
+    cli-helpers
   ];
 
   checkInputs = [ pytest mock glibcLocales ];

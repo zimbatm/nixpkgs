@@ -1,5 +1,19 @@
-{ stdenv, fetchFromGitHub, openssl, boost, libevent, autoreconfHook, db4, miniupnpc, eject, pkgconfig, qt4, protobuf, qrencode, hexdump
-, withGui }:
+{ stdenv
+, fetchFromGitHub
+, openssl
+, boost
+, libevent
+, autoreconfHook
+, db4
+, miniupnpc
+, eject
+, pkgconfig
+, qt4
+, protobuf
+, qrencode
+, hexdump
+, withGui
+}:
 
 with stdenv.lib;
 stdenv.mkDerivation rec {
@@ -26,11 +40,13 @@ stdenv.mkDerivation rec {
     db4
     miniupnpc
     eject
-  ] ++ optionals withGui [
-    qt4
-    protobuf
-    qrencode
-  ];
+  ]
+  ++ optionals withGui [
+       qt4
+       protobuf
+       qrencode
+     ]
+  ;
 
   enableParallelBuilding = true;
 

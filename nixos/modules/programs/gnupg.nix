@@ -83,7 +83,7 @@ in
     systemd.user.sockets.dirmngr = mkIf cfg.dirmngr.enable {
       wantedBy = [ "sockets.target" ];
     };
-    
+
     environment.systemPackages = with pkgs; [ cfg.package ];
     systemd.packages = [ cfg.package ];
 
@@ -91,11 +91,15 @@ in
       # Bind gpg-agent to this TTY if gpg commands are used.
       export GPG_TTY=$(tty)
 
-    '' + (optionalString cfg.agent.enableSSHSupport ''
-      # SSH agent protocol doesn't support changing TTYs, so bind the agent
-      # to every new TTY.
-      ${cfg.package}/bin/gpg-connect-agent --quiet updatestartuptty /bye > /dev/null
-    '');
+    ''
+    + (
+        optionalString cfg.agent.enableSSHSupport ''
+          # SSH agent protocol doesn't support changing TTYs, so bind the agent
+          # to every new TTY.
+          ${cfg.package}/bin/gpg-connect-agent --quiet updatestartuptty /bye > /dev/null
+        ''
+      )
+    ;
 
     environment.extraInit = mkIf cfg.agent.enableSSHSupport ''
       if [ -z "$SSH_AUTH_SOCK" ]; then
@@ -104,7 +108,8 @@ in
     '';
 
     assertions = [
-      { assertion = cfg.agent.enableSSHSupport -> !config.programs.ssh.startAgent;
+      {
+        assertion = cfg.agent.enableSSHSupport -> !config.programs.ssh.startAgent;
         message = "You can't use ssh-agent and GnuPG agent with SSH support enabled at the same time!";
       }
     ];

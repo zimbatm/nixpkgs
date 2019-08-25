@@ -1,7 +1,7 @@
 { stdenv, fetchurl, }:
 
 let
-  mkDataset = { name, version, sha256, envvar}:
+  mkDataset = { name, version, sha256, envvar }:
     stdenv.mkDerivation {
       inherit name version;
 
@@ -30,7 +30,8 @@ let
       };
     };
 in
-  builtins.listToAttrs (map (a: { inherit (a) name; value = mkDataset a; }) [
+builtins.listToAttrs (
+  map (a: { inherit (a) name; value = mkDataset a; }) [
     {
       name = "G4NDL";
       version = "4.5";
@@ -100,4 +101,5 @@ in
       sha256 = "2a287adbda1c0292571edeae2082a65b7f7bd6cf2bf088432d1d6f889426dcf3";
       envvar = "REALSURFACE";
     }
-  ])
+  ]
+)

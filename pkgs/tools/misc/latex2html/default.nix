@@ -1,5 +1,10 @@
-{ stdenv, fetchurl, makeWrapper
-, ghostscript, netpbm, perl }:
+{ stdenv
+, fetchurl
+, makeWrapper
+, ghostscript
+, netpbm
+, perl
+}:
 # TODO: withTex
 
 # Ported from Homebrew.

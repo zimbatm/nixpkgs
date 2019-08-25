@@ -1,8 +1,25 @@
-{ stdenv, fetchurl, dpkg, xorg
-, glib, libGLU_combined, libpulseaudio, zlib, dbus, fontconfig, freetype
-, gtk3, pango
-, makeWrapper , python, pythonPackages, lib
-, lsof, curl, libuuid, cups, mesa
+{ stdenv
+, fetchurl
+, dpkg
+, xorg
+, glib
+, libGLU_combined
+, libpulseaudio
+, zlib
+, dbus
+, fontconfig
+, freetype
+, gtk3
+, pango
+, makeWrapper
+, python
+, pythonPackages
+, lib
+, lsof
+, curl
+, libuuid
+, cups
+, mesa
 }:
 
 let
@@ -17,28 +34,30 @@ let
   baseUrl = http://repo.sinew.in;
 
   # used of both wrappers and libpath
-  libPath = lib.makeLibraryPath (with xorg; [
-    mesa.drivers
-    libGLU_combined
-    fontconfig
-    freetype
-    libpulseaudio
-    zlib
-    dbus
-    libX11
-    libXi
-    libSM
-    libICE
-    libXrender
-    libXScrnSaver
-    libxcb
-    glib
-    gtk3
-    pango
-    curl
-    libuuid
-    cups
-  ]);
+  libPath = lib.makeLibraryPath (
+    with xorg; [
+      mesa.drivers
+      libGLU_combined
+      fontconfig
+      freetype
+      libpulseaudio
+      zlib
+      dbus
+      libX11
+      libXi
+      libSM
+      libICE
+      libXrender
+      libXScrnSaver
+      libxcb
+      glib
+      gtk3
+      pango
+      curl
+      libuuid
+      cups
+    ]
+  );
   package = stdenv.mkDerivation rec {
 
     inherit (data) version;
@@ -53,14 +72,14 @@ let
       description = "a well known password manager";
       homepage = https://www.enpass.io/;
       license = lib.licenses.unfree;
-      platforms = [ "x86_64-linux" "i686-linux"];
+      platforms = [ "x86_64-linux" "i686-linux" ];
     };
 
-    buildInputs = [makeWrapper dpkg];
+    buildInputs = [ makeWrapper dpkg ];
     phases = [ "unpackPhase" "installPhase" ];
 
     unpackPhase = "dpkg -X $src .";
-    installPhase=''
+    installPhase = ''
       mkdir -p $out/bin
       cp -r opt/enpass/*  $out/bin
       cp -r usr/* $out
@@ -82,13 +101,14 @@ let
   updater = {
     update = stdenv.mkDerivation rec {
       name = "enpass-update-script";
-      SCRIPT =./update_script.py;
+      SCRIPT = ./update_script.py;
 
-      buildInputs = with pythonPackages; [python requests pathlib2 six attrs ];
+      buildInputs = with pythonPackages; [ python requests pathlib2 six attrs ];
       shellHook = ''
-      exec python $SCRIPT --target pkgs/tools/security/enpass/data.json --repo ${baseUrl}
+        exec python $SCRIPT --target pkgs/tools/security/enpass/data.json --repo ${baseUrl}
       '';
 
     };
   };
-in (package // {refresh = updater;})
+in
+(package // { refresh = updater; })

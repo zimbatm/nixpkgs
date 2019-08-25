@@ -1,20 +1,24 @@
 import ./make-test.nix {
   name = "nesting";
-  nodes =  {
+  nodes = {
     clone = { pkgs, ... }: {
       environment.systemPackages = [ pkgs.cowsay ];
       nesting.clone = [
-        ({ pkgs, ... }: {
-          environment.systemPackages = [ pkgs.hello ];
-        })
+        (
+          { pkgs, ... }: {
+            environment.systemPackages = [ pkgs.hello ];
+          }
+        )
       ];
     };
     children = { pkgs, ... }: {
       environment.systemPackages = [ pkgs.cowsay ];
       nesting.children = [
-        ({ pkgs, ... }: {
-          environment.systemPackages = [ pkgs.hello ];
-        })
+        (
+          { pkgs, ... }: {
+            environment.systemPackages = [ pkgs.hello ];
+          }
+        )
       ];
     };
   };

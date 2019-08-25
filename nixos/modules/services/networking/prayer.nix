@@ -57,7 +57,7 @@ in
 
       extraConfig = mkOption {
         type = types.lines;
-        default = "" ;
+        default = "";
         description = ''
           Extra configuration. Contents will be added verbatim to the configuration file.
         '';
@@ -73,14 +73,16 @@ in
     environment.systemPackages = [ prayer ];
 
     users.users = singleton
-      { name = prayerUser;
+      {
+        name = prayerUser;
         uid = config.ids.uids.prayer;
         description = "Prayer daemon user";
         home = stateDir;
       };
 
     users.groups = singleton
-      { name = prayerGroup;
+      {
+        name = prayerGroup;
         gid = config.ids.gids.prayer;
       };
 

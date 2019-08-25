@@ -1,4 +1,4 @@
-{ stdenv, libusb1, fetchgit}:
+{ stdenv, libusb1, fetchgit }:
 
 
 let
@@ -19,7 +19,7 @@ stdenv.mkDerivation {
     substituteInPlace Makefile --replace "install -o root -g root -m 4755" "install -m 555"
   '';
 
-  patches = [./unistd.patch];
+  patches = [ ./unistd.patch ];
   buildInputs = [ libusb1 ];
   makeFlags = "build";
   preInstall = ''
@@ -32,8 +32,7 @@ stdenv.mkDerivation {
   meta = {
     description = "Controls AlienFX lighting";
     homepage = https://github.com/tibz/alienfx;
-    maintainers = [stdenv.lib.maintainers.tomberek];
+    maintainers = [ stdenv.lib.maintainers.tomberek ];
     platforms = stdenv.lib.platforms.linux;
   };
 }
-

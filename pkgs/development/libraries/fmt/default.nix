@@ -25,8 +25,8 @@ stdenv.mkDerivation rec {
   doCheck = true;
   # preCheckHook ensures the test binaries can find libfmt.so.5
   preCheck = if enableShared
-             then "export LD_LIBRARY_PATH=\"$PWD\""
-             else "";
+  then "export LD_LIBRARY_PATH=\"$PWD\""
+  else "";
 
   meta = with stdenv.lib; {
     description = "Small, safe and fast formatting library";

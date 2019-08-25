@@ -14,10 +14,12 @@ stdenv.mkDerivation rec {
   };
 
   patches = [
-    (fetchpatch {
-      url = "https://github.com/leahneukirchen/mblaze/commit/53151f4f890f302291eb8d3375dec4f8ecb66ed7.patch";
-      sha256 = "1mcyrh053iiyzdhgm09g5h3a77np496whnc7jr4agpk1nkbcpfxc";
-    })
+    (
+      fetchpatch {
+        url = "https://github.com/leahneukirchen/mblaze/commit/53151f4f890f302291eb8d3375dec4f8ecb66ed7.patch";
+        sha256 = "1mcyrh053iiyzdhgm09g5h3a77np496whnc7jr4agpk1nkbcpfxc";
+      }
+    )
   ];
 
   makeFlags = "PREFIX=$(out)";

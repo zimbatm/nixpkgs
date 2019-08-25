@@ -13,9 +13,17 @@ stdenv.mkDerivation {
 
   nativeBuildInputs = [ cmake pkgconfig ];
   buildInputs = with qt5; with gst_all_1;
-      [ gstreamer gst-plugins-base gst-plugins-good gst-plugins-ugly
-        pcre qtbase qttools taglib zlib
-      ];
+    [
+      gstreamer
+      gst-plugins-base
+      gst-plugins-good
+      gst-plugins-ugly
+      pcre
+      qtbase
+      qttools
+      taglib
+      zlib
+    ];
 
   # CMake Error at src/GUI/Resources/Icons/cmake_install.cmake:49 (file):
   #   file cannot create directory: /usr/share/icons.  Maybe need administrative
@@ -36,7 +44,8 @@ stdenv.mkDerivation {
   NIX_CFLAGS_COMPILE = "-I${gst_all_1.gst-plugins-base.dev}/include/gstreamer-1.0";
 
   meta = with stdenv.lib;
-    { description = "Sayonara music player";
+    {
+      description = "Sayonara music player";
       homepage = https://sayonara-player.com/;
       license = licenses.gpl3;
       platforms = platforms.linux;

@@ -19,13 +19,17 @@ let
         ${fd_cfg.extraClientConfig}
       }
      
-      ${concatStringsSep "\n" (mapAttrsToList (name: value: ''
-      Director {
-        Name = "${name}";
-        Password = "${value.password}";
-        Monitor = "${value.monitor}";
-      }
-      '') fd_cfg.director)}
+      ${concatStringsSep "\n" (
+      mapAttrsToList (
+        name: value: ''
+          Director {
+            Name = "${name}";
+            Password = "${value.password}";
+            Monitor = "${value.monitor}";
+          }
+        ''
+      ) fd_cfg.director
+    )}
      
       Messages {
         Name = Standard;
@@ -35,7 +39,7 @@ let
     '';
 
   sd_cfg = config.services.bacula-sd;
-  sd_conf = pkgs.writeText "bacula-sd.conf" 
+  sd_conf = pkgs.writeText "bacula-sd.conf"
     ''
       Storage {
         Name = "${sd_cfg.name}";
@@ -45,22 +49,30 @@ let
         ${sd_cfg.extraStorageConfig}
       }
  
-      ${concatStringsSep "\n" (mapAttrsToList (name: value: ''
-      Device {
-        Name = "${name}";
-        Archive Device = "${value.archiveDevice}";
-        Media Type = "${value.mediaType}";
-        ${value.extraDeviceConfig}
-      }
-      '') sd_cfg.device)}
+      ${concatStringsSep "\n" (
+      mapAttrsToList (
+        name: value: ''
+          Device {
+            Name = "${name}";
+            Archive Device = "${value.archiveDevice}";
+            Media Type = "${value.mediaType}";
+            ${value.extraDeviceConfig}
+          }
+        ''
+      ) sd_cfg.device
+    )}
 
-      ${concatStringsSep "\n" (mapAttrsToList (name: value: ''
-      Director {
-        Name = "${name}";
-        Password = "${value.password}";
-        Monitor = "${value.monitor}";
-      }
-      '') sd_cfg.director)}
+      ${concatStringsSep "\n" (
+      mapAttrsToList (
+        name: value: ''
+          Director {
+            Name = "${name}";
+            Password = "${value.password}";
+            Monitor = "${value.monitor}";
+          }
+        ''
+      ) sd_cfg.director
+    )}
 
       Messages {
         Name = Standard;
@@ -70,88 +82,89 @@ let
     '';
 
   dir_cfg = config.services.bacula-dir;
-  dir_conf = pkgs.writeText "bacula-dir.conf" 
+  dir_conf = pkgs.writeText "bacula-dir.conf"
     ''
-    Director {
-      Name = "${dir_cfg.name}";
-      Password = "${dir_cfg.password}";
-      DirPort = ${toString dir_cfg.port};
-      Working Directory = "${libDir}";
-      Pid Directory = "/run/";
-      QueryFile = "${pkgs.bacula}/etc/query.sql";
-      ${dir_cfg.extraDirectorConfig}
-    }
+      Director {
+        Name = "${dir_cfg.name}";
+        Password = "${dir_cfg.password}";
+        DirPort = ${toString dir_cfg.port};
+        Working Directory = "${libDir}";
+        Pid Directory = "/run/";
+        QueryFile = "${pkgs.bacula}/etc/query.sql";
+        ${dir_cfg.extraDirectorConfig}
+      }
 
-    Catalog {
-      Name = "PostgreSQL";
-      dbname = "bacula";
-      user = "bacula";
-    }
+      Catalog {
+        Name = "PostgreSQL";
+        dbname = "bacula";
+        user = "bacula";
+      }
 
-    Messages {
-      Name = Standard;
-      syslog = all, !skipped, !restored
-      ${dir_cfg.extraMessagesConfig}
-    }
+      Messages {
+        Name = Standard;
+        syslog = all, !skipped, !restored
+        ${dir_cfg.extraMessagesConfig}
+      }
 
-    ${dir_cfg.extraConfig}
+      ${dir_cfg.extraConfig}
     '';
 
-  directorOptions = {...}:
-  {
-    options = {
-      password = mkOption {
-        # TODO: required?
-        description = ''
-           Specifies the password that must be supplied for a Director to b
-        '';
-      };
-      
-      monitor = mkOption {
-        default = "no";
-        example = "yes";
-        description = ''
-           If Monitor is set to no (default), this director will have full 
-        '';
+  directorOptions = { ... }:
+    {
+      options = {
+        password = mkOption {
+          # TODO: required?
+          description = ''
+            Specifies the password that must be supplied for a Director to b
+          '';
+        };
+
+        monitor = mkOption {
+          default = "no";
+          example = "yes";
+          description = ''
+            If Monitor is set to no (default), this director will have full 
+          '';
+        };
       };
     };
-  };
 
-  deviceOptions = {...}:
-  {
-    options = {
-      archiveDevice = mkOption {
-        # TODO: required?
-        description = ''
-          The specified name-string gives the system file name of the storage device managed by this storage daemon. This will usually be the device file name of a removable storage device (tape drive), for example " /dev/nst0" or "/dev/rmt/0mbn". For a DVD-writer, it will be for example /dev/hdc. It may also be a directory name if you are archiving to disk storage.
-        '';
-      };
+  deviceOptions = { ... }:
+    {
+      options = {
+        archiveDevice = mkOption {
+          # TODO: required?
+          description = ''
+            The specified name-string gives the system file name of the storage device managed by this storage daemon. This will usually be the device file name of a removable storage device (tape drive), for example " /dev/nst0" or "/dev/rmt/0mbn". For a DVD-writer, it will be for example /dev/hdc. It may also be a directory name if you are archiving to disk storage.
+          '';
+        };
 
-      mediaType = mkOption {
-        # TODO: required?
-        description = ''
-          The specified name-string names the type of media supported by this device, for example, "DLT7000". Media type names are arbitrary in that you set them to anything you want, but they must be known to the volume database to keep track of which storage daemons can read which volumes. In general, each different storage type should have a unique Media Type associated with it. The same name-string must appear in the appropriate Storage resource definition in the Director's configuration file.
-        '';
-      };
+        mediaType = mkOption {
+          # TODO: required?
+          description = ''
+            The specified name-string names the type of media supported by this device, for example, "DLT7000". Media type names are arbitrary in that you set them to anything you want, but they must be known to the volume database to keep track of which storage daemons can read which volumes. In general, each different storage type should have a unique Media Type associated with it. The same name-string must appear in the appropriate Storage resource definition in the Director's configuration file.
+          '';
+        };
 
-      extraDeviceConfig = mkOption {
-        default = "";
-        description = ''
-          Extra configuration to be passed in Device directive.
-        '';
-        example = ''
-          LabelMedia = yes
-          Random Access = no
-          AutomaticMount = no
-          RemovableMedia = no
-          MaximumOpenWait = 60
-          AlwaysOpen = no
-        '';
+        extraDeviceConfig = mkOption {
+          default = "";
+          description = ''
+            Extra configuration to be passed in Device directive.
+          '';
+          example = ''
+            LabelMedia = yes
+            Random Access = no
+            AutomaticMount = no
+            RemovableMedia = no
+            MaximumOpenWait = 60
+            AlwaysOpen = no
+          '';
+        };
       };
     };
-  };
 
-in {
+in
+{
   options = {
     services.bacula-fd = {
       enable = mkOption {
@@ -161,7 +174,7 @@ in {
           Whether to enable the Bacula File Daemon.
         '';
       };
- 
+
       name = mkOption {
         default = "${config.networking.hostName}-fd";
         description = ''
@@ -171,7 +184,7 @@ in {
           Clients. This directive is required.
         '';
       };
- 
+
       port = mkOption {
         default = 9102;
         type = types.int;
@@ -181,7 +194,7 @@ in {
           the Client resource of the Director's configuration file.
         '';
       };
- 
+
       director = mkOption {
         default = {};
         description = ''
@@ -220,14 +233,14 @@ in {
           Whether to enable Bacula Storage Daemon.
         '';
       };
- 
+
       name = mkOption {
         default = "${config.networking.hostName}-sd";
         description = ''
           Specifies the Name of the Storage daemon.
         '';
       };
- 
+
       port = mkOption {
         default = 9103;
         type = types.int;
@@ -251,7 +264,7 @@ in {
         '';
         type = with types; attrsOf (submodule deviceOptions);
       };
- 
+
       extraStorageConfig = mkOption {
         default = "";
         description = ''
@@ -272,7 +285,7 @@ in {
           console = all
         '';
       };
- 
+
     };
 
     services.bacula-dir = {
@@ -290,7 +303,7 @@ in {
           The director name used by the system administrator. This directive is required.
         '';
       };
- 
+
       port = mkOption {
         default = 9101;
         type = types.int;
@@ -298,11 +311,11 @@ in {
           Specify the port (a positive integer) on which the Director daemon will listen for Bacula Console connections. This same port number must be specified in the Director resource of the Console configuration file. The default is 9101, so normally this directive need not be specified. This directive should not be used if you specify DirAddresses (N.B plural) directive.
         '';
       };
- 
+
       password = mkOption {
         # TODO: required?
         description = ''
-           Specifies the password that must be supplied for a Director.
+          Specifies the password that must be supplied for a Director.
         '';
       };
 

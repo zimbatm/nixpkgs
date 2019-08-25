@@ -32,9 +32,12 @@ in
 
   config = mkIf cfg.enable {
     services.udev.packages = [
-      (pkgs.nitrokey-udev-rules.override (attrs:
-        { inherit (cfg) group; }
-      ))
+      (
+        pkgs.nitrokey-udev-rules.override (
+          attrs:
+            { inherit (cfg) group; }
+        )
+      )
     ];
     users.groups."${cfg.group}" = {};
   };

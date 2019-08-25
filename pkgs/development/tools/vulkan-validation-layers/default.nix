@@ -1,6 +1,17 @@
-{ stdenv, fetchFromGitHub, cmake, writeText, python3
-, vulkan-headers, vulkan-loader, glslang
-, pkgconfig, xlibsWrapper, libxcb, libXrandr, wayland }:
+{ stdenv
+, fetchFromGitHub
+, cmake
+, writeText
+, python3
+, vulkan-headers
+, vulkan-loader
+, glslang
+, pkgconfig
+, xlibsWrapper
+, libxcb
+, libXrandr
+, wayland
+}:
 stdenv.mkDerivation rec {
   name = "vulkan-validation-layers-${version}";
   version = "1.1.106.0"; # WARNING: glslang overrides in all-packages.nix must be updated to match known-good.json!
@@ -12,7 +23,7 @@ stdenv.mkDerivation rec {
     sha256 = "1sq42j8ikll2dyi9ygaz80lx89mvq9d21pkaf49gzhg4xjcd97dp";
   };
 
-  nativeBuildInputs = [ pkgconfig cmake python3  ];
+  nativeBuildInputs = [ pkgconfig cmake python3 ];
   buildInputs = [ vulkan-headers vulkan-loader libxcb libXrandr wayland ];
   enableParallelBuilding = true;
 
@@ -31,9 +42,9 @@ stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "LunarG Vulkan loader";
-    homepage    = https://www.lunarg.com;
-    platforms   = platforms.linux;
-    license     = licenses.asl20;
+    homepage = https://www.lunarg.com;
+    platforms = platforms.linux;
+    license = licenses.asl20;
     maintainers = [ maintainers.ralith ];
   };
 }

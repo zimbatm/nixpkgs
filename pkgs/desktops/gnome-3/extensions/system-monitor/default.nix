@@ -18,11 +18,13 @@ stdenv.mkDerivation rec {
   ];
 
   patches = [
-    (substituteAll {
-      src = ./paths_and_nonexisting_dirs.patch;
-      gtop_path = "${libgtop}/lib/girepository-1.0";
-      glib_net_path = "${glib-networking}/lib/girepository-1.0";
-    })
+    (
+      substituteAll {
+        src = ./paths_and_nonexisting_dirs.patch;
+        gtop_path = "${libgtop}/lib/girepository-1.0";
+        glib_net_path = "${glib-networking}/lib/girepository-1.0";
+      }
+    )
   ];
 
   buildPhase = ''

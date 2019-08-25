@@ -1,7 +1,8 @@
 { stdenv, fetchzip, coreutils, perl, gnutar, gzip }:
 let
   version = "6M62";
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "inform7-${version}";
   buildInputs = [ perl coreutils gnutar gzip ];
   src = fetchzip {

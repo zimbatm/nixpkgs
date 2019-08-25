@@ -5,7 +5,7 @@
 , darwin
 }:
 
-with rustPlatform; 
+with rustPlatform;
 
 buildRustPackage rec {
   version = "0.22.0";

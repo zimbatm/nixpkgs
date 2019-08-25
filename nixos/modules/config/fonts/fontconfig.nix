@@ -26,13 +26,13 @@ let
   # back-supported fontconfig version and package
   # version is used for font cache generation
   supportVersion = "210";
-  supportPkg     = pkgs."fontconfig_${supportVersion}";
+  supportPkg = pkgs."fontconfig_${supportVersion}";
 
   # latest fontconfig version and package
   # version is used for configuration folder name, /etc/fonts/VERSION/
   # note: format differs from supportVersion and can not be used with makeCacheConf
-  latestVersion  = pkgs.fontconfig.configVersion;
-  latestPkg      = pkgs.fontconfig;
+  latestVersion = pkgs.fontconfig.configVersion;
+  latestPkg = pkgs.fontconfig;
 
   # supported version fonts.conf
   supportFontsConf = pkgs.makeFontsConf { fontconfig = supportPkg; fontDirectories = config.fonts.fonts; };
@@ -41,32 +41,32 @@ let
   # version dependent
   # priority 0
   cacheConfSupport = makeCacheConf { version = supportVersion; };
-  cacheConfLatest  = makeCacheConf {};
+  cacheConfLatest = makeCacheConf {};
 
   # generate the font cache setting file for a fontconfig version
   # use latest when no version is passed
   makeCacheConf = { version ? null }:
     let
       fcPackage = if version == null
-                  then "fontconfig"
-                  else "fontconfig_${version}";
+      then "fontconfig"
+      else "fontconfig_${version}";
       makeCache = fontconfig: pkgs.makeFontsCache { inherit fontconfig; fontDirectories = config.fonts.fonts; };
-      cache     = makeCache pkgs."${fcPackage}";
-      cache32   = makeCache pkgs.pkgsi686Linux."${fcPackage}";
+      cache = makeCache pkgs."${fcPackage}";
+      cache32 = makeCache pkgs.pkgsi686Linux."${fcPackage}";
     in
-    pkgs.writeText "fc-00-nixos-cache.conf" ''
-      <?xml version='1.0'?>
-      <!DOCTYPE fontconfig SYSTEM 'fonts.dtd'>
-      <fontconfig>
-        <!-- Font directories -->
-        ${concatStringsSep "\n" (map (font: "<dir>${font}</dir>") config.fonts.fonts)}
-        <!-- Pre-generated font caches -->
-        <cachedir>${cache}</cachedir>
-        ${optionalString (pkgs.stdenv.isx86_64 && cfg.cache32Bit) ''
-          <cachedir>${cache32}</cachedir>
-        ''}
-      </fontconfig>
-    '';
+      pkgs.writeText "fc-00-nixos-cache.conf" ''
+        <?xml version='1.0'?>
+        <!DOCTYPE fontconfig SYSTEM 'fonts.dtd'>
+        <fontconfig>
+          <!-- Font directories -->
+          ${concatStringsSep "\n" (map (font: "<dir>${font}</dir>") config.fonts.fonts)}
+          <!-- Pre-generated font caches -->
+          <cachedir>${cache}</cachedir>
+          ${optionalString (pkgs.stdenv.isx86_64 && cfg.cache32Bit) ''
+        <cachedir>${cache32}</cachedir>
+      ''}
+        </fontconfig>
+      '';
 
   # rendering settings configuration file
   # priority 10
@@ -98,12 +98,12 @@ let
       </match>
 
       ${optionalString (cfg.dpi != 0) ''
-      <match target="pattern">
-        <edit name="dpi" mode="assign">
-          <double>${toString cfg.dpi}</double>
-        </edit>
-      </match>
-      ''}
+    <match target="pattern">
+      <edit name="dpi" mode="assign">
+        <double>${toString cfg.dpi}</double>
+      </edit>
+    </match>
+  ''}
 
     </fontconfig>
   '';
@@ -114,33 +114,38 @@ let
   # default fonts configuration file
   # priority 52
   defaultFontsConf =
-    let genDefault = fonts: name:
-      optionalString (fonts != []) ''
-        <alias>
-          <family>${name}</family>
-          <prefer>
-          ${concatStringsSep ""
-          (map (font: ''
-            <family>${font}</family>
-          '') fonts)}
-          </prefer>
-        </alias>
-      '';
+    let
+      genDefault = fonts: name:
+        optionalString (fonts != []) ''
+          <alias>
+            <family>${name}</family>
+            <prefer>
+            ${concatStringsSep ""
+          (
+            map (
+              font: ''
+                <family>${font}</family>
+              ''
+            ) fonts
+          )}
+            </prefer>
+          </alias>
+        '';
     in
-    pkgs.writeText "fc-52-nixos-default-fonts.conf" ''
-    <?xml version='1.0'?>
-    <!DOCTYPE fontconfig SYSTEM 'fonts.dtd'>
-    <fontconfig>
+      pkgs.writeText "fc-52-nixos-default-fonts.conf" ''
+        <?xml version='1.0'?>
+        <!DOCTYPE fontconfig SYSTEM 'fonts.dtd'>
+        <fontconfig>
 
-      <!-- Default fonts -->
-      ${genDefault cfg.defaultFonts.sansSerif "sans-serif"}
+          <!-- Default fonts -->
+          ${genDefault cfg.defaultFonts.sansSerif "sans-serif"}
 
-      ${genDefault cfg.defaultFonts.serif     "serif"}
+          ${genDefault cfg.defaultFonts.serif "serif"}
 
-      ${genDefault cfg.defaultFonts.monospace "monospace"}
+          ${genDefault cfg.defaultFonts.monospace "monospace"}
 
-    </fontconfig>
-  '';
+        </fontconfig>
+      '';
 
   # bitmap font options
   # priority 53
@@ -158,7 +163,7 @@ let
         </pattern>
       </rejectfont>
     </selectfont>
-    ''}
+  ''}
 
     <!-- Use embedded bitmaps in fonts like Calibri? -->
     <match target="font">
@@ -230,13 +235,13 @@ let
     ${optionalString (!cfg.includeUserConf) ''
     rm $support_folder/50-user.conf
     rm $latest_folder/50-user.conf
-    ''}
+  ''}
 
     # local.conf (indirect priority 51)
     ${optionalString (cfg.localConf != "") ''
     ln -s ${localConf}        $support_folder/../local.conf
     ln -s ${localConf}        $latest_folder/../local.conf
-    ''}
+  ''}
 
     # 52-nixos-default-fonts.conf
     ln -s ${defaultFontsConf} $support_folder/52-nixos-default-fonts.conf
@@ -250,13 +255,13 @@ let
     # 53-nixos-reject-type1.conf
     ln -s ${rejectType1} $support_folder/53-nixos-reject-type1.conf
     ln -s ${rejectType1} $latest_folder/53-nixos-reject-type1.conf
-    ''}
+  ''}
   '';
 
   # Package with configuration files
   # this merge all the packages in the fonts.fontconfig.confPackages list
   fontconfigEtc = pkgs.buildEnv {
-    name  = "fontconfig-etc";
+    name = "fontconfig-etc";
     paths = cfg.confPackages;
     ignoreCollisions = true;
   };
@@ -282,8 +287,8 @@ in
 
         confPackages = mkOption {
           internal = true;
-          type     = with types; listOf path;
-          default  = [ ];
+          type = with types; listOf path;
+          default = [];
           description = ''
             Fontconfig configuration packages.
           '';
@@ -320,7 +325,7 @@ in
         defaultFonts = {
           monospace = mkOption {
             type = types.listOf types.str;
-            default = ["DejaVu Sans Mono"];
+            default = [ "DejaVu Sans Mono" ];
             description = ''
               System-wide default monospace font(s). Multiple fonts may be
               listed in case multiple languages must be supported.
@@ -329,7 +334,7 @@ in
 
           sansSerif = mkOption {
             type = types.listOf types.str;
-            default = ["DejaVu Sans"];
+            default = [ "DejaVu Sans" ];
             description = ''
               System-wide default sans serif font(s). Multiple fonts may be
               listed in case multiple languages must be supported.
@@ -338,7 +343,7 @@ in
 
           serif = mkOption {
             type = types.listOf types.str;
-            default = ["DejaVu Serif"];
+            default = [ "DejaVu Serif" ];
             description = ''
               System-wide default serif font(s). Multiple fonts may be listed
               in case multiple languages must be supported.
@@ -383,7 +388,7 @@ in
 
           rgba = mkOption {
             default = "rgb";
-            type = types.enum ["rgb" "bgr" "vrgb" "vbgr" "none"];
+            type = types.enum [ "rgb" "bgr" "vrgb" "vbgr" "none" ];
             description = ''
               Subpixel order. The overwhelming majority of displays are
               <literal>rgb</literal> in their normal orientation. Select
@@ -399,7 +404,7 @@ in
 
           lcdfilter = mkOption {
             default = "default";
-            type = types.enum ["none" "default" "light" "legacy"];
+            type = types.enum [ "none" "default" "light" "legacy" ];
             description = ''
               FreeType LCD filter. At high resolution (> 200 DPI), LCD filtering
               has no visible effect; users of such displays may want to select
@@ -447,13 +452,17 @@ in
 
   };
   config = mkMerge [
-    (mkIf cfg.enable {
-      environment.systemPackages    = [ pkgs.fontconfig ];
-      environment.etc.fonts.source  = "${fontconfigEtc}/etc/fonts/";
-    })
-    (mkIf (cfg.enable && !cfg.penultimate.enable) {
-      fonts.fontconfig.confPackages = [ confPkg ];
-    })
+    (
+      mkIf cfg.enable {
+        environment.systemPackages = [ pkgs.fontconfig ];
+        environment.etc.fonts.source = "${fontconfigEtc}/etc/fonts/";
+      }
+    )
+    (
+      mkIf (cfg.enable && !cfg.penultimate.enable) {
+        fonts.fontconfig.confPackages = [ confPkg ];
+      }
+    )
   ];
 
 }

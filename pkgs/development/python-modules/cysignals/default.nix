@@ -2,7 +2,8 @@
 , fetchPypi
 , buildPythonPackage
 , cython
-, pariSupport ? true, pari # for interfacing with the PARI/GP signal handler
+, pariSupport ? true
+, pari # for interfacing with the PARI/GP signal handler
 }:
 
 assert pariSupport -> pari != null;
@@ -33,12 +34,14 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [
     cython
-  ] ++ lib.optionals pariSupport [
-    # When cysignals is built with pari, including cysignals into the
-    # buildInputs of another python package will cause cython to link against
-    # pari.
-    pari
-  ];
+  ]
+  ++ lib.optionals pariSupport [
+       # When cysignals is built with pari, including cysignals into the
+       # buildInputs of another python package will cause cython to link against
+       # pari.
+       pari
+     ]
+  ;
 
   enableParallelBuilding = true;
 

@@ -1,6 +1,8 @@
 { stdenv, fetchurl, pkgconfig, dbus, expat }:
 
-let version = "1.0.3"; in
+let
+  version = "1.0.3";
+in
 
 stdenv.mkDerivation rec {
   name = "libnih-${version}";

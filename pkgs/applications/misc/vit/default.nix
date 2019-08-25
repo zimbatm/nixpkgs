@@ -1,6 +1,11 @@
-{ stdenv, fetchFromGitHub
-, makeWrapper, which
-, taskwarrior, ncurses, perlPackages }:
+{ stdenv
+, fetchFromGitHub
+, makeWrapper
+, which
+, taskwarrior
+, ncurses
+, perlPackages
+}:
 
 stdenv.mkDerivation rec {
   pname = "vit";
@@ -28,7 +33,8 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ makeWrapper which ];
   buildInputs = [ taskwarrior ncurses ]
-    ++ (with perlPackages; [ perl Curses TryTiny TextCharWidth ]);
+    ++ (with perlPackages; [ perl Curses TryTiny TextCharWidth ])
+    ;
 
   meta = with stdenv.lib; {
     description = "Visual Interactive Taskwarrior";
@@ -37,4 +43,3 @@ stdenv.mkDerivation rec {
     license = licenses.gpl3;
   };
 }
-

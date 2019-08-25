@@ -1,5 +1,11 @@
-{ stdenv, buildPythonPackage, fetchPypi
-, pytest, mock, pytestcov, coverage }:
+{ stdenv
+, buildPythonPackage
+, fetchPypi
+, pytest
+, mock
+, pytestcov
+, coverage
+}:
 
 buildPythonPackage rec {
   pname = "gunicorn";

@@ -6,8 +6,12 @@
    https://sourceware.org/git/?p=glibc.git;a=blob;f=localedata/SUPPORTED
 */
 
-{ stdenv, buildPackages, callPackage, writeText
-, allLocales ? true, locales ? [ "en_US.UTF-8/UTF-8" ]
+{ stdenv
+, buildPackages
+, callPackage
+, writeText
+, allLocales ? true
+, locales ? [ "en_US.UTF-8/UTF-8" ]
 }:
 
 callPackage ./common.nix { inherit stdenv; } {
@@ -31,27 +35,29 @@ callPackage ./common.nix { inherit stdenv; } {
       # Hack to allow building of the locales (needed since glibc-2.12)
       sed -i -e 's,^$(rtld-prefix) $(common-objpfx)locale/localedef,localedef --prefix='$TMPDIR',' ../glibc-2*/localedata/Makefile
     ''
-      + stdenv.lib.optionalString (!allLocales) ''
-      # Check that all locales to be built are supported
-      echo -n '${stdenv.lib.concatMapStrings (s: s + " \\\n") locales}' \
-        | sort > locales-to-build.txt
-      cat ../glibc-2*/localedata/SUPPORTED | grep ' \\' \
-        | sort > locales-supported.txt
-      comm -13 locales-supported.txt locales-to-build.txt \
-        > locales-unsupported.txt
-      if [[ $(wc -c locales-unsupported.txt) != "0 locales-unsupported.txt" ]]; then
-        cat locales-supported.txt
-        echo "Error: unsupported locales detected:"
-        cat locales-unsupported.txt
-        echo "You should choose from the list above the error."
-        false
-      fi
+    + stdenv.lib.optionalString (!allLocales) ''
+        # Check that all locales to be built are supported
+        echo -n '${stdenv.lib.concatMapStrings (s: s + " \\\n") locales}' \
+          | sort > locales-to-build.txt
+        cat ../glibc-2*/localedata/SUPPORTED | grep ' \\' \
+          | sort > locales-supported.txt
+        comm -13 locales-supported.txt locales-to-build.txt \
+          > locales-unsupported.txt
+        if [[ $(wc -c locales-unsupported.txt) != "0 locales-unsupported.txt" ]]; then
+          cat locales-supported.txt
+          echo "Error: unsupported locales detected:"
+          cat locales-unsupported.txt
+          echo "You should choose from the list above the error."
+          false
+        fi
 
-      echo SUPPORTED-LOCALES='${toString locales}' > ../glibc-2*/localedata/SUPPORTED
-    '' + ''
+        echo SUPPORTED-LOCALES='${toString locales}' > ../glibc-2*/localedata/SUPPORTED
+      ''
+    + ''
       make localedata/install-locales \
           localedir=$out/lib/locale \
-    '';
+    ''
+  ;
 
   installPhase =
     ''

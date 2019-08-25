@@ -5,68 +5,70 @@ let
   fourStoreUser = "fourstore";
   run = "${pkgs.su}/bin/su -s ${pkgs.runtimeShell} ${fourStoreUser}";
 in
-with lib;
-{
+  with lib;
+  {
 
-  ###### interface
+    ###### interface
 
-  options = {
+    options = {
 
-    services.fourStore = {
+      services.fourStore = {
 
-      enable = mkOption {
-        default = false;
-        description = "Whether to enable 4Store RDF database server.";
-      };
+        enable = mkOption {
+          default = false;
+          description = "Whether to enable 4Store RDF database server.";
+        };
 
-      database = mkOption {
-        default = "";
-        description = "RDF database name. If it doesn't exist, it will be created. Databases are stored in ${stateDir}.";
-      };
+        database = mkOption {
+          default = "";
+          description = "RDF database name. If it doesn't exist, it will be created. Databases are stored in ${stateDir}.";
+        };
 
-      options = mkOption {
-        default = "";
-        description = "Extra CLI options to pass to 4Store.";
+        options = mkOption {
+          default = "";
+          description = "Extra CLI options to pass to 4Store.";
+        };
+
       };
 
     };
 
-  };
 
+    ###### implementation
 
-  ###### implementation
+    config = mkIf cfg.enable {
 
-  config = mkIf cfg.enable {
+      assertions = singleton
+        {
+          assertion = cfg.enable -> cfg.database != "";
+          message = "Must specify 4Store database name.";
+        };
 
-    assertions = singleton
-      { assertion = cfg.enable -> cfg.database != "";
-        message = "Must specify 4Store database name.";
+      users.users = singleton
+        {
+          name = fourStoreUser;
+          uid = config.ids.uids.fourstore;
+          description = "4Store database user";
+          home = stateDir;
+        };
+
+      services.avahi.enable = true;
+
+      systemd.services."4store" = {
+        after = [ "network.target" ];
+        wantedBy = [ "multi-user.target" ];
+
+        preStart = ''
+          mkdir -p ${stateDir}/
+          chown ${fourStoreUser} ${stateDir}
+          if ! test -e "${stateDir}/${cfg.database}"; then
+            ${run} -c '${pkgs.rdf4store}/bin/4s-backend-setup ${cfg.database}'
+          fi
+        '';
+
+        script = ''
+          ${run} -c '${pkgs.rdf4store}/bin/4s-backend -D ${cfg.options} ${cfg.database}'
+        '';
       };
-
-    users.users = singleton
-      { name = fourStoreUser;
-        uid = config.ids.uids.fourstore;
-        description = "4Store database user";
-        home = stateDir;
-      };
-
-    services.avahi.enable = true;
-
-    systemd.services."4store" = {
-      after = [ "network.target" ];
-      wantedBy = [ "multi-user.target" ];
-
-      preStart = ''
-        mkdir -p ${stateDir}/
-        chown ${fourStoreUser} ${stateDir}
-        if ! test -e "${stateDir}/${cfg.database}"; then
-          ${run} -c '${pkgs.rdf4store}/bin/4s-backend-setup ${cfg.database}'
-        fi
-      '';
-
-      script = ''
-        ${run} -c '${pkgs.rdf4store}/bin/4s-backend -D ${cfg.options} ${cfg.database}'
-      '';
     };
-  };
-}
+  }

@@ -4,7 +4,8 @@ let
   password = "helloworld";
 
 in
-  import ./make-test.nix ({ pkgs, ...} : {
+import ./make-test.nix (
+  { pkgs, ... }: {
     name = "sudo";
     meta = with pkgs.stdenv.lib.maintainers; {
       maintainers = [ lschuermann ];
@@ -12,41 +13,41 @@ in
 
     machine =
       { lib, ... }:
-      with lib;
-      {
-        users.groups = { foobar = {}; barfoo = {}; baz = { gid = 1337; }; };
-        users.users = {
-          test0 = { isNormalUser = true; extraGroups = [ "wheel" ]; };
-          test1 = { isNormalUser = true; password = password; };
-          test2 = { isNormalUser = true; extraGroups = [ "foobar" ]; password = password; };
-          test3 = { isNormalUser = true; extraGroups = [ "barfoo" ]; };
-          test4 = { isNormalUser = true; extraGroups = [ "baz" ]; };
-          test5 = { isNormalUser = true; };
+        with lib;
+        {
+          users.groups = { foobar = {}; barfoo = {}; baz = { gid = 1337; }; };
+          users.users = {
+            test0 = { isNormalUser = true; extraGroups = [ "wheel" ]; };
+            test1 = { isNormalUser = true; password = password; };
+            test2 = { isNormalUser = true; extraGroups = [ "foobar" ]; password = password; };
+            test3 = { isNormalUser = true; extraGroups = [ "barfoo" ]; };
+            test4 = { isNormalUser = true; extraGroups = [ "baz" ]; };
+            test5 = { isNormalUser = true; };
+          };
+
+          security.sudo = {
+            enable = true;
+            wheelNeedsPassword = false;
+
+            extraRules = [
+              # SUDOERS SYNTAX CHECK (Test whether the module produces a valid output;
+              # errors being detected by the visudo checks.
+
+              # These should not create any entries
+              { users = [ "notest1" ]; commands = []; }
+              { commands = [ { command = "ALL"; options = []; } ]; }
+
+              # Test defining commands with the options syntax, though not setting any options
+              { users = [ "notest2" ]; commands = [ { command = "ALL"; options = []; } ]; }
+
+
+              # CONFIGURATION FOR TEST CASES
+              { users = [ "test1" ]; groups = [ "foobar" ]; commands = [ "ALL" ]; }
+              { groups = [ "barfoo" 1337 ]; commands = [ { command = "ALL"; options = [ "NOPASSWD" "NOSETENV" ]; } ]; }
+              { users = [ "test5" ]; commands = [ { command = "ALL"; options = [ "NOPASSWD" "SETENV" ]; } ]; runAs = "test1:barfoo"; }
+            ];
+          };
         };
-
-        security.sudo = {
-          enable = true;
-          wheelNeedsPassword = false;
-
-          extraRules = [
-            # SUDOERS SYNTAX CHECK (Test whether the module produces a valid output;
-            # errors being detected by the visudo checks.
-
-            # These should not create any entries
-            { users = [ "notest1" ]; commands = [ ]; }
-            { commands = [ { command = "ALL"; options = [ ]; } ]; }
-
-            # Test defining commands with the options syntax, though not setting any options
-            { users = [ "notest2" ]; commands = [ { command = "ALL"; options = [ ]; } ]; }
-
-
-            # CONFIGURATION FOR TEST CASES
-            { users = [ "test1" ]; groups = [ "foobar" ]; commands = [ "ALL" ]; }
-            { groups = [ "barfoo" 1337 ]; commands = [ { command = "ALL"; options = [ "NOPASSWD" "NOSETENV" ]; } ]; }
-            { users = [ "test5" ]; commands = [ { command = "ALL"; options = [ "NOPASSWD" "SETENV" ]; } ]; runAs = "test1:barfoo"; }
-          ];
-        };
-      };
 
     testScript =
       ''
@@ -90,4 +91,5 @@ in
             $machine->fail("sudo -u test3 sudo -n -E -u root true");
         };
       '';
-  })
+  }
+)

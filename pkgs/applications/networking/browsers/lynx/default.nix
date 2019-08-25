@@ -1,6 +1,11 @@
-{ stdenv, buildPackages
-, fetchurl, pkgconfig, ncurses, gzip
-, sslSupport ? true, openssl ? null
+{ stdenv
+, buildPackages
+, fetchurl
+, pkgconfig
+, ncurses
+, gzip
+, sslSupport ? true
+, openssl ? null
 , nukeReferences
 }:
 
@@ -26,11 +31,14 @@ stdenv.mkDerivation rec {
     "--enable-default-colors"
     "--enable-widec"
     "--enable-ipv6"
-  ] ++ stdenv.lib.optional sslSupport "--with-ssl";
+  ]
+  ++ stdenv.lib.optional sslSupport "--with-ssl"
+  ;
 
   depsBuildBuild = [ buildPackages.stdenv.cc ];
   nativeBuildInputs = [ nukeReferences ]
-    ++ stdenv.lib.optional sslSupport pkgconfig;
+    ++ stdenv.lib.optional sslSupport pkgconfig
+    ;
 
   buildInputs = [ ncurses gzip ] ++ stdenv.lib.optional sslSupport openssl.dev;
 

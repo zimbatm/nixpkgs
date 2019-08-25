@@ -25,10 +25,12 @@ python3Packages.buildPythonApplication rec {
   ];
 
   postPatch = let
-    ext = stdenv.hostPlatform.extensions.sharedLibrary; in ''
-    substituteInPlace virtscreen/__main__.py \
-      --replace "'GL'" "'${libGL}/lib/libGL${ext}'" \
-  '';
+    ext = stdenv.hostPlatform.extensions.sharedLibrary;
+  in
+    ''
+      substituteInPlace virtscreen/__main__.py \
+        --replace "'GL'" "'${libGL}/lib/libGL${ext}'" \
+    '';
 
   meta = with stdenv.lib; {
     description = "Make your iPad/tablet/computer as a secondary monitor on Linux";

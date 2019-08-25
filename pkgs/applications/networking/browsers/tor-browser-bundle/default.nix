@@ -6,37 +6,37 @@
 , tor
 , tor-browser-unwrapped
 
-# Wrapper runtime
+  # Wrapper runtime
 , coreutils
 , hicolor-icon-theme
 , shared-mime-info
 , noto-fonts
 , noto-fonts-emoji
 
-# Audio support
+  # Audio support
 , audioSupport ? mediaSupport
 , apulse
 
-# Media support (implies audio support)
+  # Media support (implies audio support)
 , mediaSupport ? false
 , ffmpeg
 
-# Extensions, common
+  # Extensions, common
 , zip
 
-# HTTPS Everywhere
+  # HTTPS Everywhere
 , git
 , libxml2 # xmllint
 , python27
 , python27Packages
 , rsync
 
-# Pluggable transports
+  # Pluggable transports
 , obfs4
 
-# Customization
+  # Customization
 , extraPrefs ? ""
-, extraExtensions ? [ ]
+, extraExtensions ? []
 }:
 
 with stdenv.lib;
@@ -50,7 +50,8 @@ let
 
   firefoxExtensions = import ./extensions.nix {
     inherit stdenv fetchurl fetchgit zip
-      git libxml2 python27 python27Packages rsync;
+      git libxml2 python27 python27Packages rsync
+      ;
   };
 
   bundledExtensions = with firefoxExtensions; [
@@ -58,7 +59,8 @@ let
     noscript
     torbutton
     tor-launcher
-  ] ++ extraExtensions;
+  ]
+    ++ extraExtensions;
 
   fontsEnv = symlinkJoin {
     name = "tor-browser-fonts";
@@ -130,10 +132,10 @@ stdenv.mkDerivation rec {
 
     // Allow sandbox access to sound devices if using ALSA directly
     ${if audioSupport then ''
-      pref("security.sandbox.content.write_path_whitelist", "/dev/snd/");
-    '' else ''
-      clearPref("security.sandbox.content.write_path_whitelist");
-    ''}
+    pref("security.sandbox.content.write_path_whitelist", "/dev/snd/");
+  '' else ''
+    clearPref("security.sandbox.content.write_path_whitelist");
+  ''}
 
     // User customization
     ${extraPrefs}
@@ -181,18 +183,18 @@ stdenv.mkDerivation rec {
     # Generate a suitable wrapper
     wrapper_PATH=${makeBinPath [ coreutils ]}
     wrapper_XDG_DATA_DIRS=${concatMapStringsSep ":" (x: "${x}/share") [
-      hicolor-icon-theme
-      shared-mime-info
-    ]}
+    hicolor-icon-theme
+    shared-mime-info
+  ]}
 
     ${optionalString audioSupport ''
-      # apulse uses a non-standard library path ...
-      wrapper_LD_LIBRARY_PATH=${apulse}/lib/apulse''${wrapper_LD_LIBRARY_PATH:+:$wrapper_LD_LIBRARY_PATH}
-    ''}
+    # apulse uses a non-standard library path ...
+    wrapper_LD_LIBRARY_PATH=${apulse}/lib/apulse''${wrapper_LD_LIBRARY_PATH:+:$wrapper_LD_LIBRARY_PATH}
+  ''}
 
     ${optionalString mediaSupport ''
-      wrapper_LD_LIBRARY_PATH=${mediaLibPath}''${wrapper_LD_LIBRARY_PATH:+:$wrapper_LD_LIBRARY_PATH}
-    ''}
+    wrapper_LD_LIBRARY_PATH=${mediaLibPath}''${wrapper_LD_LIBRARY_PATH:+:$wrapper_LD_LIBRARY_PATH}
+  ''}
 
     mkdir -p $out/bin
     cat >$out/bin/tor-browser <<EOF
@@ -339,7 +341,7 @@ stdenv.mkDerivation rec {
       longDescription and expression of the `firefoxPackages.tor-browser` package for more info.
     '';
     inherit (tor-browser-unwrapped.meta) homepage platforms license;
-    hydraPlatforms = [ ];
+    hydraPlatforms = [];
     maintainers = with maintainers; [ joachifm ];
   };
 }

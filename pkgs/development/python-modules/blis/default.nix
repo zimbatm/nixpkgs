@@ -33,5 +33,5 @@ buildPythonPackage rec {
     homepage = https://github.com/explosion/cython-blis;
     license = licenses.mit;
     maintainers = with maintainers; [ danieldk ];
-    };
+  };
 }

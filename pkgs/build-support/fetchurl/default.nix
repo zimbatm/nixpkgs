@@ -10,32 +10,39 @@ let
   # resulting store derivations (.drv files) much smaller, which in
   # turn makes nix-env/nix-instantiate faster.
   mirrorsFile =
-    stdenvNoCC.mkDerivation ({
-      name = "mirrors-list";
-      builder = ./write-mirror-list.sh;
-      preferLocalBuild = true;
-    } // mirrors);
+    stdenvNoCC.mkDerivation (
+      {
+        name = "mirrors-list";
+        builder = ./write-mirror-list.sh;
+        preferLocalBuild = true;
+      }
+      // mirrors
+    );
 
   # Names of the master sites that are mirrored (i.e., "sourceforge",
   # "gnu", etc.).
   sites = builtins.attrNames mirrors;
 
-  impureEnvVars = lib.fetchers.proxyImpureEnvVars ++ [
-    # This variable allows the user to pass additional options to curl
-    "NIX_CURL_FLAGS"
+  impureEnvVars = lib.fetchers.proxyImpureEnvVars
+    ++ [
+         # This variable allows the user to pass additional options to curl
+         "NIX_CURL_FLAGS"
 
-    # This variable allows the user to override hashedMirrors from the
-    # command-line.
-    "NIX_HASHED_MIRRORS"
+         # This variable allows the user to override hashedMirrors from the
+         # command-line.
+         "NIX_HASHED_MIRRORS"
 
-    # This variable allows overriding the timeout for connecting to
-    # the hashed mirrors.
-    "NIX_CONNECT_TIMEOUT"
-  ] ++ (map (site: "NIX_MIRRORS_${site}") sites);
+         # This variable allows overriding the timeout for connecting to
+         # the hashed mirrors.
+         "NIX_CONNECT_TIMEOUT"
+       ]
+    ++ (map (site: "NIX_MIRRORS_${site}") sites)
+    ;
 
 in
 
-{ # URL to fetch.
+{
+  # URL to fetch.
   url ? ""
 
 , # Alternatively, a list of URLs specifying alternative download
@@ -95,60 +102,62 @@ in
 , preferLocalBuild ? true
 }:
 
-assert sha512 != "" -> builtins.compareVersions "1.11" builtins.nixVersion <= 0;
+  assert sha512 != "" -> builtins.compareVersions "1.11" builtins.nixVersion <= 0;
 
-let
-  urls_ =
-    if urls != [] && url == "" then
-      (if lib.isList urls then urls
-       else throw "`urls` is not a list")
-    else if urls == [] && url != "" then [url]
-    else throw "fetchurl requires either `url` or `urls` to be set";
+  let
+    urls_ =
+      if urls != [] && url == "" then
+        (
+          if lib.isList urls then urls
+          else throw "`urls` is not a list"
+        )
+      else if urls == [] && url != "" then [ url ]
+      else throw "fetchurl requires either `url` or `urls` to be set";
 
-  hash_ =
-    if hash != "" then { outputHashAlgo = null; outputHash = hash; }
-    else if md5 != "" then throw "fetchurl does not support md5 anymore, please use sha256 or sha512"
-    else if (outputHash != "" && outputHashAlgo != "") then { inherit outputHashAlgo outputHash; }
-    else if sha512 != "" then { outputHashAlgo = "sha512"; outputHash = sha512; }
-    else if sha256 != "" then { outputHashAlgo = "sha256"; outputHash = sha256; }
-    else if sha1   != "" then { outputHashAlgo = "sha1";   outputHash = sha1; }
-    else throw "fetchurl requires a hash for fixed-output derivation: ${lib.concatStringsSep ", " urls_}";
-in
+    hash_ =
+      if hash != "" then { outputHashAlgo = null; outputHash = hash; }
+      else if md5 != "" then throw "fetchurl does not support md5 anymore, please use sha256 or sha512"
+      else if (outputHash != "" && outputHashAlgo != "") then { inherit outputHashAlgo outputHash; }
+      else if sha512 != "" then { outputHashAlgo = "sha512"; outputHash = sha512; }
+      else if sha256 != "" then { outputHashAlgo = "sha256"; outputHash = sha256; }
+      else if sha1 != "" then { outputHashAlgo = "sha1"; outputHash = sha1; }
+      else throw "fetchurl requires a hash for fixed-output derivation: ${lib.concatStringsSep ", " urls_}";
+  in
 
-stdenvNoCC.mkDerivation {
-  name =
-    if showURLs then "urls"
-    else if name != "" then name
-    else baseNameOf (toString (builtins.head urls_));
+    stdenvNoCC.mkDerivation {
+      name =
+        if showURLs then "urls"
+        else if name != "" then name
+        else baseNameOf (toString (builtins.head urls_));
 
-  builder = ./builder.sh;
+      builder = ./builder.sh;
 
-  nativeBuildInputs = [ curl ];
+      nativeBuildInputs = [ curl ];
 
-  urls = urls_;
+      urls = urls_;
 
-  # If set, prefer the content-addressable mirrors
-  # (http://tarballs.nixos.org) over the original URLs.
-  preferHashedMirrors = true;
+      # If set, prefer the content-addressable mirrors
+      # (http://tarballs.nixos.org) over the original URLs.
+      preferHashedMirrors = true;
 
-  # New-style output content requirements.
-  inherit (hash_) outputHashAlgo outputHash;
+      # New-style output content requirements.
+      inherit (hash_) outputHashAlgo outputHash;
 
-  outputHashMode = if (recursiveHash || executable) then "recursive" else "flat";
+      outputHashMode = if (recursiveHash || executable) then "recursive" else "flat";
 
-  inherit curlOpts showURLs mirrorsFile postFetch downloadToTemp executable;
+      inherit curlOpts showURLs mirrorsFile postFetch downloadToTemp executable;
 
-  impureEnvVars = impureEnvVars ++ netrcImpureEnvVars;
+      impureEnvVars = impureEnvVars ++ netrcImpureEnvVars;
 
-  nixpkgsVersion = lib.trivial.release;
+      nixpkgsVersion = lib.trivial.release;
 
-  inherit preferLocalBuild;
+      inherit preferLocalBuild;
 
-  postHook = if netrcPhase == null then null else ''
-    ${netrcPhase}
-    curlOpts="$curlOpts --netrc-file $PWD/netrc"
-  '';
+      postHook = if netrcPhase == null then null else ''
+        ${netrcPhase}
+        curlOpts="$curlOpts --netrc-file $PWD/netrc"
+      '';
 
-  inherit meta;
-  inherit passthru;
-}
+      inherit meta;
+      inherit passthru;
+    }

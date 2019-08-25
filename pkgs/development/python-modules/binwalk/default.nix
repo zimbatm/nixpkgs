@@ -11,9 +11,11 @@
 , cabextract
 , lzma
 , pycrypto
-, pyqtgraph ? null }:
+, pyqtgraph ? null
+}:
 
-let visualizationSupport = (pyqtgraph != null);
+let
+  visualizationSupport = (pyqtgraph != null);
 in
 buildPythonPackage rec {
   name = "binwalk-${version}";
@@ -27,7 +29,8 @@ buildPythonPackage rec {
   };
 
   propagatedBuildInputs = [ zlib xz ncompress gzip bzip2 gnutar p7zip cabextract lzma pycrypto ]
-    ++ stdenv.lib.optional visualizationSupport pyqtgraph;
+    ++ stdenv.lib.optional visualizationSupport pyqtgraph
+    ;
 
   meta = with stdenv.lib; {
     homepage = "http://binwalk.org";

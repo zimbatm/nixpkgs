@@ -12,12 +12,14 @@ stdenv.mkDerivation rec {
 
   patches = [
     ./gcc-4.4.diff
-    (fetchpatch {
-      # Fix a stack-smashing bug:
-      # xhttps://bugs.debian.org/cgi-bin/bugreport.cgi?bug=681591
-      url = "https://bugs.launchpad.net/ubuntu/+source/libfcgi/+bug/933417/+attachment/2745025/+files/poll.patch";
-      sha256 = "0v3gw0smjvrxh1bv3zx9xp633gbv5dd5bcn3ipj6ckqjyv4i6i7m";
-    })
+    (
+      fetchpatch {
+        # Fix a stack-smashing bug:
+        # xhttps://bugs.debian.org/cgi-bin/bugreport.cgi?bug=681591
+        url = "https://bugs.launchpad.net/ubuntu/+source/libfcgi/+bug/933417/+attachment/2745025/+files/poll.patch";
+        sha256 = "0v3gw0smjvrxh1bv3zx9xp633gbv5dd5bcn3ipj6ckqjyv4i6i7m";
+      }
+    )
   ];
 
   postInstall = "ln -s . $out/include/fastcgi";

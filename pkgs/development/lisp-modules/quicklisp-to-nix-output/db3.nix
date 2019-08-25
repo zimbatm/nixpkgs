@@ -5,7 +5,7 @@ rec {
 
   description = ''DB3 file reader'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/cl-db3/2015-03-02/cl-db3-20150302-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "db3";
 
-  asdFilesToKeep = ["db3.asd"];
+  asdFilesToKeep = [ "db3.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM db3 DESCRIPTION DB3 file reader SHA256

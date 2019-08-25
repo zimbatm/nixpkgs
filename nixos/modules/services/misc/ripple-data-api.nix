@@ -32,7 +32,8 @@ let
     };
   };
 
-in {
+in
+{
   options = {
     services.rippleDataApi = {
       enable = mkEnableOption "ripple data api";
@@ -46,7 +47,7 @@ in {
       importMode = mkOption {
         description = "Ripple data api import mode.";
         default = "liveOnly";
-        type = types.enum ["live" "liveOnly"];
+        type = types.enum [ "live" "liveOnly" ];
       };
 
       minLedger = mkOption {
@@ -170,23 +171,27 @@ in {
             "${toString cfg.minLedger} ${toString cfg.maxLedger}"
           else
             cfg.importMode;
-      in {
-        ExecStart = "${pkgs.ripple-data-api}/bin/importer ${importMode} debug";
-        Restart = "always";
-        User = "ripple-data-api";
-      };
+      in
+        {
+          ExecStart = "${pkgs.ripple-data-api}/bin/importer ${importMode} debug";
+          Restart = "always";
+          User = "ripple-data-api";
+        };
 
       preStart = mkMerge [
-        (mkIf (cfg.couchdb.create) ''
-          HOST="http://${optionalString (cfg.couchdb.pass != "") "${cfg.couchdb.user}:${cfg.couchdb.pass}@"}${cfg.couchdb.host}:${toString cfg.couchdb.port}"
-          curl -X PUT $HOST/${cfg.couchdb.db} || true
-        '')
+        (
+          mkIf (cfg.couchdb.create) ''
+            HOST="http://${optionalString (cfg.couchdb.pass != "") "${cfg.couchdb.user}:${cfg.couchdb.pass}@"}${cfg.couchdb.host}:${toString cfg.couchdb.port}"
+            curl -X PUT $HOST/${cfg.couchdb.db} || true
+          ''
+        )
         "${pkgs.ripple-data-api}/bin/update-views"
       ];
     };
 
     users.users = singleton
-      { name = "ripple-data-api";
+      {
+        name = "ripple-data-api";
         description = "Ripple data api user";
         uid = config.ids.uids.ripple-data-api;
       };

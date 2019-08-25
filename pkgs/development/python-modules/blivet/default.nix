@@ -1,12 +1,24 @@
-{ stdenv, fetchFromGitHub, buildPythonPackage, pykickstart, pyparted, pyblock
-, pyudev, six, libselinux, cryptsetup, multipath-tools, lsof, utillinux
+{ stdenv
+, fetchFromGitHub
+, buildPythonPackage
+, pykickstart
+, pyparted
+, pyblock
+, pyudev
+, six
+, libselinux
+, cryptsetup
+, multipath-tools
+, lsof
+, utillinux
 }:
 
 let
   pyenable = { enablePython = true; };
   selinuxWithPython = libselinux.override pyenable;
   cryptsetupWithPython = cryptsetup.override pyenable;
-in buildPythonPackage rec {
+in
+buildPythonPackage rec {
   pname = "blivet";
   version = "0.67";
 
@@ -31,7 +43,12 @@ in buildPythonPackage rec {
   '';
 
   propagatedBuildInputs = [
-    pykickstart pyparted pyblock pyudev selinuxWithPython.py cryptsetupWithPython
+    pykickstart
+    pyparted
+    pyblock
+    pyudev
+    selinuxWithPython.py
+    cryptsetupWithPython
     six
   ];
 

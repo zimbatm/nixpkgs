@@ -33,11 +33,13 @@ buildGoPackage rec {
 
   preBuild = lib.optionalString stdenv.isDarwin ''
     ulimit -n 8192
-  '' + ''
+  ''
+  + ''
     export CGO_CFLAGS="-I${rocksdb}/include"
     export CGO_LDFLAGS="-L${rocksdb}/lib -lrocksdb -lstdc++ -lm -lz -lbz2 -lsnappy -llz4"
     packr clean && packr
-  '';
+  ''
+  ;
 
   postInstall = ''
     rm $bin/bin/{scripts,templates,trezor-common}
@@ -51,4 +53,3 @@ buildGoPackage rec {
     platforms = platforms.all;
   };
 }
-

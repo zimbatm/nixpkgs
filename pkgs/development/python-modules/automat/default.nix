@@ -1,5 +1,11 @@
-{ stdenv, buildPythonPackage, fetchPypi,
-  m2r, setuptools_scm, six, attrs }:
+{ stdenv
+, buildPythonPackage
+, fetchPypi
+, m2r
+, setuptools_scm
+, six
+, attrs
+}:
 
 buildPythonPackage rec {
   version = "0.7.0";
@@ -21,6 +27,6 @@ buildPythonPackage rec {
     homepage = https://github.com/glyph/Automat;
     description = "Self-service finite-state machines for the programmer on the go";
     license = licenses.mit;
-    maintainers = [ ];
+    maintainers = [];
   };
 }

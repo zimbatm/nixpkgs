@@ -22,14 +22,18 @@ mkDerivation rec {
   enableParallelBuilding = true;
 
   patches = [
-    (fetchpatch {
-      url = "https://bitbucket.org/maproom/qmapshack/raw/d0b1b595578a83fda981ccc1ff24166fa636ba1d/FindPROJ4.patch";
-      sha256 = "1nx4ax233bnnj478cmjpm5c1qqmyn1navlihf10q6hhbanay9n99";
-    })
-    (fetchpatch {
-      url = "https://bitbucket.org/maproom/qmapshack/raw/d0b1b595578a83fda981ccc1ff24166fa636ba1d/FindQuaZip5.patch";
-      sha256 = "0z1b2dz2zlz685mxgn8bmh1fyhxpf6dzd6jvkkjyk2kvnrdxv3b9";
-    })
+    (
+      fetchpatch {
+        url = "https://bitbucket.org/maproom/qmapshack/raw/d0b1b595578a83fda981ccc1ff24166fa636ba1d/FindPROJ4.patch";
+        sha256 = "1nx4ax233bnnj478cmjpm5c1qqmyn1navlihf10q6hhbanay9n99";
+      }
+    )
+    (
+      fetchpatch {
+        url = "https://bitbucket.org/maproom/qmapshack/raw/d0b1b595578a83fda981ccc1ff24166fa636ba1d/FindQuaZip5.patch";
+        sha256 = "0z1b2dz2zlz685mxgn8bmh1fyhxpf6dzd6jvkkjyk2kvnrdxv3b9";
+      }
+    )
   ];
 
   meta = with lib; {

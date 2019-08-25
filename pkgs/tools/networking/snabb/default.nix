@@ -1,5 +1,15 @@
-{ stdenv, fetchFromGitHub, bash, makeWrapper, git, mysql, diffutils, which, coreutils, procps, nettools
-,supportOpenstack ? true
+{ stdenv
+, fetchFromGitHub
+, bash
+, makeWrapper
+, git
+, mysql
+, diffutils
+, which
+, coreutils
+, procps
+, nettools
+, supportOpenstack ? true
 }:
 
 with stdenv.lib;
@@ -24,11 +34,13 @@ stdenv.mkDerivation rec {
     for f in $(find src/program/snabbnfv/ -type f); do
       substituteInPlace $f --replace "/bin/bash" "${bash}/bin/bash"
     done
-  '' + optionalString supportOpenstack ''
-    # We need a way to pass $PATH to the scripts
-    sed -i '2iexport PATH=${git}/bin:${mysql}/bin:${which}/bin:${procps}/bin:${coreutils}/bin' src/program/snabbnfv/neutron_sync_master/neutron_sync_master.sh.inc
-    sed -i '2iexport PATH=${git}/bin:${coreutils}/bin:${diffutils}/bin:${nettools}/bin' src/program/snabbnfv/neutron_sync_agent/neutron_sync_agent.sh.inc
-  '';
+  ''
+  + optionalString supportOpenstack ''
+      # We need a way to pass $PATH to the scripts
+      sed -i '2iexport PATH=${git}/bin:${mysql}/bin:${which}/bin:${procps}/bin:${coreutils}/bin' src/program/snabbnfv/neutron_sync_master/neutron_sync_master.sh.inc
+      sed -i '2iexport PATH=${git}/bin:${coreutils}/bin:${diffutils}/bin:${nettools}/bin' src/program/snabbnfv/neutron_sync_agent/neutron_sync_agent.sh.inc
+    ''
+  ;
 
   preBuild = ''
     make clean
@@ -43,7 +55,7 @@ stdenv.mkDerivation rec {
   # "Fatal error: can't create obj/arch/sse2_c.o: No such file or directory".
   enableParallelBuilding = false;
 
-  meta =  {
+  meta = {
     homepage = https://github.com/SnabbCo/snabbswitch;
     description = "Simple and fast packet networking toolkit";
     longDescription = ''

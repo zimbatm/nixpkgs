@@ -1,9 +1,22 @@
-{ config, stdenv, fetchurl, zlib, pkgconfig, mpg123, libogg, libvorbis, portaudio, libsndfile, flac
-, usePulseAudio ? config.pulseaudio or false, libpulseaudio }:
+{ config
+, stdenv
+, fetchurl
+, zlib
+, pkgconfig
+, mpg123
+, libogg
+, libvorbis
+, portaudio
+, libsndfile
+, flac
+, usePulseAudio ? config.pulseaudio or false
+, libpulseaudio
+}:
 
 let
   version = "0.4.1";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "openmpt123-${version}";
 
   src = fetchurl {
@@ -16,7 +29,8 @@ in stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ zlib mpg123 libogg libvorbis portaudio libsndfile flac ]
-  ++ stdenv.lib.optional usePulseAudio libpulseaudio;
+    ++ stdenv.lib.optional usePulseAudio libpulseaudio
+    ;
 
   configureFlags = stdenv.lib.optional (!usePulseAudio) [ "--without-pulseaudio" ];
 

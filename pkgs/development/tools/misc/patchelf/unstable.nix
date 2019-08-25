@@ -15,16 +15,17 @@ stdenv.mkDerivation rec {
   postPatch = stdenv.lib.optionalString stdenv.hostPlatform.isMusl ''
     substituteInPlace tests/Makefile.am \
       --replace "set-rpath-library.sh" ""
-  '' +
-  # extend version identifier to more informative than "0.10".
+  ''
+  + # extend version identifier to more informative than "0.10".
   ''
     echo -n ${version} > version
-  '';
+  ''
+  ;
 
   setupHook = [ ./setup-hook.sh ];
 
   nativeBuildInputs = [ autoreconfHook ];
-  buildInputs = [ ];
+  buildInputs = [];
 
   doCheck = !stdenv.isDarwin;
 

@@ -1,4 +1,4 @@
-{stdenv, fetchurl, ocaml, findlib, ncurses, python, ocaml_make}:
+{ stdenv, fetchurl, ocaml, findlib, ncurses, python, ocaml_make }:
 
 # This is the original pycaml version with patches from debian.
 
@@ -6,15 +6,19 @@ stdenv.mkDerivation {
   name = "pycaml-0.82-14";
 
   srcs = [
-    (fetchurl {
-      url = "mirror://debian/pool/main/p/pycaml/pycaml_0.82.orig.tar.gz";
-      sha256 = "d57be559c8d586c575717d47817986bbdbcebe2ffd16ad6b291525c62868babe";
-    })
+    (
+      fetchurl {
+        url = "mirror://debian/pool/main/p/pycaml/pycaml_0.82.orig.tar.gz";
+        sha256 = "d57be559c8d586c575717d47817986bbdbcebe2ffd16ad6b291525c62868babe";
+      }
+    )
 
-    (fetchurl {
-      url = "mirror://debian/pool/main/p/pycaml/pycaml_0.82-14.debian.tar.gz";
-      sha256 = "a763088ec1fa76c769bf586ed6692e7ac035b0a2bfd48a90a8e7a9539ec0c2f1";
-    })
+    (
+      fetchurl {
+        url = "mirror://debian/pool/main/p/pycaml/pycaml_0.82-14.debian.tar.gz";
+        sha256 = "a763088ec1fa76c769bf586ed6692e7ac035b0a2bfd48a90a8e7a9539ec0c2f1";
+      }
+    )
   ];
 
   postPatch = ''

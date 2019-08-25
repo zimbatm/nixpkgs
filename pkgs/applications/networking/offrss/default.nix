@@ -10,16 +10,20 @@ stdenv.mkDerivation {
 
   buildInputs = [ curl libmrss ]
     ++ stdenv.lib.optional (stdenv.hostPlatform == stdenv.buildPlatform) podofo
-    ++ stdenv.lib.optional (!stdenv.isLinux) libiconv;
+    ++ stdenv.lib.optional (!stdenv.isLinux) libiconv
+    ;
 
   configurePhase = ''
     substituteInPlace Makefile \
       --replace '$(CC) $(CFLAGS) $(LDFLAGS)' '$(CXX) $(CFLAGS) $(LDFLAGS)'
-  '' + stdenv.lib.optionalString (!stdenv.isLinux) ''
-    sed 's/#EXTRA/EXTRA/' -i Makefile
-  '' + stdenv.lib.optionalString (stdenv.hostPlatform != stdenv.buildPlatform) ''
-    sed 's/^PDF/#PDF/' -i Makefile
-  '';
+  ''
+  + stdenv.lib.optionalString (!stdenv.isLinux) ''
+      sed 's/#EXTRA/EXTRA/' -i Makefile
+    ''
+  + stdenv.lib.optionalString (stdenv.hostPlatform != stdenv.buildPlatform) ''
+      sed 's/^PDF/#PDF/' -i Makefile
+    ''
+  ;
 
   src = fetchurl {
     url = http://vicerveza.homeunix.net/~viric/soft/offrss/offrss-1.3.tar.gz;
@@ -29,8 +33,8 @@ stdenv.mkDerivation {
   meta = {
     homepage = http://vicerveza.homeunix.net/~viric/cgi-bin/offrss;
     description = "Offline RSS/Atom reader";
-    license="AGPLv3+";
-    maintainers = with stdenv.lib.maintainers; [viric];
+    license = "AGPLv3+";
+    maintainers = with stdenv.lib.maintainers; [ viric ];
     platforms = stdenv.lib.platforms.linux;
   };
 }

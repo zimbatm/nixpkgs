@@ -1,6 +1,8 @@
 { stdenv, lib, fetchurl, libiconv, xz, bison, automake115x, autoconf }:
 
-let allowBisonDependency = !stdenv.isDarwin; in
+let
+  allowBisonDependency = !stdenv.isDarwin;
+in
 stdenv.mkDerivation rec {
   name = "gettext-${version}";
   version = "0.19.8.1";
@@ -11,15 +13,19 @@ stdenv.mkDerivation rec {
   };
   patches = [
     ./absolute-paths.diff
-    (fetchurl {
-      name = "CVE-2018-18751.patch";
-      url = "https://git.savannah.gnu.org/gitweb/?p=gettext.git;a=patch;h=dce3a16e5e9368245735e29bf498dcd5e3e474a4";
-      sha256 = "1lpjwwcjr1sb879faj0xyzw02kma0ivab6xwn3qciy13qy6fq5xn";
-    })
-  ] ++ lib.optionals (!allowBisonDependency) [
-    # Only necessary for CVE-2018-18751.patch:
-    ./CVE-2018-18751-bison.patch
-  ];
+    (
+      fetchurl {
+        name = "CVE-2018-18751.patch";
+        url = "https://git.savannah.gnu.org/gitweb/?p=gettext.git;a=patch;h=dce3a16e5e9368245735e29bf498dcd5e3e474a4";
+        sha256 = "1lpjwwcjr1sb879faj0xyzw02kma0ivab6xwn3qciy13qy6fq5xn";
+      }
+    )
+  ]
+  ++ lib.optionals (!allowBisonDependency) [
+       # Only necessary for CVE-2018-18751.patch:
+       ./CVE-2018-18751-bison.patch
+     ]
+  ;
 
   outputs = [ "out" "man" "doc" "info" ];
 
@@ -28,28 +34,34 @@ stdenv.mkDerivation rec {
   LDFLAGS = if stdenv.isSunOS then "-lm -lmd -lmp -luutil -lnvpair -lnsl -lidmap -lavl -lsec" else "";
 
   configureFlags = [
-     "--disable-csharp" "--with-xz"
-     # avoid retaining reference to CF during stdenv bootstrap
-  ] ++ lib.optionals stdenv.isDarwin [
-    "gt_cv_func_CFPreferencesCopyAppValue=no"
-    "gt_cv_func_CFLocaleCopyCurrent=no"
-  ] ++ stdenv.lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
-    # On cross building, gettext supposes that the wchar.h from libc
-    # does not fulfill gettext needs, so it tries to work with its
-    # own wchar.h file, which does not cope well with the system's
-    # wchar.h and stddef.h (gcc-4.3 - glibc-2.9)
-    "gl_cv_func_wcwidth_works=yes"
-  ];
+    "--disable-csharp"
+    "--with-xz"
+    # avoid retaining reference to CF during stdenv bootstrap
+  ]
+  ++ lib.optionals stdenv.isDarwin [
+       "gt_cv_func_CFPreferencesCopyAppValue=no"
+       "gt_cv_func_CFLocaleCopyCurrent=no"
+     ]
+  ++ stdenv.lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
+       # On cross building, gettext supposes that the wchar.h from libc
+       # does not fulfill gettext needs, so it tries to work with its
+       # own wchar.h file, which does not cope well with the system's
+       # wchar.h and stddef.h (gcc-4.3 - glibc-2.9)
+       "gl_cv_func_wcwidth_works=yes"
+     ]
+  ;
 
   postPatch = ''
-   substituteAllInPlace gettext-runtime/src/gettext.sh.in
-   substituteInPlace gettext-tools/projects/KDE/trigger --replace "/bin/pwd" pwd
-   substituteInPlace gettext-tools/projects/GNOME/trigger --replace "/bin/pwd" pwd
-   substituteInPlace gettext-tools/src/project-id --replace "/bin/pwd" pwd
-  '' + lib.optionalString stdenv.hostPlatform.isCygwin ''
-    sed -i -e "s/\(cldr_plurals_LDADD = \)/\\1..\/gnulib-lib\/libxml_rpl.la /" gettext-tools/src/Makefile.in
-    sed -i -e "s/\(libgettextsrc_la_LDFLAGS = \)/\\1..\/gnulib-lib\/libxml_rpl.la /" gettext-tools/src/Makefile.in
-  '';
+    substituteAllInPlace gettext-runtime/src/gettext.sh.in
+    substituteInPlace gettext-tools/projects/KDE/trigger --replace "/bin/pwd" pwd
+    substituteInPlace gettext-tools/projects/GNOME/trigger --replace "/bin/pwd" pwd
+    substituteInPlace gettext-tools/src/project-id --replace "/bin/pwd" pwd
+  ''
+  + lib.optionalString stdenv.hostPlatform.isCygwin ''
+      sed -i -e "s/\(cldr_plurals_LDADD = \)/\\1..\/gnulib-lib\/libxml_rpl.la /" gettext-tools/src/Makefile.in
+      sed -i -e "s/\(libgettextsrc_la_LDFLAGS = \)/\\1..\/gnulib-lib\/libxml_rpl.la /" gettext-tools/src/Makefile.in
+    ''
+  ;
 
   nativeBuildInputs = [
     xz
@@ -59,10 +71,11 @@ stdenv.mkDerivation rec {
   # is also applied):
   ++ lib.optional allowBisonDependency bison
   ++ [
-    # Only necessary for CVE-2018-18751.patch:
-    automake115x
-    autoconf
-  ];
+       # Only necessary for CVE-2018-18751.patch:
+       automake115x
+       autoconf
+     ]
+  ;
   # HACK, see #10874 (and 14664)
   buildInputs = stdenv.lib.optional (!stdenv.isLinux && !stdenv.hostPlatform.isCygwin) libiconv;
 
@@ -106,5 +119,5 @@ stdenv.mkDerivation rec {
 }
 
 // stdenv.lib.optionalAttrs stdenv.isDarwin {
-  makeFlags = "CFLAGS=-D_FORTIFY_SOURCE=0";
-}
+     makeFlags = "CFLAGS=-D_FORTIFY_SOURCE=0";
+   }

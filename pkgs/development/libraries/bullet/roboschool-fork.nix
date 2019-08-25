@@ -1,5 +1,10 @@
-{ stdenv, fetchFromGitHub, cmake, libGLU_combined, freeglut
-, Cocoa,  OpenGL
+{ stdenv
+, fetchFromGitHub
+, cmake
+, libGLU_combined
+, freeglut
+, Cocoa
+, OpenGL
 }:
 
 stdenv.mkDerivation rec {
@@ -19,7 +24,8 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ cmake ];
   buildInputs = stdenv.lib.optionals stdenv.isLinux [ libGLU_combined freeglut ]
-    ++ stdenv.lib.optionals stdenv.isDarwin [ Cocoa OpenGL ];
+    ++ stdenv.lib.optionals stdenv.isDarwin [ Cocoa OpenGL ]
+    ;
 
   patches = [ ./gwen-narrowing.patch ];
 
@@ -32,15 +38,17 @@ stdenv.mkDerivation rec {
     "-DBUILD_SHARED_LIBS=ON"
     "-DBUILD_CPU_DEMOS=OFF"
     "-DINSTALL_EXTRA_LIBS=ON"
-  ] ++ stdenv.lib.optionals stdenv.isDarwin [
-    "-DOPENGL_FOUND=true"
-    "-DOPENGL_LIBRARIES=${OpenGL}/Library/Frameworks/OpenGL.framework"
-    "-DOPENGL_INCLUDE_DIR=${OpenGL}/Library/Frameworks/OpenGL.framework"
-    "-DOPENGL_gl_LIBRARY=${OpenGL}/Library/Frameworks/OpenGL.framework"
-    "-DCOCOA_LIBRARY=${Cocoa}/Library/Frameworks/Cocoa.framework"
-    "-DBUILD_BULLET2_DEMOS=OFF"
-    "-DBUILD_UNIT_TESTS=OFF"
-  ];
+  ]
+  ++ stdenv.lib.optionals stdenv.isDarwin [
+       "-DOPENGL_FOUND=true"
+       "-DOPENGL_LIBRARIES=${OpenGL}/Library/Frameworks/OpenGL.framework"
+       "-DOPENGL_INCLUDE_DIR=${OpenGL}/Library/Frameworks/OpenGL.framework"
+       "-DOPENGL_gl_LIBRARY=${OpenGL}/Library/Frameworks/OpenGL.framework"
+       "-DCOCOA_LIBRARY=${Cocoa}/Library/Frameworks/Cocoa.framework"
+       "-DBUILD_BULLET2_DEMOS=OFF"
+       "-DBUILD_UNIT_TESTS=OFF"
+     ]
+  ;
 
   enableParallelBuilding = true;
 

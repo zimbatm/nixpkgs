@@ -3,7 +3,7 @@ let
   version = "0.7.2";
 in
 stdenv.mkDerivation rec {
-  name="dfu-programmer-${version}";
+  name = "dfu-programmer-${version}";
 
   buildInputs = [ libusb ];
 

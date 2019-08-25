@@ -12,9 +12,11 @@ stdenv.mkDerivation rec {
   outputs = [ "out" "dev" ];
 
   nativeBuildInputs = [ pkgconfig gnum4 ];
-  buildInputs = stdenv.lib.optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
-    Cocoa
-  ]);
+  buildInputs = stdenv.lib.optionals stdenv.isDarwin (
+    with darwin.apple_sdk.frameworks; [
+      Cocoa
+    ]
+  );
   propagatedBuildInputs = [ glib libsigcxx ];
 
   enableParallelBuilding = true;
@@ -34,7 +36,7 @@ stdenv.mkDerivation rec {
 
     license = licenses.lgpl2Plus;
 
-    maintainers = with maintainers; [raskin];
+    maintainers = with maintainers; [ raskin ];
     platforms = platforms.unix;
   };
 }

@@ -2,7 +2,7 @@
 
 stdenv.mkDerivation rec {
 
-  pname   = "rmount";
+  pname = "rmount";
   version = "1.0.1";
 
   src = fetchFromGitHub rec {

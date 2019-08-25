@@ -32,35 +32,41 @@ let
       uwsgiCfg = {
         uwsgi =
           if c.type == "normal"
-            then {
-              inherit plugins;
-            } // removeAttrs c [ "type" "pythonPackages" ]
-              // optionalAttrs (python != null) {
-                pythonpath = "${pythonEnv}/${python.sitePackages}";
-                env =
-                  # Argh, uwsgi expects list of key-values there instead of a dictionary.
-                  let env' = c.env or [];
-                      getPath =
-                        x: if hasPrefix "PATH=" x
-                           then substring (stringLength "PATH=") (stringLength x) x
-                           else null;
-                      oldPaths = filter (x: x != null) (map getPath env');
-                  in env' ++ [ "PATH=${optionalString (oldPaths != []) "${last oldPaths}:"}${pythonEnv}/bin" ];
-              }
+          then {
+            inherit plugins;
+          }
+          // removeAttrs c [ "type" "pythonPackages" ]
+          // optionalAttrs (python != null) {
+               pythonpath = "${pythonEnv}/${python.sitePackages}";
+               env =
+                 # Argh, uwsgi expects list of key-values there instead of a dictionary.
+                 let
+                   env' = c.env or [];
+                   getPath =
+                     x: if hasPrefix "PATH=" x
+                     then substring (stringLength "PATH=") (stringLength x) x
+                     else null;
+                   oldPaths = filter (x: x != null) (map getPath env');
+                 in
+                   env' ++ [ "PATH=${optionalString (oldPaths != []) "${last oldPaths}:"}${pythonEnv}/bin" ];
+             }
           else if c.type == "emperor"
-            then {
-              emperor = if builtins.typeOf c.vassals != "set" then c.vassals
-                        else pkgs.buildEnv {
-                          name = "vassals";
-                          paths = mapAttrsToList buildCfg c.vassals;
-                        };
-            } // removeAttrs c [ "type" "vassals" ]
+          then {
+            emperor = if builtins.typeOf c.vassals != "set" then c.vassals
+            else pkgs.buildEnv {
+              name = "vassals";
+              paths = mapAttrsToList buildCfg c.vassals;
+            };
+          }
+          // removeAttrs c [ "type" "vassals" ]
           else throw "`type` attribute in UWSGI configuration should be either 'normal' or 'emperor'";
       };
 
-    in pkgs.writeTextDir "${name}.json" (builtins.toJSON uwsgiCfg);
+    in
+      pkgs.writeTextDir "${name}.json" (builtins.toJSON uwsgiCfg);
 
-in {
+in
+{
 
   options = {
     services.uwsgi = {
@@ -146,15 +152,21 @@ in {
       };
     };
 
-    users.users = optionalAttrs (cfg.user == "uwsgi") (singleton
-      { name = "uwsgi";
-        group = cfg.group;
-        uid = config.ids.uids.uwsgi;
-      });
+    users.users = optionalAttrs (cfg.user == "uwsgi") (
+      singleton
+        {
+          name = "uwsgi";
+          group = cfg.group;
+          uid = config.ids.uids.uwsgi;
+        }
+    );
 
-    users.groups = optionalAttrs (cfg.group == "uwsgi") (singleton
-      { name = "uwsgi";
-        gid = config.ids.gids.uwsgi;
-      });
+    users.groups = optionalAttrs (cfg.group == "uwsgi") (
+      singleton
+        {
+          name = "uwsgi";
+          gid = config.ids.gids.uwsgi;
+        }
+    );
   };
 }

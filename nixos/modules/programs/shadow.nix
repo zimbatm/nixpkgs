@@ -61,18 +61,22 @@ in
   config = {
 
     environment.systemPackages =
-      lib.optional config.users.mutableUsers pkgs.shadow ++
-      lib.optional (types.shellPackage.check config.users.defaultUserShell)
-        config.users.defaultUserShell;
+      lib.optional config.users.mutableUsers pkgs.shadow
+      ++ lib.optional (types.shellPackage.check config.users.defaultUserShell)
+           config.users.defaultUserShell
+      ;
 
     environment.etc =
-      [ { # /etc/login.defs: global configuration for pwdutils.  You
+      [
+        {
+          # /etc/login.defs: global configuration for pwdutils.  You
           # cannot login without it!
           source = pkgs.writeText "login.defs" loginDefs;
           target = "login.defs";
         }
 
-        { # /etc/default/useradd: configuration for useradd.
+        {
+          # /etc/default/useradd: configuration for useradd.
           source = pkgs.writeText "useradd"
             ''
               GROUP=100
@@ -84,7 +88,8 @@ in
       ];
 
     security.pam.services =
-      { chsh = { rootOK = true; };
+      {
+        chsh = { rootOK = true; };
         chfn = { rootOK = true; };
         su = { rootOK = true; forwardXAuth = true; logFailures = true; };
         passwd = {};
@@ -103,13 +108,17 @@ in
       };
 
     security.wrappers = {
-      su.source        = "${pkgs.shadow.su}/bin/su";
-      sg.source        = "${pkgs.shadow.out}/bin/sg";
-      newgrp.source    = "${pkgs.shadow.out}/bin/newgrp";
+      su.source = "${pkgs.shadow.su}/bin/su";
+      sg.source = "${pkgs.shadow.out}/bin/sg";
+      newgrp.source = "${pkgs.shadow.out}/bin/newgrp";
       newuidmap.source = "${pkgs.shadow.out}/bin/newuidmap";
       newgidmap.source = "${pkgs.shadow.out}/bin/newgidmap";
-    } // (if config.users.mutableUsers then {
-      passwd.source    = "${pkgs.shadow.out}/bin/passwd";
-    } else {});
+    }
+    // (
+         if config.users.mutableUsers then {
+           passwd.source = "${pkgs.shadow.out}/bin/passwd";
+         } else {}
+       )
+    ;
   };
 }

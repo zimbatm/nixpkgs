@@ -13,21 +13,34 @@ buildPythonApplication rec {
     sha256 = "051qjdpwif06x7qspnb4pfwdhb8nnmz99yqcp4kla5hv0n3jh0w9";
   };
 
-    LOCALE_ARCHIVE = stdenv.lib.optionalString stdenv.isLinux
-      "${glibcLocales}/lib/locale/locale-archive";
-    LANG = "en_US.UTF-8";
-    LC_TYPE = "en_US.UTF-8";
+  LOCALE_ARCHIVE = stdenv.lib.optionalString stdenv.isLinux
+    "${glibcLocales}/lib/locale/locale-archive";
+  LANG = "en_US.UTF-8";
+  LC_TYPE = "en_US.UTF-8";
 
   buildInputs = [ glibcLocales ];
   propagatedBuildInputs = with python3.pkgs;
-    [ atomicwrites click click-log configobj humanize icalendar parsedatetime
-      python-dateutil pyxdg tabulate urwid ];
+    [
+      atomicwrites
+      click
+      click-log
+      configobj
+      humanize
+      icalendar
+      parsedatetime
+      python-dateutil
+      pyxdg
+      tabulate
+      urwid
+    ];
 
   checkInputs = with python3.pkgs;
     [ flake8 flake8-import-order freezegun hypothesis pytest pytestrunner pytestcov ];
 
-  makeWrapperArgs = [ "--set LOCALE_ARCHIVE ${glibcLocales}/lib/locale/locale-archive"
-                      "--set CHARSET en_us.UTF-8" ];
+  makeWrapperArgs = [
+    "--set LOCALE_ARCHIVE ${glibcLocales}/lib/locale/locale-archive"
+    "--set CHARSET en_us.UTF-8"
+  ];
 
   preCheck = ''
     # Remove one failing test that only checks whether the command line works

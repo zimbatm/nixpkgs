@@ -1,6 +1,22 @@
-{ stdenv, fetchurl, pkgconfig, gtk2, bison, intltool, flex
-, netpbm, imagemagick, dbus, xlibsWrapper, libGLU_combined
-, shared-mime-info, tcl, tk, gnome2, pangox_compat, gd, xorg
+{ stdenv
+, fetchurl
+, pkgconfig
+, gtk2
+, bison
+, intltool
+, flex
+, netpbm
+, imagemagick
+, dbus
+, xlibsWrapper
+, libGLU_combined
+, shared-mime-info
+, tcl
+, tk
+, gnome2
+, pangox_compat
+, gd
+, xorg
 }:
 
 stdenv.mkDerivation rec {
@@ -14,12 +30,25 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ pkgconfig ];
   buildInputs = [
-    gtk2 bison intltool flex netpbm imagemagick dbus xlibsWrapper
-    libGLU_combined tcl shared-mime-info tk
-    gnome2.gtkglext pangox_compat gd xorg.libXmu
+    gtk2
+    bison
+    intltool
+    flex
+    netpbm
+    imagemagick
+    dbus
+    xlibsWrapper
+    libGLU_combined
+    tcl
+    shared-mime-info
+    tk
+    gnome2.gtkglext
+    pangox_compat
+    gd
+    xorg.libXmu
   ];
 
-  configureFlags = ["--disable-update-desktop-database"];
+  configureFlags = [ "--disable-update-desktop-database" ];
 
   meta = with stdenv.lib; {
     description = "Printed Circuit Board editor";

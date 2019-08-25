@@ -24,10 +24,12 @@ buildPythonApplication rec {
   };
 
   patches = [
-    (substituteAll {
-      src = ./paths.patch;
-      inherit libX11 libXtst;
-    })
+    (
+      substituteAll {
+        src = ./paths.patch;
+        inherit libX11 libXtst;
+      }
+    )
   ];
 
   nativeBuildInputs = [

@@ -9,5 +9,5 @@ stdenv.mkDerivation {
   buildCommand = ''
     makeWrapper ${nuspell}/bin/nuspell $out/bin/nuspell --prefix DICPATH : ${searchPath}
   '';
-  meta = removeAttrs nuspell.meta ["outputsToInstall"];
+  meta = removeAttrs nuspell.meta [ "outputsToInstall" ];
 }

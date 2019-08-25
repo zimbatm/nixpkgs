@@ -7,7 +7,9 @@ stdenv.mkDerivation rec {
   name = "prelink-${version}";
 
   buildInputs = [
-    libelf stdenv.cc.libc (stdenv.lib.getOutput "static" stdenv.cc.libc)
+    libelf
+    stdenv.cc.libc
+    (stdenv.lib.getOutput "static" stdenv.cc.libc)
   ];
 
   src = fetchurl {

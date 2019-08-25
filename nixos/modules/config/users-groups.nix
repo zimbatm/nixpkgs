@@ -260,24 +260,32 @@ let
     };
 
     config = mkMerge
-      [ { name = mkDefault name;
+      [
+        {
+          name = mkDefault name;
           shell = mkIf config.useDefaultShell (mkDefault cfg.defaultUserShell);
         }
-        (mkIf config.isNormalUser {
-          group = mkDefault "users";
-          createHome = mkDefault true;
-          home = mkDefault "/home/${config.name}";
-          useDefaultShell = mkDefault true;
-          isSystemUser = mkDefault false;
-        })
+        (
+          mkIf config.isNormalUser {
+            group = mkDefault "users";
+            createHome = mkDefault true;
+            home = mkDefault "/home/${config.name}";
+            useDefaultShell = mkDefault true;
+            isSystemUser = mkDefault false;
+          }
+        )
         # If !mutableUsers, setting ‘initialPassword’ is equivalent to
         # setting ‘password’ (and similarly for hashed passwords).
-        (mkIf (!cfg.mutableUsers && config.initialPassword != null) {
-          password = mkDefault config.initialPassword;
-        })
-        (mkIf (!cfg.mutableUsers && config.initialHashedPassword != null) {
-          hashedPassword = mkDefault config.initialHashedPassword;
-        })
+        (
+          mkIf (!cfg.mutableUsers && config.initialPassword != null) {
+            password = mkDefault config.initialPassword;
+          }
+        )
+        (
+          mkIf (!cfg.mutableUsers && config.initialHashedPassword != null) {
+            hashedPassword = mkDefault config.initialHashedPassword;
+          }
+        )
       ];
 
   };
@@ -356,45 +364,64 @@ let
 
   mkSubuidEntry = user: concatStrings (
     map (range: "${user.name}:${toString range.startUid}:${toString range.count}\n")
-      user.subUidRanges);
+      user.subUidRanges
+  );
 
   subuidFile = concatStrings (map mkSubuidEntry (attrValues cfg.users));
 
   mkSubgidEntry = user: concatStrings (
     map (range: "${user.name}:${toString range.startGid}:${toString range.count}\n")
-        user.subGidRanges);
+      user.subGidRanges
+  );
 
   subgidFile = concatStrings (map mkSubgidEntry (attrValues cfg.users));
 
-  idsAreUnique = set: idAttr: !(fold (name: args@{ dup, acc }:
-    let
-      id = builtins.toString (builtins.getAttr idAttr (builtins.getAttr name set));
-      exists = builtins.hasAttr id acc;
-      newAcc = acc // (builtins.listToAttrs [ { name = id; value = true; } ]);
-    in if dup then args else if exists
-      then builtins.trace "Duplicate ${idAttr} ${id}" { dup = true; acc = null; }
-      else { dup = false; acc = newAcc; }
-    ) { dup = false; acc = {}; } (builtins.attrNames set)).dup;
+  idsAreUnique = set: idAttr: !(
+    fold (
+      name: args@{ dup, acc }:
+        let
+          id = builtins.toString (builtins.getAttr idAttr (builtins.getAttr name set));
+          exists = builtins.hasAttr id acc;
+          newAcc = acc // (builtins.listToAttrs [ { name = id; value = true; } ]);
+        in
+          if dup then args else if exists
+          then builtins.trace "Duplicate ${idAttr} ${id}" { dup = true; acc = null; }
+          else { dup = false; acc = newAcc; }
+    ) { dup = false; acc = {}; } (builtins.attrNames set)
+  ).dup;
 
   uidsAreUnique = idsAreUnique (filterAttrs (n: u: u.uid != null) cfg.users) "uid";
   gidsAreUnique = idsAreUnique (filterAttrs (n: g: g.gid != null) cfg.groups) "gid";
 
-  spec = pkgs.writeText "users-groups.json" (builtins.toJSON {
-    inherit (cfg) mutableUsers;
-    users = mapAttrsToList (_: u:
-      { inherit (u)
-          name uid group description home createHome isSystemUser
-          password passwordFile hashedPassword
-          initialPassword initialHashedPassword;
-        shell = utils.toShellPath u.shell;
-      }) cfg.users;
-    groups = mapAttrsToList (n: g:
-      { inherit (g) name gid;
-        members = g.members ++ (mapAttrsToList (n: u: u.name) (
-          filterAttrs (n: u: elem g.name u.extraGroups) cfg.users
-        ));
-      }) cfg.groups;
-  });
+  spec = pkgs.writeText "users-groups.json" (
+    builtins.toJSON {
+      inherit (cfg) mutableUsers;
+      users = mapAttrsToList (
+        _: u:
+          {
+            inherit (u)
+              name uid group description home createHome isSystemUser
+              password passwordFile hashedPassword
+              initialPassword initialHashedPassword
+              ;
+            shell = utils.toShellPath u.shell;
+          }
+      ) cfg.users;
+      groups = mapAttrsToList (
+        n: g:
+          {
+            inherit (g) name gid;
+            members = g.members
+              ++ (
+                   mapAttrsToList (n: u: u.name) (
+                     filterAttrs (n: u: elem g.name u.extraGroups) cfg.users
+                   )
+                 )
+              ;
+          }
+      ) cfg.groups;
+    }
+  );
 
   systemShells =
     let
@@ -402,7 +429,8 @@ let
     in
       filter types.shellPackage.check shells;
 
-in {
+in
+{
 
   ###### interface
 
@@ -451,7 +479,7 @@ in {
           home = "/home/alice";
           createHome = true;
           group = "users";
-          extraGroups = ["wheel"];
+          extraGroups = [ "wheel" ];
           shell = "/bin/sh";
         };
       };
@@ -464,8 +492,9 @@ in {
     users.groups = mkOption {
       default = {};
       example =
-        { students.gid = 1001;
-          hackers = { };
+        {
+          students.gid = 1001;
+          hackers = {};
         };
       type = with types; loaOf (submodule groupOpts);
       description = ''
@@ -554,15 +583,21 @@ in {
         text = subgidFile;
         mode = "0644";
       };
-    } // (mapAttrs' (name: { packages, ... }: {
-      name = "profiles/per-user/${name}";
-      value.source = pkgs.buildEnv {
-        name = "user-environment";
-        paths = packages;
-        inherit (config.environment) pathsToLink extraOutputsToInstall;
-        inherit (config.system.path) ignoreCollisions postBuild;
-      };
-    }) (filterAttrs (_: u: u.packages != []) cfg.users));
+    }
+    // (
+         mapAttrs' (
+           name: { packages, ... }: {
+             name = "profiles/per-user/${name}";
+             value.source = pkgs.buildEnv {
+               name = "user-environment";
+               paths = packages;
+               inherit (config.environment) pathsToLink extraOutputsToInstall;
+               inherit (config.system.path) ignoreCollisions postBuild;
+             };
+           }
+         ) (filterAttrs (_: u: u.packages != []) cfg.users)
+       )
+    ;
 
     environment.profiles = [
       "$HOME/.nix-profile"
@@ -570,26 +605,35 @@ in {
     ];
 
     assertions = [
-      { assertion = !cfg.enforceIdUniqueness || (uidsAreUnique && gidsAreUnique);
+      {
+        assertion = !cfg.enforceIdUniqueness || (uidsAreUnique && gidsAreUnique);
         message = "UIDs and GIDs must be unique!";
       }
-      { # If mutableUsers is false, to prevent users creating a
+      {
+        # If mutableUsers is false, to prevent users creating a
         # configuration that locks them out of the system, ensure that
         # there is at least one "privileged" account that has a
         # password or an SSH authorized key. Privileged accounts are
         # root and users in the wheel group.
-        assertion = !cfg.mutableUsers ->
-          any id (mapAttrsToList (name: cfg:
-            (name == "root"
-             || cfg.group == "wheel"
-             || elem "wheel" cfg.extraGroups)
-            &&
-            ((cfg.hashedPassword != null && cfg.hashedPassword != "!")
-             || cfg.password != null
-             || cfg.passwordFile != null
-             || cfg.openssh.authorizedKeys.keys != []
-             || cfg.openssh.authorizedKeys.keyFiles != [])
-          ) cfg.users);
+        assertion = !cfg.mutableUsers
+          -> any id (
+               mapAttrsToList (
+                 name: cfg:
+                   (
+                     name == "root"
+                     || cfg.group == "wheel"
+                     || elem "wheel" cfg.extraGroups
+                   )
+                   && (
+                        (cfg.hashedPassword != null && cfg.hashedPassword != "!")
+                        || cfg.password != null
+                        || cfg.passwordFile != null
+                        || cfg.openssh.authorizedKeys.keys != []
+                        || cfg.openssh.authorizedKeys.keyFiles != []
+                      )
+               ) cfg.users
+             )
+          ;
         message = ''
           Neither the root account nor any wheel user has a password or SSH authorized key.
           You must set one to prevent being locked out of your system.'';

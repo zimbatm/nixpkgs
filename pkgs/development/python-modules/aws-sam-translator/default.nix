@@ -24,7 +24,9 @@ buildPythonPackage rec {
     boto3
     jsonschema
     six
-  ] ++ lib.optionals (pythonOlder "3.4") [ enum34 ];
+  ]
+  ++ lib.optionals (pythonOlder "3.4") [ enum34 ]
+  ;
 
   meta = {
     homepage = https://github.com/awslabs/serverless-application-model;

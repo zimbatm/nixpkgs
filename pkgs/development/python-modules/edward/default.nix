@@ -1,10 +1,19 @@
-{ stdenv, buildPythonPackage, fetchPypi, isPy27, pythonAtLeast
-, Keras, numpy, scipy, six, tensorflow }:
+{ stdenv
+, buildPythonPackage
+, fetchPypi
+, isPy27
+, pythonAtLeast
+, Keras
+, numpy
+, scipy
+, six
+, tensorflow
+}:
 
 buildPythonPackage rec {
   pname = "edward";
   version = "1.3.5";
-  name  = "${pname}-${version}";
+  name = "${pname}-${version}";
 
   disabled = !(isPy27 || pythonAtLeast "3.4");
 

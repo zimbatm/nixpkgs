@@ -10,8 +10,8 @@ let
     auth_required = ${diodBool cfg.authRequired}
     exportall = ${diodBool cfg.exportall}
     exportopts = "${concatStringsSep "," cfg.exportopts}"
-    exports = { ${concatStringsSep ", " (map (s: ''"${s}"'' ) cfg.exports)} }
-    listen = { ${concatStringsSep ", " (map (s: ''"${s}"'' ) cfg.listen)} }
+    exports = { ${concatStringsSep ", " (map (s: ''"${s}"'') cfg.exports)} }
+    listen = { ${concatStringsSep ", " (map (s: ''"${s}"'') cfg.listen)} }
     logdest = "${cfg.logdest}"
     nwthreads = ${toString cfg.nwthreads}
     squashuser = "${cfg.squashuser}"

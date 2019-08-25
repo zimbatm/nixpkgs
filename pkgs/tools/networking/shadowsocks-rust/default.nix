@@ -14,7 +14,8 @@ rustPlatform.buildRustPackage rec {
   cargoSha256 = "19wx19sbal2q5ndniv6vllayjjy5fzi8fw7fn1d23jb9l91ak7ab";
 
   buildInputs = [ openssl libsodium ]
-    ++ stdenv.lib.optionals stdenv.isDarwin [ Security ];
+    ++ stdenv.lib.optionals stdenv.isDarwin [ Security ]
+    ;
   nativeBuildInputs = [ pkgconfig ];
 
   # tries to read /etc/resolv.conf, hence fails in sandbox

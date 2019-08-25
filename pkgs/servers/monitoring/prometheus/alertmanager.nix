@@ -14,15 +14,18 @@ buildGoPackage rec {
     sha256 = "17f3a4fiwycpd031k1d9irhd96cklbh2ygs35j5r6hgw2130sy4p";
   };
 
-  buildFlagsArray = let t = "${goPackagePath}/vendor/github.com/prometheus/common/version"; in ''
-    -ldflags=
-       -X ${t}.Version=${version}
-       -X ${t}.Revision=${src.rev}
-       -X ${t}.Branch=unknown
-       -X ${t}.BuildUser=nix@nixpkgs
-       -X ${t}.BuildDate=unknown
-       -X ${t}.GoVersion=${stdenv.lib.getVersion go}
-  '';
+  buildFlagsArray = let
+    t = "${goPackagePath}/vendor/github.com/prometheus/common/version";
+  in
+    ''
+      -ldflags=
+         -X ${t}.Version=${version}
+         -X ${t}.Revision=${src.rev}
+         -X ${t}.Branch=unknown
+         -X ${t}.BuildUser=nix@nixpkgs
+         -X ${t}.BuildDate=unknown
+         -X ${t}.GoVersion=${stdenv.lib.getVersion go}
+    '';
 
   postInstall = ''
     mkdir -p $bin/etc/bash_completion.d

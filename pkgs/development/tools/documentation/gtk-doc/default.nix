@@ -10,7 +10,8 @@
 , libxslt
 , gettext
 , gnome3
-, withDblatex ? false, dblatex
+, withDblatex ? false
+, dblatex
 }:
 
 stdenv.mkDerivation rec {
@@ -21,7 +22,7 @@ stdenv.mkDerivation rec {
     domain = "gitlab.gnome.org";
     owner = "GNOME";
     repo = pname;
-    rev = "GTK_DOC_${stdenv.lib.replaceStrings ["."] ["_"] version }";
+    rev = "GTK_DOC_${stdenv.lib.replaceStrings [ "." ] [ "_" ] version }";
     sha256 = "05lr6apj3pd3s59a7k6p45k9ywwrp577ra4pvkhxvb5p7v90c2fi";
   };
 

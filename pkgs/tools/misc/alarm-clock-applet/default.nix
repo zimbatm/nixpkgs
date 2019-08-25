@@ -1,4 +1,5 @@
-{ stdenv, fetchFromGitHub
+{ stdenv
+, fetchFromGitHub
 , pkgconfig
 , autoconf
 , automake111x
@@ -50,7 +51,9 @@ stdenv.mkDerivation rec {
     libnotify
     libxml2
     libunique
-  ] ++ gst_plugins;
+  ]
+  ++ gst_plugins
+  ;
 
   propagatedUserEnvPkgs = [ gnome2.GConf.out ];
 

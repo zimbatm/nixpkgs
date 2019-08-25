@@ -1,7 +1,18 @@
-{ stdenv, fetchurl, pkgconfig, gtk, intltool, libglade, libxfce4util
-, libxfce4ui, xfconf, libwnck, libstartup_notification, xorg }:
+{ stdenv
+, fetchurl
+, pkgconfig
+, gtk
+, intltool
+, libglade
+, libxfce4util
+, libxfce4ui
+, xfconf
+, libwnck
+, libstartup_notification
+, xorg
+}:
 let
-  p_name  = "xfwm4";
+  p_name = "xfwm4";
   ver_maj = "4.12";
   ver_min = "4";
 in
@@ -14,9 +25,19 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs =
-    [ pkgconfig intltool gtk libglade libxfce4util libxfce4ui xfconf
-      libwnck libstartup_notification
-      xorg.libXcomposite xorg.libXfixes xorg.libXdamage
+    [
+      pkgconfig
+      intltool
+      gtk
+      libglade
+      libxfce4util
+      libxfce4ui
+      xfconf
+      libwnck
+      libstartup_notification
+      xorg.libXcomposite
+      xorg.libXfixes
+      xorg.libXdamage
     ];
 
   enableParallelBuilding = true;

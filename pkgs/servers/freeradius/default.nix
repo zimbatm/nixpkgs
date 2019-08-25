@@ -1,6 +1,11 @@
-{ stdenv, fetchurl, autoreconfHook, talloc, finger_bsd, perl
+{ stdenv
+, fetchurl
+, autoreconfHook
+, talloc
+, finger_bsd
+, perl
 , openssl
-, linkOpenssl? true
+, linkOpenssl ? true
 , openldap
 , withLdap ? true
 , sqlite
@@ -63,13 +68,16 @@ stdenv.mkDerivation rec {
     ++ optional withJson json_c
     ++ optional withYubikey libyubikey
     ++ optional withCollectd collectd
-    ++ optional withRest curl;
+    ++ optional withRest curl
+    ;
 
 
   configureFlags = [
     "--sysconfdir=/etc"
     "--localstatedir=/var"
-  ] ++ optional (!linkOpenssl) "--with-openssl=no";
+  ]
+  ++ optional (!linkOpenssl) "--with-openssl=no"
+  ;
 
   postPatch = ''
     substituteInPlace src/main/checkrad.in --replace "/usr/bin/finger" "${finger_bsd}/bin/finger"
@@ -91,4 +99,3 @@ stdenv.mkDerivation rec {
   };
 
 }
-

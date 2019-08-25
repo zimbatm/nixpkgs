@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
   mesonFlags =
     [ "-Dinstall-test-programs=true" ]
     ++ stdenv.lib.optionals (stdenv.isAarch32 || stdenv.isAarch64)
-      [ "-Dtegra=true" "-Detnaviv=true" ]
+         [ "-Dtegra=true" "-Detnaviv=true" ]
     ++ stdenv.lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) "-Dintel=false"
     ;
 

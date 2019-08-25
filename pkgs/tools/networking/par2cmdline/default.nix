@@ -1,7 +1,7 @@
 { stdenv, fetchFromGitHub, autoreconfHook }:
 
 stdenv.mkDerivation rec {
-  name    = "par2cmdline-${version}";
+  name = "par2cmdline-${version}";
   version = "0.8.0";
 
   src = fetchFromGitHub {

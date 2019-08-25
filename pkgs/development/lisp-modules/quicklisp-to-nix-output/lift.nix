@@ -5,7 +5,7 @@ rec {
 
   description = ''LIsp Framework for Testing'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/lift/2015-10-31/lift-20151031-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "lift";
 
-  asdFilesToKeep = ["lift.asd"];
+  asdFilesToKeep = [ "lift.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM lift DESCRIPTION LIsp Framework for Testing SHA256

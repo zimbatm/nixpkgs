@@ -1,6 +1,8 @@
 { lib, stdenv, fetchurl, cmake, libcxxabi, fixDarwinDylibNames }:
 
-let version = "3.5.2"; in
+let
+  version = "3.5.2";
+in
 
 stdenv.mkDerivation rec {
   name = "libc++-${version}";

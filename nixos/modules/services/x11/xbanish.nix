@@ -2,9 +2,11 @@
 
 with lib;
 
-let cfg = config.services.xbanish;
+let
+  cfg = config.services.xbanish;
 
-in {
+in
+{
   options.services.xbanish = {
 
     enable = mkEnableOption "xbanish";

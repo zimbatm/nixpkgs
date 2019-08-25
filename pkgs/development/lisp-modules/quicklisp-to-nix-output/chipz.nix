@@ -5,7 +5,7 @@ rec {
 
   description = ''A library for decompressing deflate, zlib, and gzip data'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/chipz/2018-03-28/chipz-20180328-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "chipz";
 
-  asdFilesToKeep = ["chipz.asd"];
+  asdFilesToKeep = [ "chipz.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM chipz DESCRIPTION

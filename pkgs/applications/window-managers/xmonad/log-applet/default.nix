@@ -1,11 +1,20 @@
-{ stdenv, fetchFromGitHub, pkgconfig, autoreconfHook, glib, dbus-glib
-, desktopSupport ? "gnomeflashback", xorg
+{ stdenv
+, fetchFromGitHub
+, pkgconfig
+, autoreconfHook
+, glib
+, dbus-glib
+, desktopSupport ? "gnomeflashback"
+, xorg
 , gtk2
-, gtk3, gnome3, mate
-, libxfce4util, xfce4-panel
+, gtk3
+, gnome3
+, mate
+, libxfce4util
+, xfce4-panel
 }:
 
-assert desktopSupport == "gnomeflashback" || desktopSupport == "mate"  || desktopSupport == "xfce4";
+assert desktopSupport == "gnomeflashback" || desktopSupport == "mate" || desktopSupport == "xfce4";
 
 stdenv.mkDerivation rec {
   version = "unstable-2017-09-15";
@@ -23,11 +32,11 @@ stdenv.mkDerivation rec {
     ++ stdenv.lib.optionals (desktopSupport == "gnomeflashback") [ gtk3 gnome3.gnome-panel ]
     ++ stdenv.lib.optionals (desktopSupport == "mate") [ gtk3 mate.mate-panel ]
     ++ stdenv.lib.optionals (desktopSupport == "xfce4") [ gtk2 libxfce4util xfce4-panel ]
-  ;
+    ;
 
   nativeBuildInputs = [ autoreconfHook pkgconfig ];
 
-  configureFlags =  [ "--with-panel=${desktopSupport}" ];
+  configureFlags = [ "--with-panel=${desktopSupport}" ];
 
   patches = [ ./fix-paths.patch ];
 
@@ -43,4 +52,3 @@ stdenv.mkDerivation rec {
     maintainers = with maintainers; [ abbradar ];
   };
 }
-

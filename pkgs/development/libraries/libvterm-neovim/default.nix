@@ -19,7 +19,8 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ libtool ];
 
   makeFlags = [ "PREFIX=$(out)" ]
-    ++ stdenv.lib.optional stdenv.isDarwin "LIBTOOL=${libtool}/bin/libtool";
+    ++ stdenv.lib.optional stdenv.isDarwin "LIBTOOL=${libtool}/bin/libtool"
+    ;
 
   enableParallelBuilding = true;
 
@@ -27,7 +28,7 @@ stdenv.mkDerivation rec {
     description = "VT220/xterm/ECMA-48 terminal emulator library";
     homepage = http://www.leonerd.org.uk/code/libvterm/;
     license = licenses.mit;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
     platforms = platforms.unix;
   };
 }

@@ -36,11 +36,12 @@ stdenv.mkDerivation rec {
   # Fix a segfault in llc
   # See http://lists.llvm.org/pipermail/llvm-dev/2016-October/106500.html
   patches = [ ./D17533-1.patch ]
-   ++ stdenv.lib.optional (!stdenv.isDarwin) ./fix-llvm-config.patch
-   ++ stdenv.lib.optionals stdenv.hostPlatform.isMusl [
-     ../TLI-musl.patch
-     ../dynamiclibrary-musl.patch
-   ];
+    ++ stdenv.lib.optional (!stdenv.isDarwin) ./fix-llvm-config.patch
+    ++ stdenv.lib.optionals stdenv.hostPlatform.isMusl [
+         ../TLI-musl.patch
+         ../dynamiclibrary-musl.patch
+       ]
+    ;
 
   # hacky fix: New LLVM releases require a newer macOS SDK than
   # 10.9. This is a temporary measure until nixpkgs darwin support is
@@ -56,14 +57,15 @@ stdenv.mkDerivation rec {
     (
       cd projects/compiler-rt
       patch -p1 < ${
-        fetchpatch {
-          name = "sigaltstack.patch"; # for glibc-2.26
-          url = https://github.com/llvm-mirror/compiler-rt/commit/8a5e425a68d.diff;
-          sha256 = "0h4y5vl74qaa7dl54b1fcyqalvlpd8zban2d1jxfkxpzyi7m8ifi";
-        }
-      }
+    fetchpatch {
+      name = "sigaltstack.patch"; # for glibc-2.26
+      url = https://github.com/llvm-mirror/compiler-rt/commit/8a5e425a68d.diff;
+      sha256 = "0h4y5vl74qaa7dl54b1fcyqalvlpd8zban2d1jxfkxpzyi7m8ifi";
+    }
+    }
     )
-  '';
+  ''
+  ;
 
   # hacky fix: created binaries need to be run before installation
   preBuild = ''
@@ -73,7 +75,7 @@ stdenv.mkDerivation rec {
 
   cmakeFlags = with stdenv; [
     "-DCMAKE_BUILD_TYPE=${if debugVersion then "Debug" else "Release"}"
-    "-DLLVM_INSTALL_UTILS=ON"  # Needed by rustc
+    "-DLLVM_INSTALL_UTILS=ON" # Needed by rustc
     "-DLLVM_BUILD_TESTS=ON"
     "-DLLVM_ENABLE_FFI=ON"
     "-DLLVM_ENABLE_RTTI=ON"
@@ -81,19 +83,22 @@ stdenv.mkDerivation rec {
     "-DLLVM_HOST_TRIPLE=${stdenv.hostPlatform.config}"
     "-DLLVM_DEFAULT_TARGET_TRIPLE=${stdenv.hostPlatform.config}"
     "-DTARGET_TRIPLE=${stdenv.hostPlatform.config}"
-  ] ++ stdenv.lib.optional enableSharedLibraries [
-    "-DLLVM_LINK_LLVM_DYLIB=ON"
-  ] ++ stdenv.lib.optional (!isDarwin)
-    "-DLLVM_BINUTILS_INCDIR=${libbfd.dev}/include"
-    ++ stdenv.lib.optionals ( isDarwin) [
-    "-DLLVM_ENABLE_LIBCXX=ON"
-    "-DCAN_TARGET_i386=false"
-  ] ++ stdenv.lib.optionals stdenv.hostPlatform.isMusl [
-    # Not yet supported
-    "-DCOMPILER_RT_BUILD_SANITIZERS=OFF"
-    "-DCOMPILER_RT_BUILD_XRAY=OFF"
+  ]
+    ++ stdenv.lib.optional enableSharedLibraries [
+         "-DLLVM_LINK_LLVM_DYLIB=ON"
+       ]
+    ++ stdenv.lib.optional (!isDarwin)
+         "-DLLVM_BINUTILS_INCDIR=${libbfd.dev}/include"
+    ++ stdenv.lib.optionals (isDarwin) [
+         "-DLLVM_ENABLE_LIBCXX=ON"
+         "-DCAN_TARGET_i386=false"
+       ]
+    ++ stdenv.lib.optionals stdenv.hostPlatform.isMusl [
+         # Not yet supported
+         "-DCOMPILER_RT_BUILD_SANITIZERS=OFF"
+         "-DCOMPILER_RT_BUILD_XRAY=OFF"
 
-  ];
+       ];
 
   postBuild = ''
     rm -fR $out
@@ -107,9 +112,9 @@ stdenv.mkDerivation rec {
 
   meta = {
     description = "Collection of modular and reusable compiler and toolchain technologies";
-    homepage    = http://llvm.org/;
-    license     = stdenv.lib.licenses.ncsa;
+    homepage = http://llvm.org/;
+    license = stdenv.lib.licenses.ncsa;
     maintainers = with stdenv.lib.maintainers; [ lovek323 raskin ];
-    platforms   = stdenv.lib.platforms.all;
+    platforms = stdenv.lib.platforms.all;
   };
 }

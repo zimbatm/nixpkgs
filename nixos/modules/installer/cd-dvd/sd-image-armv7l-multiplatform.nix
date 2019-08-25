@@ -26,7 +26,7 @@ in
   # - ttyAMA0: for Allwinner (pcDuino3 Nano) and QEMU's -machine virt
   # - ttyO0: for OMAP (BeagleBone Black)
   # - ttySAC2: for Exynos (ODROID-XU3)
-  boot.kernelParams = ["console=ttyS0,115200n8" "console=ttymxc0,115200n8" "console=ttyAMA0,115200n8" "console=ttyO0,115200n8" "console=ttySAC2,115200n8" "console=tty0"];
+  boot.kernelParams = [ "console=ttyS0,115200n8" "console=ttymxc0,115200n8" "console=ttyAMA0,115200n8" "console=ttyO0,115200n8" "console=ttySAC2,115200n8" "console=tty0" ];
 
   sdImage = {
     populateFirmwareCommands = let
@@ -45,7 +45,8 @@ in
         # TODO: check when/if this can be removed.
         enable_uart=1
       '';
-      in ''
+    in
+      ''
         (cd ${pkgs.raspberrypifw}/share/raspberrypi/boot && cp bootcode.bin fixup*.dat start*.elf $NIX_BUILD_TOP/firmware/)
         cp ${pkgs.ubootRaspberryPi2}/u-boot.bin firmware/u-boot-rpi2.bin
         cp ${pkgs.ubootRaspberryPi3_32bit}/u-boot.bin firmware/u-boot-rpi3.bin

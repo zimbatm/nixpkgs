@@ -1,6 +1,26 @@
-{ stdenv, fetchurl, fetchgit, vdr, alsaLib, fetchFromGitHub
-, libvdpau, libxcb, xcbutilwm, graphicsmagick, libav, pcre, xorgserver, ffmpeg
-, libiconv, boost, libgcrypt, perl, utillinux, groff, libva, xorg, ncurses
+{ stdenv
+, fetchurl
+, fetchgit
+, vdr
+, alsaLib
+, fetchFromGitHub
+, libvdpau
+, libxcb
+, xcbutilwm
+, graphicsmagick
+, libav
+, pcre
+, xorgserver
+, ffmpeg
+, libiconv
+, boost
+, libgcrypt
+, perl
+, utillinux
+, groff
+, libva
+, xorg
+, ncurses
 , callPackage
 }: let
   mkPlugin = name: stdenv.mkDerivation {
@@ -10,17 +30,27 @@
     preConfigure = "cd PLUGINS/src/${name}";
     installFlags = [ "DESTDIR=$(out)" ];
   };
-in {
+in
+{
 
   xineliboutput = callPackage ./xineliboutput {};
 
-  skincurses = (mkPlugin "skincurses").overrideAttrs(oldAttr: {
-    buildInputs = oldAttr.buildInputs ++ [ ncurses ];
-  });
+  skincurses = (mkPlugin "skincurses").overrideAttrs (
+    oldAttr: {
+      buildInputs = oldAttr.buildInputs ++ [ ncurses ];
+    }
+  );
 
   inherit (stdenv.lib.genAttrs [
-    "epgtableid0" "hello" "osddemo" "pictures" "servicedemo" "status" "svdrpdemo"
-  ] mkPlugin);
+    "epgtableid0"
+    "hello"
+    "osddemo"
+    "pictures"
+    "servicedemo"
+    "status"
+    "svdrpdemo"
+  ] mkPlugin)
+    ;
 
   femon = stdenv.mkDerivation rec {
 
@@ -52,11 +82,16 @@ in {
     name = "vdr-vaapidevice-0.7.0";
 
     buildInputs = [
-      vdr libxcb xcbutilwm ffmpeg
+      vdr
+      libxcb
+      xcbutilwm
+      ffmpeg
       alsaLib
       libvdpau # vdpau
       libva # va-api
-    ] ++ (with xorg; [ libxcb libX11 ]);
+    ]
+    ++ (with xorg; [ libxcb libX11 ])
+    ;
 
     makeFlags = [ "DESTDIR=$(out)" ];
 
@@ -177,29 +212,30 @@ in {
   vnsiserver = let
     name = "vnsiserver";
     version = "1.8.0";
-  in stdenv.mkDerivation {
-    name = "vdr-${name}-${version}";
+  in
+    stdenv.mkDerivation {
+      name = "vdr-${name}-${version}";
 
-    buildInputs = [ vdr ];
+      buildInputs = [ vdr ];
 
-    installFlags = [ "DESTDIR=$(out)" ];
+      installFlags = [ "DESTDIR=$(out)" ];
 
-    src = fetchFromGitHub {
-      repo = "vdr-plugin-${name}";
-      owner = "FernetMenta";
-      rev = "v${version}";
-      sha256 = "0n7idpxqx7ayd63scl6xwdx828ik4kb2mwz0c30cfjnmnxxd45lw";
+      src = fetchFromGitHub {
+        repo = "vdr-plugin-${name}";
+        owner = "FernetMenta";
+        rev = "v${version}";
+        sha256 = "0n7idpxqx7ayd63scl6xwdx828ik4kb2mwz0c30cfjnmnxxd45lw";
+      };
+
+      meta = with stdenv.lib; {
+        homepage = https://github.com/FernetMenta/vdr-plugin-vnsiserver;
+        description = "VDR plugin to handle KODI clients.";
+        maintainers = [ maintainers.ck3d ];
+        license = licenses.gpl2;
+        platforms = [ "i686-linux" "x86_64-linux" ];
+      };
+
     };
-
-    meta = with stdenv.lib; {
-      homepage = https://github.com/FernetMenta/vdr-plugin-vnsiserver;
-      description = "VDR plugin to handle KODI clients.";
-      maintainers = [ maintainers.ck3d ];
-      license = licenses.gpl2;
-      platforms = [ "i686-linux" "x86_64-linux" ];
-    };
-
-  };
 
   text2skin = stdenv.mkDerivation rec {
     name = "vdr-text2skin-1.3.4-20170702";
@@ -304,35 +340,36 @@ in {
       buildInputs = [ boost liblogpp libconvpp libnetpp ];
     };
 
-  in stdenv.mkDerivation rec {
-    pname = "vdr-fritzbox";
+  in
+    stdenv.mkDerivation rec {
+      pname = "vdr-fritzbox";
 
-    version = "1.5.3";
+      version = "1.5.3";
 
-    src = fetchFromGitHub {
-      owner = "jowi24";
-      repo = "vdr-fritz";
-      rev = version;
-      sha256 = "0wab1kyma9jzhm6j33cv9hd2a5d1334ghgdi2051nmr1bdcfcsw8";
+      src = fetchFromGitHub {
+        owner = "jowi24";
+        repo = "vdr-fritz";
+        rev = version;
+        sha256 = "0wab1kyma9jzhm6j33cv9hd2a5d1334ghgdi2051nmr1bdcfcsw8";
+      };
+
+      postUnpack = ''
+        cp ${libfritzpp}/lib/* $sourceRoot/libfritz++
+        cp ${liblogpp}/lib/* $sourceRoot/liblog++
+        cp ${libnetpp}/lib/* $sourceRoot/libnet++
+        cp ${libconvpp}/lib/* $sourceRoot/libconv++
+      '';
+
+      buildInputs = [ vdr boost libconvpp libfritzpp libnetpp liblogpp ];
+
+      installFlags = [ "DESTDIR=$(out)" ];
+
+      meta = with stdenv.lib; {
+        homepage = https://github.com/jowi24/vdr-fritz;
+        description = "A plugin for VDR to access AVMs Fritz Box routers";
+        maintainers = [ maintainers.ck3d ];
+        license = licenses.gpl2;
+        platforms = [ "i686-linux" "x86_64-linux" ];
+      };
     };
-
-    postUnpack = ''
-      cp ${libfritzpp}/lib/* $sourceRoot/libfritz++
-      cp ${liblogpp}/lib/* $sourceRoot/liblog++
-      cp ${libnetpp}/lib/* $sourceRoot/libnet++
-      cp ${libconvpp}/lib/* $sourceRoot/libconv++
-    '';
-
-    buildInputs = [ vdr boost libconvpp libfritzpp libnetpp liblogpp ];
-
-    installFlags = [ "DESTDIR=$(out)" ];
-
-    meta = with stdenv.lib; {
-      homepage = https://github.com/jowi24/vdr-fritz;
-      description = "A plugin for VDR to access AVMs Fritz Box routers";
-      maintainers = [ maintainers.ck3d ];
-      license = licenses.gpl2;
-      platforms = [ "i686-linux" "x86_64-linux" ];
-    };
-  };
 }

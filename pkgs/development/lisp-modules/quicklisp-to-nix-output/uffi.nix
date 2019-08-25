@@ -5,7 +5,7 @@ rec {
 
   description = ''Universal Foreign Function Library for Common Lisp'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/uffi/2018-02-28/uffi-20180228-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "uffi";
 
-  asdFilesToKeep = ["uffi.asd"];
+  asdFilesToKeep = [ "uffi.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM uffi DESCRIPTION Universal Foreign Function Library for Common Lisp

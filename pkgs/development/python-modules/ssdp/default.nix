@@ -16,7 +16,7 @@ buildPythonPackage rec {
 
   buildInputs = [ pbr ];
   checkInputs = [ pytest ];
-  propagatedBuildInputs = [ ];
+  propagatedBuildInputs = [];
 
   meta = with stdenv.lib; {
     homepage = https://github.com/codingjoe/ssdp;

@@ -6,11 +6,12 @@ let
   cfg = config.services.loki;
 
   prettyJSON = conf:
-    pkgs.runCommand "loki-config.json" { } ''
+    pkgs.runCommand "loki-config.json" {} ''
       echo '${builtins.toJSON conf}' | ${pkgs.jq}/bin/jq 'del(._module)' > $out
     '';
 
-in {
+in
+{
   options.services.loki = {
     enable = mkEnableOption "loki";
 
@@ -66,19 +67,21 @@ in {
   };
 
   config = mkIf cfg.enable {
-    assertions = [{
-      assertion = (
-        (cfg.configuration == {} -> cfg.configFile != null) &&
-        (cfg.configFile != null -> cfg.configuration == {})
-      );
-      message  = ''
-        Please specify either
-        'services.loki.configuration' or
-        'services.loki.configFile'.
-      '';
-    }];
+    assertions = [
+      {
+        assertion = (
+          (cfg.configuration == {} -> cfg.configFile != null)
+          && (cfg.configFile != null -> cfg.configuration == {})
+        );
+        message = ''
+          Please specify either
+          'services.loki.configuration' or
+          'services.loki.configFile'.
+        '';
+      }
+    ];
 
-    users.groups.${cfg.group} = { };
+    users.groups.${cfg.group} = {};
     users.users.${cfg.user} = {
       description = "Loki Service User";
       group = cfg.group;
@@ -93,20 +96,20 @@ in {
 
       serviceConfig = let
         conf = if cfg.configFile == null
-               then prettyJSON cfg.configuration
-               else cfg.configFile;
+        then prettyJSON cfg.configuration
+        else cfg.configFile;
       in
-      {
-        ExecStart = "${pkgs.grafana-loki}/bin/loki --config.file=${conf} ${escapeShellArgs cfg.extraFlags}";
-        User = cfg.user;
-        Restart = "always";
-        PrivateTmp = true;
-        ProtectHome = true;
-        ProtectSystem = "full";
-        DevicePolicy = "closed";
-        NoNewPrivileges = true;
-        WorkingDirectory = cfg.dataDir;
-      };
+        {
+          ExecStart = "${pkgs.grafana-loki}/bin/loki --config.file=${conf} ${escapeShellArgs cfg.extraFlags}";
+          User = cfg.user;
+          Restart = "always";
+          PrivateTmp = true;
+          ProtectHome = true;
+          ProtectSystem = "full";
+          DevicePolicy = "closed";
+          NoNewPrivileges = true;
+          WorkingDirectory = cfg.dataDir;
+        };
     };
   };
 }

@@ -31,9 +31,18 @@ buildGoPackage rec {
 
   outputs = [ "bin" "out" ];
   nativeBuildInputs = [ pkgconfig ];
-  buildInputs = [ btrfs-progs gpgme libapparmor libassuan libgpgerror
-                 libseccomp libselinux lvm2 ]
-                ++ stdenv.lib.optionals (glibc != null) [ glibc glibc.static ];
+  buildInputs = [
+    btrfs-progs
+    gpgme
+    libapparmor
+    libassuan
+    libgpgerror
+    libseccomp
+    libselinux
+    lvm2
+  ]
+  ++ stdenv.lib.optionals (glibc != null) [ glibc glibc.static ]
+  ;
 
   makeFlags = ''BUILDTAGS="apparmor seccomp selinux
     containers_image_ostree_stub"'';

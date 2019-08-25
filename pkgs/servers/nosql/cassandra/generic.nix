@@ -1,17 +1,31 @@
-{ stdenv, fetchurl, python, makeWrapper, gawk, bash, getopt, procps
-, which, jre, version, sha256, coreutils, ...
+{ stdenv
+, fetchurl
+, python
+, makeWrapper
+, gawk
+, bash
+, getopt
+, procps
+, which
+, jre
+, version
+, sha256
+, coreutils
+, ...
 }:
 
 let
   libPath = stdenv.lib.makeLibraryPath [ stdenv.cc.cc ];
-  binPath = with stdenv.lib; makeBinPath ([
-    bash
-    getopt
-    gawk
-    which
-    jre
-    procps
-  ]);
+  binPath = with stdenv.lib; makeBinPath (
+    [
+      bash
+      getopt
+      gawk
+      which
+      jre
+      procps
+    ]
+  );
 in
 
 stdenv.mkDerivation rec {
@@ -81,7 +95,7 @@ stdenv.mkDerivation rec {
     done
 
     wrapProgram $out/bin/cqlsh --prefix PATH : ${python}/bin
-    '';
+  '';
 
   meta = with stdenv.lib; {
     homepage = http://cassandra.apache.org/;

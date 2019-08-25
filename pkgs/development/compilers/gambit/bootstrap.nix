@@ -1,7 +1,7 @@
 { stdenv, fetchurl, autoconf, ... }:
 
 stdenv.mkDerivation rec {
-  name    = "gambit-bootstrap-${version}";
+  name = "gambit-bootstrap-${version}";
   version = "4.9.3";
 
   src = fetchurl {
@@ -32,9 +32,9 @@ stdenv.mkDerivation rec {
 
   meta = {
     description = "Optimizing Scheme to C compiler, bootstrap step";
-    homepage    = "http://gambitscheme.org";
-    license     = stdenv.lib.licenses.lgpl2;
-    platforms   = stdenv.lib.platforms.unix;
+    homepage = "http://gambitscheme.org";
+    license = stdenv.lib.licenses.lgpl2;
+    platforms = stdenv.lib.platforms.unix;
     maintainers = with stdenv.lib.maintainers; [ thoughtpolice raskin fare ];
   };
 }

@@ -1,9 +1,21 @@
-{ stdenv, fetchurl, libX11, cups, zlib, libxml2, pango, atk, gtk2, glib
-, gdk-pixbuf }:
+{ stdenv
+, fetchurl
+, libX11
+, cups
+, zlib
+, libxml2
+, pango
+, atk
+, gtk2
+, glib
+, gdk-pixbuf
+}:
 
 assert stdenv.hostPlatform.system == "i686-linux";
 
-let version = "9.5.5"; in
+let
+  version = "9.5.5";
+in
 
 stdenv.mkDerivation {
   name = "adobe-reader-${version}-1";

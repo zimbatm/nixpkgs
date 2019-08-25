@@ -1,6 +1,7 @@
 { lib
 , buildGoPackage
-, fetchFromGitHub }:
+, fetchFromGitHub
+}:
 
 buildGoPackage rec {
   name = "nixops-dns-${version}";

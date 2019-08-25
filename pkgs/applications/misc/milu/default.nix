@@ -24,9 +24,9 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ pkgconfig ];
   buildInputs = [
-     glib
-     unzip
-     llvmPackages.libclang
+    glib
+    unzip
+    llvmPackages.libclang
   ];
 
   meta = {
@@ -37,4 +37,3 @@ stdenv.mkDerivation rec {
     maintainers = [ stdenv.lib.maintainers.vrthra ];
   };
 }
-

@@ -3,9 +3,9 @@
 let
   packages = self: with self; {
 
-    lumina = callPackage ./lumina { };
-    lumina-calculator = callPackage ./lumina-calculator { };
-    lumina-pdf = callPackage ./lumina-pdf { };
+    lumina = callPackage ./lumina {};
+    lumina-calculator = callPackage ./lumina-calculator {};
+    lumina-pdf = callPackage ./lumina-pdf {};
 
     preRequisitePackages = [
       pkgs.fluxbox
@@ -23,4 +23,5 @@ let
 
   };
 
-in pkgs.lib.makeScope libsForQt5.newScope packages
+in
+pkgs.lib.makeScope libsForQt5.newScope packages

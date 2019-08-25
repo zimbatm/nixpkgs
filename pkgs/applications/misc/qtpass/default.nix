@@ -5,9 +5,9 @@ mkDerivation rec {
   version = "1.2.3";
 
   src = fetchFromGitHub {
-    owner  = "IJHack";
-    repo   = "QtPass";
-    rev    = "v${version}";
+    owner = "IJHack";
+    repo = "QtPass";
+    rev = "v${version}";
     sha256 = "1vfhfyccrxq9snyvayqfzm5rqik8ny2gysyv7nipc91kvhq3bhky";
   };
 

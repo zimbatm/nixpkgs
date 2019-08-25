@@ -1,4 +1,4 @@
-{stdenv, fetchFromGitHub, autoreconfHook }:
+{ stdenv, fetchFromGitHub, autoreconfHook }:
 
 stdenv.mkDerivation rec {
   name = "liquid-dsp-${version}";

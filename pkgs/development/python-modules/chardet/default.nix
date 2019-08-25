@@ -1,5 +1,11 @@
-{ stdenv, buildPythonPackage, fetchPypi, fetchpatch
-, pytest, pytestrunner, hypothesis }:
+{ stdenv
+, buildPythonPackage
+, fetchPypi
+, fetchpatch
+, pytest
+, pytestrunner
+, hypothesis
+}:
 
 buildPythonPackage rec {
   pname = "chardet";
@@ -12,10 +18,12 @@ buildPythonPackage rec {
 
   patches = [
     # Add pytest 4 support. See: https://github.com/chardet/chardet/pull/174
-    (fetchpatch {
-      url = "https://github.com/chardet/chardet/commit/0561ddcedcd12ea1f98b7ddedb93686ed8a5ffa4.patch";
-      sha256 = "1y1xhjf32rdhq9sfz58pghwv794f3w2f2qcn8p6hp4pc8jsdrn2q";
-    })
+    (
+      fetchpatch {
+        url = "https://github.com/chardet/chardet/commit/0561ddcedcd12ea1f98b7ddedb93686ed8a5ffa4.patch";
+        sha256 = "1y1xhjf32rdhq9sfz58pghwv794f3w2f2qcn8p6hp4pc8jsdrn2q";
+      }
+    )
   ];
 
   checkInputs = [ pytest pytestrunner hypothesis ];

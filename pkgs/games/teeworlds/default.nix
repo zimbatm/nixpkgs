@@ -1,5 +1,16 @@
-{ fetchFromGitHub, stdenv, bam, pkgconfig, python, alsaLib
-, libX11, libGLU, SDL2, lua5_3, zlib, freetype, wavpack
+{ fetchFromGitHub
+, stdenv
+, bam
+, pkgconfig
+, python
+, alsaLib
+, libX11
+, libGLU
+, SDL2
+, lua5_3
+, zlib
+, freetype
+, wavpack
 }:
 
 stdenv.mkDerivation rec {
@@ -38,7 +49,15 @@ stdenv.mkDerivation rec {
   '';
 
   buildInputs = [
-    python alsaLib libX11 libGLU SDL2 lua5_3 zlib freetype wavpack
+    python
+    alsaLib
+    libX11
+    libGLU
+    SDL2
+    lua5_3
+    zlib
+    freetype
+    wavpack
   ];
 
   postInstall = ''
@@ -59,6 +78,6 @@ stdenv.mkDerivation rec {
     homepage = https://teeworlds.com/;
     license = "BSD-style, see `license.txt'";
     maintainers = with stdenv.lib.maintainers; [ astsmtl ];
-    platforms = ["x86_64-linux" "i686-linux"];
+    platforms = [ "x86_64-linux" "i686-linux" ];
   };
 }

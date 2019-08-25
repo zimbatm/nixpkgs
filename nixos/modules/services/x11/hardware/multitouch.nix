@@ -2,15 +2,17 @@
 
 with lib;
 
-let cfg = config.services.xserver.multitouch;
-    disabledTapConfig = ''
-      Option "MaxTapTime" "0"
-      Option "MaxTapMove" "0"
-      Option "TapButton1" "0"
-      Option "TapButton2" "0"
-      Option "TapButton3" "0"
-    '';
-in {
+let
+  cfg = config.services.xserver.multitouch;
+  disabledTapConfig = ''
+    Option "MaxTapTime" "0"
+    Option "MaxTapMove" "0"
+    Option "TapButton1" "0"
+    Option "TapButton2" "0"
+    Option "TapButton3" "0"
+  '';
+in
+{
 
   options = {
 
@@ -41,8 +43,8 @@ in {
 
       buttonsMap = mkOption {
         type = types.listOf types.int;
-        default = [3 2 0];
-        example = [1 3 2];
+        default = [ 3 2 0 ];
+        example = [ 1 3 2 ];
         description = "Remap touchpad buttons.";
         apply = map toString;
       };
@@ -80,11 +82,11 @@ in {
           Option "ClickFinger3" "${builtins.elemAt cfg.buttonsMap 2}"
           ${optionalString (!cfg.tapButtons) disabledTapConfig}
           ${optionalString cfg.invertScroll ''
-            Option "ScrollUpButton" "5"
-            Option "ScrollDownButton" "4"
-            Option "ScrollLeftButton" "7"
-            Option "ScrollRightButton" "6"
-          ''}
+        Option "ScrollUpButton" "5"
+        Option "ScrollDownButton" "4"
+        Option "ScrollLeftButton" "7"
+        Option "ScrollRightButton" "6"
+      ''}
           ${cfg.additionalOptions}
         EndSection
       '';

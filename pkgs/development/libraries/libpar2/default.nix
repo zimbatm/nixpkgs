@@ -1,6 +1,8 @@
 { stdenv, fetchurl, pkgconfig, libsigcxx }:
 
-let version = "0.4"; in
+let
+  version = "0.4";
+in
 
 stdenv.mkDerivation rec {
   name = "libpar2-${version}";

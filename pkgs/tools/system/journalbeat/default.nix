@@ -15,9 +15,12 @@ buildGoPackage rec {
 
   buildInputs = [ systemd.dev ];
 
-  postFixup = let libPath = lib.makeLibraryPath [ systemd.lib ]; in ''
-    patchelf --set-rpath ${libPath} "$bin/bin/journalbeat"
-  '';
+  postFixup = let
+    libPath = lib.makeLibraryPath [ systemd.lib ];
+  in
+    ''
+      patchelf --set-rpath ${libPath} "$bin/bin/journalbeat"
+    '';
 
   meta = with lib; {
     homepage = https://github.com/mheese/journalbeat;

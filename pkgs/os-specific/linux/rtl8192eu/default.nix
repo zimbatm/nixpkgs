@@ -2,9 +2,11 @@
 
 with lib;
 
-let modDestDir = "$out/lib/modules/${kernel.modDirVersion}/kernel/drivers/net/wireless/realtek/rtl8192eu";
+let
+  modDestDir = "$out/lib/modules/${kernel.modDirVersion}/kernel/drivers/net/wireless/realtek/rtl8192eu";
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "rtl8192eu-${kernel.version}-${version}";
   version = "4.4.1.20190319";
 

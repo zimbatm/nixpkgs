@@ -2,7 +2,8 @@
 
 let
   pythonEnv = python3.withPackages (ps: with ps; [ pyqt5 sip ]);
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "qarte-4.6.0";
   src = fetchbzr {
     url = http://bazaar.launchpad.net/~vincent-vandevyvre/qarte/qarte-4;

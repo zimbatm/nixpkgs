@@ -24,10 +24,12 @@ stdenv.mkDerivation rec {
 
   patches = [
     # declare variables declared in headers as extern, not yet merged upstream
-    (fetchpatch {
-      url = "https://github.com/graph-algorithms/edge-addition-planarity-suite/pull/3.patch";
-      sha256 = "1nqjc4clr326imz4jxqxcxv2hgh1sjgzll27k5cwkdin8lnmmil8";
-    })
+    (
+      fetchpatch {
+        url = "https://github.com/graph-algorithms/edge-addition-planarity-suite/pull/3.patch";
+        sha256 = "1nqjc4clr326imz4jxqxcxv2hgh1sjgzll27k5cwkdin8lnmmil8";
+      }
+    )
   ];
 
   meta = with stdenv.lib; {

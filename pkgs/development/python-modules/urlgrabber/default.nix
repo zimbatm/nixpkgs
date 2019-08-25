@@ -3,7 +3,7 @@
 buildPythonPackage rec {
   pname = "urlgrabber";
   version = "4.0.0";
-  name  = "${pname}-${version}";
+  name = "${pname}-${version}";
 
   src = fetchPypi {
     inherit pname version;

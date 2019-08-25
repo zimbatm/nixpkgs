@@ -106,7 +106,7 @@
       postgres = 71;
       #vboxusers = 72; # unused
       #vboxsf = 73; # unused
-      smbguest = 74;  # unused
+      smbguest = 74; # unused
       varnish = 75;
       datadog = 76;
       lighttpd = 77;
@@ -285,7 +285,7 @@
       postgrey = 258;
       hound = 259;
       leaps = 260;
-      ipfs  = 261;
+      ipfs = 261;
       stanchion = 262;
       riak-cs = 263;
       infinoted = 264;
@@ -420,7 +420,7 @@
       postgres = 71;
       vboxusers = 72;
       vboxsf = 73;
-      smbguest = 74;  # unused
+      smbguest = 74; # unused
       varnish = 75;
       datadog = 76;
       lighttpd = 77;

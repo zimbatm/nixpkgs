@@ -1,7 +1,8 @@
 { stdenv, fetchurl, bzip2 }:
 
-let major = "1.1";
-    version = "${major}.13";
+let
+  major = "1.1";
+  version = "${major}.13";
 in
 stdenv.mkDerivation rec {
   name = "pbzip2-${version}";
@@ -23,7 +24,7 @@ stdenv.mkDerivation rec {
     homepage = http://compression.ca/pbzip2/;
     description = "A parallel implementation of bzip2 for multi-core machines";
     license = licenses.bsd2;
-    maintainers = with maintainers; [viric];
+    maintainers = with maintainers; [ viric ];
     platforms = platforms.unix;
   };
 }

@@ -1,4 +1,9 @@
-{ stdenv, fetchurl, gettext, libgpgerror, enableCapabilities ? false, libcap
+{ stdenv
+, fetchurl
+, gettext
+, libgpgerror
+, enableCapabilities ? false
+, libcap
 , buildPackages
 }:
 
@@ -25,7 +30,8 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ libgpgerror ]
     ++ stdenv.lib.optional stdenv.isDarwin gettext
-    ++ stdenv.lib.optional enableCapabilities libcap;
+    ++ stdenv.lib.optional enableCapabilities libcap
+    ;
 
   configureFlags = [ "--with-libgpg-error-prefix=${libgpgerror.dev}" ];
 
@@ -33,9 +39,11 @@ stdenv.mkDerivation rec {
   # Also make sure includes are fixed for callers who don't use libgpgcrypt-config
   postFixup = ''
     sed -i 's,#include <gpg-error.h>,#include "${libgpgerror.dev}/include/gpg-error.h",g' "$dev/include/gcrypt.h"
-  '' + stdenv.lib.optionalString enableCapabilities ''
-    sed -i 's,\(-lcap\),-L${libcap.lib}/lib \1,' $out/lib/libgcrypt.la
-  '';
+  ''
+  + stdenv.lib.optionalString enableCapabilities ''
+      sed -i 's,\(-lcap\),-L${libcap.lib}/lib \1,' $out/lib/libgcrypt.la
+    ''
+  ;
 
   # TODO: figure out why this is even necessary and why the missing dylib only crashes
   # random instead of every test

@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
   version = "29.4b7";
 
   src = fetchurl {
-    url = "https://www.mersenne.org/ftp_root/gimps/p95v${lib.replaceStrings ["."] [""] version}.source.zip";
+    url = "https://www.mersenne.org/ftp_root/gimps/p95v${lib.replaceStrings [ "." ] [ "" ] version}.source.zip";
     sha256 = "0idaqm46m4yis7vl014scx57lpccvjbnyy79gmj8caxghyajws0m";
   };
 
@@ -38,7 +38,7 @@ stdenv.mkDerivation rec {
   installPhase = ''
     install -D ${srcDir}/mprime $out/bin/mprime
   '';
-  
+
   meta = {
     description = "Mersenne prime search / System stability tester";
     longDescription = ''
@@ -52,6 +52,6 @@ stdenv.mkDerivation rec {
     # a suitable prime. http://www.mersenne.org/legal/#EULA
     license = stdenv.lib.licenses.unfree;
     # Untested on linux-32 and osx. Works in theory.
-    platforms = ["i686-linux" "x86_64-linux" "x86_64-darwin"];
+    platforms = [ "i686-linux" "x86_64-linux" "x86_64-darwin" ];
   };
 }

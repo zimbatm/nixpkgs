@@ -1,5 +1,15 @@
-{stdenv, fetchurl, libGLU_combined, freeglut, glew, libXmu, libXext, libX11
-, qmake, GLUT, fixDarwinDylibNames }:
+{ stdenv
+, fetchurl
+, libGLU_combined
+, freeglut
+, glew
+, libXmu
+, libXext
+, libX11
+, qmake
+, GLUT
+, fixDarwinDylibNames
+}:
 
 stdenv.mkDerivation rec {
   version = "1.4.2";
@@ -10,11 +20,13 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ qmake ]
-    ++ stdenv.lib.optional stdenv.isDarwin fixDarwinDylibNames;
+    ++ stdenv.lib.optional stdenv.isDarwin fixDarwinDylibNames
+    ;
 
   buildInputs = [ glew ]
     ++ stdenv.lib.optionals stdenv.isLinux [ libGLU_combined freeglut libXmu libXext libX11 ]
-    ++ stdenv.lib.optional stdenv.isDarwin GLUT;
+    ++ stdenv.lib.optional stdenv.isDarwin GLUT
+    ;
 
   doCheck = false;
 
@@ -27,11 +39,13 @@ stdenv.mkDerivation rec {
 
   postInstall = ''
     install -D license.txt "$out/share/doc/opencsg/license.txt"
-  '' + stdenv.lib.optionalString stdenv.isDarwin ''
-    mkdir -p $out/Applications
-    mv $out/bin/*.app $out/Applications
-    rmdir $out/bin || true
-  '';
+  ''
+  + stdenv.lib.optionalString stdenv.isDarwin ''
+      mkdir -p $out/Applications
+      mv $out/bin/*.app $out/Applications
+      rmdir $out/bin || true
+    ''
+  ;
 
   postFixup = stdenv.lib.optionalString stdenv.isDarwin ''
     app=$out/Applications/opencsgexample.app/Contents/MacOS/opencsgexample
@@ -49,4 +63,3 @@ stdenv.mkDerivation rec {
     license = licenses.gpl2;
   };
 }
-

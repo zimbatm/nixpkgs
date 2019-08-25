@@ -1,8 +1,21 @@
-{ stdenv, fetchFromGitLab, lib, darwin
-, git, nettle, llvmPackages, cargo, rustc
-, rustPlatform, pkgconfig, glib
-, openssl, sqlite, capnproto
-, ensureNewerSourcesForZipFilesHook, pythonSupport ? true, pythonPackages ? null
+{ stdenv
+, fetchFromGitLab
+, lib
+, darwin
+, git
+, nettle
+, llvmPackages
+, cargo
+, rustc
+, rustPlatform
+, pkgconfig
+, glib
+, openssl
+, sqlite
+, capnproto
+, ensureNewerSourcesForZipFilesHook
+, pythonSupport ? true
+, pythonPackages ? null
 }:
 
 assert pythonSupport -> pythonPackages != null;
@@ -28,8 +41,8 @@ rustPlatform.buildRustPackage rec {
     llvmPackages.libclang
     llvmPackages.clang
     ensureNewerSourcesForZipFilesHook
-  ] ++
-    lib.optionals pythonSupport [ pythonPackages.setuptools ]
+  ]
+  ++ lib.optionals pythonSupport [ pythonPackages.setuptools ]
   ;
 
   checkInputs = lib.optionals pythonSupport [
@@ -43,8 +56,8 @@ rustPlatform.buildRustPackage rec {
     nettle
     capnproto
   ]
-    ++ lib.optionals pythonSupport [ pythonPackages.python pythonPackages.cffi ]
-    ++ lib.optionals stdenv.isDarwin [ darwin.apple_sdk.frameworks.Security ]
+  ++ lib.optionals pythonSupport [ pythonPackages.python pythonPackages.cffi ]
+  ++ lib.optionals stdenv.isDarwin [ darwin.apple_sdk.frameworks.Security ]
   ;
 
   makeFlags = [
@@ -70,9 +83,11 @@ rustPlatform.buildRustPackage rec {
 
   preInstall = lib.optionalString pythonSupport ''
     export installFlags="PYTHONPATH=$PYTHONPATH:$out/${pythonPackages.python.sitePackages}"
-  '' + lib.optionalString (!pythonSupport) ''
-    export installFlags="PYTHON=disable"
-  '';
+  ''
+  + lib.optionalString (!pythonSupport) ''
+      export installFlags="PYTHON=disable"
+    ''
+  ;
 
   # Don't use buildRustPackage phases, only use it for rust deps setup
   configurePhase = null;

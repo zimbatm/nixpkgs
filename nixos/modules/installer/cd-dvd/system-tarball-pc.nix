@@ -7,7 +7,7 @@ with lib;
 
 let
 
-  pkgs2storeContents = l : map (x: { object = x; symlink = "none"; }) l;
+  pkgs2storeContents = l: map (x: { object = x; symlink = "none"; }) l;
 
   # For PXE kernel loading
   pxeconfig = pkgs.writeText "pxeconfig-default" ''
@@ -66,7 +66,8 @@ in
 
 {
   imports =
-    [ ./system-tarball.nix
+    [
+      ./system-tarball.nix
 
       # Profiles of this basic installation.
       ../../profiles/all-hardware.nix
@@ -79,25 +80,33 @@ in
   tarball.storeContents = pkgs2storeContents [ pkgs.stdenv ];
 
   tarball.contents =
-    [ { source = config.boot.kernelPackages.kernel + "/" + config.system.boot.loader.kernelFile;
+    [
+      {
+        source = config.boot.kernelPackages.kernel + "/" + config.system.boot.loader.kernelFile;
         target = "/boot/" + config.system.boot.loader.kernelFile;
       }
-      { source = "${pkgs.syslinux}/share/syslinux/pxelinux.0";
+      {
+        source = "${pkgs.syslinux}/share/syslinux/pxelinux.0";
         target = "/boot/pxelinux.0";
       }
-      { source = "${pkgs.syslinux}/share/syslinux/menu.c32";
+      {
+        source = "${pkgs.syslinux}/share/syslinux/menu.c32";
         target = "/boot/menu.c32";
       }
-      { source = pxeconfig;
+      {
+        source = pxeconfig;
         target = "/boot/pxelinux.cfg/default";
       }
-      { source = readme;
+      {
+        source = readme;
         target = "/readme.txt";
       }
-      { source = dhcpdExampleConfig;
+      {
+        source = dhcpdExampleConfig;
         target = "/boot/dhcpd.conf-example";
       }
-      { source = "${pkgs.memtest86}/memtest.bin";
+      {
+        source = "${pkgs.memtest86}/memtest.bin";
         # We can't leave '.bin', because pxelinux interprets this specially,
         # and it would not load the image fine.
         # http://forum.canardpc.com/threads/46464-0104-when-launched-via-pxe
@@ -123,9 +132,10 @@ in
   /* fake entry, just to have a happy stage-1. Users
      may boot without having stage-1 though */
   fileSystems = [
-    { mountPoint = "/";
+    {
+      mountPoint = "/";
       device = "/dev/something";
-      }
+    }
   ];
 
   nixpkgs.config = {

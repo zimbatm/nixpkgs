@@ -3,20 +3,23 @@
 let
   python = python3.override {
     packageOverrides = self: super: {
-      tornado = super.tornado.overridePythonAttrs (oldAttrs: rec {
-        version = "5.1.1";
-        src = oldAttrs.src.override {
-          inherit version;
-          sha256 = "4e5158d97583502a7e2739951553cbd88a72076f152b4b11b64b9a10c4c49409";
-        };
-      });
+      tornado = super.tornado.overridePythonAttrs (
+        oldAttrs: rec {
+          version = "5.1.1";
+          src = oldAttrs.src.override {
+            inherit version;
+            sha256 = "4e5158d97583502a7e2739951553cbd88a72076f152b4b11b64b9a10c4c49409";
+          };
+        }
+      );
       protobuf = super.protobuf.override {
         protobuf = protobuf3_7;
       };
     };
   };
 
-in python.pkgs.buildPythonApplication rec {
+in
+python.pkgs.buildPythonApplication rec {
   pname = "esphome";
   version = "1.12.2";
 
@@ -28,8 +31,15 @@ in python.pkgs.buildPythonApplication rec {
   ESPHOME_USE_SUBPROCESS = "";
 
   propagatedBuildInputs = with python.pkgs; [
-    voluptuous pyyaml paho-mqtt colorlog
-    tornado protobuf tzlocal pyserial ifaddr
+    voluptuous
+    pyyaml
+    paho-mqtt
+    colorlog
+    tornado
+    protobuf
+    tzlocal
+    pyserial
+    ifaddr
   ];
 
   makeWrapperArgs = [

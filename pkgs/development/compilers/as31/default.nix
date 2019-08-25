@@ -4,7 +4,8 @@ let
 
   version = "2.3.1";
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "as31-${version}";
   src = fetchurl {
     name = "as31-${version}.tar.gz"; # Nix doesn't like the colons in the URL
@@ -15,11 +16,13 @@ in stdenv.mkDerivation {
   buildInputs = [ yacc ];
 
   patches = [
-    (fetchpatch {
-       name = "CVE-2012-0808.patch";
-       url = "https://bugs.debian.org/cgi-bin/bugreport.cgi?att=1;bug=655496;filename=as31-mkstemps.patch;msg=5";
-       sha256 = "0iia4wa8m141bwz4588yxb1dp2qwhapcii382sncm6jvwyngwh21";
-     })
+    (
+      fetchpatch {
+        name = "CVE-2012-0808.patch";
+        url = "https://bugs.debian.org/cgi-bin/bugreport.cgi?att=1;bug=655496;filename=as31-mkstemps.patch;msg=5";
+        sha256 = "0iia4wa8m141bwz4588yxb1dp2qwhapcii382sncm6jvwyngwh21";
+      }
+    )
   ];
 
   preConfigure = ''

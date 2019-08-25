@@ -1,9 +1,18 @@
-{ stdenv, fetchurl, scons, libX11, pkgconfig
-, libusb1, boost, glib, dbus-glib }:
+{ stdenv
+, fetchurl
+, scons
+, libX11
+, pkgconfig
+, libusb1
+, boost
+, glib
+, dbus-glib
+}:
 
 let
   version = "0.8.8";
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "xboxdrv-${version}";
 
   src = fetchurl {

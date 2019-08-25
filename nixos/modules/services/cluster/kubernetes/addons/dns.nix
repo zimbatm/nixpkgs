@@ -10,7 +10,8 @@ let
     health = 10054;
     metrics = 10055;
   };
-in {
+in
+{
   options.services.kubernetes.addons.dns = {
     enable = mkEnableOption "kubernetes dns addon";
 
@@ -20,9 +21,13 @@ in {
       # this default is also what kubernetes users
       default = (
         concatStringsSep "." (
-          take 3 (splitString "." config.services.kubernetes.apiserver.serviceClusterIpRange
-        ))
-      ) + ".254";
+          take 3 (
+            splitString "." config.services.kubernetes.apiserver.serviceClusterIpRange
+          )
+        )
+      )
+      + ".254"
+      ;
       type = types.str;
     };
 

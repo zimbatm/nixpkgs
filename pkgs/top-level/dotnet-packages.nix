@@ -11,7 +11,8 @@
 , overrides ? {}
 }:
 
-let self = dotnetPackages // overrides; dotnetPackages = with self; {
+let
+  self = dotnetPackages // overrides; dotnetPackages = with self; {
 
   # BINARY PACKAGES
 
@@ -332,14 +333,14 @@ let self = dotnetPackages // overrides; dotnetPackages = with self; {
     outputFiles = [ "Binaries/*" ];
 
     postInstall = ''
-        mkdir -pv "$out/lib/dotnet/${baseName}"
-        ln -sv "${pkgs.z3}/bin/z3" "$out/lib/dotnet/${baseName}/z3.exe"
+      mkdir -pv "$out/lib/dotnet/${baseName}"
+      ln -sv "${pkgs.z3}/bin/z3" "$out/lib/dotnet/${baseName}/z3.exe"
 
-        # so that this derivation can be used as a vim plugin to install syntax highlighting
-        vimdir=$out/share/vim-plugins/boogie
-        install -Dt $vimdir/syntax/ Util/vim/syntax/boogie.vim
-        mkdir $vimdir/ftdetect
-        echo 'au BufRead,BufNewFile *.bpl set filetype=boogie' > $vimdir/ftdetect/bpl.vim
+      # so that this derivation can be used as a vim plugin to install syntax highlighting
+      vimdir=$out/share/vim-plugins/boogie
+      install -Dt $vimdir/syntax/ Util/vim/syntax/boogie.vim
+      mkdir $vimdir/ftdetect
+      echo 'au BufRead,BufNewFile *.bpl set filetype=boogie' > $vimdir/ftdetect/bpl.vim
     '';
 
     meta = with stdenv.lib; {
@@ -427,7 +428,7 @@ let self = dotnetPackages // overrides; dotnetPackages = with self; {
       sha256 = "1w2ag9na20ly0m2sic3nkgdc4qqyb4x4c9iv588ynpkgd1pjndrk";
     };
 
-    buildInputs = [ ];
+    buildInputs = [];
 
     preConfigure = ''
       rm -vf Distribution/*.dll Distribution/*.exe # Make sure we don't use those
@@ -535,7 +536,7 @@ let self = dotnetPackages // overrides; dotnetPackages = with self; {
         This project provides a command-line interface to the
         FSharp.Compiler.Service project. It is intended to be used as a backend
         service for rich editing or 'intellisense' features for editors.
-        '';
+      '';
       homepage = https://github.com/fsharp/FSharp.AutoComplete;
       license = stdenv.lib.licenses.asl20;
       maintainers = with stdenv.lib.maintainers; [ obadz ];
@@ -596,10 +597,10 @@ let self = dotnetPackages // overrides; dotnetPackages = with self; {
     };
 
     preConfigure = ''
-       # Copy single-files-in-git-repos
-       mkdir -p "paket-files/fsprojects/FSharp.TypeProviders.StarterPack/src"
-       cp -v "${fileProvidedTypes}" "paket-files/fsprojects/FSharp.TypeProviders.StarterPack/src/ProvidedTypes.fs"
-       cp -v "${fileDebugProvidedTypes}" "paket-files/fsprojects/FSharp.TypeProviders.StarterPack/src/DebugProvidedTypes.fs"
+      # Copy single-files-in-git-repos
+      mkdir -p "paket-files/fsprojects/FSharp.TypeProviders.StarterPack/src"
+      cp -v "${fileProvidedTypes}" "paket-files/fsprojects/FSharp.TypeProviders.StarterPack/src/ProvidedTypes.fs"
+      cp -v "${fileDebugProvidedTypes}" "paket-files/fsprojects/FSharp.TypeProviders.StarterPack/src/DebugProvidedTypes.fs"
     '';
 
     xBuildFiles = [ "src/FSharp.Data.fsproj" "src/FSharp.Data.DesignTime.fsproj" ];
@@ -934,4 +935,6 @@ let self = dotnetPackages // overrides; dotnetPackages = with self; {
     };
   };
 
-}; in self
+};
+in
+self

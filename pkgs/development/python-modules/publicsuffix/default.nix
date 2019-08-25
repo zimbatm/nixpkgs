@@ -14,10 +14,12 @@ buildPythonPackage rec {
   # disable test_fetch and the doctests (which also invoke fetch)
   patchPhase = stdenv.lib.optionalString isPy3k ''
     sed -i "s/)\.read(/,encoding='utf-8'\0/" setup.py
-  '' + ''
+  ''
+  + ''
     sed -i -e "/def test_fetch/i\\
     \\t@unittest.skip('requires internet')" -e "/def additional_tests():/,+1d" tests.py
-  '';
+  ''
+  ;
 
   meta = with stdenv.lib; {
     description = "Allows to get the public suffix of a domain name";

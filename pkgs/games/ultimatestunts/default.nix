@@ -1,5 +1,13 @@
-{stdenv, fetchurl, SDL, libGLU_combined, SDL_image, freealut, openal, libvorbis,
-pkgconfig}:
+{ stdenv
+, fetchurl
+, SDL
+, libGLU_combined
+, SDL_image
+, freealut
+, openal
+, libvorbis
+, pkgconfig
+}:
 
 stdenv.mkDerivation rec {
   name = "ultimate-stunts-0.7.6.1";
@@ -19,7 +27,7 @@ stdenv.mkDerivation rec {
     homepage = http://www.ultimatestunts.nl/;
     description = "Remake of the popular racing DOS-game Stunts";
     license = stdenv.lib.licenses.gpl2Plus;
-    maintainers = with stdenv.lib.maintainers; [viric];
+    maintainers = with stdenv.lib.maintainers; [ viric ];
     platforms = with stdenv.lib.platforms; linux;
   };
 }

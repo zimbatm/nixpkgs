@@ -12,16 +12,17 @@ stdenv.mkDerivation rec{
     sha256 = "19dck47v4hd07q9742mgb928h7y1y9638qlh2rzsvqsfqvqmxh85";
   };
 
-  nativeBuildInputs = [ autoconf
-                        automake
-                        libtool
-                        pkgconfig
-                        which
-                        libxslt
-                        libxml2
-                        docbook_xml_dtd_412
-                        docbook_xsl
-                      ];
+  nativeBuildInputs = [
+    autoconf
+    automake
+    libtool
+    pkgconfig
+    which
+    libxslt
+    libxml2
+    docbook_xml_dtd_412
+    docbook_xsl
+  ];
 
   buildInputs = [ glib imagemagick ] ++ stdenv.lib.optional stdenv.isDarwin [ darwin.apple_sdk.frameworks.ApplicationServices ];
 
@@ -31,9 +32,10 @@ stdenv.mkDerivation rec{
     ./autogen.sh
   '';
 
-  configureFlags = [ "--enable-man"
-                     "--with-xml-catalog=${docbook_xml_dtd_412}/xml/dtd/docbook/catalog.xml"
-                   ];
+  configureFlags = [
+    "--enable-man"
+    "--with-xml-catalog=${docbook_xml_dtd_412}/xml/dtd/docbook/catalog.xml"
+  ];
 
   meta = with stdenv.lib; {
     description = "Terminal graphics for the 21st century.";

@@ -3,7 +3,8 @@
 let
   pname = "samim-fonts";
   version = "3.1.0";
-in fetchFromGitHub rec {
+in
+fetchFromGitHub rec {
   name = "${pname}-${version}";
 
   owner = "rastikerdar";

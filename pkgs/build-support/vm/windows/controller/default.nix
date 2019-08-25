@@ -1,5 +1,15 @@
-{ stdenv, writeScript, vmTools, makeInitrd
-, samba, vde2, openssh, socat, netcat-gnu, coreutils, gnugrep, gzip
+{ stdenv
+, writeScript
+, vmTools
+, makeInitrd
+, samba
+, vde2
+, openssh
+, socat
+, netcat-gnu
+, coreutils
+, gnugrep
+, gzip
 , runtimeShell
 }:
 
@@ -74,68 +84,74 @@ let
 
   loopForever = "while :; do ${coreutils}/bin/sleep 1; done";
 
-  initScript = writeScript "init.sh" (''
-    #!${runtimeShell}
-    ${coreutils}/bin/cp -L "${sshKey}" /ssh.key
-    ${coreutils}/bin/chmod 600 /ssh.key
-  '' + (if installMode then ''
-    echo -n "Waiting for Windows installation to finish..."
-    while ! ${netcat-gnu}/bin/netcat -z 192.168.0.1 22; do
-      echo -n .
-      # Print a dot every 10 seconds only to shorten line length.
-      ${coreutils}/bin/sleep 10
-    done
-    ${coreutils}/bin/touch /xchg/waiting_done
-    echo " success."
-    # Loop forever, because this VM is going to be killed.
-    ${loopForever}
-  '' else ''
-    ${coreutils}/bin/mkdir -p /etc/samba /etc/samba/private \
-                              /var/lib/samba /var/log /var/run
-    ${coreutils}/bin/cat > /etc/samba/smb.conf <<CONFIG
-    [global]
-    security = user
-    map to guest = Bad User
-    guest account = root
-    workgroup = cygwin
-    netbios name = controller
-    server string = %h
-    log level = 1
-    max log size = 1000
-    log file = /var/log/samba.log
+  initScript = writeScript "init.sh" (
+    ''
+      #!${runtimeShell}
+      ${coreutils}/bin/cp -L "${sshKey}" /ssh.key
+      ${coreutils}/bin/chmod 600 /ssh.key
+    ''
+    + (
+        if installMode then ''
+          echo -n "Waiting for Windows installation to finish..."
+          while ! ${netcat-gnu}/bin/netcat -z 192.168.0.1 22; do
+            echo -n .
+            # Print a dot every 10 seconds only to shorten line length.
+            ${coreutils}/bin/sleep 10
+          done
+          ${coreutils}/bin/touch /xchg/waiting_done
+          echo " success."
+          # Loop forever, because this VM is going to be killed.
+          ${loopForever}
+        '' else ''
+          ${coreutils}/bin/mkdir -p /etc/samba /etc/samba/private \
+                                    /var/lib/samba /var/log /var/run
+          ${coreutils}/bin/cat > /etc/samba/smb.conf <<CONFIG
+          [global]
+          security = user
+          map to guest = Bad User
+          guest account = root
+          workgroup = cygwin
+          netbios name = controller
+          server string = %h
+          log level = 1
+          max log size = 1000
+          log file = /var/log/samba.log
 
-    [nixstore]
-    path = /nix/store
-    writable = yes
-    guest ok = yes
+          [nixstore]
+          path = /nix/store
+          writable = yes
+          guest ok = yes
 
-    [xchg]
-    path = /xchg
-    writable = yes
-    guest ok = yes
-    CONFIG
+          [xchg]
+          path = /xchg
+          writable = yes
+          guest ok = yes
+          CONFIG
 
-    ${samba}/sbin/nmbd -D
-    ${samba}/sbin/smbd -D
+          ${samba}/sbin/nmbd -D
+          ${samba}/sbin/smbd -D
 
-    echo -n "Waiting for Windows VM to become available..."
-    while ! ${netcat-gnu}/bin/netcat -z 192.168.0.1 22; do
-      echo -n .
-      ${coreutils}/bin/sleep 1
-    done
-    ${coreutils}/bin/touch /xchg/waiting_done
-    echo " success."
+          echo -n "Waiting for Windows VM to become available..."
+          while ! ${netcat-gnu}/bin/netcat -z 192.168.0.1 22; do
+            echo -n .
+            ${coreutils}/bin/sleep 1
+          done
+          ${coreutils}/bin/touch /xchg/waiting_done
+          echo " success."
 
-    ${openssh}/bin/ssh \
-      -o UserKnownHostsFile=/dev/null \
-      -o StrictHostKeyChecking=no \
-      -i /ssh.key \
-      -l Administrator \
-      192.168.0.1 -- ${lib.escapeShellArg command}
-  '') + optionalString (suspendTo != null) ''
-    ${coreutils}/bin/touch /xchg/suspend_now
-    ${loopForever}
-  '');
+          ${openssh}/bin/ssh \
+            -o UserKnownHostsFile=/dev/null \
+            -o StrictHostKeyChecking=no \
+            -i /ssh.key \
+            -l Administrator \
+            192.168.0.1 -- ${lib.escapeShellArg command}
+        ''
+      )
+    + optionalString (suspendTo != null) ''
+        ${coreutils}/bin/touch /xchg/suspend_now
+        ${loopForever}
+      ''
+  );
 
   kernelAppend = concatStringsSep " " [
     "panic=1"
@@ -145,35 +161,45 @@ let
     "command=${initScript}"
   ];
 
-  controllerQemuArgs = concatStringsSep " " (maybeKvm64 ++ [
-    "-pidfile $CTRLVM_PIDFILE"
-    "-nographic"
-    "-no-reboot"
-    "-virtfs local,path=/nix/store,security_model=none,mount_tag=store"
-    "-virtfs local,path=$XCHG_DIR,security_model=none,mount_tag=xchg"
-    "-kernel ${modulesClosure.kernel}/bzImage"
-    "-initrd ${initrd}/initrd"
-    "-append \"${kernelAppend}\""
-    "-net nic,vlan=0,macaddr=52:54:00:12:01:02,model=virtio"
-    "-net vde,vlan=0,sock=$QEMU_VDE_SOCKET"
-  ]);
+  controllerQemuArgs = concatStringsSep " " (
+    maybeKvm64
+    ++ [
+         "-pidfile $CTRLVM_PIDFILE"
+         "-nographic"
+         "-no-reboot"
+         "-virtfs local,path=/nix/store,security_model=none,mount_tag=store"
+         "-virtfs local,path=$XCHG_DIR,security_model=none,mount_tag=xchg"
+         "-kernel ${modulesClosure.kernel}/bzImage"
+         "-initrd ${initrd}/initrd"
+         "-append \"${kernelAppend}\""
+         "-net nic,vlan=0,macaddr=52:54:00:12:01:02,model=virtio"
+         "-net vde,vlan=0,sock=$QEMU_VDE_SOCKET"
+       ]
+  );
 
   maybeKvm64 = optional (stdenv.hostPlatform.system == "x86_64-linux") "-cpu kvm64";
 
-  cygwinQemuArgs = concatStringsSep " " (maybeKvm64 ++ [
-    "-monitor unix:$MONITOR_SOCKET,server,nowait"
-    "-pidfile $WINVM_PIDFILE"
-    "-nographic"
-    "-net nic,vlan=0,macaddr=52:54:00:12:01:01"
-    "-net vde,vlan=0,sock=$QEMU_VDE_SOCKET"
-    "-rtc base=2010-01-01,clock=vm"
-  ] ++ qemuArgs ++ optionals (resumeFrom != null) [
-    "-incoming 'exec: ${gzip}/bin/gzip -c -d \"${resumeFrom}\"'"
-  ]);
+  cygwinQemuArgs = concatStringsSep " " (
+    maybeKvm64
+    ++ [
+         "-monitor unix:$MONITOR_SOCKET,server,nowait"
+         "-pidfile $WINVM_PIDFILE"
+         "-nographic"
+         "-net nic,vlan=0,macaddr=52:54:00:12:01:01"
+         "-net vde,vlan=0,sock=$QEMU_VDE_SOCKET"
+         "-rtc base=2010-01-01,clock=vm"
+       ]
+    ++ qemuArgs
+    ++ optionals (resumeFrom != null) [
+         "-incoming 'exec: ${gzip}/bin/gzip -c -d \"${resumeFrom}\"'"
+       ]
+  );
 
-  modulesClosure = overrideDerivation vmTools.modulesClosure (o: {
-    rootModules = o.rootModules ++ singleton "virtio_net";
-  });
+  modulesClosure = overrideDerivation vmTools.modulesClosure (
+    o: {
+      rootModules = o.rootModules ++ singleton "virtio_net";
+    }
+  );
 
   preVM = ''
     (set; declare -p) > saved-env
@@ -255,7 +281,8 @@ let
     exit $(< "$XCHG_DIR/in-vm-exit")
   '';
 
-in writeScript "run-cygwin-vm.sh" ''
+in
+writeScript "run-cygwin-vm.sh" ''
   #!${stdenv.shell} -e
   ${preVM}
   ${vmExec}

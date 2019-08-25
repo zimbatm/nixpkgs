@@ -1,10 +1,25 @@
-{ stdenv, lib, fetchurl, zlib, openssl, ncurses, libidn, pcre, libssh, mysql, postgresql
-, withGUI ? false, makeWrapper, pkgconfig, gtk2 }:
+{ stdenv
+, lib
+, fetchurl
+, zlib
+, openssl
+, ncurses
+, libidn
+, pcre
+, libssh
+, mysql
+, postgresql
+, withGUI ? false
+, makeWrapper
+, pkgconfig
+, gtk2
+}:
 
 let
   makeDirs = output: subDir: pkgs: lib.concatStringsSep " " (map (path: lib.getOutput output path + "/" + subDir) pkgs);
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "thc-hydra-${version}";
   version = "8.5";
 
@@ -24,7 +39,8 @@ in stdenv.mkDerivation rec {
 
   nativeBuildInputs = lib.optionals withGUI [ pkgconfig makeWrapper ];
   buildInputs = [ zlib openssl ncurses libidn pcre libssh mysql.connector-c postgresql ]
-                ++ lib.optional withGUI gtk2;
+    ++ lib.optional withGUI gtk2
+    ;
 
   postInstall = lib.optionalString withGUI ''
     wrapProgram $out/bin/xhydra \
@@ -35,7 +51,7 @@ in stdenv.mkDerivation rec {
     description = "A very fast network logon cracker which support many different services";
     license = licenses.agpl3;
     homepage = https://www.thc.org/thc-hydra/;
-    maintainers = with maintainers; [offline];
+    maintainers = with maintainers; [ offline ];
     platforms = platforms.linux;
   };
 }

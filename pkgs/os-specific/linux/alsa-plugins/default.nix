@@ -13,13 +13,14 @@ stdenv.mkDerivation rec {
   buildInputs =
     [ pkgconfig alsaLib libogg ]
     ++ lib.optional (libpulseaudio != null) libpulseaudio
-    ++ lib.optional (libjack2 != null) libjack2;
+    ++ lib.optional (libjack2 != null) libjack2
+    ;
 
   meta = with lib; {
     description = "Various plugins for ALSA";
     homepage = http://alsa-project.org/;
     license = licenses.lgpl21;
-    maintainers = [maintainers.marcweber];
+    maintainers = [ maintainers.marcweber ];
     platforms = platforms.linux;
   };
 }

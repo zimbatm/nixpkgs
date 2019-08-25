@@ -5,7 +5,7 @@ rec {
 
   description = ''Set-like data structure.'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/map-set/2016-06-28/map-set-20160628-hg.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "map-set";
 
-  asdFilesToKeep = ["map-set.asd"];
+  asdFilesToKeep = [ "map-set.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM map-set DESCRIPTION Set-like data structure. SHA256

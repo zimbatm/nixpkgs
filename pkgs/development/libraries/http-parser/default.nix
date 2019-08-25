@@ -2,7 +2,8 @@
 
 let
   version = "2.9.2";
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "http-parser-${version}";
 
   src = fetchFromGitHub {

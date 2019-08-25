@@ -25,15 +25,24 @@ buildPythonPackage rec {
   disabled = (!isPy3k);
 
   src = fetchPypi {
-     inherit pname version;
-     sha256 = "fd9e777157669d004e7c25adce3e7c697234283384c99aa0c23454173a14a7a8";
+    inherit pname version;
+    sha256 = "fd9e777157669d004e7c25adce3e7c697234283384c99aa0c23454173a14a7a8";
   };
 
   buildInputs = [ pytestrunner ];
   checkInputs = [ pytest pytestcov pytest-benchmark openssh ];
-  propagatedBuildInputs = [ pymatgen marshmallow pyyaml pygmo
-                            pandas scipy numpy scikitlearn
-                            lammps-cython pymatgen-lammps ];
+  propagatedBuildInputs = [
+    pymatgen
+    marshmallow
+    pyyaml
+    pygmo
+    pandas
+    scipy
+    numpy
+    scikitlearn
+    lammps-cython
+    pymatgen-lammps
+  ];
 
   # tests require git lfs download. and is quite large so skip tests
   doCheck = false;

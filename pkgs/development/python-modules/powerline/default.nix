@@ -9,19 +9,19 @@
 # the executables of git, mercurial and bazaar.
 
 buildPythonPackage rec {
-  version  = "2.7";
+  version = "2.7";
   pname = "powerline";
   name = pname + "-" + version;
 
   src = fetchurl {
-    url    = "https://github.com/powerline/powerline/archive/${version}.tar.gz";
-    name   = "${name}.tar.gz";
+    url = "https://github.com/powerline/powerline/archive/${version}.tar.gz";
+    name = "${name}.tar.gz";
     sha256 = "1h1j2rfphvfdq6mmfyn5bql45hzrwxkhpc2jcwf0vrl3slzkl5s5";
   };
 
-  propagatedBuildInputs = [ psutil pygit2];
+  propagatedBuildInputs = [ psutil pygit2 ];
 
-# error: This is still beta and some tests still fail
+  # error: This is still beta and some tests still fail
   doCheck = false;
 
   postInstall = ''
@@ -38,11 +38,11 @@ buildPythonPackage rec {
 
     install -dm755 "$out/share/tmux"
     install -m644 "powerline/bindings/tmux/powerline.conf" "$out/share/tmux/powerline.conf"
-    '';
+  '';
 
   meta = {
-    homepage    = https://github.com/powerline/powerline;
+    homepage = https://github.com/powerline/powerline;
     description = "The ultimate statusline/prompt utility";
-    license     = lib.licenses.mit;
+    license = lib.licenses.mit;
   };
 }

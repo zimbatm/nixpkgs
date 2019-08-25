@@ -1,4 +1,4 @@
-{stdenv, fetchurl, tcl, tk, xlibsWrapper, makeWrapper}:
+{ stdenv, fetchurl, tcl, tk, xlibsWrapper, makeWrapper }:
 
 stdenv.mkDerivation rec {
   version = "3.0";
@@ -8,7 +8,7 @@ stdenv.mkDerivation rec {
     sha256 = "08pgjvd2vvmqk3h641x63nxp7wqimb9r30889mkyfh2agc62sjbc";
   };
 
-  buildInputs = [tcl tk xlibsWrapper makeWrapper];
+  buildInputs = [ tcl tk xlibsWrapper makeWrapper ];
 
   hardeningDisable = [ "format" ];
 
@@ -46,7 +46,7 @@ stdenv.mkDerivation rec {
       fullName = "WordNet 3.0 license";
       url = https://wordnet.princeton.edu/license-and-commercial-use;
     };
-    maintainers = [ ];
+    maintainers = [];
     platforms = with stdenv.lib.platforms; linux ++ darwin;
   };
 }

@@ -10,10 +10,12 @@ stdenv.mkDerivation {
   };
 
   patches = [
-    (fetchpatch {
-      url = "https://github.com/mkottman/acpi_call/pull/67.patch";
-      sha256 = "0z07apvdl8nvl8iwfk1sl1iidfjyx12fc0345bmp2nq1537kpbri";
-    })
+    (
+      fetchpatch {
+        url = "https://github.com/mkottman/acpi_call/pull/67.patch";
+        sha256 = "0z07apvdl8nvl8iwfk1sl1iidfjyx12fc0345bmp2nq1537kpbri";
+      }
+    )
   ];
 
   hardeningDisable = [ "pic" ];
@@ -36,7 +38,7 @@ stdenv.mkDerivation {
   '';
 
   meta = {
-    maintainers = [stdenv.lib.maintainers.raskin];
+    maintainers = [ stdenv.lib.maintainers.raskin ];
     platforms = stdenv.lib.platforms.linux;
     description = "A module allowing arbitrary ACPI calls; use case: hybrid video";
   };

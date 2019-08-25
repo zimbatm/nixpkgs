@@ -1,7 +1,7 @@
 { stdenv, fetchurl, pkgconfig, libusb1-axoloti }:
 
 stdenv.mkDerivation rec {
-  name="dfu-util-${version}";
+  name = "dfu-util-${version}";
   version = "0.8";
 
   nativeBuildInputs = [ pkgconfig ];
@@ -26,6 +26,6 @@ stdenv.mkDerivation rec {
     homepage = http://dfu-util.sourceforge.net;
     license = licenses.gpl2Plus;
     platforms = platforms.unix;
-    maintainers = [ ];
+    maintainers = [];
   };
 }

@@ -1,8 +1,39 @@
-{ stdenv, fetchurl, pkgconfig, gtk3, vala, enchant2, wrapGAppsHook, meson, ninja
-, desktop-file-utils, gnome-online-accounts, gsettings-desktop-schemas, adwaita-icon-theme
-, libnotify, libcanberra-gtk3, libsecret, gmime, isocodes, libxml2, gettext
-, sqlite, gcr, json-glib, itstool, libgee, gnome3, webkitgtk, python3
-, xvfb_run, dbus, shared-mime-info, libunwind, libunity, folks, glib-networking }:
+{ stdenv
+, fetchurl
+, pkgconfig
+, gtk3
+, vala
+, enchant2
+, wrapGAppsHook
+, meson
+, ninja
+, desktop-file-utils
+, gnome-online-accounts
+, gsettings-desktop-schemas
+, adwaita-icon-theme
+, libnotify
+, libcanberra-gtk3
+, libsecret
+, gmime
+, isocodes
+, libxml2
+, gettext
+, sqlite
+, gcr
+, json-glib
+, itstool
+, libgee
+, gnome3
+, webkitgtk
+, python3
+, xvfb_run
+, dbus
+, shared-mime-info
+, libunwind
+, libunity
+, folks
+, glib-networking
+}:
 
 stdenv.mkDerivation rec {
   pname = "geary";
@@ -14,15 +45,38 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    desktop-file-utils gettext itstool libxml2 meson ninja
-    pkgconfig vala wrapGAppsHook python3
+    desktop-file-utils
+    gettext
+    itstool
+    libxml2
+    meson
+    ninja
+    pkgconfig
+    vala
+    wrapGAppsHook
+    python3
   ];
 
   buildInputs = [
-    adwaita-icon-theme enchant2 gcr gmime gnome-online-accounts
-    gsettings-desktop-schemas gtk3 isocodes json-glib libcanberra-gtk3
-    libgee libnotify libsecret sqlite webkitgtk glib-networking
-    libunwind libunity folks
+    adwaita-icon-theme
+    enchant2
+    gcr
+    gmime
+    gnome-online-accounts
+    gsettings-desktop-schemas
+    gtk3
+    isocodes
+    json-glib
+    libcanberra-gtk3
+    libgee
+    libnotify
+    libsecret
+    sqlite
+    webkitgtk
+    glib-networking
+    libunwind
+    libunity
+    folks
   ];
 
   checkInputs = [ xvfb_run dbus ];

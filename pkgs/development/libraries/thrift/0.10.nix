@@ -1,5 +1,14 @@
-{ stdenv, fetchurl, boost, zlib, libevent, openssl, python, pkgconfig, bison
-, flex, twisted
+{ stdenv
+, fetchurl
+, boost
+, zlib
+, libevent
+, openssl
+, python
+, pkgconfig
+, bison
+, flex
+, twisted
 }:
 
 stdenv.mkDerivation rec {
@@ -19,7 +28,14 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ pkgconfig ];
   buildInputs = [
-    boost zlib libevent openssl python bison flex twisted
+    boost
+    zlib
+    libevent
+    openssl
+    python
+    bison
+    flex
+    twisted
   ];
 
   preConfigure = "export PY_PREFIX=$out";

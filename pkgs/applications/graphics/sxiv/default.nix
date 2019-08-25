@@ -18,8 +18,8 @@ stdenv.mkDerivation rec {
       --replace /usr/local $out
   '';
 
-  configFile = optionalString (conf!=null) (builtins.toFile "config.def.h" conf);
-  preBuild = optionalString (conf!=null) "cp ${configFile} config.def.h";
+  configFile = optionalString (conf != null) (builtins.toFile "config.def.h" conf);
+  preBuild = optionalString (conf != null) "cp ${configFile} config.def.h";
 
   buildInputs = [ libXft imlib2 giflib libexif ];
 

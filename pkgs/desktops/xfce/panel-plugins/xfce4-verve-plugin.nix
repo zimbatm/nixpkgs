@@ -1,9 +1,20 @@
-{ stdenv, fetchurl, pkgconfig, intltool, glib, exo, pcre
-, libxfce4util, xfce4-panel, libxfce4ui, xfconf, gtk }:
+{ stdenv
+, fetchurl
+, pkgconfig
+, intltool
+, glib
+, exo
+, pcre
+, libxfce4util
+, xfce4-panel
+, libxfce4ui
+, xfconf
+, gtk
+}:
 
 with stdenv.lib;
 stdenv.mkDerivation rec {
-  p_name  = "xfce4-verve-plugin";
+  p_name = "xfce4-verve-plugin";
   ver_maj = "1.1";
   ver_min = "0";
 

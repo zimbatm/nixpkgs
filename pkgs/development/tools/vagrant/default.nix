@@ -1,5 +1,15 @@
-{ stdenv, lib, fetchurl, buildRubyGem, bundlerEnv, ruby, libarchive
-, libguestfs, qemu, writeText, withLibvirt ? stdenv.isLinux }:
+{ stdenv
+, lib
+, fetchurl
+, buildRubyGem
+, bundlerEnv
+, ruby
+, libarchive
+, libguestfs
+, qemu
+, writeText
+, withLibvirt ? stdenv.isLinux
+}:
 
 let
   # NOTE: bumping the version and updating the hash is insufficient;
@@ -16,18 +26,22 @@ let
     inherit ruby;
     gemfile = writeText "Gemfile" "";
     lockfile = writeText "Gemfile.lock" "";
-    gemset = lib.recursiveUpdate (import ./gemset.nix) ({
-      vagrant = {
-        source = {
-          type = "url";
-          inherit url sha256;
+    gemset = lib.recursiveUpdate (import ./gemset.nix) (
+      {
+        vagrant = {
+          source = {
+            type = "url";
+            inherit url sha256;
+          };
+          inherit version;
         };
-        inherit version;
-      };
-    } // lib.optionalAttrs withLibvirt (import ./gemset_libvirt.nix));
+      }
+      // lib.optionalAttrs withLibvirt (import ./gemset_libvirt.nix)
+    );
   };
 
-in buildRubyGem rec {
+in
+buildRubyGem rec {
   name = "${gemName}-${version}";
   gemName = "vagrant";
   inherit version;
@@ -55,28 +69,34 @@ in buildRubyGem rec {
   postInstall =
     let
       pathAdditions = lib.makeSearchPath "bin"
-        (map (x: "${lib.getBin x}") ([
-          libarchive
-        ] ++ lib.optionals withLibvirt [
-          libguestfs
-          qemu
-        ]));
-    in ''
-    wrapProgram "$out/bin/vagrant" \
-      --set GEM_PATH "${deps}/lib/ruby/gems/${ruby.version.libDir}" \
-      --prefix PATH ':' ${pathAdditions}
+        (
+          map (x: "${lib.getBin x}") (
+            [
+              libarchive
+            ]
+            ++ lib.optionals withLibvirt [
+                 libguestfs
+                 qemu
+               ]
+          )
+        );
+    in
+      ''
+        wrapProgram "$out/bin/vagrant" \
+          --set GEM_PATH "${deps}/lib/ruby/gems/${ruby.version.libDir}" \
+          --prefix PATH ':' ${pathAdditions}
 
-    mkdir -p "$out/vagrant-plugins/plugins.d"
-    echo '{}' > "$out/vagrant-plugins/plugins.json"
+        mkdir -p "$out/vagrant-plugins/plugins.d"
+        echo '{}' > "$out/vagrant-plugins/plugins.json"
 
-    mkdir -p $out/share/bash-completion/completions/
-    cp -av contrib/bash/completion.sh $out/share/bash-completion/completions/vagrant
-  '' +
-  lib.optionalString withLibvirt ''
-    substitute ${./vagrant-libvirt.json.in} $out/vagrant-plugins/plugins.d/vagrant-libvirt.json \
-      --subst-var-by ruby_version ${ruby.version} \
-      --subst-var-by vagrant_version ${version}
-  '';
+        mkdir -p $out/share/bash-completion/completions/
+        cp -av contrib/bash/completion.sh $out/share/bash-completion/completions/vagrant
+      ''
+      + lib.optionalString withLibvirt ''
+          substitute ${./vagrant-libvirt.json.in} $out/vagrant-plugins/plugins.d/vagrant-libvirt.json \
+            --subst-var-by ruby_version ${ruby.version} \
+            --subst-var-by vagrant_version ${version}
+        '';
 
   installCheckPhase = ''
     if [[ "$("$out/bin/vagrant" --version)" == "Vagrant ${version}" ]]; then

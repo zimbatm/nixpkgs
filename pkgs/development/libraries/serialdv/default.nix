@@ -2,7 +2,7 @@
 
 stdenv.mkDerivation rec {
   pname = "serialdv";
-  version ="1.1.1";
+  version = "1.1.1";
 
   src = fetchFromGitHub {
     owner = "f4exb";
@@ -20,4 +20,3 @@ stdenv.mkDerivation rec {
     maintainers = with maintainers; [ alkeryn ];
   };
 }
-

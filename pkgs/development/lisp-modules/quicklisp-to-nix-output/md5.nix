@@ -5,7 +5,7 @@ rec {
 
   description = ''The MD5 Message-Digest Algorithm RFC 1321'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/md5/2018-02-28/md5-20180228-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "md5";
 
-  asdFilesToKeep = ["md5.asd"];
+  asdFilesToKeep = [ "md5.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM md5 DESCRIPTION The MD5 Message-Digest Algorithm RFC 1321 SHA256

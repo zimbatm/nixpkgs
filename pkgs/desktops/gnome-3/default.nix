@@ -1,388 +1,447 @@
 { config, pkgs, lib }:
 
-lib.makeScope pkgs.newScope (self: with self; {
-  updateScript = callPackage ./update.nix { };
+lib.makeScope pkgs.newScope (
+  self: with self; {
+    updateScript = callPackage ./update.nix {};
+
+    /* Remove packages of packagesToRemove from packages, based on their names
+
+       Type:
+         removePackagesByName :: [package] -> [package] -> [package]
+
+       Example:
+         removePackagesByName [ nautilus file-roller ] [ file-roller totem ]
+         => [ nautilus ]
+    */
+    removePackagesByName = packages: packagesToRemove:
+      let
+        pkgName = drv: (builtins.parseDrvName drv.name).name;
+        namesToRemove = map pkgName packagesToRemove;
+      in
+        lib.filter (x: !(builtins.elem (pkgName x) namesToRemove)) packages;
+
+    maintainers = with pkgs.lib.maintainers; [ lethalman jtojnar hedning worldofpeace ];
+
+    corePackages = with gnome3; [
+      pkgs.desktop-file-utils
+      pkgs.shared-mime-info # for update-mime-database
+      pkgs.glib # for gsettings
+      pkgs.gtk3.out # for gtk-update-icon-cache
+      glib-networking
+      gvfs
+      dconf
+      gnome-backgrounds
+      gnome-control-center
+      pkgs.gnome-menus
+      gnome-settings-daemon
+      gnome-shell
+      gnome-themes-extra
+      adwaita-icon-theme
+      gnome-shell-extensions
+      pkgs.hicolor-icon-theme
+    ];
+
+    optionalPackages = with gnome3; [
+      baobab
+      eog
+      epiphany
+      evince
+      gucharmap
+      nautilus
+      totem
+      vino
+      yelp
+      gnome-bluetooth
+      gnome-calculator
+      gnome-contacts
+      gnome-font-viewer
+      gnome-screenshot
+      gnome-system-monitor
+      simple-scan
+      gnome-terminal
+      gnome-user-docs
+      evolution
+      file-roller
+      gedit
+      gnome-clocks
+      gnome-music
+      gnome-tweaks
+      pkgs.gnome-photos
+      nautilus-sendto
+      dconf-editor
+      vinagre
+      gnome-weather
+      gnome-logs
+      gnome-maps
+      gnome-characters
+      gnome-calendar
+      accerciser
+      gnome-nettool
+      gnome-getting-started-docs
+      gnome-packagekit
+      gnome-software
+      gnome-power-manager
+      gnome-todo
+      pkgs.gnome-usage
+    ];
+
+    gamesPackages = with gnome3; [
+      swell-foop
+      lightsoff
+      iagno
+      tali
+      quadrapassel
+      gnome-sudoku
+      atomix
+      aisleriot
+      five-or-more
+      four-in-a-row
+      gnome-chess
+      gnome-klotski
+      gnome-mahjongg
+      gnome-mines
+      gnome-nibbles
+      gnome-robots
+      gnome-tetravex
+      hitori
+      gnome-taquin
+    ];
 
-  /* Remove packages of packagesToRemove from packages, based on their names
+    libsoup = pkgs.libsoup.override { gnomeSupport = true; };
+    libchamplain = pkgs.libchamplain.override { libsoup = libsoup; };
+    gnome3 = self // { recurseForDerivations = false; };
+    vala = pkgs.vala_0_44;
+    gegl_0_4 = pkgs.gegl_0_4.override { gtk = pkgs.gtk3; };
 
-     Type:
-       removePackagesByName :: [package] -> [package] -> [package]
+    # ISO installer
+    # installerIso = callPackage ./installer.nix {};
 
-     Example:
-       removePackagesByName [ nautilus file-roller ] [ file-roller totem ]
-       => [ nautilus ]
-  */
-  removePackagesByName = packages: packagesToRemove:
-    let
-      pkgName = drv: (builtins.parseDrvName drv.name).name;
-      namesToRemove = map pkgName packagesToRemove;
-    in
-      lib.filter (x: !(builtins.elem (pkgName x) namesToRemove)) packages;
+    #### Core (http://ftp.acc.umu.se/pub/GNOME/core/)
 
-  maintainers = with pkgs.lib.maintainers; [ lethalman jtojnar hedning worldofpeace ];
+    adwaita-icon-theme = callPackage ./core/adwaita-icon-theme {};
 
-  corePackages = with gnome3; [
-    pkgs.desktop-file-utils
-    pkgs.shared-mime-info # for update-mime-database
-    pkgs.glib # for gsettings
-    pkgs.gtk3.out # for gtk-update-icon-cache
-    glib-networking gvfs dconf gnome-backgrounds gnome-control-center
-    pkgs.gnome-menus gnome-settings-daemon gnome-shell
-    gnome-themes-extra adwaita-icon-theme gnome-shell-extensions
-    pkgs.hicolor-icon-theme
-  ];
+    baobab = callPackage ./core/baobab {};
 
-  optionalPackages = with gnome3; [ baobab eog epiphany evince
-    gucharmap nautilus totem vino yelp gnome-bluetooth
-    gnome-calculator gnome-contacts gnome-font-viewer gnome-screenshot
-    gnome-system-monitor simple-scan
-    gnome-terminal gnome-user-docs evolution file-roller gedit
-    gnome-clocks gnome-music gnome-tweaks pkgs.gnome-photos
-    nautilus-sendto dconf-editor vinagre gnome-weather gnome-logs
-    gnome-maps gnome-characters gnome-calendar accerciser gnome-nettool
-    gnome-getting-started-docs gnome-packagekit gnome-software
-    gnome-power-manager gnome-todo pkgs.gnome-usage
-  ];
+    caribou = callPackage ./core/caribou {};
 
-  gamesPackages = with gnome3; [ swell-foop lightsoff iagno
-    tali quadrapassel gnome-sudoku atomix aisleriot five-or-more
-    four-in-a-row gnome-chess gnome-klotski gnome-mahjongg
-    gnome-mines gnome-nibbles gnome-robots gnome-tetravex
-    hitori gnome-taquin
-  ];
+    dconf = callPackage ./core/dconf {};
+    dconf-editor = callPackage ./core/dconf-editor {};
 
-  libsoup = pkgs.libsoup.override { gnomeSupport = true; };
-  libchamplain = pkgs.libchamplain.override { libsoup = libsoup; };
-  gnome3 = self // { recurseForDerivations = false; };
-  vala = pkgs.vala_0_44;
-  gegl_0_4 = pkgs.gegl_0_4.override { gtk = pkgs.gtk3; };
+    empathy = callPackage ./core/empathy {};
 
-# ISO installer
-# installerIso = callPackage ./installer.nix {};
+    epiphany = callPackage ./core/epiphany {};
 
-#### Core (http://ftp.acc.umu.se/pub/GNOME/core/)
+    evince = callPackage ./core/evince {}; # ToDo: dbus would prevent compilation, enable tests
 
-  adwaita-icon-theme = callPackage ./core/adwaita-icon-theme { };
+    evolution-data-server = callPackage ./core/evolution-data-server {};
 
-  baobab = callPackage ./core/baobab { };
+    gdm = callPackage ./core/gdm {};
 
-  caribou = callPackage ./core/caribou { };
+    gjs = callPackage ./core/gjs {};
 
-  dconf = callPackage ./core/dconf { };
-  dconf-editor = callPackage ./core/dconf-editor { };
+    glib-networking = pkgs.glib-networking.override {
+      inherit (pkgs) gsettings-desktop-schemas;
+    };
 
-  empathy = callPackage ./core/empathy { };
+    gnome-backgrounds = callPackage ./core/gnome-backgrounds {};
 
-  epiphany = callPackage ./core/epiphany { };
+    gnome-bluetooth = callPackage ./core/gnome-bluetooth {};
 
-  evince = callPackage ./core/evince { }; # ToDo: dbus would prevent compilation, enable tests
+    gnome-color-manager = callPackage ./core/gnome-color-manager {};
 
-  evolution-data-server = callPackage ./core/evolution-data-server { };
+    gnome-contacts = callPackage ./core/gnome-contacts {};
 
-  gdm = callPackage ./core/gdm { };
+    gnome-control-center = callPackage ./core/gnome-control-center {};
 
-  gjs = callPackage ./core/gjs { };
+    gnome-calculator = callPackage ./core/gnome-calculator {};
 
-  glib-networking = pkgs.glib-networking.override {
-    inherit (pkgs) gsettings-desktop-schemas;
-  };
+    gnome-common = callPackage ./core/gnome-common {};
 
-  gnome-backgrounds = callPackage ./core/gnome-backgrounds { };
+    gnome-desktop = callPackage ./core/gnome-desktop {};
 
-  gnome-bluetooth = callPackage ./core/gnome-bluetooth { };
+    gnome-dictionary = callPackage ./core/gnome-dictionary {};
 
-  gnome-color-manager = callPackage ./core/gnome-color-manager { };
+    gnome-disk-utility = callPackage ./core/gnome-disk-utility {};
 
-  gnome-contacts = callPackage ./core/gnome-contacts { };
+    gnome-font-viewer = callPackage ./core/gnome-font-viewer {};
 
-  gnome-control-center = callPackage ./core/gnome-control-center { };
+    gnome-keyring = callPackage ./core/gnome-keyring {};
 
-  gnome-calculator = callPackage ./core/gnome-calculator { };
+    libgnome-keyring = callPackage ./core/libgnome-keyring {};
 
-  gnome-common = callPackage ./core/gnome-common { };
+    gnome-online-miners = callPackage ./core/gnome-online-miners {};
 
-  gnome-desktop = callPackage ./core/gnome-desktop { };
+    gnome-remote-desktop = callPackage ./core/gnome-remote-desktop {};
 
-  gnome-dictionary = callPackage ./core/gnome-dictionary { };
+    gnome-session = callPackage ./core/gnome-session {};
 
-  gnome-disk-utility = callPackage ./core/gnome-disk-utility { };
+    gnome-shell = callPackage ./core/gnome-shell {};
 
-  gnome-font-viewer = callPackage ./core/gnome-font-viewer { };
+    gnome-shell-extensions = callPackage ./core/gnome-shell-extensions {};
 
-  gnome-keyring = callPackage ./core/gnome-keyring { };
+    gnome-screenshot = callPackage ./core/gnome-screenshot {};
 
-  libgnome-keyring = callPackage ./core/libgnome-keyring { };
+    gnome-settings-daemon = callPackage ./core/gnome-settings-daemon {};
 
-  gnome-online-miners = callPackage ./core/gnome-online-miners { };
+    gnome-software = callPackage ./core/gnome-software {};
 
-  gnome-remote-desktop = callPackage ./core/gnome-remote-desktop { };
+    gnome-system-monitor = callPackage ./core/gnome-system-monitor {};
 
-  gnome-session = callPackage ./core/gnome-session { };
+    gnome-terminal = callPackage ./core/gnome-terminal {};
 
-  gnome-shell = callPackage ./core/gnome-shell { };
+    gnome-themes-extra = callPackage ./core/gnome-themes-extra {};
 
-  gnome-shell-extensions = callPackage ./core/gnome-shell-extensions { };
+    gnome-user-docs = callPackage ./core/gnome-user-docs {};
 
-  gnome-screenshot = callPackage ./core/gnome-screenshot { };
+    gnome-user-share = callPackage ./core/gnome-user-share {};
 
-  gnome-settings-daemon = callPackage ./core/gnome-settings-daemon { };
+    gucharmap = callPackage ./core/gucharmap {};
 
-  gnome-software = callPackage ./core/gnome-software { };
+    gvfs = pkgs.gvfs.override { gnome = gnome3; gnomeSupport = true; };
 
-  gnome-system-monitor = callPackage ./core/gnome-system-monitor { };
+    eog = callPackage ./core/eog {};
 
-  gnome-terminal = callPackage ./core/gnome-terminal { };
+    mutter = callPackage ./core/mutter {};
 
-  gnome-themes-extra = callPackage ./core/gnome-themes-extra { };
+    # Needed for elementary's gala and greeter until they get around to adapting to all the API breaking changes in libmutter-3
+    # A more detailed explaination can be seen here https://decathorpe.com/2018/09/04/call-for-help-pantheon-on-fedora-29.html
+    # See Also: https://github.com/elementary/gala/issues/303
+    mutter328 = callPackage ./core/mutter/3.28.nix {};
 
-  gnome-user-docs = callPackage ./core/gnome-user-docs { };
+    nautilus = callPackage ./core/nautilus {};
 
-  gnome-user-share = callPackage ./core/gnome-user-share { };
+    networkmanager-openvpn = pkgs.networkmanager-openvpn.override {
+      withGnome = true;
+    };
 
-  gucharmap = callPackage ./core/gucharmap { };
+    networkmanager-vpnc = pkgs.networkmanager-vpnc.override {
+      withGnome = true;
+    };
 
-  gvfs = pkgs.gvfs.override { gnome = gnome3; gnomeSupport = true; };
+    networkmanager-openconnect = pkgs.networkmanager-openconnect.override {
+      withGnome = true;
+    };
 
-  eog = callPackage ./core/eog { };
+    networkmanager-fortisslvpn = pkgs.networkmanager-fortisslvpn.override {
+      withGnome = true;
+    };
 
-  mutter = callPackage ./core/mutter { };
+    networkmanager-l2tp = pkgs.networkmanager-l2tp.override {
+      withGnome = true;
+    };
 
-  # Needed for elementary's gala and greeter until they get around to adapting to all the API breaking changes in libmutter-3
-  # A more detailed explaination can be seen here https://decathorpe.com/2018/09/04/call-for-help-pantheon-on-fedora-29.html
-  # See Also: https://github.com/elementary/gala/issues/303
-  mutter328 = callPackage ./core/mutter/3.28.nix { };
+    networkmanager-iodine = pkgs.networkmanager-iodine.override {
+      withGnome = true;
+    };
 
-  nautilus = callPackage ./core/nautilus { };
+    networkmanagerapplet = pkgs.networkmanagerapplet.override {
+      withGnome = true;
+    };
 
-  networkmanager-openvpn = pkgs.networkmanager-openvpn.override {
-    withGnome = true;
-  };
+    rygel = callPackage ./core/rygel {};
 
-  networkmanager-vpnc = pkgs.networkmanager-vpnc.override {
-    withGnome = true;
-  };
+    simple-scan = callPackage ./core/simple-scan {};
 
-  networkmanager-openconnect = pkgs.networkmanager-openconnect.override {
-    withGnome = true;
-  };
+    sushi = callPackage ./core/sushi {};
 
-  networkmanager-fortisslvpn = pkgs.networkmanager-fortisslvpn.override {
-    withGnome = true;
-  };
+    totem = callPackage ./core/totem {};
 
-  networkmanager-l2tp = pkgs.networkmanager-l2tp.override {
-    withGnome = true;
-  };
+    vino = callPackage ./core/vino {};
 
-  networkmanager-iodine = pkgs.networkmanager-iodine.override {
-    withGnome = true;
-  };
+    yelp = callPackage ./core/yelp {};
 
-  networkmanagerapplet = pkgs.networkmanagerapplet.override {
-    withGnome = true;
-  };
+    yelp-xsl = callPackage ./core/yelp-xsl {};
 
-  rygel = callPackage ./core/rygel { };
+    yelp-tools = callPackage ./core/yelp-tools {};
 
-  simple-scan = callPackage ./core/simple-scan { };
+    zenity = callPackage ./core/zenity {};
 
-  sushi = callPackage ./core/sushi { };
 
-  totem = callPackage ./core/totem { };
+    #### Apps (http://ftp.acc.umu.se/pub/GNOME/apps/)
 
-  vino = callPackage ./core/vino { };
+    accerciser = callPackage ./apps/accerciser {};
 
-  yelp = callPackage ./core/yelp { };
+    cheese = callPackage ./apps/cheese {};
 
-  yelp-xsl = callPackage ./core/yelp-xsl { };
+    evolution = callPackage ./apps/evolution {};
 
-  yelp-tools = callPackage ./core/yelp-tools { };
+    file-roller = callPackage ./apps/file-roller {};
 
-  zenity = callPackage ./core/zenity { };
+    gedit = callPackage ./apps/gedit {};
 
+    ghex = callPackage ./apps/ghex {};
 
-#### Apps (http://ftp.acc.umu.se/pub/GNOME/apps/)
+    glade = callPackage ./apps/glade {};
 
-  accerciser = callPackage ./apps/accerciser { };
+    gnome-books = callPackage ./apps/gnome-books {};
 
-  cheese = callPackage ./apps/cheese { };
+    gnome-boxes = callPackage ./apps/gnome-boxes {};
 
-  evolution = callPackage ./apps/evolution { };
+    gnome-calendar = callPackage ./apps/gnome-calendar {};
 
-  file-roller = callPackage ./apps/file-roller { };
+    gnome-characters = callPackage ./apps/gnome-characters {};
 
-  gedit = callPackage ./apps/gedit { };
+    gnome-clocks = callPackage ./apps/gnome-clocks {};
 
-  ghex = callPackage ./apps/ghex { };
+    gnome-documents = callPackage ./apps/gnome-documents {};
 
-  glade = callPackage ./apps/glade { };
+    gnome-getting-started-docs = callPackage ./apps/gnome-getting-started-docs {};
 
-  gnome-books = callPackage ./apps/gnome-books { };
+    gnome-logs = callPackage ./apps/gnome-logs {};
 
-  gnome-boxes = callPackage ./apps/gnome-boxes { };
+    gnome-maps = callPackage ./apps/gnome-maps {};
 
-  gnome-calendar = callPackage ./apps/gnome-calendar { };
+    gnome-music = callPackage ./apps/gnome-music {};
 
-  gnome-characters = callPackage ./apps/gnome-characters { };
+    gnome-nettool = callPackage ./apps/gnome-nettool {};
 
-  gnome-clocks = callPackage ./apps/gnome-clocks { };
+    gnome-notes = callPackage ./apps/gnome-notes {};
 
-  gnome-documents = callPackage ./apps/gnome-documents { };
+    gnome-power-manager = callPackage ./apps/gnome-power-manager {};
 
-  gnome-getting-started-docs = callPackage ./apps/gnome-getting-started-docs { };
+    gnome-sound-recorder = callPackage ./apps/gnome-sound-recorder {};
 
-  gnome-logs = callPackage ./apps/gnome-logs { };
+    gnome-todo = callPackage ./apps/gnome-todo {};
 
-  gnome-maps = callPackage ./apps/gnome-maps { };
+    gnome-weather = callPackage ./apps/gnome-weather {};
 
-  gnome-music = callPackage ./apps/gnome-music { };
+    nautilus-sendto = callPackage ./apps/nautilus-sendto {};
 
-  gnome-nettool = callPackage ./apps/gnome-nettool { };
+    polari = callPackage ./apps/polari {};
 
-  gnome-notes = callPackage ./apps/gnome-notes { };
+    seahorse = callPackage ./apps/seahorse {};
 
-  gnome-power-manager = callPackage ./apps/gnome-power-manager { };
+    vinagre = callPackage ./apps/vinagre {};
 
-  gnome-sound-recorder = callPackage ./apps/gnome-sound-recorder { };
+    #### Dev http://ftp.gnome.org/pub/GNOME/devtools/
 
-  gnome-todo = callPackage ./apps/gnome-todo {};
+    anjuta = callPackage ./devtools/anjuta {};
 
-  gnome-weather = callPackage ./apps/gnome-weather { };
+    devhelp = callPackage ./devtools/devhelp {};
 
-  nautilus-sendto = callPackage ./apps/nautilus-sendto { };
+    gnome-devel-docs = callPackage ./devtools/gnome-devel-docs {};
 
-  polari = callPackage ./apps/polari { };
+    nemiver = callPackage ./devtools/nemiver {};
 
-  seahorse = callPackage ./apps/seahorse { };
+    #### Games
 
-  vinagre = callPackage ./apps/vinagre { };
+    aisleriot = callPackage ./games/aisleriot {};
 
-#### Dev http://ftp.gnome.org/pub/GNOME/devtools/
+    atomix = callPackage ./games/atomix {};
 
-  anjuta = callPackage ./devtools/anjuta { };
+    five-or-more = callPackage ./games/five-or-more {};
 
-  devhelp = callPackage ./devtools/devhelp { };
+    four-in-a-row = callPackage ./games/four-in-a-row {};
 
-  gnome-devel-docs = callPackage ./devtools/gnome-devel-docs { };
+    gnome-chess = callPackage ./games/gnome-chess {};
 
-  nemiver = callPackage ./devtools/nemiver { };
+    gnome-klotski = callPackage ./games/gnome-klotski {};
 
-#### Games
+    gnome-mahjongg = callPackage ./games/gnome-mahjongg {};
 
-  aisleriot = callPackage ./games/aisleriot { };
+    gnome-mines = callPackage ./games/gnome-mines {};
 
-  atomix = callPackage ./games/atomix { };
+    gnome-nibbles = callPackage ./games/gnome-nibbles {};
 
-  five-or-more = callPackage ./games/five-or-more { };
+    gnome-robots = callPackage ./games/gnome-robots {};
 
-  four-in-a-row = callPackage ./games/four-in-a-row { };
+    gnome-sudoku = callPackage ./games/gnome-sudoku {};
 
-  gnome-chess = callPackage ./games/gnome-chess { };
+    gnome-taquin = callPackage ./games/gnome-taquin {};
 
-  gnome-klotski = callPackage ./games/gnome-klotski { };
+    gnome-tetravex = callPackage ./games/gnome-tetravex {};
 
-  gnome-mahjongg = callPackage ./games/gnome-mahjongg { };
+    hitori = callPackage ./games/hitori {};
 
-  gnome-mines = callPackage ./games/gnome-mines { };
+    iagno = callPackage ./games/iagno {};
 
-  gnome-nibbles = callPackage ./games/gnome-nibbles { };
+    lightsoff = callPackage ./games/lightsoff {};
 
-  gnome-robots = callPackage ./games/gnome-robots { };
+    swell-foop = callPackage ./games/swell-foop {};
 
-  gnome-sudoku = callPackage ./games/gnome-sudoku { };
+    tali = callPackage ./games/tali {};
 
-  gnome-taquin = callPackage ./games/gnome-taquin { };
+    quadrapassel = callPackage ./games/quadrapassel {};
 
-  gnome-tetravex = callPackage ./games/gnome-tetravex { };
+    #### Misc -- other packages on http://ftp.gnome.org/pub/GNOME/sources/
 
-  hitori = callPackage ./games/hitori { };
+    geary = callPackage ./misc/geary {};
 
-  iagno = callPackage ./games/iagno { };
+    gitg = callPackage ./misc/gitg {};
 
-  lightsoff = callPackage ./games/lightsoff { };
+    libgnome-games-support = callPackage ./misc/libgnome-games-support {};
 
-  swell-foop = callPackage ./games/swell-foop { };
+    gnome-applets = callPackage ./misc/gnome-applets {};
 
-  tali = callPackage ./games/tali { };
+    gnome-flashback = callPackage ./misc/gnome-flashback {};
 
-  quadrapassel = callPackage ./games/quadrapassel { };
+    gnome-panel = callPackage ./misc/gnome-panel {};
 
-#### Misc -- other packages on http://ftp.gnome.org/pub/GNOME/sources/
+    gnome-screensaver = callPackage ./misc/gnome-screensaver {};
 
-  geary = callPackage ./misc/geary { };
+    gnome-tweaks = callPackage ./misc/gnome-tweaks {};
 
-  gitg = callPackage ./misc/gitg { };
+    gpaste = callPackage ./misc/gpaste {};
 
-  libgnome-games-support = callPackage ./misc/libgnome-games-support { };
+    metacity = callPackage ./misc/metacity {};
 
-  gnome-applets = callPackage ./misc/gnome-applets { };
+    nautilus-python = callPackage ./misc/nautilus-python {};
 
-  gnome-flashback = callPackage ./misc/gnome-flashback { };
+    gtkhtml = callPackage ./misc/gtkhtml { enchant = pkgs.enchant1; };
 
-  gnome-panel = callPackage ./misc/gnome-panel { };
+    pomodoro = callPackage ./misc/pomodoro {};
 
-  gnome-screensaver = callPackage ./misc/gnome-screensaver { };
+    gnome-autoar = callPackage ./misc/gnome-autoar {};
 
-  gnome-tweaks = callPackage ./misc/gnome-tweaks { };
+    gnome-packagekit = callPackage ./misc/gnome-packagekit {};
+  }
+  // lib.optionalAttrs (config.allowAliases or true) {
+       #### Legacy aliases
 
-  gpaste = callPackage ./misc/gpaste { };
+       bijiben = gnome-notes; # added 2018-09-26
+       evolution_data_server = evolution-data-server; # added 2018-02-25
+       geocode_glib = pkgs.geocode-glib; # added 2018-02-25
+       glib_networking = pkgs.glib-networking; # added 2018-02-25
+       gnome_common = gnome-common; # added 2018-02-25
+       gnome_control_center = gnome-control-center; # added 2018-02-25
+       gnome_desktop = gnome-desktop; # added 2018-02-25
+       gnome_keyring = gnome-keyring; # added 2018-02-25
+       gnome_online_accounts = gnome-online-accounts; # added 2018-02-25
+       gnome_session = gnome-session; # added 2018-02-25
+       gnome_settings_daemon = gnome-settings-daemon; # added 2018-02-25
+       gnome_shell = gnome-shell; # added 2018-02-25
+       gnome_terminal = gnome-terminal; # added 2018-02-25
+       gnome-themes-standard = gnome-themes-extra; # added 2018-03-14
+       gnome_themes_standard = gnome-themes-standard; # added 2018-02-25
+       gnome-tweak-tool = gnome-tweaks; # added 2018-03-21
+       gsettings_desktop_schemas = gsettings-desktop-schemas; # added 2018-02-25
+       libgames-support = libgnome-games-support; # added 2018-03-14
+       libgnome_keyring = libgnome-keyring; # added 2018-02-25
+       inherit (pkgs) rarian; # added 2018-04-25
+       networkmanager_fortisslvpn = networkmanager-fortisslvpn; # added 2018-02-25
+       networkmanager_iodine = networkmanager-iodine; # added 2018-02-25
+       networkmanager_l2tp = networkmanager-l2tp; # added 2018-02-25
+       networkmanager_openconnect = networkmanager-openconnect; # added 2018-02-25
+       networkmanager_openvpn = networkmanager-openvpn; # added 2018-02-25
+       networkmanager_vpnc = networkmanager-vpnc; # added 2018-02-25
+       yelp_xsl = yelp-xsl; # added 2018-02-25
+       yelp_tools = yelp-tools; # added 2018-02-25
 
-  metacity = callPackage ./misc/metacity { };
+       # added 2019-02-08
+       inherit (pkgs) atk glib gobject-introspection gspell webkitgtk gtk3 gtkmm3
+         libgtop libgudev libhttpseverywhere librsvg libsecret gdk_pixbuf gtksourceview gtksourceviewmm gtksourceview4
+         easytag meld orca rhythmbox shotwell gnome-usage
+         clutter clutter-gst clutter-gtk cogl gtk-vnc libdazzle libgda libgit2-glib libgxps libgdata libgepub libcroco libpeas libgee geocode-glib libgweather librest libzapojit libmediaart gfbgraph gexiv2 folks totem-pl-parser gcr gsound libgnomekbd vte vte_290 vte-ng gnome-menus gdl
+         ;
+       inherit (pkgs) gsettings-desktop-schemas; # added 2019-04-16
+       inherit (pkgs) gnome-video-effects; # added 2019-08-19
+       inherit (pkgs) gnome-online-accounts grilo grilo-plugins tracker tracker-miners gnome-photos; # added 2019-08-23
 
-  nautilus-python = callPackage ./misc/nautilus-python { };
+       defaultIconTheme = adwaita-icon-theme;
+       gtk = gtk3;
+       gtkmm = gtkmm3;
+       rest = librest;
 
-  gtkhtml = callPackage ./misc/gtkhtml { enchant = pkgs.enchant1; };
-
-  pomodoro = callPackage ./misc/pomodoro { };
-
-  gnome-autoar = callPackage ./misc/gnome-autoar { };
-
-  gnome-packagekit = callPackage ./misc/gnome-packagekit { };
-} // lib.optionalAttrs (config.allowAliases or true) {
-#### Legacy aliases
-
-  bijiben = gnome-notes; # added 2018-09-26
-  evolution_data_server = evolution-data-server; # added 2018-02-25
-  geocode_glib = pkgs.geocode-glib; # added 2018-02-25
-  glib_networking = pkgs.glib-networking; # added 2018-02-25
-  gnome_common = gnome-common; # added 2018-02-25
-  gnome_control_center = gnome-control-center; # added 2018-02-25
-  gnome_desktop = gnome-desktop; # added 2018-02-25
-  gnome_keyring = gnome-keyring; # added 2018-02-25
-  gnome_online_accounts = gnome-online-accounts; # added 2018-02-25
-  gnome_session = gnome-session; # added 2018-02-25
-  gnome_settings_daemon = gnome-settings-daemon; # added 2018-02-25
-  gnome_shell = gnome-shell; # added 2018-02-25
-  gnome_terminal = gnome-terminal; # added 2018-02-25
-  gnome-themes-standard = gnome-themes-extra; # added 2018-03-14
-  gnome_themes_standard = gnome-themes-standard; # added 2018-02-25
-  gnome-tweak-tool = gnome-tweaks; # added 2018-03-21
-  gsettings_desktop_schemas = gsettings-desktop-schemas; # added 2018-02-25
-  libgames-support = libgnome-games-support; # added 2018-03-14
-  libgnome_keyring = libgnome-keyring; # added 2018-02-25
-  inherit (pkgs) rarian; # added 2018-04-25
-  networkmanager_fortisslvpn = networkmanager-fortisslvpn; # added 2018-02-25
-  networkmanager_iodine = networkmanager-iodine; # added 2018-02-25
-  networkmanager_l2tp = networkmanager-l2tp; # added 2018-02-25
-  networkmanager_openconnect = networkmanager-openconnect; # added 2018-02-25
-  networkmanager_openvpn = networkmanager-openvpn; # added 2018-02-25
-  networkmanager_vpnc = networkmanager-vpnc; # added 2018-02-25
-  yelp_xsl = yelp-xsl; # added 2018-02-25
-  yelp_tools = yelp-tools; # added 2018-02-25
-
-  # added 2019-02-08
-  inherit (pkgs) atk glib gobject-introspection gspell webkitgtk gtk3 gtkmm3
-      libgtop libgudev libhttpseverywhere librsvg libsecret gdk_pixbuf gtksourceview gtksourceviewmm gtksourceview4
-      easytag meld orca rhythmbox shotwell gnome-usage
-      clutter clutter-gst clutter-gtk cogl gtk-vnc libdazzle libgda libgit2-glib libgxps libgdata libgepub libcroco libpeas libgee geocode-glib libgweather librest libzapojit libmediaart gfbgraph gexiv2 folks totem-pl-parser gcr gsound libgnomekbd vte vte_290 vte-ng gnome-menus gdl;
-  inherit (pkgs) gsettings-desktop-schemas; # added 2019-04-16
-  inherit (pkgs) gnome-video-effects; # added 2019-08-19
-  inherit (pkgs) gnome-online-accounts grilo grilo-plugins tracker tracker-miners gnome-photos; # added 2019-08-23
-
-  defaultIconTheme = adwaita-icon-theme;
-  gtk = gtk3;
-  gtkmm = gtkmm3;
-  rest = librest;
-
-  pidgin-im-gnome-shell-extension = pkgs.gnomeExtensions.pidgin-im-integration; # added 2019-08-01
-})
+       pidgin-im-gnome-shell-extension = pkgs.gnomeExtensions.pidgin-im-integration; # added 2019-08-01
+     }
+)

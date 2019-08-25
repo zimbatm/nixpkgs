@@ -1,6 +1,8 @@
 { fetchcvs, stdenv, emacs, w3m, imagemagick, texinfo, autoreconfHook }:
 
-let date = "2013-03-21"; in
+let
+  date = "2013-03-21";
+in
 stdenv.mkDerivation rec {
   name = "emacs-w3m-cvs${date}";
 
@@ -56,6 +58,6 @@ stdenv.mkDerivation rec {
 
     homepage = http://emacs-w3m.namazu.org/;
 
-    maintainers = [ ];
+    maintainers = [];
   };
 }

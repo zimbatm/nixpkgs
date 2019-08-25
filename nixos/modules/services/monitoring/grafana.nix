@@ -48,7 +48,9 @@ let
     SMTP_USER = cfg.smtp.user;
     SMTP_PASSWORD = cfg.smtp.password;
     SMTP_FROM_ADDRESS = cfg.smtp.fromAddress;
-  } // cfg.extraOptions;
+  }
+  // cfg.extraOptions
+  ;
 
   datasourceConfiguration = {
     apiVersion = 1;
@@ -64,7 +66,7 @@ let
 
   dashboardFile = pkgs.writeText "dashboard.yaml" (builtins.toJSON dashboardConfiguration);
 
-  provisionConfDir =  pkgs.runCommand "grafana-provisioning" { } ''
+  provisionConfDir = pkgs.runCommand "grafana-provisioning" {} ''
     mkdir -p $out/{datasources,dashboards}
     ln -sf ${datasourceFile} $out/datasources/datasource.yaml
     ln -sf ${dashboardFile} $out/dashboards/dashboard.yaml
@@ -81,11 +83,11 @@ let
         description = "Name of the datasource. Required";
       };
       type = mkOption {
-        type = types.enum ["graphite" "prometheus" "cloudwatch" "elasticsearch" "influxdb" "opentsdb" "mysql" "mssql" "postgres" "loki"];
+        type = types.enum [ "graphite" "prometheus" "cloudwatch" "elasticsearch" "influxdb" "opentsdb" "mysql" "mssql" "postgres" "loki" ];
         description = "Datasource type. Required";
       };
       access = mkOption {
-        type = types.enum ["proxy" "direct"];
+        type = types.enum [ "proxy" "direct" ];
         default = "proxy";
         description = "Access mode. proxy or direct (Server or Browser in the UI). Required";
       };
@@ -202,14 +204,15 @@ let
       };
     };
   };
-in {
+in
+{
   options.services.grafana = {
     enable = mkEnableOption "grafana";
 
     protocol = mkOption {
       description = "Which protocol to listen.";
       default = "http";
-      type = types.enum ["http" "https" "socket"];
+      type = types.enum [ "http" "https" "socket" ];
     };
 
     addr = mkOption {
@@ -271,7 +274,7 @@ in {
       type = mkOption {
         description = "Database type.";
         default = "sqlite3";
-        type = types.enum ["mysql" "sqlite3" "postgres"];
+        type = types.enum [ "mysql" "sqlite3" "postgres" ];
       };
 
       host = mkOption {
@@ -438,7 +441,7 @@ in {
       autoAssignOrgRole = mkOption {
         description = "Default role new users will be auto assigned.";
         default = "Viewer";
-        type = types.enum ["Viewer" "Editor"];
+        type = types.enum [ "Viewer" "Editor" ];
       };
     };
 
@@ -482,13 +485,17 @@ in {
 
   config = mkIf cfg.enable {
     warnings = flatten [
-      (optional (
-        cfg.database.password != opt.database.password.default ||
-        cfg.security.adminPassword != opt.security.adminPassword.default
-      ) "Grafana passwords will be stored as plaintext in the Nix store!")
-      (optional (
-        any (x: x.password != null || x.basicAuthPassword != null || x.secureJsonData != null) cfg.provision.datasources
-      ) "Datasource passwords will be stored as plaintext in the Nix store!")
+      (
+        optional (
+          cfg.database.password != opt.database.password.default
+          || cfg.security.adminPassword != opt.security.adminPassword.default
+        ) "Grafana passwords will be stored as plaintext in the Nix store!"
+      )
+      (
+        optional (
+          any (x: x.password != null || x.basicAuthPassword != null || x.secureJsonData != null) cfg.provision.datasources
+        ) "Datasource passwords will be stored as plaintext in the Nix store!"
+      )
     ];
 
     environment.systemPackages = [ cfg.package ];
@@ -514,27 +521,29 @@ in {
 
     systemd.services.grafana = {
       description = "Grafana Service Daemon";
-      wantedBy = ["multi-user.target"];
-      after = ["networking.target"];
+      wantedBy = [ "multi-user.target" ];
+      after = [ "networking.target" ];
       environment = {
         QT_QPA_PLATFORM = "offscreen";
-      } // mapAttrs' (n: v: nameValuePair "GF_${n}" (toString v)) envOptions;
+      }
+      // mapAttrs' (n: v: nameValuePair "GF_${n}" (toString v)) envOptions
+      ;
       script = ''
         ${optionalString (cfg.database.passwordFile != null) ''
-          export GF_DATABASE_PASSWORD="$(cat ${escapeShellArg cfg.database.passwordFile})"
-        ''}
+        export GF_DATABASE_PASSWORD="$(cat ${escapeShellArg cfg.database.passwordFile})"
+      ''}
         ${optionalString (cfg.security.adminPasswordFile != null) ''
-          export GF_SECURITY_ADMIN_PASSWORD="$(cat ${escapeShellArg cfg.security.adminPasswordFile})"
-        ''}
+        export GF_SECURITY_ADMIN_PASSWORD="$(cat ${escapeShellArg cfg.security.adminPasswordFile})"
+      ''}
         ${optionalString (cfg.security.secretKeyFile != null) ''
-          export GF_SECURITY_SECRET_KEY="$(cat ${escapeShellArg cfg.security.secretKeyFile})"
-        ''}
+        export GF_SECURITY_SECRET_KEY="$(cat ${escapeShellArg cfg.security.secretKeyFile})"
+      ''}
         ${optionalString (cfg.smtp.passwordFile != null) ''
-          export GF_SMTP_PASSWORD="$(cat ${escapeShellArg cfg.smtp.passwordFile})"
-        ''}
+        export GF_SMTP_PASSWORD="$(cat ${escapeShellArg cfg.smtp.passwordFile})"
+      ''}
         ${optionalString cfg.provision.enable ''
-          export GF_PATHS_PROVISIONING=${provisionConfDir};
-        ''}
+        export GF_PATHS_PROVISIONING=${provisionConfDir};
+      ''}
         exec ${cfg.package.bin}/bin/grafana-server -homepath ${cfg.dataDir}
       '';
       serviceConfig = {

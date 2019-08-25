@@ -1,5 +1,10 @@
-{ lib, fetchurl, stdenv, ncurses,
-IOKit, python }:
+{ lib
+, fetchurl
+, stdenv
+, ncurses
+, IOKit
+, python
+}:
 
 stdenv.mkDerivation rec {
   name = "htop-${version}";
@@ -12,8 +17,9 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ python ];
   buildInputs =
-    [ ncurses ] ++
-    lib.optionals stdenv.isDarwin [ IOKit ];
+    [ ncurses ]
+    ++ lib.optionals stdenv.isDarwin [ IOKit ]
+    ;
 
   prePatch = ''
     patchShebangs scripts/MakeHeader.py

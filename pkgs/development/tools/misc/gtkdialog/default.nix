@@ -1,4 +1,4 @@
-{stdenv, fetchurl, gtk2, pkgconfig, hicolor-icon-theme }:
+{ stdenv, fetchurl, gtk2, pkgconfig, hicolor-icon-theme }:
 
 stdenv.mkDerivation {
   name = "gtkdialog-0.8.3";

@@ -1,6 +1,8 @@
 { mkDerivation, lib, fetchurl, qtbase, qttools, qmake }:
 
-let inherit (lib) getDev; in
+let
+  inherit (lib) getDev;
+in
 
 mkDerivation rec {
   pname = "qt5ct";

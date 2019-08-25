@@ -1,5 +1,14 @@
-{ fetchurl, stdenv, pkgconfig, gettext, gtk2, gconf
-, curl, libexif, sqlite, libxml2 }:
+{ fetchurl
+, stdenv
+, pkgconfig
+, gettext
+, gtk2
+, gconf
+, curl
+, libexif
+, sqlite
+, libxml2
+}:
 
 stdenv.mkDerivation rec {
   name = "tangogps-0.99.2";

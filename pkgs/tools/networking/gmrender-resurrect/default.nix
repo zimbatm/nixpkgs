@@ -1,7 +1,21 @@
-{ stdenv, fetchFromGitHub, autoconf, automake, pkgconfig, makeWrapper
-, gstreamer, gst-plugins-base, gst-plugins-good, gst-plugins-bad, gst-plugins-ugly, gst-libav, libupnp }:
+{ stdenv
+, fetchFromGitHub
+, autoconf
+, automake
+, pkgconfig
+, makeWrapper
+, gstreamer
+, gst-plugins-base
+, gst-plugins-good
+, gst-plugins-bad
+, gst-plugins-ugly
+, gst-libav
+, libupnp
+}:
 
-let version = "4f221e6b85abf85957b547436e982d7a501a1718"; in
+let
+  version = "4f221e6b85abf85957b547436e982d7a501a1718";
+in
 
 stdenv.mkDerivation {
   name = "gmrender-resurrect-${version}";

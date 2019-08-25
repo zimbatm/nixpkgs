@@ -1,5 +1,14 @@
-{ stdenv, mkDerivation, fetchFromGitHub, boost
-, qtbase, qtwebkit, poppler, qmake, hunspell, html-tidy}:
+{ stdenv
+, mkDerivation
+, fetchFromGitHub
+, boost
+, qtbase
+, qtwebkit
+, poppler
+, qmake
+, hunspell
+, html-tidy
+}:
 
 mkDerivation rec {
   name = "nixnote2-${version}";

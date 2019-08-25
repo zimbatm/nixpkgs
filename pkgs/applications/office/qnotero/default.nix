@@ -1,4 +1,6 @@
-{ stdenv, fetchFromGitHub, python3Packages
+{ stdenv
+, fetchFromGitHub
+, python3Packages
 }:
 
 python3Packages.buildPythonPackage rec {
@@ -17,11 +19,11 @@ python3Packages.buildPythonPackage rec {
   propagatedBuildInputs = [ python3Packages.pyqt4 ];
 
   patchPhase = ''
-      substituteInPlace ./setup.py \
-        --replace "/usr/share" "usr/share"
+    substituteInPlace ./setup.py \
+      --replace "/usr/share" "usr/share"
 
-      substituteInPlace ./libqnotero/_themes/default.py \
-         --replace "/usr/share" "$out/usr/share"
+    substituteInPlace ./libqnotero/_themes/default.py \
+       --replace "/usr/share" "$out/usr/share"
   '';
 
   meta = {

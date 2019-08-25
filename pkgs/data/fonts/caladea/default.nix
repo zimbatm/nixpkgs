@@ -2,7 +2,8 @@
 
 let
   version = "20130214";
-in fetchzip rec {
+in
+fetchzip rec {
   name = "caladea-${version}";
 
   url = "https://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/crosextrafonts-${version}.tar.gz";
@@ -27,7 +28,7 @@ in fetchzip rec {
     '';
     license = licenses.asl20;
     platforms = platforms.all;
-    maintainers = [maintainers.rycee];
+    maintainers = [ maintainers.rycee ];
 
     # Reduce the priority of this package. The intent is that if you
     # also install the `vista-fonts` package, then you probably will

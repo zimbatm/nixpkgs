@@ -70,4 +70,3 @@ buildPythonPackage rec {
     maintainers = [ maintainers.kiwi ];
   };
 }
-

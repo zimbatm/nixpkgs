@@ -1,6 +1,14 @@
-{ stdenv, fetchurl
-, bundlerEnv, ruby
-, alsaUtils, libnotify, which, wrapGAppsHook, gtk2, atk, gobject-introspection
+{ stdenv
+, fetchurl
+, bundlerEnv
+, ruby
+, alsaUtils
+, libnotify
+, which
+, wrapGAppsHook
+, gtk2
+, atk
+, gobject-introspection
 }:
 
 # how to update:

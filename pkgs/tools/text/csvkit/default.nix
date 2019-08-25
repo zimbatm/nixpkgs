@@ -10,11 +10,16 @@ python3.pkgs.buildPythonApplication rec {
   };
 
   propagatedBuildInputs = with python3.pkgs; [
-    agate agate-excel agate-dbf agate-sql six
+    agate
+    agate-excel
+    agate-dbf
+    agate-sql
+    six
   ];
 
   checkInputs = with python3.pkgs; [
-    glibcLocales nose
+    glibcLocales
+    nose
   ];
 
   checkPhase = ''

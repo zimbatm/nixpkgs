@@ -2,7 +2,7 @@
 
 stdenv.mkDerivation rec {
 
-  name="avarice-2.13";
+  name = "avarice-2.13";
 
   src = fetchurl {
     url = "mirror://sourceforge/avarice/${name}.tar.bz2";
@@ -21,4 +21,3 @@ stdenv.mkDerivation rec {
     broken = true; # 2018-04-10
   };
 }
-

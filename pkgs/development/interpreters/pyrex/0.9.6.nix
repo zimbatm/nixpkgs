@@ -1,6 +1,8 @@
 { stdenv, fetchurl, python2Packages }:
 
-let version = "0.9.6.4"; in
+let
+  version = "0.9.6.4";
+in
 
 python2Packages.buildPythonPackage rec {
   name = "pyrex-${version}";

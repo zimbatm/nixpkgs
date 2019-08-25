@@ -17,17 +17,21 @@ stdenv.mkDerivation rec {
     # 5, and seemingly doesn't affect Darwin.
     ./disable-t810.patch
 
-    (fetchpatch {
-      url = "https://raw.githubusercontent.com/macports/macports-ports/b76d1e48dac/editors/nano/files/secure_snprintf.patch";
-      extraPrefix = "";
-      sha256 = "1wy9pjw3vvp8fv8a7pmkqmiapgacfx54qj9fvsc5gwry0vv7vnc3";
-    })
+    (
+      fetchpatch {
+        url = "https://raw.githubusercontent.com/macports/macports-ports/b76d1e48dac/editors/nano/files/secure_snprintf.patch";
+        extraPrefix = "";
+        sha256 = "1wy9pjw3vvp8fv8a7pmkqmiapgacfx54qj9fvsc5gwry0vv7vnc3";
+      }
+    )
 
     # Expected to appear in the next release
-    (fetchpatch {
-      url = "https://raw.githubusercontent.com/Homebrew/formula-patches/3fff7c990b8df4174045834b9c1210e7736ff5a4/rcs/noreturn.patch";
-      sha256 = "10zniqrd6xagf3q03i1vksl0vd9nla3qcj0840n3m8z6jd4aypcx";
-    })
+    (
+      fetchpatch {
+        url = "https://raw.githubusercontent.com/Homebrew/formula-patches/3fff7c990b8df4174045834b9c1210e7736ff5a4/rcs/noreturn.patch";
+        sha256 = "10zniqrd6xagf3q03i1vksl0vd9nla3qcj0840n3m8z6jd4aypcx";
+      }
+    )
   ];
 
   doCheck = true;

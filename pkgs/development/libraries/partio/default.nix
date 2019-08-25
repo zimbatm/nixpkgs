@@ -24,7 +24,7 @@ stdenv.mkDerivation rec
 
     mkdir $dev
     mkdir $out
-      '';
+  '';
 
   # TODO:
   # Sexpr support

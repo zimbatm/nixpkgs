@@ -14,7 +14,7 @@
 , pytz
 , tornado
 , aiohttp
-# test dependencies
+  # test dependencies
 , freezegun
 , mock
 , pretend
@@ -47,7 +47,9 @@ buildPythonPackage rec {
 
     # optional requirements
     tornado
-  ] ++ lib.optional isPy3k aiohttp;
+  ]
+  ++ lib.optional isPy3k aiohttp
+  ;
 
   checkInputs = [
     freezegun
@@ -56,7 +58,9 @@ buildPythonPackage rec {
     pytestcov
     pytest
     requests-mock
-  ] ++ lib.optional isPy3k aioresponses;
+  ]
+  ++ lib.optional isPy3k aioresponses
+  ;
 
   checkPhase = ''
     runHook preCheck

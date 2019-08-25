@@ -9,8 +9,8 @@ stdenv.mkDerivation {
   };
 
   ARCH = if stdenv.hostPlatform.system == "i686-linux" then "linux32"
-         else if stdenv.hostPlatform.system == "x86_64-linux" then "linux64"
-         else throw "Unsupported system";
+  else if stdenv.hostPlatform.system == "x86_64-linux" then "linux64"
+  else throw "Unsupported system";
 
   hardeningDisable = [ "format" ];
 

@@ -1,4 +1,4 @@
-{ lib } :
+{ lib }:
 
 with lib;
 {
@@ -62,8 +62,8 @@ with lib;
       type = types.nullOr types.str;
       default = null;
       description = ''
-         Name of the vmac interface to use. keepalived will come up with a name
-         if you don't specify one.
+        Name of the vmac interface to use. keepalived will come up with a name
+        if you don't specify one.
       '';
     };
 
@@ -79,9 +79,9 @@ with lib;
       type = types.nullOr types.str;
       default = null;
       description = ''
-         Default IP for binding vrrpd is the primary IP on interface. If you
-         want to hide location of vrrpd, use this IP as src_addr for unicast
-         vrrp packets.
+        Default IP for binding vrrpd is the primary IP on interface. If you
+        want to hide location of vrrpd, use this IP as src_addr for unicast
+        vrrp packets.
       '';
     };
 
@@ -98,9 +98,13 @@ with lib;
     };
 
     virtualIps = mkOption {
-      type = types.listOf (types.submodule (import ./virtual-ip-options.nix {
-        inherit lib;
-      }));
+      type = types.listOf (
+        types.submodule (
+          import ./virtual-ip-options.nix {
+            inherit lib;
+          }
+        )
+      );
       default = [];
       example = literalExample ''
         TODO: Example

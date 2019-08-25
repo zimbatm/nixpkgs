@@ -17,12 +17,12 @@ let
     };
 
     buildInputs = [
-      btrfs-progs               # for btrfs/ioctl.h
-      utillinux                 # for uuid.h
+      btrfs-progs # for btrfs/ioctl.h
+      utillinux # for uuid.h
     ];
 
     nativeBuildInputs = [
-      pythonPackages.markdown   # documentation build
+      pythonPackages.markdown # documentation build
     ];
 
     preBuild = ''

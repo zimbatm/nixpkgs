@@ -1,13 +1,34 @@
-{ stdenv, fetchurl, pkgconfig, vala, glib, libxslt, gtk3, wrapGAppsHook
-, webkitgtk, json-glib, librest, libsecret, gtk-doc, gobject-introspection
-, gettext, icu, glib-networking, hicolor-icon-theme
-, libsoup, docbook_xsl, docbook_xml_dtd_412, gnome3, gcr, kerberos
+{ stdenv
+, fetchurl
+, pkgconfig
+, vala
+, glib
+, libxslt
+, gtk3
+, wrapGAppsHook
+, webkitgtk
+, json-glib
+, librest
+, libsecret
+, gtk-doc
+, gobject-introspection
+, gettext
+, icu
+, glib-networking
+, hicolor-icon-theme
+, libsoup
+, docbook_xsl
+, docbook_xml_dtd_412
+, gnome3
+, gcr
+, kerberos
 }:
 
 let
   pname = "gnome-online-accounts";
   version = "3.32.0";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "${pname}-${version}";
 
   src = fetchurl {
@@ -29,13 +50,29 @@ in stdenv.mkDerivation rec {
   enableParallelBuilding = true;
 
   nativeBuildInputs = [
-    pkgconfig gobject-introspection vala gettext wrapGAppsHook
-    libxslt docbook_xsl docbook_xml_dtd_412 gtk-doc
+    pkgconfig
+    gobject-introspection
+    vala
+    gettext
+    wrapGAppsHook
+    libxslt
+    docbook_xsl
+    docbook_xml_dtd_412
+    gtk-doc
     hicolor-icon-theme # for setup-hook
   ];
   buildInputs = [
-    glib gtk3 webkitgtk json-glib librest libsecret glib-networking icu libsoup
-    gcr kerberos
+    glib
+    gtk3
+    webkitgtk
+    json-glib
+    librest
+    libsecret
+    glib-networking
+    icu
+    libsoup
+    gcr
+    kerberos
   ];
 
   passthru = {

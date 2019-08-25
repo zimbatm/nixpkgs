@@ -5,7 +5,8 @@ with lib;
 let
   cfg = config.services.grafana_reporter;
 
-in {
+in
+{
   options.services.grafana_reporter = {
     enable = mkEnableOption "grafana_reporter";
 
@@ -13,7 +14,7 @@ in {
       protocol = mkOption {
         description = "Grafana protocol.";
         default = "http";
-        type = types.enum ["http" "https"];
+        type = types.enum [ "http" "https" ];
       };
       addr = mkOption {
         description = "Grafana address.";
@@ -49,8 +50,8 @@ in {
   config = mkIf cfg.enable {
     systemd.services.grafana_reporter = {
       description = "Grafana Reporter Service Daemon";
-      wantedBy = ["multi-user.target"];
-      after = ["network.target"];
+      wantedBy = [ "multi-user.target" ];
+      after = [ "network.target" ];
       serviceConfig = let
         args = lib.concatStringsSep " " [
           "-proto ${cfg.grafana.protocol}://"
@@ -58,9 +59,10 @@ in {
           "-port :${toString cfg.port}"
           "-templates ${cfg.templateDir}"
         ];
-      in {
-        ExecStart = "${pkgs.grafana_reporter.bin}/bin/grafana-reporter ${args}";
-      };
+      in
+        {
+          ExecStart = "${pkgs.grafana_reporter.bin}/bin/grafana-reporter ${args}";
+        };
     };
   };
 }

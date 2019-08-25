@@ -1,9 +1,20 @@
-{ stdenv, fetchurl, libgpgerror, gnupg, pkgconfig, glib, pth, libassuan
-, file, which, ncurses
+{ stdenv
+, fetchurl
+, libgpgerror
+, gnupg
+, pkgconfig
+, glib
+, pth
+, libassuan
+, file
+, which
+, ncurses
 , texinfo
 , buildPackages
 , qtbase ? null
-, pythonSupport ? false, swig2 ? null, python ? null
+, pythonSupport ? false
+, swig2 ? null
+, python ? null
 }:
 
 let
@@ -25,14 +36,16 @@ stdenv.mkDerivation rec {
 
   propagatedBuildInputs =
     [ libgpgerror glib libassuan pth ]
-    ++ lib.optional (qtbase != null) qtbase;
+    ++ lib.optional (qtbase != null) qtbase
+    ;
 
   nativeBuildInputs = [ file pkgconfig gnupg texinfo ]
-  ++ lib.optionals pythonSupport [ python swig2 which ncurses ];
+    ++ lib.optionals pythonSupport [ python swig2 which ncurses ]
+    ;
 
   depsBuildBuild = [ buildPackages.stdenv.cc ];
 
-  postPatch =''
+  postPatch = ''
     substituteInPlace ./configure --replace /usr/bin/file ${file}/bin/file
   '';
 
@@ -40,19 +53,22 @@ stdenv.mkDerivation rec {
     "--enable-fixed-path=${gnupg}/bin"
     "--with-libgpg-error-prefix=${libgpgerror.dev}"
     "--with-libassuan-prefix=${libassuan.dev}"
-  ] ++ lib.optional pythonSupport "--enable-languages=python"
+  ]
+  ++ lib.optional pythonSupport "--enable-languages=python"
   # Tests will try to communicate with gpg-agent instance via a UNIX socket
   # which has a path length limit. Nix on darwin is using a build directory
   # that already has quite a long path and the resulting socket path doesn't
   # fit in the limit. https://github.com/NixOS/nix/pull/1085
-    ++ lib.optionals stdenv.isDarwin [ "--disable-gpg-test" ];
+  ++ lib.optionals stdenv.isDarwin [ "--disable-gpg-test" ]
+  ;
 
   NIX_CFLAGS_COMPILE =
     # qgpgme uses Q_ASSERT which retains build inputs at runtime unless
     # debugging is disabled
     lib.optional (qtbase != null) "-DQT_NO_DEBUG"
     # https://www.gnupg.org/documentation/manuals/gpgme/Largefile-Support-_0028LFS_0029.html
-    ++ lib.optional (system == "i686-linux") "-D_FILE_OFFSET_BITS=64";
+    ++ lib.optional (system == "i686-linux") "-D_FILE_OFFSET_BITS=64"
+    ;
 
   checkInputs = [ which ];
 

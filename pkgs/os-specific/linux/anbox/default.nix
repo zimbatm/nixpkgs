@@ -1,5 +1,10 @@
-{ stdenv, fetchFromGitHub, fetchurl
-, cmake, pkgconfig, dbus, makeWrapper
+{ stdenv
+, fetchFromGitHub
+, fetchurl
+, cmake
+, pkgconfig
+, dbus
+, makeWrapper
 , gtest
 , boost
 , libcap
@@ -59,8 +64,22 @@ stdenv.mkDerivation rec {
   ];
 
   buildInputs = [
-    cmake pkgconfig dbus boost libcap gtest systemd mesa glib
-    SDL2 SDL2_image protobuf protobufc properties-cpp lxc python
+    cmake
+    pkgconfig
+    dbus
+    boost
+    libcap
+    gtest
+    systemd
+    mesa
+    glib
+    SDL2
+    SDL2_image
+    protobuf
+    protobufc
+    properties-cpp
+    lxc
+    python
     libGL
   ];
 
@@ -96,7 +115,7 @@ stdenv.mkDerivation rec {
 
   postInstall = ''
     wrapProgram $out/bin/anbox \
-      --prefix LD_LIBRARY_PATH : ${stdenv.lib.makeLibraryPath [libGL libglvnd]} \
+      --prefix LD_LIBRARY_PATH : ${stdenv.lib.makeLibraryPath [ libGL libglvnd ]} \
       --prefix PATH : ${git}/bin
 
     mkdir -p $out/share/dbus-1/services

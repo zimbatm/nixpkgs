@@ -1,11 +1,26 @@
-{ stdenv, fetchurl, perlPackages, gettext, makeWrapper, PerlMagick, which
-, gitSupport ? false, git ? null
-, docutilsSupport ? false, python ? null, docutils ? null
-, monotoneSupport ? false, monotone ? null
-, bazaarSupport ? false, bazaar ? null
-, cvsSupport ? false, cvs ? null, cvsps ? null
-, subversionSupport ? false, subversion ? null
-, mercurialSupport ? false, mercurial ? null
+{ stdenv
+, fetchurl
+, perlPackages
+, gettext
+, makeWrapper
+, PerlMagick
+, which
+, gitSupport ? false
+, git ? null
+, docutilsSupport ? false
+, python ? null
+, docutils ? null
+, monotoneSupport ? false
+, monotone ? null
+, bazaarSupport ? false
+, bazaar ? null
+, cvsSupport ? false
+, cvs ? null
+, cvsps ? null
+, subversionSupport ? false
+, subversion ? null
+, mercurialSupport ? false
+, mercurial ? null
 , extraUtils ? []
 }:
 
@@ -32,17 +47,41 @@ stdenv.mkDerivation {
   };
 
   buildInputs = [ which ]
-    ++ (with perlPackages; [ perl TextMarkdown URI HTMLParser HTMLScrubber HTMLTemplate
-          TimeDate gettext makeWrapper DBFile CGISession CGIFormBuilder LocaleGettext
-          RpcXML XMLSimple PerlMagick YAML YAMLLibYAML HTMLTree AuthenPassphrase
-          NetOpenIDConsumer LWPxParanoidAgent CryptSSLeay ])
-    ++ lib.optionals docutilsSupport [python docutils]
-    ++ lib.optionals gitSupport [git]
-    ++ lib.optionals monotoneSupport [monotone]
-    ++ lib.optionals bazaarSupport [bazaar]
-    ++ lib.optionals cvsSupport [cvs cvsps perlPackages.Filechdir]
-    ++ lib.optionals subversionSupport [subversion]
-    ++ lib.optionals mercurialSupport [mercurial];
+    ++ (
+         with perlPackages; [
+           perl
+           TextMarkdown
+           URI
+           HTMLParser
+           HTMLScrubber
+           HTMLTemplate
+           TimeDate
+           gettext
+           makeWrapper
+           DBFile
+           CGISession
+           CGIFormBuilder
+           LocaleGettext
+           RpcXML
+           XMLSimple
+           PerlMagick
+           YAML
+           YAMLLibYAML
+           HTMLTree
+           AuthenPassphrase
+           NetOpenIDConsumer
+           LWPxParanoidAgent
+           CryptSSLeay
+         ]
+       )
+    ++ lib.optionals docutilsSupport [ python docutils ]
+    ++ lib.optionals gitSupport [ git ]
+    ++ lib.optionals monotoneSupport [ monotone ]
+    ++ lib.optionals bazaarSupport [ bazaar ]
+    ++ lib.optionals cvsSupport [ cvs cvsps perlPackages.Filechdir ]
+    ++ lib.optionals subversionSupport [ subversion ]
+    ++ lib.optionals mercurialSupport [ mercurial ]
+    ;
 
   patchPhase = ''
     sed -i s@/usr/bin/perl@${perlPackages.perl}/bin/perl@ pm_filter mdwn2man

@@ -3,7 +3,8 @@
 let
   skipTests = [ "test_requirements_finder" "test_pipfile_finder" ] ++ lib.optional isPy27 "test_standard_library_deprecates_user_issue_778";
   testOpts = lib.concatMapStringsSep " " (t: "--deselect test_isort.py::${t}") skipTests;
-in buildPythonPackage rec {
+in
+buildPythonPackage rec {
   pname = "isort";
   version = "4.3.20"; # Note 4.x is the last version that supports Python2
 

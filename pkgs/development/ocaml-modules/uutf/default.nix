@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, ocaml, findlib, ocamlbuild, cmdliner , topkg, uchar }:
+{ stdenv, fetchurl, ocaml, findlib, ocamlbuild, cmdliner, topkg, uchar }:
 let
   pname = "uutf";
   webpage = "https://erratique.ch/software/${pname}";

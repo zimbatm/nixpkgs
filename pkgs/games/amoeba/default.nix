@@ -6,14 +6,18 @@ stdenv.mkDerivation rec {
   debver = "29.1";
 
   srcs = [
-    (fetchurl {
-      url = "http://http.debian.net/debian/pool/contrib/a/amoeba/amoeba_${version}.orig.tar.gz";
-      sha256 = "1hyycw4r36ryka2gab9vzkgs8gq4gqhk08vn29cwak95w0rahgim";
-    })
-    (fetchurl {
-      url = "http://http.debian.net/debian/pool/contrib/a/amoeba/amoeba_${version}-${debver}.debian.tar.xz";
-      sha256 = "1xgi2sqzq97w6hd3dcyq6cka8xmp6nr25qymzhk52cwqh7qb75p3";
-    })
+    (
+      fetchurl {
+        url = "http://http.debian.net/debian/pool/contrib/a/amoeba/amoeba_${version}.orig.tar.gz";
+        sha256 = "1hyycw4r36ryka2gab9vzkgs8gq4gqhk08vn29cwak95w0rahgim";
+      }
+    )
+    (
+      fetchurl {
+        url = "http://http.debian.net/debian/pool/contrib/a/amoeba/amoeba_${version}-${debver}.debian.tar.xz";
+        sha256 = "1xgi2sqzq97w6hd3dcyq6cka8xmp6nr25qymzhk52cwqh7qb75p3";
+      }
+    )
   ];
   sourceRoot = "amoeba-1.1.orig";
 

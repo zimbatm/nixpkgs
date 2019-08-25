@@ -1,4 +1,4 @@
-{stdenv, fetchurl, zlib, cmake}:
+{ stdenv, fetchurl, zlib, cmake }:
 
 stdenv.mkDerivation rec {
   name = "taglib-1.9.1";

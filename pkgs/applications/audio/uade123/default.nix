@@ -2,7 +2,8 @@
 
 let
   version = "2.13";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "uade123-${version}";
   src = fetchurl {
     url = "http://zakalwe.fi/uade/uade2/uade-${version}.tar.bz2";

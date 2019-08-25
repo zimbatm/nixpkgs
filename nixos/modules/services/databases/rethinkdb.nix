@@ -97,13 +97,17 @@ in
     };
 
     users.users.rethinkdb = mkIf (cfg.user == "rethinkdb")
-      { name = "rethinkdb";
+      {
+        name = "rethinkdb";
         description = "RethinkDB server user";
       };
 
-    users.groups = optionalAttrs (cfg.group == "rethinkdb") (singleton
-      { name = "rethinkdb";
-      });
+    users.groups = optionalAttrs (cfg.group == "rethinkdb") (
+      singleton
+        {
+          name = "rethinkdb";
+        }
+    );
 
   };
 

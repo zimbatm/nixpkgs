@@ -1,10 +1,17 @@
-{ stdenv, fetchurl, pkgconfig, file
-, bison, openssl, readline, bzip2
+{ stdenv
+, fetchurl
+, pkgconfig
+, file
+, bison
+, openssl
+, readline
+, bzip2
 }:
 
 let
   version = "11.33.3";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
 
   name = "monetdb-${version}";
 

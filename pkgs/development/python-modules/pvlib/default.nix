@@ -1,5 +1,14 @@
-{ stdenv, buildPythonPackage, fetchFromGitHub, numpy, pandas, pytz, six
-, pytest, mock, pytest-mock }:
+{ stdenv
+, buildPythonPackage
+, fetchFromGitHub
+, numpy
+, pandas
+, pytz
+, six
+, pytest
+, mock
+, pytest-mock
+}:
 
 buildPythonPackage rec {
   pname = "pvlib";
@@ -7,7 +16,7 @@ buildPythonPackage rec {
 
   # Use GitHub because PyPI release tarball doesn't contain the tests. See:
   # https://github.com/pvlib/pvlib-python/issues/473
-  src = fetchFromGitHub{
+  src = fetchFromGitHub {
     owner = "pvlib";
     repo = "pvlib-python";
     rev = "v${version}";

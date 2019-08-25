@@ -1,4 +1,4 @@
-{stdenv, fetchurl, pkgconfig, gtk2, libxml2, python, gettext}:
+{ stdenv, fetchurl, pkgconfig, gtk2, libxml2, python, gettext }:
 
 stdenv.mkDerivation {
   name = "libglade-2.6.4";

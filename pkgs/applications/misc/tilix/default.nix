@@ -59,10 +59,12 @@ stdenv.mkDerivation rec {
   patches = [
     # Depends on libsecret optionally
     # https://github.com/gnunn1/tilix/pull/1745
-    (fetchpatch {
-      url = "https://github.com/gnunn1/tilix/commit/e38dd182bfb92419d70434926ef9c0530189aab8.patch";
-      sha256 = "1ws4iyzi67crzlp9p7cw8jr752b3phcg5ymx5aj0bh6321g38kfk";
-    })
+    (
+      fetchpatch {
+        url = "https://github.com/gnunn1/tilix/commit/e38dd182bfb92419d70434926ef9c0530189aab8.patch";
+        sha256 = "1ws4iyzi67crzlp9p7cw8jr752b3phcg5ymx5aj0bh6321g38kfk";
+      }
+    )
   ];
 
   postPatch = ''

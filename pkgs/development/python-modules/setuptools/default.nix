@@ -18,13 +18,13 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ unzip wrapPython python.pythonForBuild ];
-  doCheck = false;  # requires pytest
+  doCheck = false; # requires pytest
   installPhase = ''
-      dst=$out/${python.sitePackages}
-      mkdir -p $dst
-      export PYTHONPATH="$dst:$PYTHONPATH"
-      ${python.pythonForBuild.interpreter} setup.py install --prefix=$out
-      wrapPythonPrograms
+    dst=$out/${python.sitePackages}
+    mkdir -p $dst
+    export PYTHONPATH="$dst:$PYTHONPATH"
+    ${python.pythonForBuild.interpreter} setup.py install --prefix=$out
+    wrapPythonPrograms
   '';
 
   pythonPath = [];

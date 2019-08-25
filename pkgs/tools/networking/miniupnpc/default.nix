@@ -10,8 +10,9 @@ let
         inherit sha256;
       };
 
-      nativeBuildInputs = [] ++
-        stdenv.lib.optionals stdenv.isDarwin [ which cctools ];
+      nativeBuildInputs = []
+        ++ stdenv.lib.optionals stdenv.isDarwin [ which cctools ]
+        ;
 
       patches = stdenv.lib.optional stdenv.isFreeBSD ./freebsd.patch;
 
@@ -26,7 +27,8 @@ let
         license = licenses.bsd3;
       };
     };
-in {
+in
+{
   miniupnpc_2 = generic {
     version = "2.1.20190625";
     sha256 = "1yqp0d8x5ldjfma5x2vhpg1aaafdg0470ismccixww3rzpbza8w7";

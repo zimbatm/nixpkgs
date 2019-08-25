@@ -12,8 +12,11 @@ pythonPackages.buildPythonApplication rec {
   nativeBuildInputs = with pythonPackages; [ sphinx setuptools_scm ];
 
   propagatedBuildInputs = with pythonPackages; [
-    pythonPackages.notmuch chardet dkimpy
-  ] ++ stdenv.lib.optional (!pythonPackages.isPy3k) subprocess32;
+    pythonPackages.notmuch
+    chardet
+    dkimpy
+  ]
+    ++ stdenv.lib.optional (!pythonPackages.isPy3k) subprocess32;
 
   makeWrapperArgs = [
     ''--prefix PATH ':' "${notmuch}/bin"''
@@ -21,7 +24,7 @@ pythonPackages.buildPythonApplication rec {
 
   outputs = [ "out" "doc" ];
 
-  postBuild =  ''
+  postBuild = ''
     python setup.py build_sphinx -b html,man
   '';
 

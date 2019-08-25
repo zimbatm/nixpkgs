@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
       easier to implement and maintain than an algorithmic solution.
     '';
     license = licenses.publicDomain;
-    maintainers = [maintainers.league];
+    maintainers = [ maintainers.league ];
     platforms = platforms.linux;
   };
 }

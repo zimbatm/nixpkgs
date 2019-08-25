@@ -21,10 +21,12 @@ buildPythonPackage rec {
   disabled = isPyPy;
 
   patches = [
-    (substituteAll {
-      src = ./hardcode-graphviz-path.patch;
-      graphviz = graphvizPkg;
-    })
+    (
+      substituteAll {
+        src = ./hardcode-graphviz-path.patch;
+        graphviz = graphvizPkg;
+      }
+    )
   ];
 
   propagatedBuildInputs = [ graphviz ];

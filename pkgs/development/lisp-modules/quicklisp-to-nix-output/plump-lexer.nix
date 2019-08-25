@@ -5,7 +5,7 @@ rec {
 
   description = ''A very simple toolkit to help with lexing used mainly in Plump.'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/plump/2017-07-25/plump-20170725-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "plump-lexer";
 
-  asdFilesToKeep = ["plump-lexer.asd"];
+  asdFilesToKeep = [ "plump-lexer.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM plump-lexer DESCRIPTION

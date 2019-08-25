@@ -3,7 +3,8 @@
 let
   makeSDLFlags = map (p: "-I${stdenv.lib.getDev p}/include/SDL");
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "jimtcl-${version}";
   version = "0.78";
 
@@ -15,7 +16,11 @@ in stdenv.mkDerivation rec {
   };
 
   buildInputs = [
-    sqlite readline asciidoc SDL SDL_gfx
+    sqlite
+    readline
+    asciidoc
+    SDL
+    SDL_gfx
   ];
 
   NIX_CFLAGS_COMPILE = makeSDLFlags [ SDL SDL_gfx ];

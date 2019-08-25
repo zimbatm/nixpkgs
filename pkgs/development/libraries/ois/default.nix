@@ -1,5 +1,15 @@
-{ stdenv, fetchurl, autoconf, automake, libtool, libX11, xorgproto
-, libXi, libXaw, libXmu, libXt }:
+{ stdenv
+, fetchurl
+, autoconf
+, automake
+, libtool
+, libX11
+, xorgproto
+, libXi
+, libXaw
+, libXmu
+, libXt
+}:
 
 let
   majorVersion = "1";
@@ -16,18 +26,27 @@ stdenv.mkDerivation rec {
   };
 
   patches = [
-    (fetchurl {
-      url = http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/dev-games/ois/files/ois-1.3-gcc47.patch;
-      sha256 = "026jw06n42bcrmg0sbdhzc4cqxsnf7fw30a2z9cigd9x282zhii8";
-      name = "gcc47.patch";
-    })
+    (
+      fetchurl {
+        url = http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/dev-games/ois/files/ois-1.3-gcc47.patch;
+        sha256 = "026jw06n42bcrmg0sbdhzc4cqxsnf7fw30a2z9cigd9x282zhii8";
+        name = "gcc47.patch";
+      }
+    )
   ];
 
   patchFlags = "-p0";
 
   buildInputs = [
-    autoconf automake libtool libX11 xorgproto libXi libXaw
-    libXmu libXt
+    autoconf
+    automake
+    libtool
+    libX11
+    xorgproto
+    libXi
+    libXaw
+    libXmu
+    libXt
   ];
 
   preConfigure = "sh bootstrap";

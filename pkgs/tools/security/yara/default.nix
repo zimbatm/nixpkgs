@@ -1,7 +1,15 @@
-{ stdenv, fetchFromGitHub, autoconf, automake, libtool, pcre
-, withCrypto ? true, openssl
-, enableMagic ? true, file
-, enableCuckoo ? true, jansson
+{ stdenv
+, fetchFromGitHub
+, autoconf
+, automake
+, libtool
+, pcre
+, withCrypto ? true
+, openssl
+, enableMagic ? true
+, file
+, enableCuckoo ? true
+, jansson
 }:
 
 stdenv.mkDerivation rec {
@@ -15,11 +23,11 @@ stdenv.mkDerivation rec {
     sha256 = "1qxqk324cyvi4n09s79786ciig1gdyhs9dnsm07hf95a3kh6w5z2";
   };
 
-  buildInputs = [ autoconf automake libtool pcre]
+  buildInputs = [ autoconf automake libtool pcre ]
     ++ stdenv.lib.optionals withCrypto [ openssl ]
     ++ stdenv.lib.optionals enableMagic [ file ]
     ++ stdenv.lib.optionals enableCuckoo [ jansson ]
-  ;
+    ;
 
   preConfigure = "./bootstrap.sh";
 
@@ -31,8 +39,8 @@ stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "The pattern matching swiss knife for malware researchers";
-    homepage    = http://Virustotal.github.io/yara/;
-    license     = licenses.asl20;
-    platforms   = stdenv.lib.platforms.all;
+    homepage = http://Virustotal.github.io/yara/;
+    license = licenses.asl20;
+    platforms = stdenv.lib.platforms.all;
   };
 }

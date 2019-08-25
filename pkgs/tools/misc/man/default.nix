@@ -1,5 +1,5 @@
 { stdenv, fetchurl, groff, less }:
- 
+
 stdenv.mkDerivation rec {
   name = "man-1.6g";
 
@@ -7,7 +7,7 @@ stdenv.mkDerivation rec {
     url = "http://primates.ximian.com/~flucifredi/man/${name}.tar.gz";
     sha256 = "17wmp2ahkhl72cvfzshmck22dnq2lbjg0678swihj270yk1vip6c";
   };
-  
+
   buildInputs = [ groff less ];
 
   preBuild = ''

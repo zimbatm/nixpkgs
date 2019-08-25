@@ -1,6 +1,6 @@
 { stdenv, fetchurl, which }:
 
-stdenv.mkDerivation  rec {
+stdenv.mkDerivation rec {
   name = "crunch-${version}";
   version = "3.6";
 

@@ -3,7 +3,8 @@
 let
   version = "4.3.4";
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "libxc-${version}";
   src = fetchurl {
     url = "http://www.tddft.org/programs/octopus/down.php?file=libxc/${version}/libxc-${version}.tar.gz";

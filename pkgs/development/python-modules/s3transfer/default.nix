@@ -24,8 +24,11 @@ buildPythonPackage rec {
   foo = 1;
 
   propagatedBuildInputs =
-    [ botocore
-    ] ++ stdenv.lib.optional (pythonOlder "3") futures;
+    [
+      botocore
+    ]
+    ++ stdenv.lib.optional (pythonOlder "3") futures
+  ;
 
   buildInputs = [
     docutils

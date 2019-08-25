@@ -8,7 +8,8 @@ with lib;
 let
 
   requiredPackages = map (pkg: setPrio ((pkg.meta.priority or 5) + 3) pkg)
-    [ config.nix.package
+    [
+      config.nix.package
       pkgs.acl
       pkgs.attr
       pkgs.bashInteractive # bash with ncurses support
@@ -72,13 +73,13 @@ in
         # Note: We need `/lib' to be among `pathsToLink' for NSS modules
         # to work.
         default = [];
-        example = ["/"];
+        example = [ "/" ];
         description = "List of directories to be symlinked in <filename>/run/current-system/sw</filename>.";
       };
 
       extraOutputsToInstall = mkOption {
         type = types.listOf types.str;
-        default = [ ];
+        default = [];
         example = [ "doc" "info" "devdoc" ];
         description = "List of additional package outputs to be symlinked into <filename>/run/current-system/sw</filename>.";
       };
@@ -109,7 +110,8 @@ in
     environment.systemPackages = requiredPackages;
 
     environment.pathsToLink =
-      [ "/bin"
+      [
+        "/bin"
         "/etc/xdg"
         "/etc/gtk-2.0"
         "/etc/gtk-3.0"

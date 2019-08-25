@@ -107,15 +107,19 @@ stdenv.mkDerivation rec {
   ];
 
   patches = [
-    (substituteAll {
-      src = ./fix-paths.patch;
-      inherit tracker;
-    })
+    (
+      substituteAll {
+        src = ./fix-paths.patch;
+        inherit tracker;
+      }
+    )
     # https://bugzilla.gnome.org/show_bug.cgi?id=795576
-    (fetchurl {
-      url = https://bugzilla.gnome.org/attachment.cgi?id=371427;
-      sha256 = "187flswvzymjfxwfrrhizb1cvs780zm39aa3i2vwa5fbllr7kcpf";
-    })
+    (
+      fetchurl {
+        url = https://bugzilla.gnome.org/attachment.cgi?id=371427;
+        sha256 = "187flswvzymjfxwfrrhizb1cvs780zm39aa3i2vwa5fbllr7kcpf";
+      }
+    )
   ];
 
   postInstall = ''

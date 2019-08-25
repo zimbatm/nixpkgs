@@ -10,31 +10,43 @@ with lib;
     (mkRenamedOptionModule [ "networking" "enableRalinkFirmware" ] [ "hardware" "enableRedistributableFirmware" ])
     (mkRenamedOptionModule [ "networking" "enableRTL8192cFirmware" ] [ "hardware" "enableRedistributableFirmware" ])
     (mkRenamedOptionModule [ "networking" "networkmanager" "useDnsmasq" ] [ "networking" "networkmanager" "dns" ])
-    (mkChangedOptionModule [ "services" "printing" "gutenprint" ] [ "services" "printing" "drivers" ]
-      (config:
-        let enabled = getAttrFromPath [ "services" "printing" "gutenprint" ] config;
-        in if enabled then [ pkgs.gutenprint ] else [ ]))
-    (mkChangedOptionModule [ "services" "ddclient" "domain" ] [ "services" "ddclient" "domains" ]
-      (config:
-        let value = getAttrFromPath [ "services" "ddclient" "domain" ] config;
-        in if value != "" then [ value ] else []))
+    (
+      mkChangedOptionModule [ "services" "printing" "gutenprint" ] [ "services" "printing" "drivers" ]
+        (
+          config:
+            let
+              enabled = getAttrFromPath [ "services" "printing" "gutenprint" ] config;
+            in
+              if enabled then [ pkgs.gutenprint ] else []
+        )
+    )
+    (
+      mkChangedOptionModule [ "services" "ddclient" "domain" ] [ "services" "ddclient" "domains" ]
+        (
+          config:
+            let
+              value = getAttrFromPath [ "services" "ddclient" "domain" ] config;
+            in
+              if value != "" then [ value ] else []
+        )
+    )
     (mkRemovedOptionModule [ "services" "ddclient" "homeDir" ] "")
     (mkRenamedOptionModule [ "services" "flatpak" "extraPortals" ] [ "xdg" "portal" "extraPortals" ])
     (mkRenamedOptionModule [ "services" "i2pd" "extIp" ] [ "services" "i2pd" "address" ])
     (mkRenamedOptionModule [ "services" "kubernetes" "apiserver" "admissionControl" ] [ "services" "kubernetes" "apiserver" "enableAdmissionPlugins" ])
-    (mkRenamedOptionModule [ "services" "kubernetes" "apiserver" "address" ] ["services" "kubernetes" "apiserver" "bindAddress"])
-    (mkRenamedOptionModule [ "services" "kubernetes" "apiserver" "port" ] ["services" "kubernetes" "apiserver" "insecurePort"])
+    (mkRenamedOptionModule [ "services" "kubernetes" "apiserver" "address" ] [ "services" "kubernetes" "apiserver" "bindAddress" ])
+    (mkRenamedOptionModule [ "services" "kubernetes" "apiserver" "port" ] [ "services" "kubernetes" "apiserver" "insecurePort" ])
     (mkRemovedOptionModule [ "services" "kubernetes" "apiserver" "publicAddress" ] "")
     (mkRenamedOptionModule [ "services" "kubernetes" "addons" "dashboard" "enableRBAC" ] [ "services" "kubernetes" "addons" "dashboard" "rbac" "enable" ])
-    (mkRenamedOptionModule [ "services" "kubernetes" "controllerManager" "address" ] ["services" "kubernetes" "controllerManager" "bindAddress"])
-    (mkRenamedOptionModule [ "services" "kubernetes" "controllerManager" "port" ] ["services" "kubernetes" "controllerManager" "insecurePort"])
+    (mkRenamedOptionModule [ "services" "kubernetes" "controllerManager" "address" ] [ "services" "kubernetes" "controllerManager" "bindAddress" ])
+    (mkRenamedOptionModule [ "services" "kubernetes" "controllerManager" "port" ] [ "services" "kubernetes" "controllerManager" "insecurePort" ])
     (mkRenamedOptionModule [ "services" "kubernetes" "etcd" "servers" ] [ "services" "kubernetes" "apiserver" "etcd" "servers" ])
     (mkRenamedOptionModule [ "services" "kubernetes" "etcd" "keyFile" ] [ "services" "kubernetes" "apiserver" "etcd" "keyFile" ])
     (mkRenamedOptionModule [ "services" "kubernetes" "etcd" "certFile" ] [ "services" "kubernetes" "apiserver" "etcd" "certFile" ])
     (mkRenamedOptionModule [ "services" "kubernetes" "etcd" "caFile" ] [ "services" "kubernetes" "apiserver" "etcd" "caFile" ])
     (mkRemovedOptionModule [ "services" "kubernetes" "kubelet" "applyManifests" ] "")
     (mkRemovedOptionModule [ "services" "kubernetes" "kubelet" "cadvisorPort" ] "")
-    (mkRenamedOptionModule [ "services" "kubernetes" "proxy" "address" ] ["services" "kubernetes" "proxy" "bindAddress"])
+    (mkRenamedOptionModule [ "services" "kubernetes" "proxy" "address" ] [ "services" "kubernetes" "proxy" "bindAddress" ])
     (mkRemovedOptionModule [ "services" "kubernetes" "verbose" ] "")
     (mkRenamedOptionModule [ "services" "logstash" "address" ] [ "services" "logstash" "listenAddress" ])
     (mkRenamedOptionModule [ "services" "neo4j" "host" ] [ "services" "neo4j" "defaultListenAddress" ])
@@ -51,10 +63,12 @@ with lib;
     (mkRemovedOptionModule [ "services" "misc" "nzbget" "openFirewall" ] "The port used by nzbget is managed through the web interface so you should adjust your firewall rules accordingly.")
     (mkRemovedOptionModule [ "services" "prometheus" "alertmanager" "user" ] "The alertmanager service is now using systemd's DynamicUser mechanism which obviates a user setting.")
     (mkRemovedOptionModule [ "services" "prometheus" "alertmanager" "group" ] "The alertmanager service is now using systemd's DynamicUser mechanism which obviates a group setting.")
-    (mkRemovedOptionModule [ "services" "prometheus2" "alertmanagerURL" ] ''
-      Due to incompatibility, the alertmanagerURL option has been removed,
-      please use 'services.prometheus2.alertmanagers' instead.
-    '')
+    (
+      mkRemovedOptionModule [ "services" "prometheus2" "alertmanagerURL" ] ''
+        Due to incompatibility, the alertmanagerURL option has been removed,
+        please use 'services.prometheus2.alertmanagers' instead.
+      ''
+    )
     (mkRenamedOptionModule [ "services" "tor" "relay" "portSpec" ] [ "services" "tor" "relay" "port" ])
     (mkRenamedOptionModule [ "services" "vmwareGuest" ] [ "virtualisation" "vmware" "guest" ])
     (mkRenamedOptionModule [ "jobs" ] [ "systemd" "services" ])
@@ -88,8 +102,10 @@ with lib;
     (mkAliasOptionModule [ "services" "openssh" "knownHosts" ] [ "programs" "ssh" "knownHosts" ])
 
     # libvirtd
-    (mkRemovedOptionModule [ "virtualisation" "libvirtd" "enableKVM" ]
-      "Set the option `virtualisation.libvirtd.qemuPackage' instead.")
+    (
+      mkRemovedOptionModule [ "virtualisation" "libvirtd" "enableKVM" ]
+        "Set the option `virtualisation.libvirtd.qemuPackage' instead."
+    )
 
     # ibus
     (mkRenamedOptionModule [ "programs" "ibus" "plugins" ] [ "i18n" "inputMethod" "ibus" "engines" ])
@@ -141,22 +157,25 @@ with lib;
     (mkRenamedOptionModule [ "sound" "enableMediaKeys" ] [ "sound" "mediaKeys" "enable" ])
 
     # postgrey
-    (mkMergedOptionModule [ [ "services" "postgrey" "inetAddr" ] [ "services" "postgrey" "inetPort" ] ] [ "services" "postgrey" "socket" ] (config: let
-        value = p: getAttrFromPath p config;
-        inetAddr = [ "services" "postgrey" "inetAddr" ];
-        inetPort = [ "services" "postgrey" "inetPort" ];
-      in
-        if value inetAddr == null
-        then { path = "/run/postgrey.sock"; }
-        else { addr = value inetAddr; port = value inetPort; }
-    ))
+    (
+      mkMergedOptionModule [ [ "services" "postgrey" "inetAddr" ] [ "services" "postgrey" "inetPort" ] ] [ "services" "postgrey" "socket" ] (
+        config: let
+          value = p: getAttrFromPath p config;
+          inetAddr = [ "services" "postgrey" "inetAddr" ];
+          inetPort = [ "services" "postgrey" "inetPort" ];
+        in
+          if value inetAddr == null
+          then { path = "/run/postgrey.sock"; }
+          else { addr = value inetAddr; port = value inetPort; }
+      )
+    )
 
     # dhcpd
     (mkRenamedOptionModule [ "services" "dhcpd" ] [ "services" "dhcpd4" ])
 
     # locate
     (mkRenamedOptionModule [ "services" "locate" "period" ] [ "services" "locate" "interval" ])
-    (mkRemovedOptionModule [ "services" "locate" "includeStore" ] "Use services.locate.prunePaths" )
+    (mkRemovedOptionModule [ "services" "locate" "includeStore" ] "Use services.locate.prunePaths")
 
     # nfs
     (mkRenamedOptionModule [ "services" "nfs" "lockdPort" ] [ "services" "nfs" "server" "lockdPort" ])
@@ -173,10 +192,12 @@ with lib;
     (mkRenamedOptionModule [ "fonts" "fontconfig" "ultimate" "renderMonoTTFAsBitmap" ] [ "fonts" "fontconfig" "renderMonoTTFAsBitmap" ])
 
     # postgresqlBackup
-    (mkRemovedOptionModule [ "services" "postgresqlBackup" "period" ] ''
-       A systemd timer is now used instead of cron.
-       The starting time can be configured via <literal>services.postgresqlBackup.startAt</literal>.
-    '')
+    (
+      mkRemovedOptionModule [ "services" "postgresqlBackup" "period" ] ''
+        A systemd timer is now used instead of cron.
+        The starting time can be configured via <literal>services.postgresqlBackup.startAt</literal>.
+      ''
+    )
 
     # phpfpm
     (mkRemovedOptionModule [ "services" "phpfpm" "poolConfigs" ] "Use services.phpfpm.pools instead.")
@@ -209,15 +230,19 @@ with lib;
     (mkRemovedOptionModule [ "services" "printing" "cupsdConf" ] "")
     (mkRemovedOptionModule [ "services" "tor" "relay" "isBridge" ] "Use services.tor.relay.role instead.")
     (mkRemovedOptionModule [ "services" "tor" "relay" "isExit" ] "Use services.tor.relay.role instead.")
-    (mkRemovedOptionModule [ "services" "xserver" "startGnuPGAgent" ]
-      "See the 16.09 release notes for more information.")
+    (
+      mkRemovedOptionModule [ "services" "xserver" "startGnuPGAgent" ]
+        "See the 16.09 release notes for more information."
+    )
     (mkRemovedOptionModule [ "services" "phpfpm" "phpIni" ] "")
     (mkRemovedOptionModule [ "services" "dovecot2" "package" ] "")
     (mkRemovedOptionModule [ "services" "firefox" "syncserver" "user" ] "")
     (mkRemovedOptionModule [ "services" "firefox" "syncserver" "group" ] "")
     (mkRemovedOptionModule [ "fonts" "fontconfig" "hinting" "style" ] "")
-    (mkRemovedOptionModule [ "services" "xserver" "displayManager" "sddm" "themes" ]
-      "Set the option `services.xserver.displayManager.sddm.package' instead.")
+    (
+      mkRemovedOptionModule [ "services" "xserver" "displayManager" "sddm" "themes" ]
+        "Set the option `services.xserver.displayManager.sddm.package' instead."
+    )
     (mkRemovedOptionModule [ "services" "xserver" "desktopManager" "xfce" "screenLock" ] "")
     (mkRemovedOptionModule [ "fonts" "fontconfig" "forceAutohint" ] "")
     (mkRemovedOptionModule [ "fonts" "fontconfig" "renderMonoTTFAsBitmap" ] "")
@@ -247,7 +272,7 @@ with lib;
     (mkRenamedOptionModule [ "virtualisation" "xen" "qemu-package" ] [ "virtualisation" "xen" "package-qemu" ])
 
     (mkRenamedOptionModule [ "programs" "info" "enable" ] [ "documentation" "info" "enable" ])
-    (mkRenamedOptionModule [ "programs" "man"  "enable" ] [ "documentation" "man"  "enable" ])
+    (mkRenamedOptionModule [ "programs" "man" "enable" ] [ "documentation" "man" "enable" ])
     (mkRenamedOptionModule [ "services" "nixosManual" "enable" ] [ "documentation" "nixos" "enable" ])
 
     # ckb
@@ -267,24 +292,51 @@ with lib;
     (mkRenamedOptionModule [ "networking" "resolvconfOptions" ] [ "networking" "resolvconf" "extraOptions" ])
 
     # Redshift
-    (mkChangedOptionModule [ "services" "redshift" "latitude" ] [ "location" "latitude" ]
-      (config:
-        let value = getAttrFromPath [ "services" "redshift" "latitude" ] config;
-        in if value == null then
-          throw "services.redshift.latitude is set to null, you can remove this"
-          else builtins.fromJSON value))
-    (mkChangedOptionModule [ "services" "redshift" "longitude" ] [ "location" "longitude" ]
-      (config:
-        let value = getAttrFromPath [ "services" "redshift" "longitude" ] config;
-        in if value == null then
-          throw "services.redshift.longitude is set to null, you can remove this"
-          else builtins.fromJSON value))
+    (
+      mkChangedOptionModule [ "services" "redshift" "latitude" ] [ "location" "latitude" ]
+        (
+          config:
+            let
+              value = getAttrFromPath [ "services" "redshift" "latitude" ] config;
+            in
+              if value == null then
+                throw "services.redshift.latitude is set to null, you can remove this"
+              else builtins.fromJSON value
+        )
+    )
+    (
+      mkChangedOptionModule [ "services" "redshift" "longitude" ] [ "location" "longitude" ]
+        (
+          config:
+            let
+              value = getAttrFromPath [ "services" "redshift" "longitude" ] config;
+            in
+              if value == null then
+                throw "services.redshift.longitude is set to null, you can remove this"
+              else builtins.fromJSON value
+        )
+    )
 
-  ] ++ (forEach [ "blackboxExporter" "collectdExporter" "fritzboxExporter"
-                   "jsonExporter" "minioExporter" "nginxExporter" "nodeExporter"
-                   "snmpExporter" "unifiExporter" "varnishExporter" ]
-       (opt: mkRemovedOptionModule [ "services" "prometheus" "${opt}" ] ''
-         The prometheus exporters are now configured using `services.prometheus.exporters'.
-         See the 18.03 release notes for more information.
-       '' ));
+  ]
+  ++ (
+       forEach [
+         "blackboxExporter"
+         "collectdExporter"
+         "fritzboxExporter"
+         "jsonExporter"
+         "minioExporter"
+         "nginxExporter"
+         "nodeExporter"
+         "snmpExporter"
+         "unifiExporter"
+         "varnishExporter"
+       ]
+         (
+           opt: mkRemovedOptionModule [ "services" "prometheus" "${opt}" ] ''
+             The prometheus exporters are now configured using `services.prometheus.exporters'.
+             See the 18.03 release notes for more information.
+           ''
+         )
+     )
+  ;
 }

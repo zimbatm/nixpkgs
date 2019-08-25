@@ -60,7 +60,9 @@ buildPythonPackage rec {
     colorlog
     pandas
     alembic
-  ] ++ lib.optionals (pythonOlder "3.5") [ typing ];
+  ]
+  ++ lib.optionals (pythonOlder "3.5") [ typing ]
+  ;
 
   configurePhase = if !(pythonOlder "3.5") then ''
     substituteInPlace setup.py \

@@ -8,9 +8,11 @@
 , perl
 }:
 
-let version = "20170519";
+let
+  version = "20170519";
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "dale-${version}";
 
   src = fetchFromGitHub {
@@ -22,7 +24,8 @@ in stdenv.mkDerivation {
 
   nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ cmake libffi llvm_35 ]
-             ++ stdenv.lib.optional doCheck perl;
+    ++ stdenv.lib.optional doCheck perl
+    ;
 
   patches = [ ./link-llvm.patch ];
 

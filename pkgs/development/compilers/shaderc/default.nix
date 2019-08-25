@@ -23,7 +23,8 @@ let
     rev = "8b911bd2ba37677037b38c9bd286c7c05701bcda";
     sha256 = "0qdnj34bkagszyvci6ifpqd7iqvybhmqzvc9lvqnls44qg90aqh2";
   };
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "shaderc-${version}";
   version = "2019.0";
 

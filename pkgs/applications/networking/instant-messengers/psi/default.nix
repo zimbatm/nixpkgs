@@ -1,5 +1,17 @@
-{ stdenv, fetchurl, enchant, qt4, zlib, sox, libX11, xorgproto, libSM
-, libICE, qca2, pkgconfig, which, glib
+{ stdenv
+, fetchurl
+, enchant
+, qt4
+, zlib
+, sox
+, libX11
+, xorgproto
+, libSM
+, libICE
+, qca2
+, pkgconfig
+, which
+, glib
 , libXScrnSaver
 }:
 
@@ -12,13 +24,25 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs =
-    [ enchant qt4 zlib sox libX11 xorgproto libSM libICE
-      qca2 pkgconfig which glib libXScrnSaver
+    [
+      enchant
+      qt4
+      zlib
+      sox
+      libX11
+      xorgproto
+      libSM
+      libICE
+      qca2
+      pkgconfig
+      which
+      glib
+      libXScrnSaver
     ];
 
-  NIX_CFLAGS_COMPILE="-I${qca2}/include/QtCrypto";
+  NIX_CFLAGS_COMPILE = "-I${qca2}/include/QtCrypto";
 
-  NIX_LDFLAGS="-lqca";
+  NIX_LDFLAGS = "-lqca";
 
   enableParallelBuilding = true;
 

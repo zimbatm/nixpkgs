@@ -47,7 +47,8 @@ let
     '';
   };
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "freenet-${version}";
   inherit version;
 

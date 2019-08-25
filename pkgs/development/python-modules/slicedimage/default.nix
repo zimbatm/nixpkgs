@@ -31,7 +31,9 @@ buildPythonPackage rec {
     requests
     scikitimage
     six
-  ] ++ lib.optionals isPy27 [ pathlib enum34 ];
+  ]
+  ++ lib.optionals isPy27 [ pathlib enum34 ]
+  ;
 
   checkInputs = [
     pytest

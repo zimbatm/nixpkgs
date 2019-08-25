@@ -12,6 +12,6 @@ buildPythonPackage rec {
   doCheck = false;
 
   meta = with stdenv.lib; {
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
   };
 }

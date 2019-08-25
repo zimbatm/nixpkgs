@@ -1,15 +1,26 @@
-{ stdenv, lib, fetchFromGitHub, cmake, docbook_xsl, libxslt
-, openssl, libuuid, libwebsockets, c-ares, libuv
-, systemd ? null, withSystemd ? stdenv.isLinux }:
+{ stdenv
+, lib
+, fetchFromGitHub
+, cmake
+, docbook_xsl
+, libxslt
+, openssl
+, libuuid
+, libwebsockets
+, c-ares
+, libuv
+, systemd ? null
+, withSystemd ? stdenv.isLinux
+}:
 
 stdenv.mkDerivation rec {
   name = "mosquitto-${version}";
   version = "1.6.4";
 
   src = fetchFromGitHub {
-    owner  = "eclipse";
-    repo   = "mosquitto";
-    rev    = "v${version}";
+    owner = "eclipse";
+    repo = "mosquitto";
+    rev = "v${version}";
     sha256 = "1kr1dgc4nzhyg3rzymbv4rka3rpb30rwsy6binb7apnw3n3ff58l";
   };
 
@@ -30,15 +41,23 @@ stdenv.mkDerivation rec {
   '';
 
   buildInputs = [
-    openssl libuuid libwebsockets c-ares libuv
-  ] ++ lib.optional withSystemd systemd;
+    openssl
+    libuuid
+    libwebsockets
+    c-ares
+    libuv
+  ]
+  ++ lib.optional withSystemd systemd
+  ;
 
   nativeBuildInputs = [ cmake docbook_xsl libxslt ];
 
   cmakeFlags = [
     "-DWITH_THREADING=ON"
     "-DWITH_WEBSOCKETS=ON"
-  ] ++ lib.optional withSystemd "-DWITH_SYSTEMD=ON";
+  ]
+  ++ lib.optional withSystemd "-DWITH_SYSTEMD=ON"
+  ;
 
   meta = with stdenv.lib; {
     description = "An open source MQTT v3.1/3.1.1 broker";

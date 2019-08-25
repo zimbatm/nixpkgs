@@ -1,4 +1,4 @@
-{stdenv, fetchurl, apacheAnt, jdk, axis2, dbus_java, fetchpatch }:
+{ stdenv, fetchurl, apacheAnt, jdk, axis2, dbus_java, fetchpatch }:
 
 stdenv.mkDerivation {
   name = "DisnixWebService-0.8";
@@ -13,10 +13,12 @@ stdenv.mkDerivation {
   DBUS_JAVA_LIB = "${dbus_java}/share/java";
   patches = [
     # Safe to remove once https://github.com/svanderburg/DisnixWebService/pull/1 is merged
-    (fetchpatch {
-      url = "https://github.com/mmahut/DisnixWebService/commit/cf07918b8c81b4ce01e0b489c1b5a3ef9c9a1cd6.patch";
-      sha256 = "15zi1l69wzgwvvqx4492s7l444gfvc9vcm7ckgif4b6cvp837brn";
-    })
+    (
+      fetchpatch {
+        url = "https://github.com/mmahut/DisnixWebService/commit/cf07918b8c81b4ce01e0b489c1b5a3ef9c9a1cd6.patch";
+        sha256 = "15zi1l69wzgwvvqx4492s7l444gfvc9vcm7ckgif4b6cvp837brn";
+      }
+    )
   ];
   prePatch = ''
     sed -i -e "s|#JAVA_HOME=|JAVA_HOME=${jdk}|" \
@@ -25,7 +27,7 @@ stdenv.mkDerivation {
   '';
   buildPhase = "ant";
   installPhase = "ant install";
-  
+
   meta = {
     description = "A SOAP interface and client for Disnix";
     license = stdenv.lib.licenses.mit;

@@ -26,7 +26,8 @@ stdenv.mkDerivation rec {
   propagatedNativeBuildInputs = [ setupDebugInfoDirs ];
 
   configureFlags =
-    [ "--program-prefix=eu-" # prevent collisions with binutils
+    [
+      "--program-prefix=eu-" # prevent collisions with binutils
       "--enable-deterministic-archives"
     ];
 

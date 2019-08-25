@@ -1,6 +1,16 @@
-{ stdenv, lib, fetchFromGitHub, cmake, libusb, pkgconfig, freeglut, libGLU_combined, libXi, libXmu
-, GLUT, Cocoa
- }:
+{ stdenv
+, lib
+, fetchFromGitHub
+, cmake
+, libusb
+, pkgconfig
+, freeglut
+, libGLU_combined
+, libXi
+, libXmu
+, GLUT
+, Cocoa
+}:
 
 stdenv.mkDerivation rec {
   name = "freenect-${version}";
@@ -14,7 +24,8 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [ libusb freeglut libGLU_combined libXi libXmu ]
-    ++ lib.optionals stdenv.isDarwin [ GLUT Cocoa ];
+    ++ lib.optionals stdenv.isDarwin [ GLUT Cocoa ]
+    ;
 
   nativeBuildInputs = [ cmake pkgconfig ];
 
@@ -24,6 +35,6 @@ stdenv.mkDerivation rec {
     homepage = http://openkinect.org;
     license = with lib.licenses; [ gpl2 asl20 ];
     maintainers = with lib.maintainers; [ bennofs ];
-    platforms = with lib.platforms; linux ++ darwin ;
+    platforms = with lib.platforms; linux ++ darwin;
   };
 }

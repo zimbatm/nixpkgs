@@ -2,7 +2,8 @@
 
 let
   version = "0.16.1";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "freedroidrpg-${version}";
 
   src = fetchurl {
@@ -13,8 +14,19 @@ in stdenv.mkDerivation rec {
   nativeBuildInputs = [ pkgconfig gettext python3 ];
 
   buildInputs = [
-    SDL SDL_image SDL_gfx SDL_mixer libogg libvorbis lua5_3 libjpeg libpng zlib
-  ] ++ stdenv.lib.optional stdenv.isDarwin libiconv;
+    SDL
+    SDL_image
+    SDL_gfx
+    SDL_mixer
+    libogg
+    libvorbis
+    lua5_3
+    libjpeg
+    libpng
+    zlib
+  ]
+  ++ stdenv.lib.optional stdenv.isDarwin libiconv
+  ;
 
   meta = with stdenv.lib; {
     description = "Isometric 3D RPG similar to game Diablo";

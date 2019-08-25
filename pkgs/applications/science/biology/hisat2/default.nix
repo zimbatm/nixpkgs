@@ -1,4 +1,4 @@
-{stdenv, fetchurl, unzip, which, python, perl}:
+{ stdenv, fetchurl, unzip, which, python, perl }:
 
 stdenv.mkDerivation rec {
   name = "hisat2-${version}";

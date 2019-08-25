@@ -1,8 +1,13 @@
-{ stdenv, buildEnv, runCommand, makeWrapper, lndir, thunar-bare
+{ stdenv
+, buildEnv
+, runCommand
+, makeWrapper
+, lndir
+, thunar-bare
 , thunarPlugins ? []
 }:
 
-with stdenv.lib; 
+with stdenv.lib;
 
 let
 
@@ -29,15 +34,17 @@ let
   meta = {
     inherit (build.meta) homepage license platforms;
 
-    description = build.meta.description + optionalString
-      (0 != length thunarPlugins)
-      " (with plugins: ${concatStrings (intersperse ", " (map (x: x.name) thunarPlugins))})";
+    description = build.meta.description
+      + optionalString
+          (0 != length thunarPlugins)
+          " (with plugins: ${concatStrings (intersperse ", " (map (x: x.name) thunarPlugins))})"
+      ;
     maintainers = build.meta.maintainers /*++ [ jraygauthier ]*/;
   };
 
 in
 
-# TODO: To be replaced with `buildEnv` awaiting missing features.
+  # TODO: To be replaced with `buildEnv` awaiting missing features.
 runCommand name {
   inherit build;
   inherit meta;
@@ -47,22 +54,25 @@ runCommand name {
   dontPatchELF = true;
   dontStrip = true;
 
-} 
-(let
-  buildWithPlugins = buildEnv {
-    name = "thunar-bare-with-plugins";
-    paths = [ build ] ++ thunarPlugins;
-  };
+}
+  (
+    let
+      buildWithPlugins = buildEnv {
+        name = "thunar-bare-with-plugins";
+        paths = [ build ] ++ thunarPlugins;
+      };
 
-in ''
-  mkdir -p $out
-  pushd ${buildWithPlugins} > /dev/null
-  for d in `find . -maxdepth 1 -name "*" -printf "%f\n" | tail -n+2`; do
-    ln -s "${buildWithPlugins}/$d" "$out/$d"
-  done
-  popd > /dev/null
+    in
+      ''
+        mkdir -p $out
+        pushd ${buildWithPlugins} > /dev/null
+        for d in `find . -maxdepth 1 -name "*" -printf "%f\n" | tail -n+2`; do
+          ln -s "${buildWithPlugins}/$d" "$out/$d"
+        done
+        popd > /dev/null
 
-  ${replaceLnExeListWithWrapped "$out/bin" [ "thunar" "thunar-settings" ] [
-    "--set THUNARX_MODULE_DIR \"${buildWithPlugins}/lib/thunarx-2\""
-  ]}
-'')
+        ${replaceLnExeListWithWrapped "$out/bin" [ "thunar" "thunar-settings" ] [
+        "--set THUNARX_MODULE_DIR \"${buildWithPlugins}/lib/thunarx-2\""
+      ]}
+      ''
+  )

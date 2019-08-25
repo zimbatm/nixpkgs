@@ -9,9 +9,10 @@ let
 
   udevRules = callPackage ./udev_rules_type1.nix {};
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "brscan4-0.4.4-4";
-  src = 
+  src =
     if stdenv.hostPlatform.system == "i686-linux" then
       fetchurl {
         url = "http://download.brother.com/welcome/dlf006646/${name}.i386.deb";

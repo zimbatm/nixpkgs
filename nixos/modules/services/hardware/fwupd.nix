@@ -9,12 +9,14 @@ let
   originalEtc =
     let
       mkEtcFile = n: nameValuePair n { source = "${pkgs.fwupd}/etc/${n}"; };
-    in listToAttrs (map mkEtcFile pkgs.fwupd.filesInstalledToEtc);
+    in
+      listToAttrs (map mkEtcFile pkgs.fwupd.filesInstalledToEtc);
   extraTrustedKeys =
     let
       mkName = p: "pki/fwupd/${baseNameOf (toString p)}";
       mkEtcFile = p: nameValuePair (mkName p) { source = p; };
-    in listToAttrs (map mkEtcFile cfg.extraTrustedKeys);
+    in
+      listToAttrs (map mkEtcFile cfg.extraTrustedKeys);
 
   # We cannot include the file in $out and rely on filesInstalledToEtc
   # to install it because it would create a cyclic dependency between
@@ -28,7 +30,8 @@ let
       '';
     };
   } else {};
-in {
+in
+{
 
   ###### interface
   options = {
@@ -100,7 +103,11 @@ in {
         '';
       };
 
-    } // originalEtc // extraTrustedKeys // testRemote;
+    }
+    // originalEtc
+    // extraTrustedKeys
+    // testRemote
+    ;
 
     services.dbus.packages = [ pkgs.fwupd ];
 

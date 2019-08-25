@@ -1,10 +1,24 @@
-{ stdenv, fetchurl, substituteAll, openvpn, intltool, libxml2, pkgconfig, file, networkmanager, libsecret
-, gtk3, withGnome ? true, gnome3, kmod }:
+{ stdenv
+, fetchurl
+, substituteAll
+, openvpn
+, intltool
+, libxml2
+, pkgconfig
+, file
+, networkmanager
+, libsecret
+, gtk3
+, withGnome ? true
+, gnome3
+, kmod
+}:
 
 let
   pname = "NetworkManager-openvpn";
   version = "1.8.10";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "${pname}${if withGnome then "-gnome" else ""}-${version}";
 
   src = fetchurl {
@@ -13,14 +27,17 @@ in stdenv.mkDerivation rec {
   };
 
   patches = [
-    (substituteAll {
-      src = ./fix-paths.patch;
-      inherit kmod openvpn;
-    })
+    (
+      substituteAll {
+        src = ./fix-paths.patch;
+        inherit kmod openvpn;
+      }
+    )
   ];
 
   buildInputs = [ openvpn networkmanager ]
-    ++ stdenv.lib.optionals withGnome [ gtk3 libsecret gnome3.networkmanagerapplet ];
+    ++ stdenv.lib.optionals withGnome [ gtk3 libsecret gnome3.networkmanagerapplet ]
+    ;
 
   nativeBuildInputs = [ intltool pkgconfig file libxml2 ];
 

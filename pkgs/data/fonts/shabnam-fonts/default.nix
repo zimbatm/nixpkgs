@@ -3,7 +3,8 @@
 let
   pname = "shabnam-fonts";
   version = "4.0.0";
-in fetchFromGitHub rec {
+in
+fetchFromGitHub rec {
   name = "${pname}-${version}";
 
   owner = "rastikerdar";

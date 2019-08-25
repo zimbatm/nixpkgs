@@ -1,16 +1,27 @@
-{ stdenv, fetchFromGitLab, cmake, gfortran, perl
-, openblas, hdf5-cpp, python3, texlive
-, armadillo, openmpi, globalarrays, openssh
+{ stdenv
+, fetchFromGitLab
+, cmake
+, gfortran
+, perl
+, openblas
+, hdf5-cpp
+, python3
+, texlive
+, armadillo
+, openmpi
+, globalarrays
+, openssh
 , makeWrapper
-} :
+}:
 
 let
   version = "18.09";
   gitLabRev = "v${version}";
 
-  python = python3.withPackages (ps : with ps; [ six pyparsing ]);
+  python = python3.withPackages (ps: with ps; [ six pyparsing ]);
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "openmolcas-${version}";
 
   src = fetchFromGitLab {
@@ -45,7 +56,7 @@ in stdenv.mkDerivation {
     "-DOPENBLASROOT=${openblas}"
   ];
 
-  GAROOT=globalarrays;
+  GAROOT = globalarrays;
 
   postConfigure = ''
     # The Makefile will install pymolcas during the build grrr.
@@ -69,4 +80,3 @@ in stdenv.mkDerivation {
     platforms = platforms.linux;
   };
 }
-

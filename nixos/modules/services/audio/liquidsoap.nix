@@ -7,20 +7,23 @@ let
 
   streamService =
     name:
-    let stream = builtins.getAttr name config.services.liquidsoap.streams; in
-    { inherit name;
-      value = {
-        after = [ "network-online.target" "sound.target" ];
-        description = "${name} liquidsoap stream";
-        wantedBy = [ "multi-user.target" ];
-        path = [ pkgs.wget ];
-        serviceConfig = {
-          ExecStart = "${pkgs.liquidsoap}/bin/liquidsoap ${stream}";
-          User = "liquidsoap";
-          LogsDirectory = "liquidsoap";
+      let
+        stream = builtins.getAttr name config.services.liquidsoap.streams;
+      in
+        {
+          inherit name;
+          value = {
+            after = [ "network-online.target" "sound.target" ];
+            description = "${name} liquidsoap stream";
+            wantedBy = [ "multi-user.target" ];
+            path = [ pkgs.wget ];
+            serviceConfig = {
+              ExecStart = "${pkgs.liquidsoap}/bin/liquidsoap ${stream}";
+              User = "liquidsoap";
+              LogsDirectory = "liquidsoap";
+            };
+          };
         };
-      };
-    };
 in
 {
 
@@ -63,7 +66,7 @@ in
 
     users.groups.liquidsoap.gid = config.ids.gids.liquidsoap;
 
-    systemd.services = builtins.listToAttrs ( map streamService streams );
+    systemd.services = builtins.listToAttrs (map streamService streams);
   };
 
 }

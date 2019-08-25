@@ -1,4 +1,6 @@
-{ buildPythonPackage, lib, fetchPypi
+{ buildPythonPackage
+, lib
+, fetchPypi
 , ipaddress
 , mock
 , nose
@@ -21,6 +23,6 @@ buildPythonPackage rec {
     description = "Reader for the MaxMind DB format";
     homepage = "https://www.maxmind.com/en/home";
     license = licenses.apsl20;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
   };
 }

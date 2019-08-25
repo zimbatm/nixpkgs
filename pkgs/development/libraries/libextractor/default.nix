@@ -1,7 +1,23 @@
-{ fetchurl, stdenv, libtool, gettext, zlib, bzip2, flac, libvorbis
-, exiv2, libgsf, rpm, pkgconfig, fetchpatch
-, gtkSupport ? true, glib ? null, gtk3 ? null
-, videoSupport ? true, ffmpeg ? null, libmpeg2 ? null}:
+{ fetchurl
+, stdenv
+, libtool
+, gettext
+, zlib
+, bzip2
+, flac
+, libvorbis
+, exiv2
+, libgsf
+, rpm
+, pkgconfig
+, fetchpatch
+, gtkSupport ? true
+, glib ? null
+, gtk3 ? null
+, videoSupport ? true
+, ffmpeg ? null
+, libmpeg2 ? null
+}:
 
 assert gtkSupport -> glib != null && gtk3 != null;
 assert videoSupport -> ffmpeg != null && libmpeg2 != null;
@@ -16,11 +32,13 @@ stdenv.mkDerivation rec {
 
   patches = [
     # Fixes build with exiv2 0.27
-    (fetchpatch {
-      name = "libextractor-exiv2-0.27.patch";
-      url = "https://git.archlinux.org/svntogit/community.git/plain/trunk/libextractor-exiv2-0.27.patch?h=packages/libextractor&id=4dc53f7fc69210ae571285dface108ed65d8ee53";
-      sha256 = "0w4gc1q1m1yxsd4hv105nblmif465nw3g5nxzldy0x2rl9mdncg6";
-    })
+    (
+      fetchpatch {
+        name = "libextractor-exiv2-0.27.patch";
+        url = "https://git.archlinux.org/svntogit/community.git/plain/trunk/libextractor-exiv2-0.27.patch?h=packages/libextractor&id=4dc53f7fc69210ae571285dface108ed65d8ee53";
+        sha256 = "0w4gc1q1m1yxsd4hv105nblmif465nw3g5nxzldy0x2rl9mdncg6";
+      }
+    )
   ];
 
   preConfigure =
@@ -30,11 +48,21 @@ stdenv.mkDerivation rec {
     '';
 
   buildInputs =
-   [ libtool gettext zlib bzip2 flac libvorbis exiv2
-     libgsf rpm
-     pkgconfig
-   ] ++ stdenv.lib.optionals gtkSupport [ glib gtk3 ]
-     ++ stdenv.lib.optionals videoSupport [ ffmpeg libmpeg2 ];
+    [
+      libtool
+      gettext
+      zlib
+      bzip2
+      flac
+      libvorbis
+      exiv2
+      libgsf
+      rpm
+      pkgconfig
+    ]
+    ++ stdenv.lib.optionals gtkSupport [ glib gtk3 ]
+    ++ stdenv.lib.optionals videoSupport [ ffmpeg libmpeg2 ]
+  ;
 
   configureFlags = [
     "--disable-ltdl-install"
@@ -76,7 +104,7 @@ stdenv.mkDerivation rec {
 
     license = stdenv.lib.licenses.gpl2Plus;
 
-    maintainers = [ ];
+    maintainers = [];
     platforms = stdenv.lib.platforms.linux;
   };
 }

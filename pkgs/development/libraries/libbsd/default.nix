@@ -14,8 +14,9 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ autoreconfHook ];
 
   patches = stdenv.lib.optional stdenv.isDarwin ./darwin.patch
-    # Suitable for all but limited to musl to avoid rebuild
-    ++ stdenv.lib.optional stdenv.hostPlatform.isMusl ./musl.patch;
+  # Suitable for all but limited to musl to avoid rebuild
+    ++ stdenv.lib.optional stdenv.hostPlatform.isMusl ./musl.patch
+    ;
 
   meta = with stdenv.lib; {
     description = "Common functions found on BSD systems";

@@ -1,5 +1,8 @@
-{ lib, buildPythonPackage, fetchPypi,
-  docopt, pillow
+{ lib
+, buildPythonPackage
+, fetchPypi
+, docopt
+, pillow
 }:
 
 buildPythonPackage rec {

@@ -1,4 +1,4 @@
-{stdenv, fetchurl, ocaml, findlib, camlp4}:
+{ stdenv, fetchurl, ocaml, findlib, camlp4 }:
 stdenv.mkDerivation {
   name = "ocamlscript-2.0.3";
   src = fetchurl {

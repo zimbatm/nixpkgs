@@ -6,8 +6,8 @@ stdenv.mkDerivation rec {
 
   src = fetchFromGitHub {
     owner = "jbruchon";
-    repo  = "jdupes";
-    rev   = "v${version}";
+    repo = "jdupes";
+    rev = "v${version}";
     sha256 = "1dzw1h9x9addkxf7r8lb8y09wmdkx8i61f5m96589r88jjk965xy";
     # Unicode file names lead to different checksums on HFS+ vs. other
     # filesystems because of unicode normalisation. The testdir

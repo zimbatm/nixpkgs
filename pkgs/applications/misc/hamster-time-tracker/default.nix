@@ -1,5 +1,12 @@
-{ stdenv, fetchzip, pythonPackages, docbook2x, libxslt, gnome-doc-utils
-, intltool, dbus-glib, gnome_python
+{ stdenv
+, fetchzip
+, pythonPackages
+, docbook2x
+, libxslt
+, gnome-doc-utils
+, intltool
+, dbus-glib
+, gnome_python
 , hicolor-icon-theme
 , wafHook
 }:
@@ -20,7 +27,11 @@ pythonPackages.buildPythonApplication rec {
 
   nativeBuildInputs = [ wafHook intltool ];
   buildInputs = [
-    docbook2x libxslt gnome-doc-utils dbus-glib hicolor-icon-theme
+    docbook2x
+    libxslt
+    gnome-doc-utils
+    dbus-glib
+    hicolor-icon-theme
   ];
 
   propagatedBuildInputs = with pythonPackages; [ pygobject2 pygtk pyxdg gnome_python dbus-python ];

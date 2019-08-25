@@ -11,7 +11,8 @@ let
     categories = "Office";
   };
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "trilium-${version}";
   version = "0.33.6";
 

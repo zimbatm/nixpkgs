@@ -4,7 +4,8 @@
 
 with lib;
 
-let cfg = config.programs.oblogout;
+let
+  cfg = config.programs.oblogout;
 
 in
 {
@@ -51,7 +52,7 @@ in
 
       buttons = mkOption {
         type = types.str;
-        default =  "cancel, logout, restart, shutdown, suspend, hibernate";
+        default = "cancel, logout, restart, shutdown, suspend, hibernate";
         description = ''
           List and order of buttons to show.
         '';
@@ -59,7 +60,7 @@ in
 
       cancel = mkOption {
         type = types.str;
-        default =  "Escape";
+        default = "Escape";
         description = ''
           Cancel logout/shutdown shortcut.
         '';
@@ -107,7 +108,7 @@ in
 
       hibernate = mkOption {
         type = types.str;
-        default =  "H";
+        default = "H";
         description = ''
           Hibernate shortcut.
         '';

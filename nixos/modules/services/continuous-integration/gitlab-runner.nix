@@ -6,14 +6,16 @@ let
   cfg = config.services.gitlab-runner;
   configFile =
     if (cfg.configFile == null) then
-      (pkgs.runCommand "config.toml" {
-        buildInputs = [ pkgs.remarshal ];
-        preferLocalBuild = true;
-      } ''
-        remarshal -if json -of toml \
-          < ${pkgs.writeText "config.json" (builtins.toJSON cfg.configOptions)} \
-          > $out
-      '')
+      (
+        pkgs.runCommand "config.toml" {
+          buildInputs = [ pkgs.remarshal ];
+          preferLocalBuild = true;
+        } ''
+          remarshal -if json -of toml \
+            < ${pkgs.writeText "config.json" (builtins.toJSON cfg.configOptions)} \
+            > $out
+        ''
+      )
     else
       cfg.configFile;
   hasDocker = config.virtualisation.docker.enable;
@@ -49,20 +51,22 @@ in
       type = types.attrs;
       example = {
         concurrent = 2;
-        runners = [{
-          name = "docker-nix-1.11";
-          url = "https://CI/";
-          token = "TOKEN";
-          executor = "docker";
-          builds_dir = "";
-          docker = {
-            host = "";
-            image = "nixos/nix:1.11";
-            privileged = true;
-            disable_cache = true;
-            cache_dir = "";
-          };
-        }];
+        runners = [
+          {
+            name = "docker-nix-1.11";
+            url = "https://CI/";
+            token = "TOKEN";
+            executor = "docker";
+            builds_dir = "";
+            docker = {
+              host = "";
+              image = "nixos/nix:1.11";
+              privileged = true;
+              disable_cache = true;
+              cache_dir = "";
+            };
+          }
+        ];
       };
     };
 
@@ -114,7 +118,8 @@ in
       environment = config.networking.proxy.envVars;
       description = "Gitlab Runner";
       after = [ "network.target" ]
-        ++ optional hasDocker "docker.service";
+        ++ optional hasDocker "docker.service"
+        ;
       requires = optional hasDocker "docker.service";
       wantedBy = [ "multi-user.target" ];
       serviceConfig = {
@@ -125,11 +130,13 @@ in
           --user gitlab-runner \
         '';
 
-      } //  optionalAttrs (cfg.gracefulTermination) {
-        TimeoutStopSec = "${cfg.gracefulTimeout}";
-        KillSignal = "SIGQUIT";
-        KillMode = "process";
-      };
+      }
+      // optionalAttrs (cfg.gracefulTermination) {
+           TimeoutStopSec = "${cfg.gracefulTimeout}";
+           KillSignal = "SIGQUIT";
+           KillMode = "process";
+         }
+      ;
     };
 
     # Make the gitlab-runner command availabe so users can query the runner

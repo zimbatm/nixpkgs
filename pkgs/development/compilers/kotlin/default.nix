@@ -2,7 +2,8 @@
 
 let
   version = "1.3.41";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   inherit version;
   name = "kotlin-${version}";
 
@@ -11,8 +12,8 @@ in stdenv.mkDerivation rec {
     sha256 = "0ch1fynqjfsb7jklw3pa6fygrgnl8nz4x4v0id06wq4md23bcjn4";
   };
 
-  propagatedBuildInputs = [ jre ] ;
-  buildInputs = [ makeWrapper unzip ] ;
+  propagatedBuildInputs = [ jre ];
+  buildInputs = [ makeWrapper unzip ];
 
   installPhase = ''
     mkdir -p $out

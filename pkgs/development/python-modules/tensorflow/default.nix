@@ -1,28 +1,78 @@
-{ stdenv, pkgs, buildBazelPackage, lib, fetchFromGitHub, fetchpatch, symlinkJoin
-# Python deps
-, buildPythonPackage, isPy3k, pythonOlder, pythonAtLeast, python
-# Python libraries
-, numpy, tensorflow-tensorboard, backports_weakref, mock, enum34, absl-py
-, future, setuptools, wheel, keras-preprocessing, keras-applications, google-pasta
-, termcolor, grpcio, six, wrapt, protobuf, tensorflow-estimator
-# Common deps
-, git, swig, which, binutils, glibcLocales, cython
-# Common libraries
-, jemalloc, openmpi, astor, gast, grpc, sqlite, openssl, jsoncpp, re2
-, curl, snappy, flatbuffers, icu, double-conversion, libpng, libjpeg, giflib
-, cudaSupport ? false, nvidia_x11 ? null, cudatoolkit ? null, cudnn ? null, nccl ? null
-# XLA without CUDA is broken
+{ stdenv
+, pkgs
+, buildBazelPackage
+, lib
+, fetchFromGitHub
+, fetchpatch
+, symlinkJoin
+  # Python deps
+, buildPythonPackage
+, isPy3k
+, pythonOlder
+, pythonAtLeast
+, python
+  # Python libraries
+, numpy
+, tensorflow-tensorboard
+, backports_weakref
+, mock
+, enum34
+, absl-py
+, future
+, setuptools
+, wheel
+, keras-preprocessing
+, keras-applications
+, google-pasta
+, termcolor
+, grpcio
+, six
+, wrapt
+, protobuf
+, tensorflow-estimator
+  # Common deps
+, git
+, swig
+, which
+, binutils
+, glibcLocales
+, cython
+  # Common libraries
+, jemalloc
+, openmpi
+, astor
+, gast
+, grpc
+, sqlite
+, openssl
+, jsoncpp
+, re2
+, curl
+, snappy
+, flatbuffers
+, icu
+, double-conversion
+, libpng
+, libjpeg
+, giflib
+, cudaSupport ? false
+, nvidia_x11 ? null
+, cudatoolkit ? null
+, cudnn ? null
+, nccl ? null
+  # XLA without CUDA is broken
 , xlaSupport ? cudaSupport
-# Default from ./configure script
+  # Default from ./configure script
 , cudaCapabilities ? [ "3.5" "5.2" ]
-, sse42Support ? builtins.elem (stdenv.hostPlatform.platform.gcc.arch or "default") ["westmere" "sandybridge" "ivybridge" "haswell" "broadwell" "skylake" "skylake-avx512"]
-, avx2Support  ? builtins.elem (stdenv.hostPlatform.platform.gcc.arch or "default") [                                     "haswell" "broadwell" "skylake" "skylake-avx512"]
-, fmaSupport   ? builtins.elem (stdenv.hostPlatform.platform.gcc.arch or "default") [                                     "haswell" "broadwell" "skylake" "skylake-avx512"]
+, sse42Support ? builtins.elem (stdenv.hostPlatform.platform.gcc.arch or "default") [ "westmere" "sandybridge" "ivybridge" "haswell" "broadwell" "skylake" "skylake-avx512" ]
+, avx2Support ? builtins.elem (stdenv.hostPlatform.platform.gcc.arch or "default") [ "haswell" "broadwell" "skylake" "skylake-avx512" ]
+, fmaSupport ? builtins.elem (stdenv.hostPlatform.platform.gcc.arch or "default") [ "haswell" "broadwell" "skylake" "skylake-avx512" ]
 }:
 
-assert cudaSupport -> nvidia_x11 != null
-                   && cudatoolkit != null
-                   && cudnn != null;
+assert cudaSupport
+-> nvidia_x11 != null
+   && cudatoolkit != null
+   && cudnn != null;
 
 # unsupported combination
 assert ! (stdenv.isDarwin && cudaSupport);
@@ -78,25 +128,31 @@ let
       ./system-jsoncpp.patch
 
       # https://github.com/tensorflow/tensorflow/pull/29673
-      (fetchpatch {
-        name = "fix-compile-with-cuda-and-mpi.patch";
-        url = "https://github.com/tensorflow/tensorflow/pull/29673/commits/498e35a3bfe38dd75cf1416a1a23c07c3b59e6af.patch";
-        sha256 = "1m2qmwv1ysqa61z6255xggwbq6mnxbig749bdvrhnch4zydxb4di";
-      })
+      (
+        fetchpatch {
+          name = "fix-compile-with-cuda-and-mpi.patch";
+          url = "https://github.com/tensorflow/tensorflow/pull/29673/commits/498e35a3bfe38dd75cf1416a1a23c07c3b59e6af.patch";
+          sha256 = "1m2qmwv1ysqa61z6255xggwbq6mnxbig749bdvrhnch4zydxb4di";
+        }
+      )
 
       # https://github.com/tensorflow/tensorflow/issues/29220
-      (fetchpatch {
-        name = "bazel-0.27.patch";
-        url = "https://github.com/tensorflow/tensorflow/commit/cfccbdb8c4a92dd26382419dceb4d934c2380391.patch";
-        sha256 = "1l56wjia2c4685flsfkkgy471wx3c66wyv8khspv06zchj0k0liw";
-      })
+      (
+        fetchpatch {
+          name = "bazel-0.27.patch";
+          url = "https://github.com/tensorflow/tensorflow/commit/cfccbdb8c4a92dd26382419dceb4d934c2380391.patch";
+          sha256 = "1l56wjia2c4685flsfkkgy471wx3c66wyv8khspv06zchj0k0liw";
+        }
+      )
     ];
 
     # On update, it can be useful to steal the changes from gentoo
     # https://gitweb.gentoo.org/repo/gentoo.git/tree/sci-libs/tensorflow
 
     nativeBuildInputs = [
-      swig which cython
+      swig
+      which
+      cython
     ];
 
     buildInputs = [
@@ -137,14 +193,17 @@ let
       # for building the wheel
       setuptools
       wheel
-    ] ++ lib.optionals (!isPy3k) [
-      future
-      mock
-    ] ++ lib.optionals cudaSupport [
-      cudatoolkit
-      cudnn
-      nvidia_x11
-    ];
+    ]
+    ++ lib.optionals (!isPy3k) [
+         future
+         mock
+       ]
+    ++ lib.optionals cudaSupport [
+         cudatoolkit
+         cudnn
+         nvidia_x11
+       ]
+    ;
 
 
     # arbitrarily set to the current latest bazel version, overly careful
@@ -194,7 +253,7 @@ let
     INCLUDEDIR = "${includes_joined}/include";
 
     PYTHON_BIN_PATH = python.interpreter;
- 
+
     TF_NEED_GCP = true;
     TF_NEED_HDFS = true;
     TF_ENABLE_XLA = tfFeature xlaSupport;
@@ -221,22 +280,24 @@ let
 
     preConfigure = let
       opt_flags = []
-        ++ lib.optionals sse42Support ["-msse4.2"]
-        ++ lib.optionals avx2Support ["-mavx2"]
-        ++ lib.optionals fmaSupport ["-mfma"];
-    in ''
-      patchShebangs configure
+        ++ lib.optionals sse42Support [ "-msse4.2" ]
+        ++ lib.optionals avx2Support [ "-mavx2" ]
+        ++ lib.optionals fmaSupport [ "-mfma" ]
+        ;
+    in
+      ''
+        patchShebangs configure
 
-      # dummy ldconfig
-      mkdir dummy-ldconfig
-      echo "#!${stdenv.shell}" > dummy-ldconfig/ldconfig
-      chmod +x dummy-ldconfig/ldconfig
-      export PATH="$PWD/dummy-ldconfig:$PATH"
+        # dummy ldconfig
+        mkdir dummy-ldconfig
+        echo "#!${stdenv.shell}" > dummy-ldconfig/ldconfig
+        chmod +x dummy-ldconfig/ldconfig
+        export PATH="$PWD/dummy-ldconfig:$PATH"
 
-      export PYTHON_LIB_PATH="$NIX_BUILD_TOP/site-packages"
-      export CC_OPT_FLAGS="${lib.concatStringsSep " " opt_flags}"
-      mkdir -p "$PYTHON_LIB_PATH"
-    '';
+        export PYTHON_LIB_PATH="$NIX_BUILD_TOP/site-packages"
+        export CC_OPT_FLAGS="${lib.concatStringsSep " " opt_flags}"
+        mkdir -p "$PYTHON_LIB_PATH"
+      '';
 
     configurePhase = ''
       runHook preConfigure
@@ -301,7 +362,8 @@ let
     };
   };
 
-in buildPythonPackage rec {
+in
+buildPythonPackage rec {
   inherit version pname;
 
   src = bazel-build.python;
@@ -337,14 +399,19 @@ in buildPythonPackage rec {
     termcolor
     wrapt
     grpcio
-  ] ++ lib.optionals (!isPy3k) [
-    mock
-    future # FIXME
-  ] ++ lib.optionals (pythonOlder "3.4") [
-    backports_weakref enum34
-  ] ++ lib.optionals withTensorboard [
-    tensorflow-tensorboard
-  ];
+  ]
+  ++ lib.optionals (!isPy3k) [
+       mock
+       future # FIXME
+     ]
+  ++ lib.optionals (pythonOlder "3.4") [
+       backports_weakref
+       enum34
+     ]
+  ++ lib.optionals withTensorboard [
+       tensorflow-tensorboard
+     ]
+  ;
 
   # Actual tests are slow and impure.
   # TODO try to run them anyway

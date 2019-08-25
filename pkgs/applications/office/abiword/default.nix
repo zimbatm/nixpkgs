@@ -1,6 +1,22 @@
-{ stdenv, fetchurl, pkgconfig, gtk3, fribidi
-, libpng, popt, libgsf, enchant, wv, librsvg, bzip2, libjpeg, perl
-, boost, libxslt, goffice, wrapGAppsHook, gnome3
+{ stdenv
+, fetchurl
+, pkgconfig
+, gtk3
+, fribidi
+, libpng
+, popt
+, libgsf
+, enchant
+, wv
+, librsvg
+, bzip2
+, libjpeg
+, perl
+, boost
+, libxslt
+, goffice
+, wrapGAppsHook
+, gnome3
 }:
 
 stdenv.mkDerivation rec {
@@ -16,17 +32,32 @@ stdenv.mkDerivation rec {
 
   patches = [
     # https://bugzilla.abisource.com/show_bug.cgi?id=13791
-    (fetchurl {
-      url = https://bugzilla.abisource.com/attachment.cgi?id=5860;
-      sha256 = "02p8kz02xm1197zcpzjs010mna9hxsbq5lwgxr8b7qhh9yxja7al";
-    })
+    (
+      fetchurl {
+        url = https://bugzilla.abisource.com/attachment.cgi?id=5860;
+        sha256 = "02p8kz02xm1197zcpzjs010mna9hxsbq5lwgxr8b7qhh9yxja7al";
+      }
+    )
   ];
 
   nativeBuildInputs = [ pkgconfig wrapGAppsHook ];
 
   buildInputs = [
-    gtk3 librsvg bzip2 fribidi libpng popt
-    libgsf enchant wv libjpeg perl boost libxslt goffice gnome3.adwaita-icon-theme
+    gtk3
+    librsvg
+    bzip2
+    fribidi
+    libpng
+    popt
+    libgsf
+    enchant
+    wv
+    libjpeg
+    perl
+    boost
+    libxslt
+    goffice
+    gnome3.adwaita-icon-theme
   ];
 
   meta = with stdenv.lib; {

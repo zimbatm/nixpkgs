@@ -4,9 +4,11 @@ with lib;
 
 let
   cfg = config.services.gitweb;
-  package = pkgs.gitweb.override (optionalAttrs cfg.gitwebTheme {
-    gitwebTheme = true;
-  });
+  package = pkgs.gitweb.override (
+    optionalAttrs cfg.gitwebTheme {
+      gitwebTheme = true;
+    }
+  );
 
 in
 {
@@ -28,7 +30,7 @@ in
     systemd.services.gitweb = {
       description = "GitWeb service";
       script = "${package}/gitweb.cgi --fastcgi --nproc=1";
-      environment  = {
+      environment = {
         FCGI_SOCKET_PATH = "/run/gitweb/gitweb.sock";
       };
       serviceConfig = {

@@ -5,7 +5,7 @@ stdenv.mkDerivation rec {
   version = "1.3.8rc1";
 
   nativeBuildInputs = [ autoreconfHook ];
-  buildInputs = [ ];
+  buildInputs = [];
 
   src = fetchFromGitHub {
     owner = "sleinen";

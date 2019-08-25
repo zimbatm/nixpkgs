@@ -41,12 +41,16 @@ in
   };
 
   config = mkMerge [
-    (mkIf config.programs.bash.vteIntegration {
-      programs.bash.interactiveShellInit = mkBefore vteInitSnippet;
-    })
+    (
+      mkIf config.programs.bash.vteIntegration {
+        programs.bash.interactiveShellInit = mkBefore vteInitSnippet;
+      }
+    )
 
-    (mkIf config.programs.zsh.vteIntegration {
-      programs.zsh.interactiveShellInit = vteInitSnippet;
-    })
+    (
+      mkIf config.programs.zsh.vteIntegration {
+        programs.zsh.interactiveShellInit = vteInitSnippet;
+      }
+    )
   ];
 }

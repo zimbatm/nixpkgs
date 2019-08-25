@@ -21,7 +21,7 @@ let
 
     [keyfile]
     ${optionalString (cfg.unmanaged != [])
-      ''unmanaged-devices=${lib.concatStringsSep ";" cfg.unmanaged}''}
+    ''unmanaged-devices=${lib.concatStringsSep ";" cfg.unmanaged}''}
 
     [logging]
     level=${cfg.logLevel}
@@ -31,7 +31,7 @@ let
     ethernet.cloned-mac-address=${cfg.ethernet.macAddress}
     wifi.cloned-mac-address=${cfg.wifi.macAddress}
     ${optionalString (cfg.wifi.powersave != null)
-      ''wifi.powersave=${if cfg.wifi.powersave then "3" else "2"}''}
+    ''wifi.powersave=${if cfg.wifi.powersave then "3" else "2"}''}
 
     [device]
     wifi.scan-rand-mac-address=${if cfg.wifi.scanRandMacAddress then "yes" else "no"}
@@ -87,7 +87,7 @@ let
   };
 
   macAddressOpt = mkOption {
-    type = types.either types.str (types.enum ["permanent" "preserve" "random" "stable"]);
+    type = types.either types.str (types.enum [ "permanent" "preserve" "random" "stable" ]);
     default = "preserve";
     example = "00:11:22:33:44:55";
     description = ''
@@ -117,7 +117,8 @@ let
     '';
   };
 
-in {
+in
+{
 
   ###### interface
 
@@ -176,17 +177,20 @@ in {
       # Ugly hack for using the correct gnome3 packageSet
       basePackages = mkOption {
         type = types.attrsOf types.package;
-        default = { inherit (pkgs)
-                            networkmanager modemmanager wpa_supplicant crda
-                            networkmanager-openvpn networkmanager-vpnc
-                            networkmanager-openconnect networkmanager-fortisslvpn
-                            networkmanager-l2tp networkmanager-iodine; };
+        default = {
+          inherit (pkgs)
+            networkmanager modemmanager wpa_supplicant crda
+            networkmanager-openvpn networkmanager-vpnc
+            networkmanager-openconnect networkmanager-fortisslvpn
+            networkmanager-l2tp networkmanager-iodine
+            ;
+        };
         internal = true;
       };
 
       packages = mkOption {
         type = types.listOf types.path;
-        default = [ ];
+        default = [];
         description = ''
           Extra packages that provide NetworkManager plugins.
         '';
@@ -270,41 +274,43 @@ in {
       };
 
       dispatcherScripts = mkOption {
-        type = types.listOf (types.submodule {
-          options = {
-            source = mkOption {
-              type = types.path;
-              description = ''
-                Path to the hook script.
-              '';
-            };
+        type = types.listOf (
+          types.submodule {
+            options = {
+              source = mkOption {
+                type = types.path;
+                description = ''
+                  Path to the hook script.
+                '';
+              };
 
-            type = mkOption {
-              type = types.enum (attrNames dispatcherTypesSubdirMap);
-              default = "basic";
-              description = ''
-                Dispatcher hook type. Look up the hooks described at
-                <link xlink:href="https://developer.gnome.org/NetworkManager/stable/NetworkManager.html">https://developer.gnome.org/NetworkManager/stable/NetworkManager.html</link>
-                and choose the type depending on the output folder.
-                You should then filter the event type (e.g., "up"/"down") from within your script.
-              '';
+              type = mkOption {
+                type = types.enum (attrNames dispatcherTypesSubdirMap);
+                default = "basic";
+                description = ''
+                  Dispatcher hook type. Look up the hooks described at
+                  <link xlink:href="https://developer.gnome.org/NetworkManager/stable/NetworkManager.html">https://developer.gnome.org/NetworkManager/stable/NetworkManager.html</link>
+                  and choose the type depending on the output folder.
+                  You should then filter the event type (e.g., "up"/"down") from within your script.
+                '';
+              };
             };
-          };
-        });
+          }
+        );
         default = [];
         example = literalExample ''
-        [ {
-              source = pkgs.writeText "upHook" '''
+          [ {
+                source = pkgs.writeText "upHook" '''
 
-                if [ "$2" != "up" ]; then
-                    logger "exit: event $2 != up"
-                fi
+                  if [ "$2" != "up" ]; then
+                      logger "exit: event $2 != up"
+                  fi
 
-                # coreutils and iproute are in PATH too
-                logger "Device $DEVICE_IFACE coming up"
-            ''';
-            type = "basic";
-        } ]'';
+                  # coreutils and iproute are in PATH too
+                  logger "Device $DEVICE_IFACE coming up"
+              ''';
+              type = "basic";
+          } ]'';
         description = ''
           A list of scripts which will be executed in response to  network  events.
         '';
@@ -342,24 +348,26 @@ in {
           '';
         };
         hostsDirs = mkOption {
-          type = with types; attrsOf (submodule {
-            options = {
-              user = mkOption {
-                type = types.str;
-                default = "root";
-                description = ''
-                  The user that will own the hosts directory.
-                '';
+          type = with types; attrsOf (
+            submodule {
+              options = {
+                user = mkOption {
+                  type = types.str;
+                  default = "root";
+                  description = ''
+                    The user that will own the hosts directory.
+                  '';
+                };
+                group = mkOption {
+                  type = types.str;
+                  default = "root";
+                  description = ''
+                    The group that will own the hosts directory.
+                  '';
+                };
               };
-              group = mkOption {
-                type = types.str;
-                default = "root";
-                description = ''
-                  The group that will own the hosts directory.
-                '';
-              };
-            };
-          });
+            }
+          );
           default = {};
           description = ''
             Defines a set of directories (relative to
@@ -377,10 +385,12 @@ in {
   config = mkIf cfg.enable {
 
     assertions = [
-      { assertion = config.networking.wireless.enable == false;
+      {
+        assertion = config.networking.wireless.enable == false;
         message = "You can not use networking.networkmanager with networking.wireless";
       }
-      { assertion = !dynamicHostsEnabled || (dynamicHostsEnabled && cfg.dns == "dnsmasq");
+      {
+        assertion = !dynamicHostsEnabled || (dynamicHostsEnabled && cfg.dns == "dnsmasq");
         message = ''
           To use networking.networkmanager.dynamicHosts you also need to set
           networking.networkmanager.dns = "dnsmasq"
@@ -389,67 +399,86 @@ in {
     ];
 
     environment.etc = with cfg.basePackages; [
-      { source = configFile;
+      {
+        source = configFile;
         target = "NetworkManager/NetworkManager.conf";
       }
-      { source = "${networkmanager-openvpn}/lib/NetworkManager/VPN/nm-openvpn-service.name";
+      {
+        source = "${networkmanager-openvpn}/lib/NetworkManager/VPN/nm-openvpn-service.name";
         target = "NetworkManager/VPN/nm-openvpn-service.name";
       }
-      { source = "${networkmanager-vpnc}/lib/NetworkManager/VPN/nm-vpnc-service.name";
+      {
+        source = "${networkmanager-vpnc}/lib/NetworkManager/VPN/nm-vpnc-service.name";
         target = "NetworkManager/VPN/nm-vpnc-service.name";
       }
-      { source = "${networkmanager-openconnect}/lib/NetworkManager/VPN/nm-openconnect-service.name";
+      {
+        source = "${networkmanager-openconnect}/lib/NetworkManager/VPN/nm-openconnect-service.name";
         target = "NetworkManager/VPN/nm-openconnect-service.name";
       }
-      { source = "${networkmanager-fortisslvpn}/lib/NetworkManager/VPN/nm-fortisslvpn-service.name";
+      {
+        source = "${networkmanager-fortisslvpn}/lib/NetworkManager/VPN/nm-fortisslvpn-service.name";
         target = "NetworkManager/VPN/nm-fortisslvpn-service.name";
       }
-      { source = "${networkmanager-l2tp}/lib/NetworkManager/VPN/nm-l2tp-service.name";
+      {
+        source = "${networkmanager-l2tp}/lib/NetworkManager/VPN/nm-l2tp-service.name";
         target = "NetworkManager/VPN/nm-l2tp-service.name";
       }
-      { source = "${networkmanager-iodine}/lib/NetworkManager/VPN/nm-iodine-service.name";
+      {
+        source = "${networkmanager-iodine}/lib/NetworkManager/VPN/nm-iodine-service.name";
         target = "NetworkManager/VPN/nm-iodine-service.name";
       }
-    ] ++ optional (cfg.appendNameservers != [] || cfg.insertNameservers != [])
-           { source = overrideNameserversScript;
+    ]
+      ++ optional (cfg.appendNameservers != [] || cfg.insertNameservers != [])
+           {
+             source = overrideNameserversScript;
              target = "NetworkManager/dispatcher.d/02overridedns";
            }
-      ++ lib.imap1 (i: s: {
-        inherit (s) source;
-        target = "NetworkManager/dispatcher.d/${dispatcherTypesSubdirMap.${s.type}}03userscript${lib.fixedWidthNumber 4 i}";
-        mode = "0544";
-      }) cfg.dispatcherScripts
+      ++ lib.imap1 (
+           i: s: {
+             inherit (s) source;
+             target = "NetworkManager/dispatcher.d/${dispatcherTypesSubdirMap.${s.type}}03userscript${lib.fixedWidthNumber 4 i}";
+             mode = "0544";
+           }
+         ) cfg.dispatcherScripts
       ++ optional dynamicHostsEnabled
-           { target = "NetworkManager/dnsmasq.d/dyndns.conf";
-             text = concatMapStrings (n: ''
-               hostsdir=/run/NetworkManager/hostsdirs/${n}
-             '') (attrNames cfg.dynamicHosts.hostsDirs);
+           {
+             target = "NetworkManager/dnsmasq.d/dyndns.conf";
+             text = concatMapStrings (
+               n: ''
+                 hostsdir=/run/NetworkManager/hostsdirs/${n}
+               ''
+             ) (attrNames cfg.dynamicHosts.hostsDirs);
            }
       ++ optional cfg.enableStrongSwan
-           { source = "${pkgs.networkmanager_strongswan}/lib/NetworkManager/VPN/nm-strongswan-service.name";
+           {
+             source = "${pkgs.networkmanager_strongswan}/lib/NetworkManager/VPN/nm-strongswan-service.name";
              target = "NetworkManager/VPN/nm-strongswan-service.name";
            };
 
     environment.systemPackages = cfg.packages;
 
-    users.groups = [{
-      name = "networkmanager";
-      gid = config.ids.gids.networkmanager;
-    }
-    {
-      name = "nm-openvpn";
-      gid = config.ids.gids.nm-openvpn;
-    }];
-    users.users = [{
-      name = "nm-openvpn";
-      uid = config.ids.uids.nm-openvpn;
-      extraGroups = [ "networkmanager" ];
-    }
-    {
-      name = "nm-iodine";
-      isSystemUser = true;
-      group = "networkmanager";
-    }];
+    users.groups = [
+      {
+        name = "networkmanager";
+        gid = config.ids.gids.networkmanager;
+      }
+      {
+        name = "nm-openvpn";
+        gid = config.ids.gids.nm-openvpn;
+      }
+    ];
+    users.users = [
+      {
+        name = "nm-openvpn";
+        uid = config.ids.uids.nm-openvpn;
+        extraGroups = [ "networkmanager" ];
+      }
+      {
+        name = "nm-iodine";
+        isSystemUser = true;
+        group = "networkmanager";
+      }
+    ];
 
     systemd.packages = cfg.packages;
 
@@ -472,11 +501,15 @@ in {
       wantedBy = [ "NetworkManager.service" ];
       before = [ "NetworkManager.service" ];
       partOf = [ "NetworkManager.service" ];
-      script = concatStrings (mapAttrsToList (n: d: ''
-        mkdir -p "/run/NetworkManager/hostsdirs/${n}"
-        chown "${d.user}:${d.group}" "/run/NetworkManager/hostsdirs/${n}"
-        chmod 0775 "/run/NetworkManager/hostsdirs/${n}"
-      '') cfg.dynamicHosts.hostsDirs);
+      script = concatStrings (
+        mapAttrsToList (
+          n: d: ''
+            mkdir -p "/run/NetworkManager/hostsdirs/${n}"
+            chown "${d.user}:${d.group}" "/run/NetworkManager/hostsdirs/${n}"
+            chmod 0775 "/run/NetworkManager/hostsdirs/${n}"
+          ''
+        ) cfg.dynamicHosts.hostsDirs
+      );
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;

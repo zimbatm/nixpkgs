@@ -1,5 +1,12 @@
-{ stdenv, fetchurl, python, pkgconfig, readline, libxslt
-, docbook_xsl, docbook_xml_dtd_42, fixDarwinDylibNames
+{ stdenv
+, fetchurl
+, python
+, pkgconfig
+, readline
+, libxslt
+, docbook_xsl
+, docbook_xml_dtd_42
+, fixDarwinDylibNames
 , wafHook
 }:
 
@@ -11,8 +18,14 @@ stdenv.mkDerivation rec {
     sha256 = "1kk76dyav41ip7ddbbf04yfydb4jvywzi2ps0z2vla56aqkn11di";
   };
 
-  nativeBuildInputs = [ pkgconfig fixDarwinDylibNames python wafHook
-                        docbook_xsl docbook_xml_dtd_42 ];
+  nativeBuildInputs = [
+    pkgconfig
+    fixDarwinDylibNames
+    python
+    wafHook
+    docbook_xsl
+    docbook_xml_dtd_42
+  ];
   buildInputs = [ readline libxslt ];
 
   wafPath = "buildtools/bin/waf";

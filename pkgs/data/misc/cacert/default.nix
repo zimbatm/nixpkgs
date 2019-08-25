@@ -1,4 +1,7 @@
-{ stdenv, fetchurl, nss, python
+{ stdenv
+, fetchurl
+, nss
+, python
 , blacklist ? []
 , includeEmail ? false
 }:
@@ -34,9 +37,9 @@ stdenv.mkDerivation rec {
     cat ${certdata2pem} > certdata2pem.py
     patch -p1 < ${./fix-unicode-ca-names.patch}
     ${optionalString includeEmail ''
-      # Disable CAs used for mail signing
-      substituteInPlace certdata2pem.py --replace \[\'CKA_TRUST_EMAIL_PROTECTION\'\] '''
-    ''}
+    # Disable CAs used for mail signing
+    substituteInPlace certdata2pem.py --replace \[\'CKA_TRUST_EMAIL_PROTECTION\'\] '''
+  ''}
   '';
 
   buildPhase = ''

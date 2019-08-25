@@ -1,14 +1,28 @@
-{ stdenv, fetchgit, autoconf, sbcl, lispPackages, xdpyinfo, texinfo4
-, makeWrapper , rlwrap, gnused, gnugrep, coreutils, xprop
+{ stdenv
+, fetchgit
+, autoconf
+, sbcl
+, lispPackages
+, xdpyinfo
+, texinfo4
+, makeWrapper
+, rlwrap
+, gnused
+, gnugrep
+, coreutils
+, xprop
 , extraModulePaths ? []
-, version }:
+, version
+}:
 
 let
-  contrib = (fetchgit {
-    url = "https://github.com/stumpwm/stumpwm-contrib.git";
-    rev = "9bebe3622b2b6c31a6bada9055ef3862fa79b86f";
-    sha256 = "1ml6mjk2fsfv4sf65fdbji3q5x0qiq99g1k8w7a99gsl2i8h60gc";
-  });
+  contrib = (
+    fetchgit {
+      url = "https://github.com/stumpwm/stumpwm-contrib.git";
+      rev = "9bebe3622b2b6c31a6bada9055ef3862fa79b86f";
+      sha256 = "1ml6mjk2fsfv4sf65fdbji3q5x0qiq99g1k8w7a99gsl2i8h60gc";
+    }
+  );
   versionSpec = {
     "latest" = {
       name = "1.0.0";
@@ -23,10 +37,10 @@ let
       patches = [ ./fix-module-path.patch ];
     };
     "git" = {
-        name = "git-20170203";
-        rev = "d20f24e58ab62afceae2afb6262ffef3cc318b97";
-        sha256 = "1gi29ds1x6dq7lz8lamnhcvcrr3cvvrg5yappfkggyhyvib1ii70";
-        patches = [];
+      name = "git-20170203";
+      rev = "d20f24e58ab62afceae2afb6262ffef3cc318b97";
+      sha256 = "1gi29ds1x6dq7lz8lamnhcvcrr3cvvrg5yappfkggyhyvib1ii70";
+      patches = [];
     };
   }.${version};
 in
@@ -44,7 +58,9 @@ stdenv.mkDerivation rec {
   patches = versionSpec.patches;
 
   buildInputs = [
-    texinfo4 makeWrapper autoconf
+    texinfo4
+    makeWrapper
+    autoconf
     sbcl
     lispPackages.clx
     lispPackages.cl-ppcre
@@ -95,10 +111,10 @@ stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "A tiling window manager for X11";
-    homepage    = https://github.com/stumpwm/;
-    license     = licenses.gpl2Plus;
+    homepage = https://github.com/stumpwm/;
+    license = licenses.gpl2Plus;
     maintainers = with maintainers; [ the-kenny ];
-    platforms   = platforms.linux;
+    platforms = platforms.linux;
     broken = true; # 2018-04-11
   };
 }

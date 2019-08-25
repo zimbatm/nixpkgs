@@ -15,6 +15,6 @@ buildPythonPackage rec {
     homepage = https://github.com/miracle2k/flask-assets;
     description = "Browsable web APIs for Flask";
     license = licenses.bsd2;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
   };
 }

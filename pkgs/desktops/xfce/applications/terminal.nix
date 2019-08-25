@@ -1,9 +1,18 @@
-{ stdenv, fetchurl, pkgconfig, intltool, ncurses, gtk, vte, dbus-glib
-, exo, libxfce4util, libxfce4ui
+{ stdenv
+, fetchurl
+, pkgconfig
+, intltool
+, ncurses
+, gtk
+, vte
+, dbus-glib
+, exo
+, libxfce4util
+, libxfce4ui
 }:
 
 stdenv.mkDerivation rec {
-  p_name  = "xfce4-terminal";
+  p_name = "xfce4-terminal";
   ver_maj = "0.6";
   ver_min = "3";
 

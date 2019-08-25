@@ -18,7 +18,10 @@ stdenv.mkDerivation rec {
     makeWrapper "${mono}/bin/mono" $out/bin/Radarr \
       --add-flags "$out/share/${name}/Radarr.exe" \
       --prefix LD_LIBRARY_PATH : ${stdenv.lib.makeLibraryPath [
-          curl sqlite libmediainfo ]}
+    curl
+    sqlite
+    libmediainfo
+  ]}
   '';
 
   meta = with stdenv.lib; {

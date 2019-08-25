@@ -1,4 +1,7 @@
-{ lib, stdenv, python3, openssl
+{ lib
+, stdenv
+, python3
+, openssl
 , enableSystemd ? stdenv.isLinux
 }:
 
@@ -21,7 +24,8 @@ let
     checkInputs = [ ldaptor mock ];
   };
 
-in buildPythonApplication rec {
+in
+buildPythonApplication rec {
   pname = "matrix-synapse";
   version = "1.3.1";
 
@@ -49,13 +53,17 @@ in buildPythonApplication rec {
     netaddr
     phonenumbers
     pillow
-    (prometheus_client.overrideAttrs (x: {
-      src = fetchPypi {
-        pname = "prometheus_client";
-        version = "0.3.1";
-        sha256 = "093yhvz7lxl7irnmsfdnf2030lkj4gsfkg6pcmy4yr1ijk029g0p";
-      };
-    }))
+    (
+      prometheus_client.overrideAttrs (
+        x: {
+          src = fetchPypi {
+            pname = "prometheus_client";
+            version = "0.3.1";
+            sha256 = "093yhvz7lxl7irnmsfdnf2030lkj4gsfkg6pcmy4yr1ijk029g0p";
+          };
+        }
+      )
+    )
     psutil
     psycopg2
     pyasn1
@@ -70,7 +78,9 @@ in buildPythonApplication rec {
     treq
     twisted
     unpaddedbase64
-  ] ++ lib.optional enableSystemd systemd;
+  ]
+  ++ lib.optional enableSystemd systemd
+  ;
 
   checkInputs = [ mock parameterized openssl ];
 

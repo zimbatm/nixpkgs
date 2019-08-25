@@ -1,6 +1,8 @@
 { stdenv, fetchFromGitHub, ocaml, findlib }:
 
-let version = "1.2"; in
+let
+  version = "1.2";
+in
 
 stdenv.mkDerivation {
   name = "ocaml${ocaml.version}-result-${version}";

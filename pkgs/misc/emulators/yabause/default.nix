@@ -1,5 +1,14 @@
-{ stdenv, fetchurl, cmake, pkgconfig, qtbase, qt5, libGLU_combined
-, freeglut ? null, openal ? null, SDL2 ? null }:
+{ stdenv
+, fetchurl
+, cmake
+, pkgconfig
+, qtbase
+, qt5
+, libGLU_combined
+, freeglut ? null
+, openal ? null
+, SDL2 ? null
+}:
 
 stdenv.mkDerivation rec {
   name = "yabause-${version}";
@@ -24,7 +33,7 @@ stdenv.mkDerivation rec {
     "-DYAB_NETWORK=ON"
     "-DYAB_OPTIMIZED_DMA=ON"
     "-DYAB_PORTS=qt"
-  ] ;
+  ];
 
   meta = with stdenv.lib; {
     description = "An open-source Sega Saturn emulator";

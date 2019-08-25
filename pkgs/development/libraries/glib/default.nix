@@ -1,13 +1,37 @@
-{ config, stdenv, fetchurl, gettext, meson, ninja, pkgconfig, perl, python3, glibcLocales
-, libiconv, zlib, libffi, pcre, libelf, gnome3, libselinux, bash, gnum4, gtk-doc, docbook_xsl, docbook_xml_dtd_45
-# use utillinuxMinimal to avoid circular dependency (utillinux, systemd, glib)
+{ config
+, stdenv
+, fetchurl
+, gettext
+, meson
+, ninja
+, pkgconfig
+, perl
+, python3
+, glibcLocales
+, libiconv
+, zlib
+, libffi
+, pcre
+, libelf
+, gnome3
+, libselinux
+, bash
+, gnum4
+, gtk-doc
+, docbook_xsl
+, docbook_xml_dtd_45
+  # use utillinuxMinimal to avoid circular dependency (utillinux, systemd, glib)
 , utillinuxMinimal ? null
 , buildPackages
 
-# this is just for tests (not in the closure of any regular package)
+  # this is just for tests (not in the closure of any regular package)
 , doCheck ? config.doCheckByDefault or false
-, coreutils, dbus, libxml2, tzdata
-, desktop-file-utils, shared-mime-info
+, coreutils
+, dbus
+, libxml2
+, tzdata
+, desktop-file-utils
+, shared-mime-info
 , darwin
 }:
 
@@ -60,13 +84,15 @@ stdenv.mkDerivation rec {
   patches = optional stdenv.isDarwin ./darwin-compilation.patch
     ++ optional doCheck ./skip-timer-test.patch
     ++ optionals stdenv.hostPlatform.isMusl [
-      ./quark_init_on_demand.patch
-      ./gobject_init_on_demand.patch
-    ] ++ [
-      ./schema-override-variable.patch
-      # Require substituteInPlace in postPatch
-      ./fix-gio-launch-desktop-path.patch
-    ];
+         ./quark_init_on_demand.patch
+         ./gobject_init_on_demand.patch
+       ]
+    ++ [
+         ./schema-override-variable.patch
+         # Require substituteInPlace in postPatch
+         ./fix-gio-launch-desktop-path.patch
+       ]
+    ;
 
   outputs = [ "bin" "out" "dev" "devdoc" ];
   outputBin = "dev";
@@ -74,17 +100,39 @@ stdenv.mkDerivation rec {
   setupHook = ./setup-hook.sh;
 
   buildInputs = [
-    libelf setupHook pcre
-    bash gnum4 # install glib-gettextize and m4 macros for other apps to use
-  ] ++ optionals stdenv.isLinux [
-    libselinux
-    utillinuxMinimal # for libmount
-  ] ++ optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
-    AppKit Carbon Cocoa CoreFoundation CoreServices Foundation
-  ]);
+    libelf
+    setupHook
+    pcre
+    bash
+    gnum4 # install glib-gettextize and m4 macros for other apps to use
+  ]
+  ++ optionals stdenv.isLinux [
+       libselinux
+       utillinuxMinimal # for libmount
+     ]
+  ++ optionals stdenv.isDarwin (
+       with darwin.apple_sdk.frameworks; [
+         AppKit
+         Carbon
+         Cocoa
+         CoreFoundation
+         CoreServices
+         Foundation
+       ]
+     )
+  ;
 
   nativeBuildInputs = [
-    meson ninja pkgconfig perl python3 gettext gtk-doc docbook_xsl docbook_xml_dtd_45 glibcLocales
+    meson
+    ninja
+    pkgconfig
+    perl
+    python3
+    gettext
+    gtk-doc
+    docbook_xsl
+    docbook_xml_dtd_45
+    glibcLocales
   ];
 
   propagatedBuildInputs = [ zlib libffi gettext libiconv ];
@@ -99,7 +147,8 @@ stdenv.mkDerivation rec {
   LC_ALL = "en_US.UTF-8";
 
   NIX_CFLAGS_COMPILE = (optional stdenv.isSunOS "-DBSD_COMP")
-    ++ [ "-Wno-error=nonnull" ];
+    ++ [ "-Wno-error=nonnull" ]
+    ;
 
   postPatch = ''
     # substitute fix-gio-launch-desktop-path.patch
@@ -123,13 +172,15 @@ stdenv.mkDerivation rec {
       mv "$dev/bin/$app" "$bin/bin"
     done
 
-  '' + optionalString (!stdenv.isDarwin) ''
-    # Add gio-launch-desktop to $out so we can refer to it from $dev
-    mkdir $out/bin
-    mv "$dev/bin/gio-launch-desktop" "$out/bin/"
-    ln -s "$out/bin/gio-launch-desktop" "$bin/bin/"
+  ''
+  + optionalString (!stdenv.isDarwin) ''
+      # Add gio-launch-desktop to $out so we can refer to it from $dev
+      mkdir $out/bin
+      mv "$dev/bin/gio-launch-desktop" "$out/bin/"
+      ln -s "$out/bin/gio-launch-desktop" "$bin/bin/"
 
-  '' + ''
+    ''
+  + ''
     moveToOutput "share/glib-2.0" "$dev"
     substituteInPlace "$dev/bin/gdbus-codegen" --replace "$out" "$dev"
     sed -i "$dev/bin/glib-gettextize" -e "s|^gettext_dir=.*|gettext_dir=$dev/share/glib-2.0/gettext|"
@@ -137,9 +188,11 @@ stdenv.mkDerivation rec {
     # This file is *included* in gtk3 and would introduce runtime reference via __FILE__.
     sed '1i#line 1 "${name}/include/glib-2.0/gobject/gobjectnotifyqueue.c"' \
       -i "$dev"/include/glib-2.0/gobject/gobjectnotifyqueue.c
-  '' + optionalString (stdenv.hostPlatform != stdenv.buildPlatform) ''
-    cp -r ${buildPackages.glib.devdoc} $devdoc
-  '';
+  ''
+  + optionalString (stdenv.hostPlatform != stdenv.buildPlatform) ''
+      cp -r ${buildPackages.glib.devdoc} $devdoc
+    ''
+  ;
 
   checkInputs = [ tzdata libxml2 desktop-file-utils shared-mime-info ];
 
@@ -177,10 +230,10 @@ stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "C library of programming buildings blocks";
-    homepage    = https://www.gtk.org/;
-    license     = licenses.lgpl21Plus;
+    homepage = https://www.gtk.org/;
+    license = licenses.lgpl21Plus;
     maintainers = with maintainers; [ lovek323 raskin ];
-    platforms   = platforms.unix;
+    platforms = platforms.unix;
 
     longDescription = ''
       GLib provides the core application building blocks for libraries

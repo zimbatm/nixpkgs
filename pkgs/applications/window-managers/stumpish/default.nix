@@ -13,17 +13,22 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [
-    gnused xorg.xprop rlwrap ncurses
+    gnused
+    xorg.xprop
+    rlwrap
+    ncurses
   ];
 
   patches = [
-    (substituteAll {
-      src = ./paths.patch;
-      sed = "${gnused}/bin/sed";
-      xprop = "${xorg.xprop}/bin/xprop";
-      rlwrap = "${rlwrap}/bin/rlwrap";
-      tput = "${ncurses}/bin/tput";
-    })
+    (
+      substituteAll {
+        src = ./paths.patch;
+        sed = "${gnused}/bin/sed";
+        xprop = "${xorg.xprop}/bin/xprop";
+        rlwrap = "${rlwrap}/bin/rlwrap";
+        tput = "${ncurses}/bin/tput";
+      }
+    )
   ];
 
   buildPhase = ''

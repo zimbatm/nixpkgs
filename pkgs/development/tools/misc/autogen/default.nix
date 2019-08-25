@@ -12,11 +12,15 @@ stdenv.mkDerivation rec {
   outputs = [ "bin" "dev" "lib" "out" "man" "info" ];
 
   nativeBuildInputs = [ which pkgconfig perl ]
-    # autogen needs a build autogen when cross-compiling
+  # autogen needs a build autogen when cross-compiling
     ++ stdenv.lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
-      buildPackages.buildPackages.autogen buildPackages.texinfo ];
+         buildPackages.buildPackages.autogen
+         buildPackages.texinfo
+       ]
+    ;
   buildInputs = [
-    guile libxml2
+    guile
+    libxml2
   ];
 
   configureFlags = stdenv.lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
@@ -53,6 +57,6 @@ stdenv.mkDerivation rec {
     license = with licenses; [ gpl3Plus lgpl3Plus ];
     homepage = https://www.gnu.org/software/autogen/;
     platforms = platforms.all;
-    maintainers = [ ];
+    maintainers = [];
   };
 }

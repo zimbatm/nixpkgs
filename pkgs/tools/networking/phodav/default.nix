@@ -1,9 +1,15 @@
-{ stdenv, fetchurl
-, intltool, pkgconfig, glib, libsoup }:
+{ stdenv
+, fetchurl
+, intltool
+, pkgconfig
+, glib
+, libsoup
+}:
 
 let
   version = "2.2";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "phodav-${version}";
 
   src = fetchurl {

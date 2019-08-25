@@ -10,11 +10,11 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [ ocaml findlib ocamlbuild ];
-  propagatedBuildInputs = [pcre];
+  propagatedBuildInputs = [ pcre ];
 
   createFindlibDestdir = true;
 
-  dontConfigure = true;	# Skip configure phase
+  dontConfigure = true; # Skip configure phase
 
   meta = with stdenv.lib; {
     homepage = https://bitbucket.org/mmottl/pcre-ocaml;

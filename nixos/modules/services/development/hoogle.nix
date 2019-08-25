@@ -11,7 +11,8 @@ let
     paths = [ (cfg.haskellPackages.ghcWithHoogle cfg.packages) ];
   };
 
-in {
+in
+{
 
   options.services.hoogle = {
     enable = mkEnableOption "Haskell documentation server";

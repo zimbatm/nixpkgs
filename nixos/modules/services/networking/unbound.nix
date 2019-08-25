@@ -17,12 +17,13 @@ let
   forward =
     optionalString (any isLocalAddress cfg.forwardAddresses) ''
       do-not-query-localhost: no
-    '' +
-    optionalString (cfg.forwardAddresses != []) ''
-      forward-zone:
-        name: .
-    '' +
-    concatMapStringsSep "\n" (x: "    forward-addr: ${x}") cfg.forwardAddresses;
+    ''
+    + optionalString (cfg.forwardAddresses != []) ''
+        forward-zone:
+          name: .
+      ''
+    + concatMapStringsSep "\n" (x: "    forward-addr: ${x}") cfg.forwardAddresses
+  ;
 
   rootTrustAnchorFile = "${stateDir}/root.key";
 
@@ -66,7 +67,7 @@ in
       };
 
       forwardAddresses = mkOption {
-        default = [ ];
+        default = [];
         type = types.listOf types.str;
         description = "What servers to forward queries to.";
       };
@@ -114,16 +115,16 @@ in
         mkdir -m 0755 -p ${stateDir}/dev/
         cp ${confFile} ${stateDir}/unbound.conf
         ${optionalString cfg.enableRootTrustAnchor ''
-          ${pkgs.unbound}/bin/unbound-anchor -a ${rootTrustAnchorFile} || echo "Root anchor updated!"
-          chown unbound ${stateDir} ${rootTrustAnchorFile}
-        ''}
+        ${pkgs.unbound}/bin/unbound-anchor -a ${rootTrustAnchorFile} || echo "Root anchor updated!"
+        chown unbound ${stateDir} ${rootTrustAnchorFile}
+      ''}
         touch ${stateDir}/dev/random
         ${pkgs.utillinux}/bin/mount --bind -n /dev/urandom ${stateDir}/dev/random
       '';
 
       serviceConfig = {
         ExecStart = "${pkgs.unbound}/bin/unbound -d -c ${stateDir}/unbound.conf";
-        ExecStopPost="${pkgs.utillinux}/bin/umount ${stateDir}/dev/random";
+        ExecStopPost = "${pkgs.utillinux}/bin/umount ${stateDir}/dev/random";
 
         ProtectSystem = true;
         ProtectHome = true;

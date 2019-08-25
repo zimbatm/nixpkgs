@@ -1,13 +1,22 @@
-{
-  stdenv, fetchurl, lib,
-  pkgconfig, libxml2, libxslt,
-  dbus-glib, libcap_ng, libqb, libseccomp, polkit, protobuf, audit,
-  withGui ? true,
-  qtbase ? null,
-  qttools ? null,
-  qtsvg ? null,
-  libgcrypt ? null,
-  libsodium ? null
+{ stdenv
+, fetchurl
+, lib
+, pkgconfig
+, libxml2
+, libxslt
+, dbus-glib
+, libcap_ng
+, libqb
+, libseccomp
+, polkit
+, protobuf
+, audit
+, withGui ? true
+, qtbase ? null
+, qttools ? null
+, qtsvg ? null
+, libgcrypt ? null
+, libsodium ? null
 }:
 
 with stdenv.lib;
@@ -42,7 +51,8 @@ stdenv.mkDerivation rec {
   ]
   ++ (lib.optional (libgcrypt != null) libgcrypt)
   ++ (lib.optional (libsodium != null) libsodium)
-  ++ (lib.optionals withGui [ qtbase qtsvg qttools ]);
+  ++ (lib.optionals withGui [ qtbase qtsvg qttools ])
+  ;
 
   configureFlags = [
     "--with-bundled-catch"
@@ -52,7 +62,8 @@ stdenv.mkDerivation rec {
   ]
   ++ (lib.optional (libgcrypt != null) "--with-crypto-library=gcrypt")
   ++ (lib.optional (libsodium != null) "--with-crypto-library=sodium")
-  ++ (lib.optional withGui "--with-gui-qt=qt5");
+  ++ (lib.optional withGui "--with-gui-qt=qt5")
+  ;
 
   enableParallelBuilding = true;
 

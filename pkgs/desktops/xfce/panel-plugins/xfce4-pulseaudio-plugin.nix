@@ -1,7 +1,17 @@
-{ stdenv, fetchurl, pkgconfig, intltool, libxfce4util, xfce4panel_gtk3, xfconf
-, gtk3, libpulseaudio, hicolor-icon-theme
-, withKeybinder ? true, keybinder3
-, withLibnotify ? true, libnotify
+{ stdenv
+, fetchurl
+, pkgconfig
+, intltool
+, libxfce4util
+, xfce4panel_gtk3
+, xfconf
+, gtk3
+, libpulseaudio
+, hicolor-icon-theme
+, withKeybinder ? true
+, keybinder3
+, withLibnotify ? true
+, libnotify
 }:
 
 assert withKeybinder -> keybinder3 != null;
@@ -10,7 +20,7 @@ assert withLibnotify -> libnotify != null;
 with stdenv.lib;
 
 stdenv.mkDerivation rec {
-  p_name  = "xfce4-pulseaudio-plugin";
+  p_name = "xfce4-pulseaudio-plugin";
   ver_maj = "0.2";
   ver_min = "3";
 
@@ -23,12 +33,13 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ pkgconfig intltool ];
   buildInputs = [ libxfce4util xfce4panel_gtk3 xfconf gtk3 libpulseaudio hicolor-icon-theme ]
     ++ optional withKeybinder keybinder3
-    ++ optional withLibnotify libnotify;
+    ++ optional withLibnotify libnotify
+    ;
 
   meta = {
     homepage = "http://goodies.xfce.org/projects/panel-plugins/${p_name}";
     description = "Adjust the audio volume of the PulseAudio sound system";
     platforms = platforms.linux;
-    maintainers = [ ];
+    maintainers = [];
   };
 }

@@ -1,6 +1,8 @@
 { stdenv, fetchurl, cmake, pkgconfig, udev, libcec_platform }:
 
-let version = "4.0.4"; in
+let
+  version = "4.0.4";
+in
 
 stdenv.mkDerivation {
   name = "libcec-${version}";

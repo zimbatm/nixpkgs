@@ -5,8 +5,8 @@ with lib;
 let
 
   pkg = if config.hardware.sane.snapshot
-    then pkgs.sane-backends-git
-    else pkgs.sane-backends;
+  then pkgs.sane-backends-git
+  else pkgs.sane-backends;
 
   sanedConf = pkgs.writeTextFile {
     name = "saned.conf";
@@ -117,46 +117,50 @@ in
   ###### implementation
 
   config = mkMerge [
-    (mkIf enabled {
-      hardware.sane.configDir = mkDefault "${saneConfig}/etc/sane.d";
+    (
+      mkIf enabled {
+        hardware.sane.configDir = mkDefault "${saneConfig}/etc/sane.d";
 
-      environment.systemPackages = backends;
-      environment.sessionVariables = env;
-      services.udev.packages = backends;
+        environment.systemPackages = backends;
+        environment.sessionVariables = env;
+        services.udev.packages = backends;
 
-      users.groups."scanner".gid = config.ids.gids.scanner;
-    })
+        users.groups."scanner".gid = config.ids.gids.scanner;
+      }
+    )
 
-    (mkIf config.services.saned.enable {
-      networking.firewall.connectionTrackingModules = [ "sane" ];
+    (
+      mkIf config.services.saned.enable {
+        networking.firewall.connectionTrackingModules = [ "sane" ];
 
-      systemd.services."saned@" = {
-        description = "Scanner Service";
-        environment = mapAttrs (name: val: toString val) env;
-        serviceConfig = {
-          User = "scanner";
-          Group = "scanner";
-          ExecStart = "${pkg}/bin/saned";
+        systemd.services."saned@" = {
+          description = "Scanner Service";
+          environment = mapAttrs (name: val: toString val) env;
+          serviceConfig = {
+            User = "scanner";
+            Group = "scanner";
+            ExecStart = "${pkg}/bin/saned";
+          };
         };
-      };
 
-      systemd.sockets.saned = {
-        description = "saned incoming socket";
-        wantedBy = [ "sockets.target" ];
-        listenStreams = [ "0.0.0.0:6566" "[::]:6566" ];
-        socketConfig = {
-          # saned needs to distinguish between IPv4 and IPv6 to open matching data sockets.
-          BindIPv6Only = "ipv6-only";
-          Accept = true;
-          MaxConnections = 1;
+        systemd.sockets.saned = {
+          description = "saned incoming socket";
+          wantedBy = [ "sockets.target" ];
+          listenStreams = [ "0.0.0.0:6566" "[::]:6566" ];
+          socketConfig = {
+            # saned needs to distinguish between IPv4 and IPv6 to open matching data sockets.
+            BindIPv6Only = "ipv6-only";
+            Accept = true;
+            MaxConnections = 1;
+          };
         };
-      };
 
-      users.users."scanner" = {
-        uid = config.ids.uids.scanner;
-        group = "scanner";
-      };
-    })
+        users.users."scanner" = {
+          uid = config.ids.uids.scanner;
+          group = "scanner";
+        };
+      }
+    )
   ];
 
 }

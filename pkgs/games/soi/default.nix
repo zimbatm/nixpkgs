@@ -1,5 +1,13 @@
-{ stdenv, fetchurl, cmake
-, boost, eigen2, lua, luabind, libGLU_combined, SDL }:
+{ stdenv
+, fetchurl
+, cmake
+, boost
+, eigen2
+, lua
+, luabind
+, libGLU_combined
+, SDL
+}:
 
 stdenv.mkDerivation rec {
   name = "soi-${version}";

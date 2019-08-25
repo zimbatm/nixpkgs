@@ -1,4 +1,11 @@
-{ stdenv, fetchurl, buildPythonPackage, pkgconfig, pytest, fuse, attr, which
+{ stdenv
+, fetchurl
+, buildPythonPackage
+, pkgconfig
+, pytest
+, fuse
+, attr
+, which
 , contextlib2
 }:
 

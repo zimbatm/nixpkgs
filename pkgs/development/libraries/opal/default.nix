@@ -1,5 +1,19 @@
-{ stdenv, fetchurl, pkgconfig, ptlib, srtp, libtheora, speex, gnome3
-, ffmpeg, x264, cyrus_sasl, openldap, openssl, expat, unixODBC }:
+{ stdenv
+, fetchurl
+, pkgconfig
+, ptlib
+, srtp
+, libtheora
+, speex
+, gnome3
+, ffmpeg
+, x264
+, cyrus_sasl
+, openldap
+, openssl
+, expat
+, unixODBC
+}:
 
 stdenv.mkDerivation rec {
   pname = "opal";
@@ -11,8 +25,19 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ pkgconfig ];
-  buildInputs = [ ptlib srtp libtheora speex
-                  ffmpeg x264 cyrus_sasl openldap openssl expat unixODBC ];
+  buildInputs = [
+    ptlib
+    srtp
+    libtheora
+    speex
+    ffmpeg
+    x264
+    cyrus_sasl
+    openldap
+    openssl
+    expat
+    unixODBC
+  ];
   propagatedBuildInputs = [ speex ];
 
   configureFlags = [ "--enable-h323" ];
@@ -40,4 +65,3 @@ stdenv.mkDerivation rec {
     };
   };
 }
-

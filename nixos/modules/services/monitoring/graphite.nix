@@ -10,16 +10,16 @@ let
   staticDir = cfg.dataDir + "/static";
 
   graphiteLocalSettingsDir = pkgs.runCommand "graphite_local_settings" {
-      inherit graphiteLocalSettings;
-      preferLocalBuild = true; 
-    } ''
+    inherit graphiteLocalSettings;
+    preferLocalBuild = true;
+  } ''
     mkdir -p $out
     ln -s $graphiteLocalSettings $out/graphite_local_settings.py
   '';
 
   graphiteLocalSettings = pkgs.writeText "graphite_local_settings.py" (
-    "STATIC_ROOT = '${staticDir}'\n" +
-    optionalString (config.time.timeZone != null) "TIME_ZONE = '${config.time.timeZone}'\n"
+    "STATIC_ROOT = '${staticDir}'\n"
+    + optionalString (config.time.timeZone != null) "TIME_ZONE = '${config.time.timeZone}'\n"
     + cfg.web.extraConfig
   );
 
@@ -37,7 +37,9 @@ let
     SEYREN_URL = cfg.seyren.seyrenUrl;
     MONGO_URL = cfg.seyren.mongoUrl;
     GRAPHITE_URL = cfg.seyren.graphiteUrl;
-  } // cfg.seyren.extraConfig;
+  }
+  // cfg.seyren.extraConfig
+  ;
 
   pagerConfig = pkgs.writeText "alarms.yaml" cfg.pager.alerts;
 
@@ -64,15 +66,17 @@ let
       cenv = pkgs.python.buildEnv.override {
         extraLibs = [ pkgs.python27Packages.carbon ];
       };
-      cenvPack =  "${cenv}/${pkgs.python.sitePackages}";
-    # opt/graphite/lib contains twisted.plugins.carbon-cache
-    in "${cenvPack}/opt/graphite/lib:${cenvPack}";
+      cenvPack = "${cenv}/${pkgs.python.sitePackages}";
+      # opt/graphite/lib contains twisted.plugins.carbon-cache
+    in
+      "${cenvPack}/opt/graphite/lib:${cenvPack}";
     GRAPHITE_ROOT = dataDir;
     GRAPHITE_CONF_DIR = configDir;
     GRAPHITE_STORAGE_DIR = dataDir;
   };
 
-in {
+in
+{
 
   ###### interface
 
@@ -401,244 +405,281 @@ in {
   ###### implementation
 
   config = mkMerge [
-    (mkIf cfg.carbon.enableCache {
-      systemd.services.carbonCache = let name = "carbon-cache"; in {
-        description = "Graphite Data Storage Backend";
-        wantedBy = [ "multi-user.target" ];
-        after = [ "network.target" ];
-        environment = carbonEnv;
-        serviceConfig = {
-          RuntimeDirectory = name;
-          ExecStart = "${pkgs.pythonPackages.twisted}/bin/twistd ${carbonOpts name}";
-          User = "graphite";
-          Group = "graphite";
-          PermissionsStartOnly = true;
-          PIDFile="/run/${name}/${name}.pid";
-        };
-        preStart = ''
-          install -dm0700 -o graphite -g graphite ${cfg.dataDir}
-          install -dm0700 -o graphite -g graphite ${cfg.dataDir}/whisper
-        '';
-      };
-    })
+    (
+      mkIf cfg.carbon.enableCache {
+        systemd.services.carbonCache = let
+          name = "carbon-cache";
+        in
+          {
+            description = "Graphite Data Storage Backend";
+            wantedBy = [ "multi-user.target" ];
+            after = [ "network.target" ];
+            environment = carbonEnv;
+            serviceConfig = {
+              RuntimeDirectory = name;
+              ExecStart = "${pkgs.pythonPackages.twisted}/bin/twistd ${carbonOpts name}";
+              User = "graphite";
+              Group = "graphite";
+              PermissionsStartOnly = true;
+              PIDFile = "/run/${name}/${name}.pid";
+            };
+            preStart = ''
+              install -dm0700 -o graphite -g graphite ${cfg.dataDir}
+              install -dm0700 -o graphite -g graphite ${cfg.dataDir}/whisper
+            '';
+          };
+      }
+    )
 
-    (mkIf cfg.carbon.enableAggregator {
-      systemd.services.carbonAggregator = let name = "carbon-aggregator"; in {
-        enable = cfg.carbon.enableAggregator;
-        description = "Carbon Data Aggregator";
-        wantedBy = [ "multi-user.target" ];
-        after = [ "network.target" ];
-        environment = carbonEnv;
-        serviceConfig = {
-          RuntimeDirectory = name;
-          ExecStart = "${pkgs.pythonPackages.twisted}/bin/twistd ${carbonOpts name}";
-          User = "graphite";
-          Group = "graphite";
-          PIDFile="/run/${name}/${name}.pid";
-        };
-      };
-    })
+    (
+      mkIf cfg.carbon.enableAggregator {
+        systemd.services.carbonAggregator = let
+          name = "carbon-aggregator";
+        in
+          {
+            enable = cfg.carbon.enableAggregator;
+            description = "Carbon Data Aggregator";
+            wantedBy = [ "multi-user.target" ];
+            after = [ "network.target" ];
+            environment = carbonEnv;
+            serviceConfig = {
+              RuntimeDirectory = name;
+              ExecStart = "${pkgs.pythonPackages.twisted}/bin/twistd ${carbonOpts name}";
+              User = "graphite";
+              Group = "graphite";
+              PIDFile = "/run/${name}/${name}.pid";
+            };
+          };
+      }
+    )
 
-    (mkIf cfg.carbon.enableRelay {
-      systemd.services.carbonRelay = let name = "carbon-relay"; in {
-        description = "Carbon Data Relay";
-        wantedBy = [ "multi-user.target" ];
-        after = [ "network.target" ];
-        environment = carbonEnv;
-        serviceConfig = {
-          RuntimeDirectory = name;
-          ExecStart = "${pkgs.pythonPackages.twisted}/bin/twistd ${carbonOpts name}";
-          User = "graphite";
-          Group = "graphite";
-          PIDFile="/run/${name}/${name}.pid";
-        };
-      };
-    })
+    (
+      mkIf cfg.carbon.enableRelay {
+        systemd.services.carbonRelay = let
+          name = "carbon-relay";
+        in
+          {
+            description = "Carbon Data Relay";
+            wantedBy = [ "multi-user.target" ];
+            after = [ "network.target" ];
+            environment = carbonEnv;
+            serviceConfig = {
+              RuntimeDirectory = name;
+              ExecStart = "${pkgs.pythonPackages.twisted}/bin/twistd ${carbonOpts name}";
+              User = "graphite";
+              Group = "graphite";
+              PIDFile = "/run/${name}/${name}.pid";
+            };
+          };
+      }
+    )
 
-    (mkIf (cfg.carbon.enableCache || cfg.carbon.enableAggregator || cfg.carbon.enableRelay) {
-      environment.systemPackages = [
-        pkgs.pythonPackages.carbon
-      ];
-    })
+    (
+      mkIf (cfg.carbon.enableCache || cfg.carbon.enableAggregator || cfg.carbon.enableRelay) {
+        environment.systemPackages = [
+          pkgs.pythonPackages.carbon
+        ];
+      }
+    )
 
-    (mkIf cfg.web.enable (let
-      python27' = pkgs.python27.override {
-        packageOverrides = self: super: {
-          django = self.django_1_8;
-          django_tagging = self.django_tagging_0_4_3;
-        };
-      };
-      pythonPackages = python27'.pkgs;
-    in {
-      systemd.services.graphiteWeb = {
-        description = "Graphite Web Interface";
-        wantedBy = [ "multi-user.target" ];
-        after = [ "network.target" ];
-        path = [ pkgs.perl ];
-        environment = {
-          PYTHONPATH = let
-              penv = pkgs.python.buildEnv.override {
-                extraLibs = [
-                  pythonPackages.graphite-web
-                  pythonPackages.pysqlite
-                ];
+    (
+      mkIf cfg.web.enable (
+        let
+          python27' = pkgs.python27.override {
+            packageOverrides = self: super: {
+              django = self.django_1_8;
+              django_tagging = self.django_tagging_0_4_3;
+            };
+          };
+          pythonPackages = python27'.pkgs;
+        in
+          {
+            systemd.services.graphiteWeb = {
+              description = "Graphite Web Interface";
+              wantedBy = [ "multi-user.target" ];
+              after = [ "network.target" ];
+              path = [ pkgs.perl ];
+              environment = {
+                PYTHONPATH = let
+                  penv = pkgs.python.buildEnv.override {
+                    extraLibs = [
+                      pythonPackages.graphite-web
+                      pythonPackages.pysqlite
+                    ];
+                  };
+                  penvPack = "${penv}/${pkgs.python.sitePackages}";
+                in
+                  concatStringsSep ":" [
+                    "${graphiteLocalSettingsDir}"
+                    "${penvPack}/opt/graphite/webapp"
+                    "${penvPack}"
+                    # explicitly adding pycairo in path because it cannot be imported via buildEnv
+                    "${pkgs.pythonPackages.pycairo}/${pkgs.python.sitePackages}"
+                  ];
+                DJANGO_SETTINGS_MODULE = "graphite.settings";
+                GRAPHITE_CONF_DIR = configDir;
+                GRAPHITE_STORAGE_DIR = dataDir;
+                LD_LIBRARY_PATH = "${pkgs.cairo.out}/lib";
               };
-              penvPack = "${penv}/${pkgs.python.sitePackages}";
-            in concatStringsSep ":" [
-                 "${graphiteLocalSettingsDir}"
-                 "${penvPack}/opt/graphite/webapp"
-                 "${penvPack}"
-                 # explicitly adding pycairo in path because it cannot be imported via buildEnv
-                 "${pkgs.pythonPackages.pycairo}/${pkgs.python.sitePackages}"
-               ];
-          DJANGO_SETTINGS_MODULE = "graphite.settings";
-          GRAPHITE_CONF_DIR = configDir;
-          GRAPHITE_STORAGE_DIR = dataDir;
-          LD_LIBRARY_PATH = "${pkgs.cairo.out}/lib";
-        };
-        serviceConfig = {
-          ExecStart = ''
-            ${pkgs.python27Packages.waitress-django}/bin/waitress-serve-django \
-              --host=${cfg.web.listenAddress} --port=${toString cfg.web.port}
-          '';
-          User = "graphite";
-          Group = "graphite";
-          PermissionsStartOnly = true;
-        };
-        preStart = ''
-          if ! test -e ${dataDir}/db-created; then
-            mkdir -p ${dataDir}/{whisper/,log/webapp/}
-            chmod 0700 ${dataDir}/{whisper/,log/webapp/}
+              serviceConfig = {
+                ExecStart = ''
+                  ${pkgs.python27Packages.waitress-django}/bin/waitress-serve-django \
+                    --host=${cfg.web.listenAddress} --port=${toString cfg.web.port}
+                '';
+                User = "graphite";
+                Group = "graphite";
+                PermissionsStartOnly = true;
+              };
+              preStart = ''
+                if ! test -e ${dataDir}/db-created; then
+                  mkdir -p ${dataDir}/{whisper/,log/webapp/}
+                  chmod 0700 ${dataDir}/{whisper/,log/webapp/}
 
-            ${pkgs.pythonPackages.django_1_8}/bin/django-admin.py migrate --noinput
+                  ${pkgs.pythonPackages.django_1_8}/bin/django-admin.py migrate --noinput
 
-            chown -R graphite:graphite ${dataDir}
+                  chown -R graphite:graphite ${dataDir}
 
-            touch ${dataDir}/db-created
-          fi
+                  touch ${dataDir}/db-created
+                fi
 
-          # Only collect static files when graphite_web changes.
-          if ! [ "${dataDir}/current_graphite_web" -ef "${pythonPackages.graphite-web}" ]; then
-            mkdir -p ${staticDir}
-            ${pkgs.pythonPackages.django_1_8}/bin/django-admin.py collectstatic  --noinput --clear
-            chown -R graphite:graphite ${staticDir}
-            ln -sfT "${pythonPackages.graphite-web}" "${dataDir}/current_graphite_web"
-          fi
-        '';
-      };
+                # Only collect static files when graphite_web changes.
+                if ! [ "${dataDir}/current_graphite_web" -ef "${pythonPackages.graphite-web}" ]; then
+                  mkdir -p ${staticDir}
+                  ${pkgs.pythonPackages.django_1_8}/bin/django-admin.py collectstatic  --noinput --clear
+                  chown -R graphite:graphite ${staticDir}
+                  ln -sfT "${pythonPackages.graphite-web}" "${dataDir}/current_graphite_web"
+                fi
+              '';
+            };
 
-      environment.systemPackages = [ pythonPackages.graphite-web ];
-    }))
+            environment.systemPackages = [ pythonPackages.graphite-web ];
+          }
+      )
+    )
 
-    (mkIf cfg.api.enable {
-      systemd.services.graphiteApi = {
-        description = "Graphite Api Interface";
-        wantedBy = [ "multi-user.target" ];
-        after = [ "network.target" ];
-        environment = {
-          PYTHONPATH = let
+    (
+      mkIf cfg.api.enable {
+        systemd.services.graphiteApi = {
+          description = "Graphite Api Interface";
+          wantedBy = [ "multi-user.target" ];
+          after = [ "network.target" ];
+          environment = {
+            PYTHONPATH = let
               aenv = pkgs.python.buildEnv.override {
                 extraLibs = [ cfg.api.package pkgs.cairo pkgs.pythonPackages.cffi ] ++ cfg.api.finders;
               };
-            in "${aenv}/${pkgs.python.sitePackages}";
-          GRAPHITE_API_CONFIG = graphiteApiConfig;
-          LD_LIBRARY_PATH = "${pkgs.cairo.out}/lib";
-        };
-        serviceConfig = {
-          ExecStart = ''
-            ${pkgs.python27Packages.waitress}/bin/waitress-serve \
-            --host=${cfg.api.listenAddress} --port=${toString cfg.api.port} \
-            graphite_api.app:app
+            in
+              "${aenv}/${pkgs.python.sitePackages}";
+            GRAPHITE_API_CONFIG = graphiteApiConfig;
+            LD_LIBRARY_PATH = "${pkgs.cairo.out}/lib";
+          };
+          serviceConfig = {
+            ExecStart = ''
+              ${pkgs.python27Packages.waitress}/bin/waitress-serve \
+              --host=${cfg.api.listenAddress} --port=${toString cfg.api.port} \
+              graphite_api.app:app
+            '';
+            User = "graphite";
+            Group = "graphite";
+            PermissionsStartOnly = true;
+          };
+          preStart = ''
+            if ! test -e ${dataDir}/db-created; then
+              mkdir -p ${dataDir}/cache/
+              chmod 0700 ${dataDir}/cache/
+
+              chown graphite:graphite ${cfg.dataDir}
+              chown -R graphite:graphite ${cfg.dataDir}/cache
+
+              touch ${dataDir}/db-created
+            fi
           '';
-          User = "graphite";
-          Group = "graphite";
-          PermissionsStartOnly = true;
         };
-        preStart = ''
-          if ! test -e ${dataDir}/db-created; then
-            mkdir -p ${dataDir}/cache/
-            chmod 0700 ${dataDir}/cache/
+      }
+    )
 
-            chown graphite:graphite ${cfg.dataDir}
-            chown -R graphite:graphite ${cfg.dataDir}/cache
-
-            touch ${dataDir}/db-created
-          fi
-        '';
-      };
-    })
-
-    (mkIf cfg.seyren.enable {
-      systemd.services.seyren = {
-        description = "Graphite Alerting Dashboard";
-        wantedBy = [ "multi-user.target" ];
-        after = [ "network.target" "mongodb.service" ];
-        environment = seyrenConfig;
-        serviceConfig = {
-          ExecStart = "${pkgs.seyren}/bin/seyren -httpPort ${toString cfg.seyren.port}";
-          WorkingDirectory = dataDir;
-          User = "graphite";
-          Group = "graphite";
-        };
-        preStart = ''
-          if ! test -e ${dataDir}/db-created; then
-            mkdir -p ${dataDir}
-            chown graphite:graphite ${dataDir}
-          fi
-        '';
-      };
-
-      services.mongodb.enable = mkDefault true;
-    })
-
-    (mkIf cfg.pager.enable {
-      systemd.services.graphitePager = {
-        description = "Graphite Pager Alerting Daemon";
-        wantedBy = [ "multi-user.target" ];
-        after = [ "network.target" "redis.service" ];
-        environment = {
-          REDIS_URL = cfg.pager.redisUrl;
-          GRAPHITE_URL = cfg.pager.graphiteUrl;
-        };
-        serviceConfig = {
-          ExecStart = "${pkgs.pythonPackages.graphitepager}/bin/graphite-pager --config ${pagerConfig}";
-          User = "graphite";
-          Group = "graphite";
-        };
-      };
-
-      services.redis.enable = mkDefault true;
-
-      environment.systemPackages = [ pkgs.pythonPackages.graphitepager ];
-    })
-
-    (mkIf cfg.beacon.enable {
-      systemd.services.graphite-beacon = {
-        description = "Grpahite Beacon Alerting Daemon";
-        wantedBy = [ "multi-user.target" ];
-        serviceConfig = {
-          ExecStart = ''
-            ${pkgs.pythonPackages.graphite_beacon}/bin/graphite-beacon \
-              --config=${pkgs.writeText "graphite-beacon.json" (builtins.toJSON cfg.beacon.config)}
+    (
+      mkIf cfg.seyren.enable {
+        systemd.services.seyren = {
+          description = "Graphite Alerting Dashboard";
+          wantedBy = [ "multi-user.target" ];
+          after = [ "network.target" "mongodb.service" ];
+          environment = seyrenConfig;
+          serviceConfig = {
+            ExecStart = "${pkgs.seyren}/bin/seyren -httpPort ${toString cfg.seyren.port}";
+            WorkingDirectory = dataDir;
+            User = "graphite";
+            Group = "graphite";
+          };
+          preStart = ''
+            if ! test -e ${dataDir}/db-created; then
+              mkdir -p ${dataDir}
+              chown graphite:graphite ${dataDir}
+            fi
           '';
-          User = "graphite";
-          Group = "graphite";
         };
-      };
-    })
 
-    (mkIf (
-      cfg.carbon.enableCache || cfg.carbon.enableAggregator || cfg.carbon.enableRelay ||
-      cfg.web.enable || cfg.api.enable ||
-      cfg.seyren.enable || cfg.pager.enable || cfg.beacon.enable
-     ) {
-      users.users = singleton {
-        name = "graphite";
-        uid = config.ids.uids.graphite;
-        description = "Graphite daemon user";
-        home = dataDir;
-      };
-      users.groups.graphite.gid = config.ids.gids.graphite;
-    })
+        services.mongodb.enable = mkDefault true;
+      }
+    )
+
+    (
+      mkIf cfg.pager.enable {
+        systemd.services.graphitePager = {
+          description = "Graphite Pager Alerting Daemon";
+          wantedBy = [ "multi-user.target" ];
+          after = [ "network.target" "redis.service" ];
+          environment = {
+            REDIS_URL = cfg.pager.redisUrl;
+            GRAPHITE_URL = cfg.pager.graphiteUrl;
+          };
+          serviceConfig = {
+            ExecStart = "${pkgs.pythonPackages.graphitepager}/bin/graphite-pager --config ${pagerConfig}";
+            User = "graphite";
+            Group = "graphite";
+          };
+        };
+
+        services.redis.enable = mkDefault true;
+
+        environment.systemPackages = [ pkgs.pythonPackages.graphitepager ];
+      }
+    )
+
+    (
+      mkIf cfg.beacon.enable {
+        systemd.services.graphite-beacon = {
+          description = "Grpahite Beacon Alerting Daemon";
+          wantedBy = [ "multi-user.target" ];
+          serviceConfig = {
+            ExecStart = ''
+              ${pkgs.pythonPackages.graphite_beacon}/bin/graphite-beacon \
+                --config=${pkgs.writeText "graphite-beacon.json" (builtins.toJSON cfg.beacon.config)}
+            '';
+            User = "graphite";
+            Group = "graphite";
+          };
+        };
+      }
+    )
+
+    (
+      mkIf (
+        cfg.carbon.enableCache || cfg.carbon.enableAggregator || cfg.carbon.enableRelay
+        || cfg.web.enable
+        || cfg.api.enable
+        || cfg.seyren.enable
+        || cfg.pager.enable
+        || cfg.beacon.enable
+      ) {
+        users.users = singleton {
+          name = "graphite";
+          uid = config.ids.uids.graphite;
+          description = "Graphite daemon user";
+          home = dataDir;
+        };
+        users.groups.graphite.gid = config.ids.gids.graphite;
+      }
+    )
   ];
 }

@@ -1,17 +1,37 @@
-{ stdenv, fetchurl, fetchpatch, lib
-, pkgconfig, meson, ninja, gettext, gobject-introspection
-, python3, gstreamer, orc, pango, libtheora
-, libintl, libopus
+{ stdenv
+, fetchurl
+, fetchpatch
+, lib
+, pkgconfig
+, meson
+, ninja
+, gettext
+, gobject-introspection
+, python3
+, gstreamer
+, orc
+, pango
+, libtheora
+, libintl
+, libopus
 , isocodes
 , libjpeg
 , libvisual
 , tremor # provides 'virbisidec'
-, gtk-doc, docbook_xsl, docbook_xml_dtd_412
-, enableX11 ? stdenv.isLinux, libXv
-, enableWayland ? stdenv.isLinux, wayland
-, enableAlsa ? stdenv.isLinux, alsaLib
-, enableCocoa ? false, darwin
-, enableCdparanoia ? (!stdenv.isDarwin), cdparanoia }:
+, gtk-doc
+, docbook_xsl
+, docbook_xml_dtd_412
+, enableX11 ? stdenv.isLinux
+, libXv
+, enableWayland ? stdenv.isLinux
+, wayland
+, enableAlsa ? stdenv.isLinux
+, alsaLib
+, enableCocoa ? false
+, darwin
+, enableCdparanoia ? (!stdenv.isDarwin)
+, cdparanoia
+}:
 
 stdenv.mkDerivation rec {
   name = "gst-plugins-base-${version}";
@@ -33,14 +53,19 @@ stdenv.mkDerivation rec {
   outputs = [ "out" "dev" ];
 
   nativeBuildInputs = [
-    pkgconfig python3 gettext gobject-introspection
+    pkgconfig
+    python3
+    gettext
+    gobject-introspection
     gtk-doc
     # Without these, enabling the 'gtk_doc' gives us `FAILED: meson-install`
-    docbook_xsl docbook_xml_dtd_412
+    docbook_xsl
+    docbook_xml_dtd_412
   ]
   # Broken meson with Darwin. Should hopefully be fixed soon. Tracking
   # in https://bugzilla.gnome.org/show_bug.cgi?id=781148.
-  ++ lib.optionals (!stdenv.isDarwin) [ meson ninja ];
+  ++ lib.optionals (!stdenv.isDarwin) [ meson ninja ]
+  ;
 
   # On Darwin, we currently use autoconf, on all other systems Meson
   # TODO Switch to Meson on Darwin as well
@@ -52,7 +77,8 @@ stdenv.mkDerivation rec {
     "--enable-cocoa=${if enableCocoa then "yes" else "no"}"
   ]
   # Introspection fails on my MacBook currently
-  ++ lib.optional stdenv.isDarwin "--disable-introspection";
+  ++ lib.optional stdenv.isDarwin "--disable-introspection"
+  ;
 
   mesonFlags = lib.optionals (!stdenv.isDarwin) [
     # Enables all features, so that we know when new dependencies are necessary.
@@ -81,7 +107,8 @@ stdenv.mkDerivation rec {
     ++ lib.optionals enableX11 [ libXv pango ]
     ++ lib.optional enableWayland wayland
     ++ lib.optional enableCocoa darwin.apple_sdk.frameworks.Cocoa
-    ++ lib.optional enableCdparanoia cdparanoia;
+    ++ lib.optional enableCdparanoia cdparanoia
+    ;
 
   propagatedBuildInputs = [ gstreamer ];
 

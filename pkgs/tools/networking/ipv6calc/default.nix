@@ -1,5 +1,12 @@
-{ stdenv, fetchurl, getopt, ip2location-c, openssl, perl
-, geoip ? null, geolite-legacy ? null }:
+{ stdenv
+, fetchurl
+, getopt
+, ip2location-c
+, openssl
+, perl
+, geoip ? null
+, geolite-legacy ? null
+}:
 
 stdenv.mkDerivation rec {
   name = "ipv6calc-${version}";
@@ -27,13 +34,17 @@ stdenv.mkDerivation rec {
     "--disable-bundled-md5"
     "--disable-dynamic-load"
     "--enable-shared"
-  ] ++ stdenv.lib.optional (geoip != null ) [
-    "--enable-geoip"
-  ] ++ stdenv.lib.optional (geolite-legacy != null) [
-    "--with-geoip-db=${geolite-legacy}/share/GeoIP"
-  ] ++ stdenv.lib.optional (ip2location-c != null ) [
-    "--enable-ip2location"
-  ];
+  ]
+  ++ stdenv.lib.optional (geoip != null) [
+       "--enable-geoip"
+     ]
+  ++ stdenv.lib.optional (geolite-legacy != null) [
+       "--with-geoip-db=${geolite-legacy}/share/GeoIP"
+     ]
+  ++ stdenv.lib.optional (ip2location-c != null) [
+       "--enable-ip2location"
+     ]
+  ;
 
   enableParallelBuilding = true;
 

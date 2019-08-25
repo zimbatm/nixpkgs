@@ -1,13 +1,41 @@
-{ stdenv, fetchurl, pkgconfig, perlPackages, libXft
-, libpng, zlib, popt, boehmgc, libxml2, libxslt, glib, gtkmm2
-, glibmm, libsigcxx, lcms, boost, gettext, makeWrapper
-, gsl, python2, poppler, imagemagick, libwpg, librevenge
-, libvisio, libcdr, libexif, potrace, cmake, hicolor-icon-theme
+{ stdenv
+, fetchurl
+, pkgconfig
+, perlPackages
+, libXft
+, libpng
+, zlib
+, popt
+, boehmgc
+, libxml2
+, libxslt
+, glib
+, gtkmm2
+, glibmm
+, libsigcxx
+, lcms
+, boost
+, gettext
+, makeWrapper
+, gsl
+, python2
+, poppler
+, imagemagick
+, libwpg
+, librevenge
+, libvisio
+, libcdr
+, libexif
+, potrace
+, cmake
+, hicolor-icon-theme
 }:
 
 let
-  python2Env = python2.withPackages(ps: with ps;
-    [ numpy lxml scour ]);
+  python2Env = python2.withPackages (
+    ps: with ps;
+    [ numpy lxml scour ]
+  );
 in
 
 stdenv.mkDerivation rec {
@@ -41,14 +69,36 @@ stdenv.mkDerivation rec {
   '';
 
   nativeBuildInputs = [ pkgconfig cmake makeWrapper python2Env ]
-    ++ (with perlPackages; [ perl XMLParser ]);
+    ++ (with perlPackages; [ perl XMLParser ])
+    ;
   buildInputs = [
-    libXft libpng zlib popt boehmgc
-    libxml2 libxslt glib gtkmm2 glibmm libsigcxx lcms boost gettext
-    gsl poppler imagemagick libwpg librevenge
-    libvisio libcdr libexif potrace hicolor-icon-theme
+    libXft
+    libpng
+    zlib
+    popt
+    boehmgc
+    libxml2
+    libxslt
+    glib
+    gtkmm2
+    glibmm
+    libsigcxx
+    lcms
+    boost
+    gettext
+    gsl
+    poppler
+    imagemagick
+    libwpg
+    librevenge
+    libvisio
+    libcdr
+    libexif
+    potrace
+    hicolor-icon-theme
 
-    python2Env perlPackages.perl
+    python2Env
+    perlPackages.perl
   ];
 
   enableParallelBuilding = true;

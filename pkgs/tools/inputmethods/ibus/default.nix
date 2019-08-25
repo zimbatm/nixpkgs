@@ -1,8 +1,33 @@
-{ stdenv, substituteAll, fetchurl, fetchFromGitHub, autoreconfHook, gettext, makeWrapper, pkgconfig
-, vala, wrapGAppsHook, dbus, dconf ? null, glib, gdk-pixbuf, gobject-introspection, gtk2
-, gtk3, gtk-doc, isocodes, python3, json-glib, libnotify ? null, enablePython2Library ? false
-, enableUI ? true, withWayland ? false, libxkbcommon ? null, wayland ? null
-, buildPackages, runtimeShell }:
+{ stdenv
+, substituteAll
+, fetchurl
+, fetchFromGitHub
+, autoreconfHook
+, gettext
+, makeWrapper
+, pkgconfig
+, vala
+, wrapGAppsHook
+, dbus
+, dconf ? null
+, glib
+, gdk-pixbuf
+, gobject-introspection
+, gtk2
+, gtk3
+, gtk-doc
+, isocodes
+, python3
+, json-glib
+, libnotify ? null
+, enablePython2Library ? false
+, enableUI ? true
+, withWayland ? false
+, libxkbcommon ? null
+, wayland ? null
+, buildPackages
+, runtimeShell
+}:
 
 assert withWayland -> wayland != null && libxkbcommon != null;
 
@@ -91,11 +116,13 @@ stdenv.mkDerivation rec {
   };
 
   patches = [
-    (substituteAll {
-      src = ./fix-paths.patch;
-      pythonInterpreter = python3Runtime.interpreter;
-      pythonSitePackages = python3.sitePackages;
-    })
+    (
+      substituteAll {
+        src = ./fix-paths.patch;
+        pythonInterpreter = python3Runtime.interpreter;
+        pythonSitePackages = python3.sitePackages;
+      }
+    )
   ];
 
   postPatch = ''
@@ -142,10 +169,12 @@ stdenv.mkDerivation rec {
     isocodes
     json-glib
     libnotify
-  ] ++ optionals withWayland [
-    libxkbcommon
-    wayland
-  ];
+  ]
+  ++ optionals withWayland [
+       libxkbcommon
+       wayland
+     ]
+  ;
 
   enableParallelBuilding = true;
 

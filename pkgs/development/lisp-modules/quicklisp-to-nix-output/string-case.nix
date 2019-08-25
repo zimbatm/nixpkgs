@@ -5,7 +5,7 @@ rec {
 
   description = ''string-case is a macro that generates specialised decision trees to dispatch on string equality'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/string-case/2018-07-11/string-case-20180711-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "string-case";
 
-  asdFilesToKeep = ["string-case.asd"];
+  asdFilesToKeep = [ "string-case.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM string-case DESCRIPTION

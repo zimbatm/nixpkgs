@@ -1,5 +1,14 @@
-{ lib, fetchurl, buildPythonPackage, python, pkgconfig, dbus, dbus-glib, isPyPy
-, ncurses, pygobject3 }:
+{ lib
+, fetchurl
+, buildPythonPackage
+, python
+, pkgconfig
+, dbus
+, dbus-glib
+, isPyPy
+, ncurses
+, pygobject3
+}:
 
 if isPyPy then throw "dbus-python not supported for interpreter ${python.executable}" else buildPythonPackage rec {
   pname = "dbus-python";
@@ -19,9 +28,10 @@ if isPyPy then throw "dbus-python not supported for interpreter ${python.executa
 
   nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ dbus dbus-glib ]
-    # My guess why it's sometimes trying to -lncurses.
-    # It seems not to retain the dependency anyway.
-    ++ lib.optional (! python ? modules) ncurses;
+  # My guess why it's sometimes trying to -lncurses.
+  # It seems not to retain the dependency anyway.
+    ++ lib.optional (! python ? modules) ncurses
+    ;
 
   doCheck = true;
   checkInputs = [ dbus.out pygobject3 ];

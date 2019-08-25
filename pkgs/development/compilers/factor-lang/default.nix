@@ -1,7 +1,24 @@
-{ stdenv, fetchurl, glib, git,
-  rlwrap, curl, pkgconfig, perl, makeWrapper, tzdata, ncurses,
-  pango, cairo, gtk2, gdk-pixbuf, gtkglext,
-  mesa, xorg, openssl, unzip }:
+{ stdenv
+, fetchurl
+, glib
+, git
+, rlwrap
+, curl
+, pkgconfig
+, perl
+, makeWrapper
+, tzdata
+, ncurses
+, pango
+, cairo
+, gtk2
+, gdk-pixbuf
+, gtkglext
+, mesa
+, xorg
+, openssl
+, unzip
+}:
 
 stdenv.mkDerivation rec {
   name = "factor-lang-${version}";
@@ -19,9 +36,27 @@ stdenv.mkDerivation rec {
     ./fuel-dir.patch
   ];
 
-  buildInputs = with xorg; [ git rlwrap curl pkgconfig perl makeWrapper
-    libX11 pango cairo gtk2 gdk-pixbuf gtkglext
-    mesa libXmu libXt libICE libSM openssl unzip ];
+  buildInputs = with xorg; [
+    git
+    rlwrap
+    curl
+    pkgconfig
+    perl
+    makeWrapper
+    libX11
+    pango
+    cairo
+    gtk2
+    gdk-pixbuf
+    gtkglext
+    mesa
+    libXmu
+    libXt
+    libICE
+    libSM
+    openssl
+    unzip
+  ];
 
   buildPhase = ''
     sed -ie '4i GIT_LABEL = heads/master-${rev}' GNUmakefile
@@ -47,9 +82,22 @@ stdenv.mkDerivation rec {
     # out of known libraries. The side effect is that find-lib
     # will work only on the known libraries. There does not seem
     # to be a generic solution here.
-    find $(echo ${stdenv.lib.makeLibraryPath (with xorg; [
-        glib libX11 pango cairo gtk2 gdk-pixbuf gtkglext
-        mesa libXmu libXt libICE libSM ])} | sed -e 's#:# #g') -name \*.so.\* > $TMPDIR/so.lst
+    find $(echo ${stdenv.lib.makeLibraryPath (
+    with xorg; [
+      glib
+      libX11
+      pango
+      cairo
+      gtk2
+      gdk-pixbuf
+      gtkglext
+      mesa
+      libXmu
+      libXt
+      libICE
+      libSM
+    ]
+  )} | sed -e 's#:# #g') -name \*.so.\* > $TMPDIR/so.lst
 
     (echo $(cat $TMPDIR/so.lst | wc -l) "libs found in cache \`/etc/ld.so.cache'";
     for l in $(<$TMPDIR/so.lst);
@@ -68,9 +116,23 @@ stdenv.mkDerivation rec {
 
     cp ./factor $out/bin
     wrapProgram $out/bin/factor --prefix LD_LIBRARY_PATH : \
-      "${stdenv.lib.makeLibraryPath (with xorg; [ glib
-        libX11 pango cairo gtk2 gdk-pixbuf gtkglext
-        mesa libXmu libXt libICE libSM openssl])}"
+      "${stdenv.lib.makeLibraryPath (
+    with xorg; [
+      glib
+      libX11
+      pango
+      cairo
+      gtk2
+      gdk-pixbuf
+      gtkglext
+      mesa
+      libXmu
+      libXt
+      libICE
+      libSM
+      openssl
+    ]
+  )}"
 
     sed -ie 's#/bin/.factor-wrapped#/lib/factor/factor#g' $out/bin/factor
     mv $out/bin/.factor-wrapped $out/lib/factor/factor

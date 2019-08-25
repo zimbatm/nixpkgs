@@ -1,5 +1,16 @@
-{ stdenv, fetchFromGitHub, cmake, pkgconfig, qtbase, qtmultimedia
-, glew, libzip, snappy, zlib, withGamepads ? true, SDL2 }:
+{ stdenv
+, fetchFromGitHub
+, cmake
+, pkgconfig
+, qtbase
+, qtmultimedia
+, glew
+, libzip
+, snappy
+, zlib
+, withGamepads ? true
+, SDL2
+}:
 
 assert withGamepads -> (SDL2 != null);
 with stdenv.lib;
@@ -23,7 +34,8 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ cmake pkgconfig ];
   buildInputs = [ qtbase qtmultimedia glew libzip snappy zlib ]
-    ++ optionals withGamepads [ SDL2 SDL2.dev ];
+    ++ optionals withGamepads [ SDL2 SDL2.dev ]
+    ;
 
   cmakeFlags = [ "-DCMAKE_BUILD_TYPE=Release" "-DUSING_QT_UI=ON" ];
 

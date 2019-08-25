@@ -34,7 +34,7 @@ let
     RebootCommand=${pkgs.systemd}/bin/systemctl reboot
     ${optionalString cfg.autoNumlock ''
     Numlock=on
-    ''}
+  ''}
 
     [Theme]
     Current=${cfg.theme}
@@ -66,7 +66,7 @@ let
     User=${cfg.autoLogin.user}
     Session=${defaultSessionName}.desktop
     Relogin=${boolToString cfg.autoLogin.relogin}
-    ''}
+  ''}
 
     ${cfg.extraConfig}
   '';
@@ -75,7 +75,8 @@ let
     let
       dm = xcfg.desktopManager.default;
       wm = xcfg.windowManager.default;
-    in dm + optionalString (wm != "none") ("+" + wm);
+    in
+      dm + optionalString (wm != "none") ("+" + wm);
 
 in
 {
@@ -195,17 +196,20 @@ in
   config = mkIf cfg.enable {
 
     assertions = [
-      { assertion = xcfg.enable;
+      {
+        assertion = xcfg.enable;
         message = ''
           SDDM requires services.xserver.enable to be true
         '';
       }
-      { assertion = cfg.autoLogin.enable -> cfg.autoLogin.user != null;
+      {
+        assertion = cfg.autoLogin.enable -> cfg.autoLogin.user != null;
         message = ''
           SDDM auto-login requires services.xserver.displayManager.sddm.autoLogin.user to be set
         '';
       }
-      { assertion = cfg.autoLogin.enable -> elem defaultSessionName dmcfg.session.names;
+      {
+        assertion = cfg.autoLogin.enable -> elem defaultSessionName dmcfg.session.names;
         message = ''
           SDDM auto-login requires that services.xserver.desktopManager.default and
           services.xserver.windowManager.default are set to valid values. The current

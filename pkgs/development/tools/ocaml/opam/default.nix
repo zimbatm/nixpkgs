@@ -1,5 +1,14 @@
-{ stdenv, lib, fetchurl, makeWrapper, getconf,
-  ocaml, unzip, ncurses, curl, aspcud, bubblewrap
+{ stdenv
+, lib
+, fetchurl
+, makeWrapper
+, getconf
+, ocaml
+, unzip
+, ncurses
+, curl
+, aspcud
+, bubblewrap
 }:
 
 assert lib.versionAtLeast ocaml.version "4.02.3";
@@ -59,7 +68,8 @@ let
       sha256 = "0arv5zaikvcqbicdk47jpfgvjrqhqm71yq2zmj7pp6zf7bm0js6s";
     };
   };
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "opam-${version}";
   version = "2.0.5";
 
@@ -92,7 +102,7 @@ in stdenv.mkDerivation rec {
   postConfigure = "make lib-ext";
 
   # Dirty, but apparently ocp-build requires a TERM
-  makeFlags = ["TERM=screen"];
+  makeFlags = [ "TERM=screen" ];
 
   outputs = [ "out" "installer" ];
   setOutputFlags = false;

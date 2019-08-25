@@ -1,4 +1,4 @@
-{stdenv, fetchFromGitHub, cups}:
+{ stdenv, fetchFromGitHub, cups }:
 
 stdenv.mkDerivation rec {
   pname = "cups-zj-58";

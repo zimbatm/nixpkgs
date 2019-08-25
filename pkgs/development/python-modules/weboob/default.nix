@@ -1,8 +1,27 @@
-{ buildPythonPackage, fetchurl, stdenv, isPy27
-, nose, pillow, prettytable, pyyaml, dateutil, gdata
-, requests, mechanize, feedparser, lxml, gnupg, pyqt5
-, libyaml, simplejson, cssselect, futures, pdfminer
-, termcolor, google_api_python_client, html2text
+{ buildPythonPackage
+, fetchurl
+, stdenv
+, isPy27
+, nose
+, pillow
+, prettytable
+, pyyaml
+, dateutil
+, gdata
+, requests
+, mechanize
+, feedparser
+, lxml
+, gnupg
+, pyqt5
+, libyaml
+, simplejson
+, cssselect
+, futures
+, pdfminer
+, termcolor
+, google_api_python_client
+, html2text
 , unidecode
 }:
 
@@ -29,16 +48,34 @@ buildPythonPackage rec {
     }; p' weboob/browser/browsers.py weboob/browser/pages.py
   '';
 
-  setupPyBuildFlags = ["--qt" "--xdg"];
+  setupPyBuildFlags = [ "--qt" "--xdg" ];
 
   checkInputs = [ nose ];
 
   nativeBuildInputs = [ pyqt5 ];
 
-  propagatedBuildInputs = [ pillow prettytable pyyaml dateutil
-    gdata requests mechanize feedparser lxml gnupg pyqt5 libyaml
-    simplejson cssselect futures pdfminer termcolor
-    google_api_python_client html2text unidecode ];
+  propagatedBuildInputs = [
+    pillow
+    prettytable
+    pyyaml
+    dateutil
+    gdata
+    requests
+    mechanize
+    feedparser
+    lxml
+    gnupg
+    pyqt5
+    libyaml
+    simplejson
+    cssselect
+    futures
+    pdfminer
+    termcolor
+    google_api_python_client
+    html2text
+    unidecode
+  ];
 
   checkPhase = ''
     nosetests
@@ -50,4 +87,3 @@ buildPythonPackage rec {
     license = stdenv.lib.licenses.agpl3;
   };
 }
-

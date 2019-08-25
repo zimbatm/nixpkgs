@@ -2,7 +2,8 @@
 
 let
   version = "2.0.0";
-in fetchzip {
+in
+fetchzip {
   name = "stix-two-${version}";
 
   url = "https://github.com/stipub/stixfonts/archive/${version}.zip";

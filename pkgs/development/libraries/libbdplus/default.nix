@@ -9,7 +9,7 @@
 
 stdenv.mkDerivation rec {
   name = "libbdplus-${version}";
-  version  = "0.1.2";
+  version = "0.1.2";
 
   src = fetchurl {
     url = "http://get.videolan.org/libbdplus/${version}/${name}.tar.bz2";
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ libgcrypt libgpgerror gettext ];
 
-  nativeBuildInputs = [ ];
+  nativeBuildInputs = [];
 
   meta = with stdenv.lib; {
     homepage = http://www.videolan.org/developers/libbdplus.html;

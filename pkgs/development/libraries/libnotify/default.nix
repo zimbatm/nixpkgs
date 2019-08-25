@@ -1,5 +1,14 @@
-{ stdenv, fetchurl, meson, ninja, pkgconfig, fetchpatch
-, glib, gdk-pixbuf, gobject-introspection, gnome3 }:
+{ stdenv
+, fetchurl
+, meson
+, ninja
+, pkgconfig
+, fetchpatch
+, glib
+, gdk-pixbuf
+, gobject-introspection
+, gnome3
+}:
 
 stdenv.mkDerivation rec {
   pname = "libnotify";
@@ -13,10 +22,12 @@ stdenv.mkDerivation rec {
   patches = [
     # Fix darwin build
     # https://gitlab.gnome.org/GNOME/libnotify/merge_requests/9
-    (fetchpatch {
-      url = "https://gitlab.gnome.org/GNOME/libnotify/commit/55eb69247fe2b479ea43311503042fc03bf4e67d.patch";
-      sha256 = "1hlb5b7c5axiyir1i5j2pi94bm2gyr1ybkp6yaqy7yk6iiqlvv50";
-    })
+    (
+      fetchpatch {
+        url = "https://gitlab.gnome.org/GNOME/libnotify/commit/55eb69247fe2b479ea43311503042fc03bf4e67d.patch";
+        sha256 = "1hlb5b7c5axiyir1i5j2pi94bm2gyr1ybkp6yaqy7yk6iiqlvv50";
+      }
+    )
   ];
 
   mesonFlags = [

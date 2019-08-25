@@ -17,7 +17,7 @@ in
     };
 
     extraOptions = mkOption {
-      default = [ ];
+      default = [];
       example = [ "--ignore-sleep" ];
       type = types.listOf types.str;
       description = ''
@@ -33,12 +33,16 @@ in
       wantedBy = [ "graphical-session.target" ];
       partOf = [ "graphical-session.target" ];
       serviceConfig.ExecStart = with lib;
-        strings.concatStringsSep " " ([
+        strings.concatStringsSep " " (
+          [
             "${pkgs.xss-lock}/bin/xss-lock"
-          ] ++ (map escapeShellArg cfg.extraOptions) ++ [
-            "--"
-            cfg.lockerCommand
-        ]);
+          ]
+          ++ (map escapeShellArg cfg.extraOptions)
+          ++ [
+               "--"
+               cfg.lockerCommand
+             ]
+        );
     };
   };
 }

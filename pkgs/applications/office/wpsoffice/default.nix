@@ -1,13 +1,24 @@
-{ stdenv, fetchurl
-, libX11, glib, xorg, fontconfig, freetype
-, zlib, libpng12, libICE, libXrender, cups }:
+{ stdenv
+, fetchurl
+, libX11
+, glib
+, xorg
+, fontconfig
+, freetype
+, zlib
+, libpng12
+, libICE
+, libXrender
+, cups
+}:
 
 let
   bits = if stdenv.hostPlatform.system == "x86_64-linux" then "x86_64"
-         else "x86";
+  else "x86";
 
   version = "10.1.0.5672";
-in stdenv.mkDerivation rec{
+in
+stdenv.mkDerivation rec{
   name = "wpsoffice-${version}";
 
   src = fetchurl {

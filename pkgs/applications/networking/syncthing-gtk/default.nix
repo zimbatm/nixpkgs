@@ -1,8 +1,26 @@
-{ stdenv, fetchFromGitHub, fetchpatch, libnotify, librsvg, killall
-, gtk3, libappindicator-gtk3, substituteAll, syncthing, wrapGAppsHook
-, gnome3, buildPythonApplication, dateutil, pyinotify, pygobject3
-, bcrypt, gobject-introspection, gsettings-desktop-schemas
-, pango, gdk-pixbuf, atk }:
+{ stdenv
+, fetchFromGitHub
+, fetchpatch
+, libnotify
+, librsvg
+, killall
+, gtk3
+, libappindicator-gtk3
+, substituteAll
+, syncthing
+, wrapGAppsHook
+, gnome3
+, buildPythonApplication
+, dateutil
+, pyinotify
+, pygobject3
+, bcrypt
+, gobject-introspection
+, gsettings-desktop-schemas
+, pango
+, gdk-pixbuf
+, atk
+}:
 
 buildPythonApplication rec {
   version = "0.9.4";
@@ -19,30 +37,43 @@ buildPythonApplication rec {
     wrapGAppsHook
     # For setup hook populating GI_TYPELIB_PATH
     gobject-introspection
-    pango gdk-pixbuf atk libnotify
+    pango
+    gdk-pixbuf
+    atk
+    libnotify
   ];
 
   buildInputs = [
-    gtk3 librsvg libappindicator-gtk3
-    libnotify gnome3.adwaita-icon-theme
+    gtk3
+    librsvg
+    libappindicator-gtk3
+    libnotify
+    gnome3.adwaita-icon-theme
     # Schemas with proxy configuration
     gsettings-desktop-schemas
   ];
 
   propagatedBuildInputs = [
-    dateutil pyinotify pygobject3 bcrypt
+    dateutil
+    pyinotify
+    pygobject3
+    bcrypt
   ];
 
   patches = [
-    (fetchpatch {
-      url = https://github.com/syncthing/syncthing-gtk/commit/b2535e5a9cdb31c4987ab7af37f62d58d38255b7.patch;
-      sha256 = "047v79wz2a9334gbzywlqwpacrk53s26ksvfqaddk06avv8742w7";
-    })
-    (substituteAll {
-      src = ./paths.patch;
-      killall = "${killall}/bin/killall";
-      syncthing = "${syncthing}/bin/syncthing";
-    })
+    (
+      fetchpatch {
+        url = https://github.com/syncthing/syncthing-gtk/commit/b2535e5a9cdb31c4987ab7af37f62d58d38255b7.patch;
+        sha256 = "047v79wz2a9334gbzywlqwpacrk53s26ksvfqaddk06avv8742w7";
+      }
+    )
+    (
+      substituteAll {
+        src = ./paths.patch;
+        killall = "${killall}/bin/killall";
+        syncthing = "${syncthing}/bin/syncthing";
+      }
+    )
   ];
 
   setupPyBuildFlags = [ "build_py" "--nofinddaemon" "--nostdownloader" ];
@@ -60,7 +91,7 @@ buildPythonApplication rec {
     description = "GTK3 & python based GUI for Syncthing";
     homepage = https://github.com/syncthing/syncthing-gtk;
     license = licenses.gpl2;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
     platforms = syncthing.meta.platforms;
   };
 }

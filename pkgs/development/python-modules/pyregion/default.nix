@@ -29,12 +29,14 @@ buildPythonPackage rec {
 
   # Upstream patch needed for the test to pass
   patches = [
-    (fetchpatch {
-      name = "conftest-astropy-3-fix.patch";
-      url = "https://github.com/astropy/pyregion/pull/136.patch";
-      sha256 = "13yxjxiqnhjy9gh24hvv6pnwx7qic2mcx3ccr1igjrc3f881d59m";
-	  })
-	];
+    (
+      fetchpatch {
+        name = "conftest-astropy-3-fix.patch";
+        url = "https://github.com/astropy/pyregion/pull/136.patch";
+        sha256 = "13yxjxiqnhjy9gh24hvv6pnwx7qic2mcx3ccr1igjrc3f881d59m";
+      }
+    )
+  ];
 
   nativeBuildInputs = [ astropy-helpers ];
 

@@ -13,11 +13,13 @@ stdenv.mkDerivation rec {
     sha256 = "1z2dw5x74wgvqgd8jvibfff0qhwkc53kxg54v12pzymyibagwf09";
   };
   patches = [
-    (fetchurl {
-      name = "r13y.patch";
-      url = "https://patch-diff.githubusercontent.com/raw/rhboot/efivar/pull/133.patch";
-      sha256 = "038cwldb8sqnal5l6mhys92cqv8x7j8rgsl8i4fiv9ih9znw26i6";
-    })
+    (
+      fetchurl {
+        name = "r13y.patch";
+        url = "https://patch-diff.githubusercontent.com/raw/rhboot/efivar/pull/133.patch";
+        sha256 = "038cwldb8sqnal5l6mhys92cqv8x7j8rgsl8i4fiv9ih9znw26i6";
+      }
+    )
   ];
 
   nativeBuildInputs = [ pkgconfig ];

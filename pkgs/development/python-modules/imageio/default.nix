@@ -22,14 +22,19 @@ buildPythonPackage rec {
     inherit pname version;
   };
 
-  checkInputs = [ pytest psutil ] ++ stdenv.lib.optionals isPy3k [
-    imageio-ffmpeg ffmpeg
-    ];
-  propagatedBuildInputs = [ numpy pillow ] ++ stdenv.lib.optionals (!isPy3k) [
-    futures
-    enum34
-    pathlib
-  ];
+  checkInputs = [ pytest psutil ]
+    ++ stdenv.lib.optionals isPy3k [
+         imageio-ffmpeg
+         ffmpeg
+       ]
+    ;
+  propagatedBuildInputs = [ numpy pillow ]
+    ++ stdenv.lib.optionals (!isPy3k) [
+         futures
+         enum34
+         pathlib
+       ]
+    ;
 
   checkPhase = ''
     export IMAGEIO_USERDIR="$TMP"

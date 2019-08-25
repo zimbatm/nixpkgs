@@ -1,6 +1,11 @@
-{ stdenv, buildPythonPackage, fetchPypi
-, itsdangerous, hypothesis
-, pytest, requests }:
+{ stdenv
+, buildPythonPackage
+, fetchPypi
+, itsdangerous
+, hypothesis
+, pytest
+, requests
+}:
 
 buildPythonPackage rec {
   pname = "Werkzeug";

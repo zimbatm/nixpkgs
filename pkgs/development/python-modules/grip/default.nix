@@ -1,7 +1,7 @@
 { stdenv
 , fetchFromGitHub
 , fetchpatch
-# Python bits:
+  # Python bits:
 , buildPythonPackage
 , pytest
 , responses
@@ -27,10 +27,12 @@ buildPythonPackage rec {
 
   patches = [
     # Render "front matter", used in our RFC template and elsewhere
-    (fetchpatch {
-      url = https://github.com/joeyespo/grip/pull/249.patch;
-      sha256 = "07za5iymfv647dfrvi6hhj54a96hgjyarys51zbi08c51shqyzpg";
-    })
+    (
+      fetchpatch {
+        url = https://github.com/joeyespo/grip/pull/249.patch;
+        sha256 = "07za5iymfv647dfrvi6hhj54a96hgjyarys51zbi08c51shqyzpg";
+      }
+    )
   ];
 
   checkInputs = [ pytest responses ];
@@ -38,8 +40,8 @@ buildPythonPackage rec {
   propagatedBuildInputs = [ docopt flask markdown path-and-address pygments requests tabulate ];
 
   checkPhase = ''
-      export PATH="$PATH:$out/bin"
-      py.test -xm "not assumption"
+    export PATH="$PATH:$out/bin"
+    py.test -xm "not assumption"
   '';
 
   meta = with stdenv.lib; {

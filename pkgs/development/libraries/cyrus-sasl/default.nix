@@ -1,6 +1,18 @@
-{ lib, stdenv, fetchurl, openssl, openldap, kerberos, db, gettext
-, pam, fixDarwinDylibNames, autoreconfHook, enableLdap ? false
-, buildPackages, pruneLibtoolFiles }:
+{ lib
+, stdenv
+, fetchurl
+, openssl
+, openldap
+, kerberos
+, db
+, gettext
+, pam
+, fixDarwinDylibNames
+, autoreconfHook
+, enableLdap ? false
+, buildPackages
+, pruneLibtoolFiles
+}:
 
 with stdenv.lib;
 stdenv.mkDerivation rec {
@@ -9,7 +21,8 @@ stdenv.mkDerivation rec {
 
   src = fetchurl {
     urls =
-      [ "http://www.cyrusimap.org/releases/${name}.tar.gz"
+      [
+        "http://www.cyrusimap.org/releases/${name}.tar.gz"
         "http://www.cyrusimap.org/releases/old/${name}.tar.gz"
       ];
     sha256 = "1m85zcpgfdhm43cavpdkhb1s2zq1b31472hq1w1gs3xh94anp1i6";
@@ -22,7 +35,8 @@ stdenv.mkDerivation rec {
   buildInputs =
     [ openssl db gettext kerberos ]
     ++ lib.optional enableLdap openldap
-    ++ lib.optional stdenv.isLinux pam;
+    ++ lib.optional stdenv.isLinux pam
+    ;
 
   patches = [
     ./missing-size_t.patch # https://bugzilla.redhat.com/show_bug.cgi?id=906519
@@ -35,7 +49,9 @@ stdenv.mkDerivation rec {
     "--with-saslauthd=/run/saslauthd"
     "--enable-login"
     "--enable-shared"
-  ] ++ lib.optional enableLdap "--with-ldap=${openldap.dev}";
+  ]
+  ++ lib.optional enableLdap "--with-ldap=${openldap.dev}"
+  ;
 
   installFlags = lib.optional stdenv.isDarwin [ "framedir=$(out)/Library/Frameworks/SASL2.framework" ];
 

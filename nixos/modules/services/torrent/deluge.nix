@@ -32,7 +32,8 @@ let
       rm ${declarativeLockFile}
     fi
   '';
-in {
+in
+{
   options = {
     services = {
       deluge = {
@@ -174,12 +175,13 @@ in {
     services.deluge.extraPackages = with pkgs; [ unzip gnutar xz p7zip bzip2 ];
 
     systemd.tmpfiles.rules = [ "d '${configDir}' 0770 ${cfg.user} ${cfg.group}" ]
-    ++ optional (cfg.config ? "download_location")
-      "d '${cfg.config.download_location}' 0770 ${cfg.user} ${cfg.group}"
-    ++ optional (cfg.config ? "torrentfiles_location")
-      "d '${cfg.config.torrentfiles_location}' 0770 ${cfg.user} ${cfg.group}"
-    ++ optional (cfg.config ? "move_completed_path")
-      "d '${cfg.config.move_completed_path}' 0770 ${cfg.user} ${cfg.group}";
+      ++ optional (cfg.config ? "download_location")
+           "d '${cfg.config.download_location}' 0770 ${cfg.user} ${cfg.group}"
+      ++ optional (cfg.config ? "torrentfiles_location")
+           "d '${cfg.config.torrentfiles_location}' 0770 ${cfg.user} ${cfg.group}"
+      ++ optional (cfg.config ? "move_completed_path")
+           "d '${cfg.config.move_completed_path}' 0770 ${cfg.user} ${cfg.group}"
+      ;
 
     systemd.services.deluged = {
       after = [ "network.target" ];
@@ -204,7 +206,7 @@ in {
     };
 
     systemd.services.delugeweb = mkIf cfg_web.enable {
-      after = [ "network.target" "deluged.service"];
+      after = [ "network.target" "deluged.service" ];
       requires = [ "deluged.service" ];
       description = "Deluge BitTorrent WebUI";
       wantedBy = [ "multi-user.target" ];
@@ -221,13 +223,17 @@ in {
     };
 
     networking.firewall = mkMerge [
-      (mkIf (cfg.declarative && cfg.openFirewall && !(cfg.config.random_port or true)) {
-        allowedTCPPortRanges = singleton (listToRange (cfg.config.listen_ports or listenPortsDefault));
-        allowedUDPPortRanges = singleton (listToRange (cfg.config.listen_ports or listenPortsDefault));
-      })
-      (mkIf (cfg.web.openFirewall) {
-        allowedTCPPorts = [ cfg.web.port ];
-      })
+      (
+        mkIf (cfg.declarative && cfg.openFirewall && !(cfg.config.random_port or true)) {
+          allowedTCPPortRanges = singleton (listToRange (cfg.config.listen_ports or listenPortsDefault));
+          allowedUDPPortRanges = singleton (listToRange (cfg.config.listen_ports or listenPortsDefault));
+        }
+      )
+      (
+        mkIf (cfg.web.openFirewall) {
+          allowedTCPPorts = [ cfg.web.port ];
+        }
+      )
     ];
 
     environment.systemPackages = [ pkgs.deluge ];

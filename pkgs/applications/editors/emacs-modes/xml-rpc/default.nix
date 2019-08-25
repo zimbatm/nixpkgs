@@ -1,4 +1,4 @@
-{stdenv, fetchurl, emacs}:
+{ stdenv, fetchurl, emacs }:
 
 stdenv.mkDerivation rec {
   name = "xml-rpc-1.6.8";
@@ -8,7 +8,7 @@ stdenv.mkDerivation rec {
     sha256 = "0i8hf90yhrjwqrv7q1f2g1cff6ld8apqkka42fh01wkdys1fbm7b";
   };
 
-  phases = [ "buildPhase" "installPhase"];
+  phases = [ "buildPhase" "installPhase" ];
 
   buildInputs = [ emacs ];
 

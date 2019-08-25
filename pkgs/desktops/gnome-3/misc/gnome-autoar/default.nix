@@ -1,5 +1,11 @@
-{ stdenv, fetchurl, pkgconfig, gnome3
-, gtk3, glib, gobject-introspection, libarchive
+{ stdenv
+, fetchurl
+, pkgconfig
+, gnome3
+, gtk3
+, glib
+, gobject-introspection
+, libarchive
 }:
 
 stdenv.mkDerivation rec {

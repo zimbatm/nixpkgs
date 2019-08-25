@@ -177,17 +177,17 @@ in
 
   config = mkIf cfg.enable {
     systemd.services.factorio = {
-      description   = "Factorio headless server";
-      wantedBy      = [ "multi-user.target" ];
-      after         = [ "network.target" ];
+      description = "Factorio headless server";
+      wantedBy = [ "multi-user.target" ];
+      after = [ "network.target" ];
 
       preStart = toString [
         "test -e ${stateDir}/saves/${cfg.saveName}.zip"
         "||"
         "${factorio}/bin/factorio"
-          "--config=${cfg.configFile}"
-          "--create=${mkSavePath cfg.saveName}"
-          (optionalString (cfg.mods != []) "--mod-directory=${modDir}")
+        "--config=${cfg.configFile}"
+        "--create=${mkSavePath cfg.saveName}"
+        (optionalString (cfg.mods != []) "--mod-directory=${modDir}")
       ];
 
       serviceConfig = {

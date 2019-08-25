@@ -21,15 +21,19 @@ pythonPackages.buildPythonApplication rec {
 
   propagatedBuildInputs = [
     nix
-  ] ++ (with pythonPackages; [
-    click
-    colorama
-    lxml
-    pyyaml
-    requests
-    toml
-    zodb
-  ]);
+  ]
+  ++ (
+       with pythonPackages; [
+         click
+         colorama
+         lxml
+         pyyaml
+         requests
+         toml
+         zodb
+       ]
+     )
+  ;
 
   postBuild = "make -C doc";
 

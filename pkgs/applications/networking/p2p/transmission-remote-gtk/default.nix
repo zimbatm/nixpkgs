@@ -1,6 +1,19 @@
-{ stdenv, autoconf, automake, libtool, wrapGAppsHook, fetchFromGitHub, pkgconfig
-, intltool, gtk3, json-glib, curl, glib, autoconf-archive, appstream-glib
-, hicolor-icon-theme }:
+{ stdenv
+, autoconf
+, automake
+, libtool
+, wrapGAppsHook
+, fetchFromGitHub
+, pkgconfig
+, intltool
+, gtk3
+, json-glib
+, curl
+, glib
+, autoconf-archive
+, appstream-glib
+, hicolor-icon-theme
+}:
 
 
 stdenv.mkDerivation rec {
@@ -16,9 +29,14 @@ stdenv.mkDerivation rec {
 
   preConfigure = "./autogen.sh";
 
-  nativeBuildInputs= [
-    autoconf automake libtool wrapGAppsHook
-    pkgconfig intltool autoconf-archive
+  nativeBuildInputs = [
+    autoconf
+    automake
+    libtool
+    wrapGAppsHook
+    pkgconfig
+    intltool
+    autoconf-archive
     appstream-glib
   ];
 

@@ -8,10 +8,12 @@ stdenv.mkDerivation rec {
 
   patches = [
     # Fix build against recent libcurl
-    (fetchpatch {
-      url = https://github.com/CMB/edbrowse/commit/5d2b9e21fdf019f461ebe62738d615428d5db963.diff;
-      sha256 = "167q8n0syj3iv6lxrbpv4kvb63j4byj4qxrxayy08bah3pss3gky";
-    })
+    (
+      fetchpatch {
+        url = https://github.com/CMB/edbrowse/commit/5d2b9e21fdf019f461ebe62738d615428d5db963.diff;
+        sha256 = "167q8n0syj3iv6lxrbpv4kvb63j4byj4qxrxayy08bah3pss3gky";
+      }
+    )
   ];
 
   postPatch = ''
@@ -37,7 +39,7 @@ stdenv.mkDerivation rec {
       This program was originally written for blind users, but many sighted users have taken advantage of the unique scripting capabilities of this program, which can be found nowhere else.
       A batch job, or cron job, can access web pages on the internet, submit forms, and send email, with no human intervention whatsoever.
       edbrowse can also tap into databases through odbc. It was primarily written by Karl Dahlke.
-      '';
+    '';
     license = licenses.gpl1Plus;
     homepage = http://edbrowse.org/;
     maintainers = [ maintainers.schmitthenner maintainers.vrthra ];

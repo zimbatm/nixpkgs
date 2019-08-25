@@ -1,6 +1,19 @@
-{ stdenv, fetchurl, cmake, pkgconfig
-, openexr, zlib, imagemagick, libGLU_combined, freeglut, fftwFloat
-, fftw, gsl, libexif, perl, opencv, qt5
+{ stdenv
+, fetchurl
+, cmake
+, pkgconfig
+, openexr
+, zlib
+, imagemagick
+, libGLU_combined
+, freeglut
+, fftwFloat
+, fftw
+, gsl
+, libexif
+, perl
+, opencv
+, qt5
 }:
 
 stdenv.mkDerivation rec {
@@ -13,7 +26,7 @@ stdenv.mkDerivation rec {
     sha256 = "04rlb705gmdiphcybf9dyr0d5lla2cfs3c308zz37x0vwi445six";
   };
 
-  outputs = [ "out" "dev" "man"];
+  outputs = [ "out" "dev" "man" ];
 
   cmakeFlags = ''
     -DWITH_MATLAB=false 
@@ -21,8 +34,18 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ cmake pkgconfig ];
   buildInputs = [
-    openexr zlib imagemagick libGLU_combined freeglut fftwFloat
-    fftw gsl libexif perl opencv qt5.qtbase
+    openexr
+    zlib
+    imagemagick
+    libGLU_combined
+    freeglut
+    fftwFloat
+    fftw
+    gsl
+    libexif
+    perl
+    opencv
+    qt5.qtbase
   ];
 
   patches = [ ./threads.patch ./pfstools.patch ];

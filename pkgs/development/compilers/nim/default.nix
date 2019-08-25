@@ -1,7 +1,19 @@
 # based on https://github.com/nim-lang/Nim/blob/v0.18.0/.travis.yml
 
-{ stdenv, lib, fetchurl, makeWrapper, nodejs-slim-11_x, openssl, pcre, readline,
-  boehmgc, sfml, tzdata, coreutils, sqlite }:
+{ stdenv
+, lib
+, fetchurl
+, makeWrapper
+, nodejs-slim-11_x
+, openssl
+, pcre
+, readline
+, boehmgc
+, sfml
+, tzdata
+, coreutils
+, sqlite
+}:
 
 stdenv.mkDerivation rec {
   pname = "nim";
@@ -30,7 +42,9 @@ stdenv.mkDerivation rec {
   #    as part of building it, so it cannot be read-only
 
   checkInputs = [
-    nodejs-slim-11_x tzdata coreutils
+    nodejs-slim-11_x
+    tzdata
+    coreutils
   ];
 
   nativeBuildInputs = [
@@ -38,7 +52,12 @@ stdenv.mkDerivation rec {
   ];
 
   buildInputs = [
-    openssl pcre readline boehmgc sfml sqlite
+    openssl
+    pcre
+    readline
+    boehmgc
+    sfml
+    sqlite
   ];
 
   buildPhase = ''
@@ -57,30 +76,33 @@ stdenv.mkDerivation rec {
   '';
 
   prePatch =
-    let disableTest = ''sed -i '1i discard \"\"\"\n  disabled: true\n\"\"\"\n\n' '';
-        disableStdLibTest = ''sed -i -e '/^when isMainModule/,/^END$/{s/^/#/}' '';
-        disableCompile = ''sed -i -e 's/^/#/' '';
-    in ''
-      substituteInPlace ./tests/osproc/tworkingdir.nim --replace "/usr/bin" "${coreutils}/bin"
-      substituteInPlace ./tests/stdlib/ttimes.nim --replace "/usr/share/zoneinfo" "${tzdata}/share/zoneinfo"
+    let
+      disableTest = ''sed -i '1i discard \"\"\"\n  disabled: true\n\"\"\"\n\n' '';
+      disableStdLibTest = ''sed -i -e '/^when isMainModule/,/^END$/{s/^/#/}' '';
+      disableCompile = ''sed -i -e 's/^/#/' '';
+    in
+      ''
+        substituteInPlace ./tests/osproc/tworkingdir.nim --replace "/usr/bin" "${coreutils}/bin"
+        substituteInPlace ./tests/stdlib/ttimes.nim --replace "/usr/share/zoneinfo" "${tzdata}/share/zoneinfo"
 
-      # reported upstream: https://github.com/nim-lang/Nim/issues/11435
-      ${disableTest} ./tests/misc/tstrace.nim
+        # reported upstream: https://github.com/nim-lang/Nim/issues/11435
+        ${disableTest} ./tests/misc/tstrace.nim
 
-      # runs out of memory on a machine with 8GB RAM
-      ${disableTest} ./tests/system/t7894.nim
+        # runs out of memory on a machine with 8GB RAM
+        ${disableTest} ./tests/system/t7894.nim
 
-      # requires network access (not available in the build container)
-      ${disableTest} ./tests/stdlib/thttpclient.nim
-    '' + lib.optionalString stdenv.isAarch64 ''
-      # supposedly broken on aarch64
-      ${disableStdLibTest} ./lib/pure/stats.nim
+        # requires network access (not available in the build container)
+        ${disableTest} ./tests/stdlib/thttpclient.nim
+      ''
+      + lib.optionalString stdenv.isAarch64 ''
+          # supposedly broken on aarch64
+          ${disableStdLibTest} ./lib/pure/stats.nim
 
-      # reported upstream: https://github.com/nim-lang/Nim/issues/11463
-      ${disableCompile} ./lib/nimhcr.nim
-      ${disableTest} ./tests/dll/nimhcr_unit.nim
-      ${disableTest} ./tests/dll/nimhcr_integration.nim
-    '';
+          # reported upstream: https://github.com/nim-lang/Nim/issues/11463
+          ${disableCompile} ./lib/nimhcr.nim
+          ${disableTest} ./tests/dll/nimhcr_unit.nim
+          ${disableTest} ./tests/dll/nimhcr_integration.nim
+        '';
 
   checkPhase = ''
     runHook preCheck

@@ -1,6 +1,8 @@
 { stdenv, buildPackages, staticBuild ? false }:
 
-let inherit (buildPackages.buildPackages) gcc; in
+let
+  inherit (buildPackages.buildPackages) gcc;
+in
 
 stdenv.mkDerivation rec {
   name = "libiberty-${gcc.cc.version}";
@@ -12,7 +14,8 @@ stdenv.mkDerivation rec {
   postUnpack = "sourceRoot=\${sourceRoot}/libiberty";
 
   configureFlags = [ "--enable-install-libiberty" ]
-    ++ stdenv.lib.optional (!staticBuild) "--enable-shared";
+    ++ stdenv.lib.optional (!staticBuild) "--enable-shared"
+    ;
 
   postInstall = stdenv.lib.optionalString (!staticBuild) ''
     cp pic/libiberty.a $out/lib*/libiberty.a

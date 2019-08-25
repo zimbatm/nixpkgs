@@ -2,19 +2,22 @@
 # packages: The packages visible to idris
 { stdenv, idris, symlinkJoin, makeWrapper }: packages:
 
-let paths = stdenv.lib.closePropagation packages;
+let
+  paths = stdenv.lib.closePropagation packages;
 in
-stdenv.lib.appendToName "with-packages" (symlinkJoin {
+stdenv.lib.appendToName "with-packages" (
+  symlinkJoin {
 
-  inherit (idris) name;
+    inherit (idris) name;
 
-  paths = paths ++ [idris] ;
+    paths = paths ++ [ idris ];
 
-  buildInputs = [ makeWrapper ];
+    buildInputs = [ makeWrapper ];
 
-  postBuild = ''
-    wrapProgram $out/bin/idris \
-      --set IDRIS_LIBRARY_PATH $out/libs
-  '';
+    postBuild = ''
+      wrapProgram $out/bin/idris \
+        --set IDRIS_LIBRARY_PATH $out/libs
+    '';
 
-})
+  }
+)

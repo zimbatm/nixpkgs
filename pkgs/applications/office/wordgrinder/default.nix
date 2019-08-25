@@ -1,5 +1,14 @@
-{ stdenv, fetchFromGitHub, pkgconfig, makeWrapper
-, lua52Packages, libXft, ncurses, ninja, readline, zlib }:
+{ stdenv
+, fetchFromGitHub
+, pkgconfig
+, makeWrapper
+, lua52Packages
+, libXft
+, ncurses
+, ninja
+, readline
+, zlib
+}:
 
 stdenv.mkDerivation rec {
   name = "wordgrinder-${version}";
@@ -45,9 +54,11 @@ stdenv.mkDerivation rec {
   # Binaries look for LuaFileSystem library (lfs.so) at runtime
   postInstall = ''
     wrapProgram $out/bin/wordgrinder --set LUA_CPATH "${lua52Packages.luafilesystem}/lib/lua/5.2/lfs.so";
-  '' + stdenv.lib.optionalString stdenv.isLinux ''
-    wrapProgram $out/bin/xwordgrinder --set LUA_CPATH "${lua52Packages.luafilesystem}/lib/lua/5.2/lfs.so";
-  '';
+  ''
+  + stdenv.lib.optionalString stdenv.isLinux ''
+      wrapProgram $out/bin/xwordgrinder --set LUA_CPATH "${lua52Packages.luafilesystem}/lib/lua/5.2/lfs.so";
+    ''
+  ;
 
   meta = with stdenv.lib; {
     description = "Text-based word processor";

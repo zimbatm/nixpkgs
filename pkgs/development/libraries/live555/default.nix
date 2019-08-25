@@ -5,7 +5,8 @@ stdenv.mkDerivation rec {
   name = "live555-${version}";
   version = "2019.08.16";
 
-  src = fetchurl { # the upstream doesn't provide a stable URL
+  src = fetchurl {
+    # the upstream doesn't provide a stable URL
     urls = [
       "mirror://sourceforge/slackbuildsdirectlinks/live.${version}.tar.gz"
       "https://download.videolan.org/contrib/live555/live.${version}.tar.gz"
@@ -18,20 +19,22 @@ stdenv.mkDerivation rec {
     sed \
       -e 's/$(INCLUDES) -I. -O2 -DSOCKLEN_T/$(INCLUDES) -I. -O2 -I. -fPIC -DRTSPCLIENT_SYNCHRONOUS_INTERFACE=1 -DSOCKLEN_T/g' \
       -i config.linux
-  '' + stdenv.lib.optionalString (stdenv ? glibc) ''
-    substituteInPlace liveMedia/include/Locale.hh \
-      --replace '<xlocale.h>' '<locale.h>'
-  '';
+  ''
+  + stdenv.lib.optionalString (stdenv ? glibc) ''
+      substituteInPlace liveMedia/include/Locale.hh \
+        --replace '<xlocale.h>' '<locale.h>'
+    ''
+  ;
 
   configurePhase = ''
     runHook preConfigure
 
     ./genMakefiles ${{
-      x86_64-darwin = "macosx";
-      i686-linux = "linux";
-      x86_64-linux = "linux-64bit";
-      aarch64-linux = "linux-64bit";
-    }.${stdenv.hostPlatform.system}}
+    x86_64-darwin = "macosx";
+    i686-linux = "linux";
+    x86_64-linux = "linux-64bit";
+    aarch64-linux = "linux-64bit";
+  }.${stdenv.hostPlatform.system}}
 
     runHook postConfigure
   '';

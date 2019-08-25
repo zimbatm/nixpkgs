@@ -9,18 +9,23 @@ let
     sha256 = hash;
   };
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "bulletml-${version}";
 
   srcs = [
-    (fetchurl {
-      url = "http://shinh.skr.jp/libbulletml/libbulletml-${version}.tar.bz2";
-      sha256 = "0yda0zgj2ydgkmby5676f5iiawabxadzh5p7bmy42998sp9g6dvw";
-    })
-    (fetchurl {
-      url = "http://shinh.skr.jp/d/d_cpp.tar.bz2";
-      sha256 = "1ly9qmbb8q9nyadmdap1gmxs3vkniqgchlv2hw7riansz4gg1agh";
-    })
+    (
+      fetchurl {
+        url = "http://shinh.skr.jp/libbulletml/libbulletml-${version}.tar.bz2";
+        sha256 = "0yda0zgj2ydgkmby5676f5iiawabxadzh5p7bmy42998sp9g6dvw";
+      }
+    )
+    (
+      fetchurl {
+        url = "http://shinh.skr.jp/d/d_cpp.tar.bz2";
+        sha256 = "1ly9qmbb8q9nyadmdap1gmxs3vkniqgchlv2hw7riansz4gg1agh";
+      }
+    )
   ];
   sourceRoot = "bulletml";
   postUnpack = "mv d_cpp bulletml/";

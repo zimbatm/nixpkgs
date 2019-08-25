@@ -11,10 +11,12 @@ stdenv.mkDerivation rec {
 
   patches = [
     # Bug #830: TTF_RenderGlyph_Shaded is broken
-    (fetchpatch {
-      url = "https://bugzilla-attachments.libsdl.org/attachment.cgi?id=830";
-      sha256 = "0cfznfzg1hs10wl349z9n8chw80i5adl3iwhq4y102g0xrjyb72d";
-    })
+    (
+      fetchpatch {
+        url = "https://bugzilla-attachments.libsdl.org/attachment.cgi?id=830";
+        sha256 = "0cfznfzg1hs10wl349z9n8chw80i5adl3iwhq4y102g0xrjyb72d";
+      }
+    )
   ];
 
   patchFlags = [ "-p0" ];

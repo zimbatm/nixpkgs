@@ -1,5 +1,16 @@
-{ stdenv, fetchurl, zlib, libtiff, libxml2, SDL, xorgproto, libX11
-, libXi, libXmu, libXext, libGLU_combined }:
+{ stdenv
+, fetchurl
+, zlib
+, libtiff
+, libxml2
+, SDL
+, xorgproto
+, libX11
+, libXi
+, libXmu
+, libXext
+, libGLU_combined
+}:
 
 stdenv.mkDerivation rec {
   name = "stardust-${version}";
@@ -11,8 +22,16 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [
-    zlib libtiff libxml2 SDL xorgproto libX11 libXi
-    libXmu libXext libGLU_combined
+    zlib
+    libtiff
+    libxml2
+    SDL
+    xorgproto
+    libX11
+    libXi
+    libXmu
+    libXext
+    libGLU_combined
   ];
 
   installFlags = [ "bindir=\${out}/bin" ];

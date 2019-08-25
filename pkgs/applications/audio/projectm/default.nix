@@ -1,12 +1,23 @@
-{ stdenv, fetchurl, fetchpatch, pkgconfig, cmake
-, glew, ftgl, ttf_bitstream_vera
-, withQt ? true, qt4
-, withLibvisual ? false, libvisual, SDL
-, withJack ? false, libjack2
-, withPulseAudio ? true, libpulseaudio
+{ stdenv
+, fetchurl
+, fetchpatch
+, pkgconfig
+, cmake
+, glew
+, ftgl
+, ttf_bitstream_vera
+, withQt ? true
+, qt4
+, withLibvisual ? false
+, libvisual
+, SDL
+, withJack ? false
+, libjack2
+, withPulseAudio ? true
+, libpulseaudio
 }:
 
-assert withJack       -> withQt;
+assert withJack -> withQt;
 assert withPulseAudio -> withQt;
 
 stdenv.mkDerivation {

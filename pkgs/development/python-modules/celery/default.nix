@@ -1,5 +1,18 @@
-{ stdenv, buildPythonPackage, fetchPypi, iana-etc, libredirect
-, case, pytest, boto3, moto, kombu, billiard, pytz, anyjson, amqp, eventlet
+{ stdenv
+, buildPythonPackage
+, fetchPypi
+, iana-etc
+, libredirect
+, case
+, pytest
+, boto3
+, moto
+, kombu
+, billiard
+, pytz
+, anyjson
+, amqp
+, eventlet
 }:
 
 buildPythonPackage rec {

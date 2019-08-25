@@ -1,9 +1,20 @@
-{ stdenv, fetchurl, fetchFromGitHub, pkgconfig
-, libtool, autoconf, automake, cppunit
-, libtorrent, ncurses, libsigcxx, curl
-, zlib, openssl, xmlrpc_c
+{ stdenv
+, fetchurl
+, fetchFromGitHub
+, pkgconfig
+, libtool
+, autoconf
+, automake
+, cppunit
+, libtorrent
+, ncurses
+, libsigcxx
+, curl
+, zlib
+, openssl
+, xmlrpc_c
 
-# This no longer works
+  # This no longer works
 , colorSupport ? false
 }:
 
@@ -20,16 +31,27 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ pkgconfig ];
   buildInputs = [
-    libtool autoconf automake cppunit
-    libtorrent ncurses libsigcxx curl zlib openssl xmlrpc_c
+    libtool
+    autoconf
+    automake
+    cppunit
+    libtorrent
+    ncurses
+    libsigcxx
+    curl
+    zlib
+    openssl
+    xmlrpc_c
   ];
 
   # Optional patch adds support for custom configurable colors
   # https://github.com/Chlorm/chlorm_overlay/blob/master/net-p2p/rtorrent/README.md
-  patches = stdenv.lib.optional colorSupport (fetchurl {
-    url = "https://gist.githubusercontent.com/codyopel/a816c2993f8013b5f4d6/raw/b952b32da1dcf14c61820dfcf7df00bc8918fec4/rtorrent-color.patch";
-    sha256 = "00gcl7yq6261rrfzpz2k8bd7mffwya0ifji1xqcvhfw50syk8965";
-  });
+  patches = stdenv.lib.optional colorSupport (
+    fetchurl {
+      url = "https://gist.githubusercontent.com/codyopel/a816c2993f8013b5f4d6/raw/b952b32da1dcf14c61820dfcf7df00bc8918fec4/rtorrent-color.patch";
+      sha256 = "00gcl7yq6261rrfzpz2k8bd7mffwya0ifji1xqcvhfw50syk8965";
+    }
+  );
 
   preConfigure = "./autogen.sh";
 

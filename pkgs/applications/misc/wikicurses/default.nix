@@ -22,4 +22,3 @@ pythonPackages.buildPythonApplication rec {
   };
 
 }
-

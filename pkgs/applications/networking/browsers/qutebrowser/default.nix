@@ -1,9 +1,21 @@
-{ stdenv, lib, fetchurl, fetchzip, python3Packages
-, mkDerivationWith, wrapQtAppsHook, wrapGAppsHook, qtbase, glib-networking
-, asciidoc, docbook_xml_dtd_45, docbook_xsl, libxml2
-, libxslt, gst_all_1 ? null
-, withPdfReader        ? true
-, withMediaPlayback    ? true
+{ stdenv
+, lib
+, fetchurl
+, fetchzip
+, python3Packages
+, mkDerivationWith
+, wrapQtAppsHook
+, wrapGAppsHook
+, qtbase
+, glib-networking
+, asciidoc
+, docbook_xml_dtd_45
+, docbook_xsl
+, libxml2
+, libxslt
+, gst_all_1 ? null
+, withPdfReader ? true
+, withMediaPlayback ? true
 }:
 
 assert withMediaPlayback -> gst_all_1 != null;
@@ -12,14 +24,15 @@ let
   pdfjs = let
     version = "2.1.266";
   in
-  fetchzip rec {
-    name = "pdfjs-${version}";
-    url = "https://github.com/mozilla/pdf.js/releases/download/v${version}/${name}-dist.zip";
-    sha256 = "1ybbnpz2jcdikzwr7r13lq528vxj3bpms1fqmg3n1zgs30cqpkby";
-    stripRoot = false;
-  };
+    fetchzip rec {
+      name = "pdfjs-${version}";
+      url = "https://github.com/mozilla/pdf.js/releases/download/v${version}/${name}-dist.zip";
+      sha256 = "1ybbnpz2jcdikzwr7r13lq528vxj3bpms1fqmg3n1zgs30cqpkby";
+      stripRoot = false;
+    };
 
-in mkDerivationWith python3Packages.buildPythonApplication rec {
+in
+mkDerivationWith python3Packages.buildPythonApplication rec {
   pname = "qutebrowser";
   version = "1.7.0";
 
@@ -35,22 +48,44 @@ in mkDerivationWith python3Packages.buildPythonApplication rec {
   buildInputs = [
     qtbase
     glib-networking
-  ] ++ lib.optionals withMediaPlayback (with gst_all_1; [
-    gst-plugins-base gst-plugins-good
-    gst-plugins-bad gst-plugins-ugly gst-libav
-  ]);
+  ]
+  ++ lib.optionals withMediaPlayback (
+       with gst_all_1; [
+         gst-plugins-base
+         gst-plugins-good
+         gst-plugins-bad
+         gst-plugins-ugly
+         gst-libav
+       ]
+     )
+  ;
 
   nativeBuildInputs = [
-    wrapQtAppsHook wrapGAppsHook asciidoc
-    docbook_xml_dtd_45 docbook_xsl libxml2 libxslt
+    wrapQtAppsHook
+    wrapGAppsHook
+    asciidoc
+    docbook_xml_dtd_45
+    docbook_xsl
+    libxml2
+    libxslt
   ];
 
   propagatedBuildInputs = with python3Packages; [
-    pyyaml pyqt5 pyqtwebengine jinja2 pygments
-    pypeg2 cssutils pyopengl attrs
+    pyyaml
+    pyqt5
+    pyqtwebengine
+    jinja2
+    pygments
+    pypeg2
+    cssutils
+    pyopengl
+    attrs
     # scripts and userscripts libs
-    tldextract beautifulsoup4
-    pyreadability pykeepass stem
+    tldextract
+    beautifulsoup4
+    pyreadability
+    pykeepass
+    stem
   ];
 
   patches = [
@@ -64,9 +99,11 @@ in mkDerivationWith python3Packages.buildPythonApplication rec {
     substituteInPlace qutebrowser/app.py --subst-var-by qutebrowser "$out/bin/qutebrowser"
 
     sed -i "s,/usr/share/,$out/share/,g" qutebrowser/utils/standarddir.py
-  '' + lib.optionalString withPdfReader ''
-    sed -i "s,/usr/share/pdf.js,${pdfjs},g" qutebrowser/browser/pdfjs.py
-  '';
+  ''
+  + lib.optionalString withPdfReader ''
+      sed -i "s,/usr/share/pdf.js,${pdfjs},g" qutebrowser/browser/pdfjs.py
+    ''
+  ;
 
   postBuild = ''
     a2x -f manpage doc/qutebrowser.1.asciidoc
@@ -105,9 +142,9 @@ in mkDerivationWith python3Packages.buildPythonApplication rec {
   '';
 
   meta = with stdenv.lib; {
-    homepage    = https://github.com/The-Compiler/qutebrowser;
+    homepage = https://github.com/The-Compiler/qutebrowser;
     description = "Keyboard-focused browser with a minimal GUI";
-    license     = licenses.gpl3Plus;
+    license = licenses.gpl3Plus;
     maintainers = with maintainers; [ jagajaga rnhmjoj ];
   };
 }

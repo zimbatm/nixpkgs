@@ -2,7 +2,8 @@
 
 let
   termonadEnv = ghcWithPackages (self: [ self.termonad ] ++ packages self);
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "termonad-with-packages-${termonadEnv.version}";
 
   nativeBuildInputs = [ makeWrapper ];

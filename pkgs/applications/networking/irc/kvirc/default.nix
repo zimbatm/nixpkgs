@@ -1,6 +1,12 @@
-{ stdenv, fetchFromGitHub
-, qtbase, qtmultimedia, qtsvg, qtx11extras
-, pkgconfig, cmake, gettext
+{ stdenv
+, fetchFromGitHub
+, qtbase
+, qtmultimedia
+, qtsvg
+, qtx11extras
+, pkgconfig
+, cmake
+, gettext
 }:
 
 stdenv.mkDerivation rec {
@@ -15,11 +21,16 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [
-    qtbase qtmultimedia qtsvg qtx11extras
+    qtbase
+    qtmultimedia
+    qtsvg
+    qtx11extras
   ];
 
   nativeBuildInputs = [
-    pkgconfig cmake gettext
+    pkgconfig
+    cmake
+    gettext
   ];
 
   meta = with stdenv.lib; {

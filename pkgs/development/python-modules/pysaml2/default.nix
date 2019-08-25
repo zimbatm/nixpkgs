@@ -3,8 +3,19 @@
 , fetchFromGitHub
 , substituteAll
 , xmlsec
-, cryptography, defusedxml, future, pyopenssl, dateutil, pytz, requests, six
-, mock, pyasn1, pymongo, pytest, responses
+, cryptography
+, defusedxml
+, future
+, pyopenssl
+, dateutil
+, pytz
+, requests
+, six
+, mock
+, pyasn1
+, pymongo
+, pytest
+, responses
 }:
 
 buildPythonPackage rec {
@@ -20,10 +31,12 @@ buildPythonPackage rec {
   };
 
   patches = [
-    (substituteAll {
-      src = ./hardcode-xmlsec1-path.patch;
-      inherit xmlsec;
-    })
+    (
+      substituteAll {
+        src = ./hardcode-xmlsec1-path.patch;
+        inherit xmlsec;
+      }
+    )
   ];
 
   propagatedBuildInputs = [ cryptography defusedxml future pyopenssl dateutil pytz requests six ];

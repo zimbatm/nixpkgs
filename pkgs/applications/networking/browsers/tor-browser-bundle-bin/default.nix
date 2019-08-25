@@ -2,10 +2,10 @@
 , fetchurl
 , makeDesktopItem
 
-# Common run-time dependencies
+  # Common run-time dependencies
 , zlib
 
-# libxul run-time dependencies
+  # libxul run-time dependencies
 , atk
 , cairo
 , dbus
@@ -27,16 +27,16 @@
 , libpulseaudio
 , apulse
 
-# Media support (implies audio support)
+  # Media support (implies audio support)
 , mediaSupport ? false
 , ffmpeg
 
 , gmp
 
-# Pluggable transport dependencies
+  # Pluggable transport dependencies
 , python27
 
-# Wrapper runtime
+  # Wrapper runtime
 , coreutils
 , glibcLocales
 , gnome3
@@ -44,14 +44,14 @@
 , shared-mime-info
 , gsettings-desktop-schemas
 
-# Whether to disable multiprocess support to work around crashing tabs
-# TODO: fix the underlying problem instead of this terrible work-around
+  # Whether to disable multiprocess support to work around crashing tabs
+  # TODO: fix the underlying problem instead of this terrible work-around
 , disableContentSandbox ? true
 
-# Extra preferences
+  # Extra preferences
 , extraPrefs ? ""
 
-# For meta
+  # For meta
 , tor-browser-bundle
 }:
 
@@ -82,8 +82,9 @@ let
   ]
   ++ optionals pulseaudioSupport [ libpulseaudio ]
   ++ optionals mediaSupport [
-    ffmpeg
-  ];
+       ffmpeg
+     ]
+  ;
 
   # Library search path for the fte transport
   fteLibPath = makeLibraryPath [ stdenv.cc.cc gmp ];
@@ -156,8 +157,8 @@ stdenv.mkDerivation rec {
 
     # apulse uses a non-standard library path.  For now special-case it.
     ${optionalString (audioSupport && !pulseaudioSupport) ''
-      libPath=${apulse}/lib/apulse:$libPath
-    ''}
+    libPath=${apulse}/lib/apulse:$libPath
+  ''}
 
     # Fixup paths to pluggable transports.
     sed -i TorBrowser/Data/Tor/torrc-defaults \
@@ -221,14 +222,14 @@ stdenv.mkDerivation rec {
 
     // Allow sandbox access to sound devices if using ALSA directly
     ${if (audioSupport && !pulseaudioSupport) then ''
-      pref("security.sandbox.content.write_path_whitelist", "/dev/snd/");
-    '' else ''
-      clearPref("security.sandbox.content.write_path_whitelist");
-    ''}
+    pref("security.sandbox.content.write_path_whitelist", "/dev/snd/");
+  '' else ''
+    clearPref("security.sandbox.content.write_path_whitelist");
+  ''}
 
     ${optionalString (extraPrefs != "") ''
-      ${extraPrefs}
-    ''}
+    ${extraPrefs}
+  ''}
     EOF
 
     # Hard-code path to TBB fonts; see also FONTCONFIG_FILE in
@@ -252,14 +253,14 @@ stdenv.mkDerivation rec {
     EOF
 
     WRAPPER_XDG_DATA_DIRS=${concatMapStringsSep ":" (x: "${x}/share") [
-      gnome3.adwaita-icon-theme
-      shared-mime-info
-    ]}
+    gnome3.adwaita-icon-theme
+    shared-mime-info
+  ]}
     WRAPPER_XDG_DATA_DIRS+=":"${concatMapStringsSep ":" (x: "${x}/share/gsettings-schemas/${x.name}") [
-      glib
-      gsettings-desktop-schemas
-      gtk3
-    ]};
+    glib
+    gsettings-desktop-schemas
+    gtk3
+  ]};
 
     # Generate wrapper
     mkdir -p $out/bin
@@ -308,10 +309,10 @@ stdenv.mkDerivation rec {
     : "\''${XDG_CONFIG_HOME:=\$REAL_HOME/.config}"
 
     ${optionalString pulseaudioSupport ''
-      # Figure out some envvars for pulseaudio
-      : "\''${PULSE_SERVER:=\$XDG_RUNTIME_DIR/pulse/native}"
-      : "\''${PULSE_COOKIE:=\$XDG_CONFIG_HOME/pulse/cookie}"
-    ''}
+    # Figure out some envvars for pulseaudio
+    : "\''${PULSE_SERVER:=\$XDG_RUNTIME_DIR/pulse/native}"
+    : "\''${PULSE_COOKIE:=\$XDG_CONFIG_HOME/pulse/cookie}"
+  ''}
 
     # Font cache files capture store paths; clear them out on the off
     # chance that TBB would continue using old font files.

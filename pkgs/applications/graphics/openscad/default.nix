@@ -41,11 +41,26 @@ mkDerivation rec {
   nativeBuildInputs = [ bison flex pkgconfig gettext qmake ];
 
   buildInputs = [
-    eigen boost glew opencsg cgal mpfr gmp glib
-    harfbuzz lib3mf libzip double-conversion freetype fontconfig
-    qtbase qtmultimedia qscintilla
-  ] ++ stdenv.lib.optional stdenv.isLinux libGLU_combined
-    ++ stdenv.lib.optional stdenv.isDarwin qtmacextras
+    eigen
+    boost
+    glew
+    opencsg
+    cgal
+    mpfr
+    gmp
+    glib
+    harfbuzz
+    lib3mf
+    libzip
+    double-conversion
+    freetype
+    fontconfig
+    qtbase
+    qtmultimedia
+    qscintilla
+  ]
+  ++ stdenv.lib.optional stdenv.isLinux libGLU_combined
+  ++ stdenv.lib.optional stdenv.isDarwin qtmacextras
   ;
 
   qmakeFlags = [ "VERSION=${version}" ];

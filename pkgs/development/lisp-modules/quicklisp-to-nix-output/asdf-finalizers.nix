@@ -5,7 +5,7 @@ rec {
 
   description = ''Enforced calling of finalizers for Lisp code'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/asdf-finalizers/2017-04-03/asdf-finalizers-20170403-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "asdf-finalizers";
 
-  asdFilesToKeep = ["asdf-finalizers.asd"];
+  asdFilesToKeep = [ "asdf-finalizers.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM asdf-finalizers DESCRIPTION

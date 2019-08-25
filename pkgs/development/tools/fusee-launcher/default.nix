@@ -4,7 +4,7 @@
 , fetchFromGitHub
 , pkgsCross
 , makeWrapper
-} :
+}:
 
 stdenv.mkDerivation rec {
   name = "fusee-launcher-${version}";

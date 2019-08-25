@@ -1,4 +1,5 @@
-{ stdenv, fetchgit
+{ stdenv
+, fetchgit
 , fetchpatch
 }:
 
@@ -7,8 +8,8 @@ stdenv.mkDerivation rec {
   version = "0.1";
 
   src = fetchgit {
-    url    = "http://git.kernel.dk/liburing";
-    rev    = "refs/tags/liburing-${version}";
+    url = "http://git.kernel.dk/liburing";
+    rev = "refs/tags/liburing-${version}";
     sha256 = "038iqsbm9bdmlwvmb899bc6g1rw5dalr990azynbvgn8qs5adysh";
   };
 
@@ -18,10 +19,12 @@ stdenv.mkDerivation rec {
     # necessary memory barrier primitives for it to work.
     #
     # Already upstream: remove when moving to the next version
-    (fetchpatch {
-      url    = "http://git.kernel.dk/cgit/liburing/patch/?id=0520db454c29f1d96cda6cf6cedeb93df65301e8";
-      sha256 = "1i8133sb1imzxpplmhlhnaxkffgplhj40vanivc6clbibvhgwpq6";
-    })
+    (
+      fetchpatch {
+        url = "http://git.kernel.dk/cgit/liburing/patch/?id=0520db454c29f1d96cda6cf6cedeb93df65301e8";
+        sha256 = "1i8133sb1imzxpplmhlhnaxkffgplhj40vanivc6clbibvhgwpq6";
+      }
+    )
 
     # This patch shuffles the name of the io_uring memory barrier primitives.
     # They were using extremely common names by accident, which caused
@@ -34,10 +37,12 @@ stdenv.mkDerivation rec {
     # which get included unilaterally.
     #
     # Already upstream: remove when moving to the next version
-    (fetchpatch {
-      url    = "http://git.kernel.dk/cgit/liburing/patch/?id=552c6a08d04c74d20eeaa86f535bfd553b352370";
-      sha256 = "123d6jdqfy7b8aq9f6ax767n48hhbx6pln3nlrp623595i8zz3wf";
-    })
+    (
+      fetchpatch {
+        url = "http://git.kernel.dk/cgit/liburing/patch/?id=552c6a08d04c74d20eeaa86f535bfd553b352370";
+        sha256 = "123d6jdqfy7b8aq9f6ax767n48hhbx6pln3nlrp623595i8zz3wf";
+      }
+    )
 
     # Finally, this patch fixes the aarch64-linux support introduced by the
     # first patch, but which was _broken_ by the second patch, in a horrid
@@ -45,10 +50,12 @@ stdenv.mkDerivation rec {
     # appropriately.
     #
     # Already upstream: remove when moving to the next version
-    (fetchpatch {
-      url    = "http://git.kernel.dk/cgit/liburing/patch/?id=6e9dd0c8c50b5988a0c77532c9c2bd6afd4790d2";
-      sha256 = "11mqa1bp2pdfqh08gpcd98kg7lh3rrng41b4l1wvhxdbvg5rfw9c";
-    })
+    (
+      fetchpatch {
+        url = "http://git.kernel.dk/cgit/liburing/patch/?id=6e9dd0c8c50b5988a0c77532c9c2bd6afd4790d2";
+        sha256 = "11mqa1bp2pdfqh08gpcd98kg7lh3rrng41b4l1wvhxdbvg5rfw9c";
+      }
+    )
 
   ];
 
@@ -74,9 +81,9 @@ stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "Userspace library for the Linux io_uring API";
-    homepage    = http://git.kernel.dk/cgit/liburing/;
-    license     = licenses.lgpl21;
-    platforms   = platforms.linux;
+    homepage = http://git.kernel.dk/cgit/liburing/;
+    license = licenses.lgpl21;
+    platforms = platforms.linux;
     maintainers = with maintainers; [ thoughtpolice ];
   };
 }

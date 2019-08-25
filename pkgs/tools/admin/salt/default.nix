@@ -1,7 +1,7 @@
-{
-  stdenv, pythonPackages, openssl,
-
-  # Many Salt modules require various Python modules to be installed,
+{ stdenv
+, pythonPackages
+, openssl
+, # Many Salt modules require various Python modules to be installed,
   # passing them in this array enables Salt to find them.
   extraInputs ? []
 }:
@@ -24,9 +24,11 @@ pythonPackages.buildPythonApplication rec {
     pyzmq
     requests
     tornado_4
-  ] ++ stdenv.lib.optional (!pythonPackages.isPy3k) [
-    futures
-  ] ++ extraInputs;
+  ]
+    ++ stdenv.lib.optional (!pythonPackages.isPy3k) [
+         futures
+       ]
+    ++ extraInputs;
 
   patches = [ ./fix-libcrypto-loading.patch ];
 

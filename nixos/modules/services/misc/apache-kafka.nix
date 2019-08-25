@@ -22,7 +22,8 @@ let
   serverConfig = pkgs.writeText "server.properties" serverProperties;
   logConfig = pkgs.writeText "log4j.properties" cfg.log4jProperties;
 
-in {
+in
+{
 
   options.services.apache-kafka = {
     enable = mkOption {
@@ -54,13 +55,13 @@ in {
       default = [ "/tmp/kafka-logs" ];
       type = types.listOf types.path;
     };
-    
+
     zookeeper = mkOption {
       description = "Zookeeper connection string";
       default = "localhost:2181";
       type = types.string;
     };
- 
+
     extraProperties = mkOption {
       description = "Extra properties for server.properties.";
       type = types.nullOr types.lines;
@@ -122,7 +123,7 @@ in {
 
   config = mkIf cfg.enable {
 
-    environment.systemPackages = [cfg.package];
+    environment.systemPackages = [ cfg.package ];
 
     users.users = singleton {
       name = "apache-kafka";

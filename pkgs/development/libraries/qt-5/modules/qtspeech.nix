@@ -2,6 +2,6 @@
 
 qtModule {
   name = "qtspeech";
-  qtInputs = [ ];
+  qtInputs = [];
   outputs = [ "out" "dev" ];
 }

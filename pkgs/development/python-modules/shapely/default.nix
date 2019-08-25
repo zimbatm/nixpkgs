@@ -1,5 +1,10 @@
-{ stdenv, buildPythonPackage, fetchPypi, substituteAll
-, geos, pytest, cython
+{ stdenv
+, buildPythonPackage
+, fetchPypi
+, substituteAll
+, geos
+, pytest
+, cython
 , numpy
 }:
 
@@ -25,12 +30,15 @@ buildPythonPackage rec {
   GEOS_LIBRARY_PATH = "${geos}/lib/libgeos_c${stdenv.hostPlatform.extensions.sharedLibrary}";
 
   patches = [
-    (substituteAll {
-      src = ./library-paths.patch;
-      libgeos_c = GEOS_LIBRARY_PATH;
-      libc = "${stdenv.cc.libc}/lib/libc${stdenv.hostPlatform.extensions.sharedLibrary}"
-               + stdenv.lib.optionalString (!stdenv.isDarwin) ".6";
-    })
+    (
+      substituteAll {
+        src = ./library-paths.patch;
+        libgeos_c = GEOS_LIBRARY_PATH;
+        libc = "${stdenv.cc.libc}/lib/libc${stdenv.hostPlatform.extensions.sharedLibrary}"
+          + stdenv.lib.optionalString (!stdenv.isDarwin) ".6"
+          ;
+      }
+    )
   ];
 
   # Disable the tests that improperly try to use the built extensions

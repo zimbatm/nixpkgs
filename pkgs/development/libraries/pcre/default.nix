@@ -1,5 +1,7 @@
-{ stdenv, fetchurl
-, pcre, windows ? null
+{ stdenv
+, fetchurl
+, pcre
+, windows ? null
 , variant ? null
 }:
 
@@ -10,10 +12,11 @@ assert elem variant [ null "cpp" "pcre16" "pcre32" ];
 let
   version = "8.43";
   pname = if (variant == null) then "pcre"
-    else  if (variant == "cpp") then "pcre-cpp"
-    else  variant;
+  else if (variant == "cpp") then "pcre-cpp"
+  else variant;
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "${pname}-${version}";
 
   src = fetchurl {
@@ -23,11 +26,13 @@ in stdenv.mkDerivation rec {
 
   outputs = [ "bin" "dev" "out" "doc" "man" ];
 
-  configureFlags = optional (!stdenv.hostPlatform.isRiscV) "--enable-jit" ++ [
-    "--enable-unicode-properties"
-    "--disable-cpp"
-  ]
-    ++ optional (variant != null) "--enable-${variant}";
+  configureFlags = optional (!stdenv.hostPlatform.isRiscV) "--enable-jit"
+    ++ [
+         "--enable-unicode-properties"
+         "--disable-cpp"
+       ]
+    ++ optional (variant != null) "--enable-${variant}"
+    ;
 
   buildInputs = optional (stdenv.hostPlatform.libc == "msvcrt") windows.mingw_w64_pthreads;
 
@@ -39,15 +44,16 @@ in stdenv.mkDerivation rec {
   '';
 
   doCheck = !(with stdenv.hostPlatform; isCygwin || isFreeBSD) && stdenv.hostPlatform == stdenv.buildPlatform;
-    # XXX: test failure on Cygwin
-    # we are running out of stack on both freeBSDs on Hydra
+  # XXX: test failure on Cygwin
+  # we are running out of stack on both freeBSDs on Hydra
 
   postFixup = ''
     moveToOutput bin/pcre-config "$dev"
   ''
-    + optionalString (variant != null) ''
-    ln -sf -t "$out/lib/" '${pcre.out}'/lib/libpcre{,posix}.{so.*.*.*,*dylib}
-  '';
+  + optionalString (variant != null) ''
+      ln -sf -t "$out/lib/" '${pcre.out}'/lib/libpcre{,posix}.{so.*.*.*,*dylib}
+    ''
+  ;
 
   meta = {
     homepage = http://www.pcre.org/;

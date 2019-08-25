@@ -1,6 +1,21 @@
-{ stdenv, fetchFromGitHub, makeWrapper, bison, flex, geoip, geolite-legacy
-, libcli, libnet, libnetfilter_conntrack, libnl, libpcap, libsodium
-, liburcu, ncurses, pkgconfig, zlib }:
+{ stdenv
+, fetchFromGitHub
+, makeWrapper
+, bison
+, flex
+, geoip
+, geolite-legacy
+, libcli
+, libnet
+, libnetfilter_conntrack
+, libnl
+, libpcap
+, libsodium
+, liburcu
+, ncurses
+, pkgconfig
+, zlib
+}:
 
 stdenv.mkDerivation rec {
   pname = "netsniff-ng";
@@ -16,8 +31,17 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ pkgconfig makeWrapper bison flex ];
   buildInputs = [
-    geoip geolite-legacy libcli libnet libnl
-    libnetfilter_conntrack libpcap libsodium liburcu ncurses zlib
+    geoip
+    geolite-legacy
+    libcli
+    libnet
+    libnl
+    libnetfilter_conntrack
+    libpcap
+    libsodium
+    liburcu
+    ncurses
+    zlib
   ];
 
   # ./configure is not autoGNU but some home-brewn magic

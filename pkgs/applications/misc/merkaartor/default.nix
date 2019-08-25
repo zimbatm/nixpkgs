@@ -1,5 +1,15 @@
-{ stdenv, fetchFromGitHub, makeWrapper, qmake, pkgconfig, boost, gdal, proj
-, qtbase, qtsvg, qtwebkit }:
+{ stdenv
+, fetchFromGitHub
+, makeWrapper
+, qmake
+, pkgconfig
+, boost
+, gdal
+, proj
+, qtbase
+, qtsvg
+, qtwebkit
+}:
 
 stdenv.mkDerivation rec {
   name = "merkaartor-${version}";
@@ -29,6 +39,6 @@ stdenv.mkDerivation rec {
     description = "OpenStreetMap editor";
     homepage = http://merkaartor.be/;
     license = licenses.gpl2Plus;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
   };
 }

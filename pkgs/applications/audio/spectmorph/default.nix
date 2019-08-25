@@ -8,7 +8,7 @@ stdenv.mkDerivation rec {
     sha256 = "003wznv3sy1b4g55vqii9pr3i3bb3zmj7nqvwrz7vjsfn2xyd1bn";
   };
 
-  buildInputs = [  libjack2 lv2 glib qt5.qtbase libao cairo libsndfile fftwFloat ];
+  buildInputs = [ libjack2 lv2 glib qt5.qtbase libao cairo libsndfile fftwFloat ];
 
   nativeBuildInputs = [ pkgconfig ];
 

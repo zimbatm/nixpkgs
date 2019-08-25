@@ -1,6 +1,27 @@
-{ stdenv, fetchurl, makeWrapper, makeDesktopItem, zlib, glib, libpng, freetype, openssl
-, xorg, fontconfig, qtbase, qtwebengine, qtwebchannel, qtsvg, xkeyboard_config, alsaLib
-, libpulseaudio ? null, libredirect, quazip, less, which, unzip, llvmPackages
+{ stdenv
+, fetchurl
+, makeWrapper
+, makeDesktopItem
+, zlib
+, glib
+, libpng
+, freetype
+, openssl
+, xorg
+, fontconfig
+, qtbase
+, qtwebengine
+, qtwebchannel
+, qtsvg
+, xkeyboard_config
+, alsaLib
+, libpulseaudio ? null
+, libredirect
+, quazip
+, less
+, which
+, unzip
+, llvmPackages
 }:
 
 let
@@ -10,10 +31,32 @@ let
   libDir = if stdenv.is64bit then "lib64" else "lib";
 
   deps =
-    [ zlib glib libpng freetype xorg.libSM xorg.libICE xorg.libXrender openssl
-      xorg.libXrandr xorg.libXfixes xorg.libXcursor xorg.libXinerama
-      xorg.libxcb fontconfig xorg.libXext xorg.libX11 alsaLib qtbase qtwebengine qtwebchannel qtsvg
-      libpulseaudio quazip llvmPackages.libcxx llvmPackages.libcxxabi
+    [
+      zlib
+      glib
+      libpng
+      freetype
+      xorg.libSM
+      xorg.libICE
+      xorg.libXrender
+      openssl
+      xorg.libXrandr
+      xorg.libXfixes
+      xorg.libXcursor
+      xorg.libXinerama
+      xorg.libxcb
+      fontconfig
+      xorg.libXext
+      xorg.libX11
+      alsaLib
+      qtbase
+      qtwebengine
+      qtwebchannel
+      qtsvg
+      libpulseaudio
+      quazip
+      llvmPackages.libcxx
+      llvmPackages.libcxxabi
     ];
 
   desktopItem = makeDesktopItem {
@@ -36,8 +79,8 @@ stdenv.mkDerivation rec {
   src = fetchurl {
     url = "https://files.teamspeak-services.com/releases/client/${version}/TeamSpeak3-Client-linux_${arch}-${version}.run";
     sha256 = if stdenv.is64bit
-                then "13286dbjp4qiyfv8my1hfpwzns4szdsnqa11j8ygsh5ikgjk338a"
-                else "04lwclq7nvw73v5fmn9795j5wi54syglc77ldl41caiqqhdqf1i5";
+    then "13286dbjp4qiyfv8my1hfpwzns4szdsnqa11j8ygsh5ikgjk338a"
+    else "04lwclq7nvw73v5fmn9795j5wi54syglc77ldl41caiqqhdqf1i5";
   };
 
   # grab the plugin sdk for the desktop icon

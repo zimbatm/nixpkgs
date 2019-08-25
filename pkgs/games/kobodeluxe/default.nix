@@ -1,4 +1,4 @@
-{stdenv, fetchurl, SDL, SDL_image, libGLU_combined} :
+{ stdenv, fetchurl, SDL, SDL_image, libGLU_combined }:
 
 stdenv.mkDerivation {
   name = "kobodeluxe-0.5.1";

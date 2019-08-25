@@ -12,7 +12,8 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ autoreconfHook ];
 
   buildInputs = [ zlib ]
-    ++ stdenv.lib.optionals stdenv.isDarwin [ Cocoa ];
+    ++ stdenv.lib.optionals stdenv.isDarwin [ Cocoa ]
+    ;
 
   configureFlags = stdenv.lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
     # AC_FUNC_MALLOC is broken on cross builds.

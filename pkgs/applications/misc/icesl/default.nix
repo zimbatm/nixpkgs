@@ -6,7 +6,7 @@ stdenv.mkDerivation rec {
   name = "iceSL-${version}";
   version = "2.1.10";
 
-  src =  if stdenv.hostPlatform.system == "x86_64-linux" then fetchzip {
+  src = if stdenv.hostPlatform.system == "x86_64-linux" then fetchzip {
     url = "https://gforge.inria.fr/frs/download.php/file/37268/icesl${version}-amd64.zip";
     sha256 = "0dv3mq6wy46xk9blzzmgbdxpsjdaxid3zadfrysxlhmgl7zb2cn2";
   } else if stdenv.hostPlatform.system == "i686-linux" then fetchzip {

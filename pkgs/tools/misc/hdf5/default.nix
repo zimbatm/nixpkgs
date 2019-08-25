@@ -13,7 +13,9 @@
 # (--enable-unsupported could be used to force the build)
 assert !cpp || mpi == null;
 
-let inherit (stdenv.lib) optional optionals; in
+let
+  inherit (stdenv.lib) optional optionals;
+in
 
 stdenv.mkDerivation rec {
   version = "1.10.5";
@@ -32,18 +34,21 @@ stdenv.mkDerivation rec {
 
   buildInputs = []
     ++ optional (gfortran != null) gfortran
-    ++ optional (szip != null) szip;
+    ++ optional (szip != null) szip
+    ;
 
   propagatedBuildInputs = []
     ++ optional (zlib != null) zlib
-    ++ optional (mpi != null) mpi;
+    ++ optional (mpi != null) mpi
+    ;
 
   configureFlags = []
     ++ optional cpp "--enable-cxx"
     ++ optional (gfortran != null) "--enable-fortran"
     ++ optional (szip != null) "--with-szlib=${szip}"
-    ++ optionals (mpi != null) ["--enable-parallel" "CC=${mpi}/bin/mpicc"]
-    ++ optional enableShared "--enable-shared";
+    ++ optionals (mpi != null) [ "--enable-parallel" "CC=${mpi}/bin/mpicc" ]
+    ++ optional enableShared "--enable-shared"
+    ;
 
   patches = [
     ./bin-mv.patch

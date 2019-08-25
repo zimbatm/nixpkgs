@@ -3,7 +3,7 @@
 with lib;
 
 let
-  cfg     = config.services.monero;
+  cfg = config.services.monero;
   dataDir = "/var/lib/monero";
 
   listToConf = option: list:
@@ -16,18 +16,18 @@ let
     data-dir=${dataDir}
 
     ${optionalString mining.enable ''
-      start-mining=${mining.address}
-      mining-threads=${toString mining.threads}
-    ''}
+    start-mining=${mining.address}
+    mining-threads=${toString mining.threads}
+  ''}
 
     rpc-bind-ip=${rpc.address}
     rpc-bind-port=${toString rpc.port}
     ${optionalString login ''
-      rpc-login=${rpc.user}:${rpc.password}
-    ''}
+    rpc-login=${rpc.user}:${rpc.password}
+  ''}
     ${optionalString rpc.restricted ''
-      restrict-rpc=1
-    ''}
+    restrict-rpc=1
+  ''}
 
     limit-rate-up=${toString limits.upload}
     limit-rate-down=${toString limits.download}
@@ -156,7 +156,7 @@ in
 
       extraNodes = mkOption {
         type = types.listOf types.str;
-        default = [ ];
+        default = [];
         description = ''
           List of additional peer IP addresses to add to the local list.
         '';
@@ -164,7 +164,7 @@ in
 
       priorityNodes = mkOption {
         type = types.listOf types.str;
-        default = [ ];
+        default = [];
         description = ''
           List of peer IP addresses to connect to and
           attempt to keep the connection open.
@@ -173,7 +173,7 @@ in
 
       exclusiveNodes = mkOption {
         type = types.listOf types.str;
-        default = [ ];
+        default = [];
         description = ''
           List of peer IP addresses to connect to *only*.
           If given the other peer options will be ignored.
@@ -199,7 +199,7 @@ in
 
     users.users = singleton {
       name = "monero";
-      uid  = config.ids.uids.monero;
+      uid = config.ids.uids.monero;
       description = "Monero daemon user";
       home = dataDir;
       createHome = true;
@@ -207,16 +207,16 @@ in
 
     users.groups = singleton {
       name = "monero";
-      gid  = config.ids.gids.monero;
+      gid = config.ids.gids.monero;
     };
 
     systemd.services.monero = {
       description = "monero daemon";
-      after    = [ "network.target" ];
+      after = [ "network.target" ];
       wantedBy = [ "multi-user.target" ];
 
       serviceConfig = {
-        User  = "monero";
+        User = "monero";
         Group = "monero";
         ExecStart = "${pkgs.monero}/bin/monerod --config-file=${configFile} --non-interactive";
         Restart = "always";
@@ -224,15 +224,14 @@ in
       };
     };
 
-   assertions = singleton {
-     assertion = cfg.mining.enable -> cfg.mining.address != "";
-     message   = ''
-       You need a Monero address to receive mining rewards:
-       specify one using option monero.mining.address.
-    '';
-   };
+    assertions = singleton {
+      assertion = cfg.mining.enable -> cfg.mining.address != "";
+      message = ''
+        You need a Monero address to receive mining rewards:
+        specify one using option monero.mining.address.
+      '';
+    };
 
   };
 
 }
-

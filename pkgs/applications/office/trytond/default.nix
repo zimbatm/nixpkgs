@@ -1,5 +1,7 @@
-{ stdenv, python2Packages
-, withPostgresql ? true }:
+{ stdenv
+, python2Packages
+, withPostgresql ? true
+}:
 
 with stdenv.lib;
 
@@ -17,24 +19,27 @@ python2Packages.buildPythonApplication rec {
   buildInputs = with python2Packages; [
     mock
   ];
-  propagatedBuildInputs = with python2Packages; ([
-    dateutil
-    lxml
-    polib
-    python-sql
-    relatorio
-    werkzeug
-    wrapt
-    ipaddress
+  propagatedBuildInputs = with python2Packages; (
+    [
+      dateutil
+      lxml
+      polib
+      python-sql
+      relatorio
+      werkzeug
+      wrapt
+      ipaddress
 
-    # extra dependencies
-    bcrypt
-    pydot
-    python-Levenshtein
-    simplejson
-    cdecimal
-    html2text
-  ] ++ stdenv.lib.optional withPostgresql psycopg2);
+      # extra dependencies
+      bcrypt
+      pydot
+      python-Levenshtein
+      simplejson
+      cdecimal
+      html2text
+    ]
+    ++ stdenv.lib.optional withPostgresql psycopg2
+  );
   meta = {
     description = "The server of the Tryton application platform";
     longDescription = ''

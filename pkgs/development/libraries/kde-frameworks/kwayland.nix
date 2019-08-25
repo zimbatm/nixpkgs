@@ -1,7 +1,9 @@
-{
-  mkDerivation, lib, propagateBin,
-  extra-cmake-modules,
-  qtbase, wayland
+{ mkDerivation
+, lib
+, propagateBin
+, extra-cmake-modules
+, qtbase
+, wayland
 }:
 
 mkDerivation {

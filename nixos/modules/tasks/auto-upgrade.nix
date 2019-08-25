@@ -2,7 +2,9 @@
 
 with lib;
 
-let cfg = config.system.autoUpgrade; in
+let
+  cfg = config.system.autoUpgrade;
+in
 
 {
 
@@ -71,9 +73,12 @@ let cfg = config.system.autoUpgrade; in
 
     system.autoUpgrade.flags =
       [ "--no-build-output" ]
-      ++ (if cfg.channel == null
-          then [ "--upgrade" ]
-          else [ "-I" "nixpkgs=${cfg.channel}/nixexprs.tar.xz" ]);
+      ++ (
+           if cfg.channel == null
+           then [ "--upgrade" ]
+           else [ "-I" "nixpkgs=${cfg.channel}/nixexprs.tar.xz" ]
+         )
+      ;
 
     systemd.services.nixos-upgrade = {
       description = "NixOS Upgrade";
@@ -83,27 +88,30 @@ let cfg = config.system.autoUpgrade; in
 
       serviceConfig.Type = "oneshot";
 
-      environment = config.nix.envVars //
-        { inherit (config.environment.sessionVariables) NIX_PATH;
-          HOME = "/root";
-        } // config.networking.proxy.envVars;
+      environment = config.nix.envVars
+        // {
+             inherit (config.environment.sessionVariables) NIX_PATH;
+             HOME = "/root";
+           }
+        // config.networking.proxy.envVars
+        ;
 
       path = [ pkgs.coreutils pkgs.gnutar pkgs.xz.bin pkgs.gitMinimal config.nix.package.out ];
 
       script = let
-          nixos-rebuild = "${config.system.build.nixos-rebuild}/bin/nixos-rebuild";
-        in
+        nixos-rebuild = "${config.system.build.nixos-rebuild}/bin/nixos-rebuild";
+      in
         if cfg.allowReboot then ''
-            ${nixos-rebuild} boot ${toString cfg.flags}
-            booted="$(readlink /run/booted-system/{initrd,kernel,kernel-modules})"
-            built="$(readlink /nix/var/nix/profiles/system/{initrd,kernel,kernel-modules})"
-            if [ "$booted" = "$built" ]; then
-              ${nixos-rebuild} switch ${toString cfg.flags}
-            else
-              /run/current-system/sw/bin/shutdown -r +1
-            fi
-          '' else ''
+          ${nixos-rebuild} boot ${toString cfg.flags}
+          booted="$(readlink /run/booted-system/{initrd,kernel,kernel-modules})"
+          built="$(readlink /nix/var/nix/profiles/system/{initrd,kernel,kernel-modules})"
+          if [ "$booted" = "$built" ]; then
             ${nixos-rebuild} switch ${toString cfg.flags}
+          else
+            /run/current-system/sw/bin/shutdown -r +1
+          fi
+        '' else ''
+          ${nixos-rebuild} switch ${toString cfg.flags}
         '';
 
       startAt = cfg.dates;

@@ -1,7 +1,30 @@
-{ stdenv, fetchurl, fetchpatch, texlive, bison, flex, liblapack
-, gmp, mpfr, pari, ntl, gsl, blas, mpfi, ecm, glpk, nauty
-, readline, gettext, libpng, libao, gfortran, perl
-, enableGUI ? false, libGLU_combined ? null, xorg ? null, fltk ? null
+{ stdenv
+, fetchurl
+, fetchpatch
+, texlive
+, bison
+, flex
+, liblapack
+, gmp
+, mpfr
+, pari
+, ntl
+, gsl
+, blas
+, mpfi
+, ecm
+, glpk
+, nauty
+, readline
+, gettext
+, libpng
+, libao
+, gfortran
+, perl
+, enableGUI ? false
+, libGLU_combined ? null
+, xorg ? null
+, fltk ? null
 }:
 
 assert enableGUI -> libGLU_combined != null && xorg != null && fltk != null;
@@ -19,10 +42,12 @@ stdenv.mkDerivation rec {
   patches = stdenv.lib.optionals (!enableGUI) [
     # when enableGui is false, giac is compiled without fltk. That means some
     # outputs differ in the make check. Patch around this:
-    (fetchpatch {
-      url    = "https://git.sagemath.org/sage.git/plain/build/pkgs/giac/patches/nofltk-check.patch?id=7553a3c8dfa7bcec07241a07e6a4e7dcf5bb4f26";
-      sha256 = "0xkmfc028vg5w6va04gp2x2iv31n8v4shd6vbyvk4blzgfmpj2cw";
-    })
+    (
+      fetchpatch {
+        url = "https://git.sagemath.org/sage.git/plain/build/pkgs/giac/patches/nofltk-check.patch?id=7553a3c8dfa7bcec07241a07e6a4e7dcf5bb4f26";
+        sha256 = "0xkmfc028vg5w6va04gp2x2iv31n8v4shd6vbyvk4blzgfmpj2cw";
+      }
+    )
   ];
 
   postPatch = ''
@@ -32,27 +57,46 @@ stdenv.mkDerivation rec {
   '';
 
   nativeBuildInputs = [
-    texlive.combined.scheme-small bison flex
+    texlive.combined.scheme-small
+    bison
+    flex
   ];
 
   # perl is only needed for patchShebangs fixup.
   buildInputs = [
-    gmp mpfr pari ntl gsl blas mpfi glpk nauty
-    readline gettext libpng libao perl ecm
+    gmp
+    mpfr
+    pari
+    ntl
+    gsl
+    blas
+    mpfi
+    glpk
+    nauty
+    readline
+    gettext
+    libpng
+    libao
+    perl
+    ecm
     # gfortran.cc default output contains static libraries compiled without -fPIC
     # we want libgfortran.so.3 instead
     (stdenv.lib.getLib gfortran.cc)
     liblapack
-  ] ++ stdenv.lib.optionals enableGUI [
-    libGLU_combined fltk xorg.libX11
-  ];
+  ]
+  ++ stdenv.lib.optionals enableGUI [
+       libGLU_combined
+       fltk
+       xorg.libX11
+     ]
+  ;
 
   /* fixes:
   configure:16211: checking for main in -lntl
   configure:16230: g++ -o conftest -g -O2   conftest.cpp -lntl  -llapack -lblas -lgfortran -ldl -lpng16 -lm -lmpfi -lmpfr -lgmp  >&5
   /nix/store/y9c1v4x7y39j2rfbg17agjwqdzxpsn18-ntl-11.3.2/lib/libntl.so: undefined reference to `pthread_key_create'
   */
-  NIX_CFLAGS_LINK="-lpthread";
+  NIX_CFLAGS_LINK = "-lpthread";
 
   # xcas Phys and Turtle menus are broken with split outputs
   # and interactive use is likely to need docs
@@ -71,12 +115,22 @@ stdenv.mkDerivation rec {
   enableParallelBuilding = true;
 
   configureFlags = [
-    "--enable-gc" "--enable-png" "--enable-gsl" "--enable-lapack"
-    "--enable-pari" "--enable-ntl" "--enable-gmpxx" # "--enable-cocoa"
-    "--enable-ao" "--enable-ecm" "--enable-glpk"
-  ] ++ stdenv.lib.optionals enableGUI [
-    "--enable-gui" "--with-x"
-  ];
+    "--enable-gc"
+    "--enable-png"
+    "--enable-gsl"
+    "--enable-lapack"
+    "--enable-pari"
+    "--enable-ntl"
+    "--enable-gmpxx" # "--enable-cocoa"
+    "--enable-ao"
+    "--enable-ecm"
+    "--enable-glpk"
+  ]
+  ++ stdenv.lib.optionals enableGUI [
+       "--enable-gui"
+       "--with-x"
+     ]
+  ;
 
   postInstall = ''
     # example Makefiles contain the full path to some commands
@@ -94,11 +148,13 @@ stdenv.mkDerivation rec {
       mv "$out/share/giac/doc" "$doc/share/giac"
       mv "$out/share/giac/examples" "$doc/share/giac"
     fi
-  '' + stdenv.lib.optionalString (!enableGUI) ''
-    for i in pixmaps application-registry applications icons; do
-      rm -r "$out/share/$i";
-    done;
-  '';
+  ''
+  + stdenv.lib.optionalString (!enableGUI) ''
+      for i in pixmaps application-registry applications icons; do
+        rm -r "$out/share/$i";
+      done;
+    ''
+  ;
 
   meta = with stdenv.lib; {
     description = "A free computer algebra system (CAS)";

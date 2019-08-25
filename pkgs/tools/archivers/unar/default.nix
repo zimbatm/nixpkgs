@@ -3,7 +3,8 @@
 let
   pname = "unar";
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "${pname}-${version}";
   version = "1.10.1";
 

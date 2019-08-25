@@ -1,6 +1,9 @@
-{ stdenv, fetchurl, perl
+{ stdenv
+, fetchurl
+, perl
 , ghostscript #for postscript and html output
-, psutils, netpbm #for html output
+, psutils
+, netpbm #for html output
 , buildPackages
 , autoreconfHook
 }:
@@ -26,16 +29,18 @@ stdenv.mkDerivation rec {
   postPatch = stdenv.lib.optionalString (psutils != null) ''
     substituteInPlace src/preproc/html/pre-html.cpp \
       --replace "psselect" "${psutils}/bin/psselect"
-  '' + stdenv.lib.optionalString (netpbm != null) ''
-    substituteInPlace src/preproc/html/pre-html.cpp \
-      --replace "pnmcut" "${netpbm}/bin/pnmcut" \
-      --replace "pnmcrop" "${netpbm}/bin/pnmcrop" \
-      --replace "pnmtopng" "${netpbm}/bin/pnmtopng"
-    substituteInPlace tmac/www.tmac \
-      --replace "pnmcrop" "${netpbm}/bin/pnmcrop" \
-      --replace "pngtopnm" "${netpbm}/bin/pngtopnm" \
-      --replace "@PNMTOPS_NOSETPAGE@" "${netpbm}/bin/pnmtops -nosetpage"
-  '';
+  ''
+  + stdenv.lib.optionalString (netpbm != null) ''
+      substituteInPlace src/preproc/html/pre-html.cpp \
+        --replace "pnmcut" "${netpbm}/bin/pnmcut" \
+        --replace "pnmcrop" "${netpbm}/bin/pnmcrop" \
+        --replace "pnmtopng" "${netpbm}/bin/pnmtopng"
+      substituteInPlace tmac/www.tmac \
+        --replace "pnmcrop" "${netpbm}/bin/pnmcrop" \
+        --replace "pngtopnm" "${netpbm}/bin/pngtopnm" \
+        --replace "@PNMTOPS_NOSETPAGE@" "${netpbm}/bin/pnmtops -nosetpage"
+    ''
+  ;
 
   buildInputs = [ ghostscript psutils netpbm perl ];
   nativeBuildInputs = [ autoreconfHook ];
@@ -47,11 +52,14 @@ stdenv.mkDerivation rec {
   # have to pass "--with-appresdir", too.
   configureFlags = [
     "--without-x"
-  ] ++ stdenv.lib.optionals (ghostscript != null) [
-    "--with-gs=${ghostscript}/bin/gs"
-  ] ++ stdenv.lib.optionals (stdenv.buildPlatform != stdenv.hostPlatform) [
-    "ac_cv_path_PERL=${buildPackages.perl}/bin/perl"
-  ];
+  ]
+  ++ stdenv.lib.optionals (ghostscript != null) [
+       "--with-gs=${ghostscript}/bin/gs"
+     ]
+  ++ stdenv.lib.optionals (stdenv.buildPlatform != stdenv.hostPlatform) [
+       "ac_cv_path_PERL=${buildPackages.perl}/bin/perl"
+     ]
+  ;
 
   makeFlags = stdenv.lib.optionals (stdenv.buildPlatform != stdenv.hostPlatform) [
     # Trick to get the build system find the proper 'native' groff
@@ -105,9 +113,11 @@ stdenv.mkDerivation rec {
     substituteInPlace $perl/bin/grog \
       --replace $out/lib/groff/grog $perl/lib/groff/grog
 
-  '' + stdenv.lib.optionalString (stdenv.buildPlatform != stdenv.hostPlatform) ''
-    find $perl/ -type f -print0 | xargs --null sed -i 's|${buildPackages.perl}|${perl}|'
-  '';
+  ''
+  + stdenv.lib.optionalString (stdenv.buildPlatform != stdenv.hostPlatform) ''
+      find $perl/ -type f -print0 | xargs --null sed -i 's|${buildPackages.perl}|${perl}|'
+    ''
+  ;
 
   meta = with stdenv.lib; {
     homepage = https://www.gnu.org/software/groff/;

@@ -25,7 +25,10 @@ stdenv.mkDerivation {
   '';
 
   buildInputs = with xorg; [
-    mtdev xorgproto libpciaccess libxcb
+    mtdev
+    xorgproto
+    libpciaccess
+    libxcb
   ];
 
   buildPhase = ''

@@ -1,5 +1,9 @@
-{ lib, buildPythonPackage, fetchPypi, callPackage
-, isPy27, isPy34
+{ lib
+, buildPythonPackage
+, fetchPypi
+, callPackage
+, isPy27
+, isPy34
 , cleo
 , requests
 , cachy
@@ -19,19 +23,22 @@
 }:
 
 let
-  cleo6 = cleo.overrideAttrs (oldAttrs: rec {
-    version = "0.6.8";
-    src = fetchPypi {
-      inherit (oldAttrs) pname;
-      inherit version;
-      sha256 = "06zp695hq835rkaq6irr1ds1dp2qfzyf32v60vxpd8rcnxv319l5";
-    };
-  });
+  cleo6 = cleo.overrideAttrs (
+    oldAttrs: rec {
+      version = "0.6.8";
+      src = fetchPypi {
+        inherit (oldAttrs) pname;
+        inherit version;
+        sha256 = "06zp695hq835rkaq6irr1ds1dp2qfzyf32v60vxpd8rcnxv319l5";
+      };
+    }
+  );
 
-  jsonschema3 = callPackage ./jsonschema.nix { };
-  glob2 = callPackage ./glob2.nix { };
+  jsonschema3 = callPackage ./jsonschema.nix {};
+  glob2 = callPackage ./glob2.nix {};
 
-in buildPythonPackage rec {
+in
+buildPythonPackage rec {
   pname = "poetry";
   version = "0.12.17";
 
@@ -61,8 +68,10 @@ in buildPythonPackage rec {
     html5lib
     shellingham
     tomlkit
-  ] ++ lib.optionals (isPy27 || isPy34) [ typing pathlib2 glob2 ]
-    ++ lib.optionals isPy27 [ virtualenv functools32 ];
+  ]
+  ++ lib.optionals (isPy27 || isPy34) [ typing pathlib2 glob2 ]
+  ++ lib.optionals isPy27 [ virtualenv functools32 ]
+  ;
 
   postInstall = ''
     mkdir -p "$out/share/bash-completion/completions"

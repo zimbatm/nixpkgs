@@ -1,9 +1,16 @@
-{ stdenv, fetchurl, pkgconfig, intltool, libxfce4util, libxfcegui4, xfce4-panel
-, gtk }:
+{ stdenv
+, fetchurl
+, pkgconfig
+, intltool
+, libxfce4util
+, libxfcegui4
+, xfce4-panel
+, gtk
+}:
 
 with stdenv.lib;
 stdenv.mkDerivation rec {
-  p_name  = "xfce4-datetime-plugin";
+  p_name = "xfce4-datetime-plugin";
   ver_maj = "0.6";
   ver_min = "2";
 

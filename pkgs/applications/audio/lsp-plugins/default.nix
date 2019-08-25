@@ -1,7 +1,17 @@
-{ stdenv, fetchFromGitHub, pkgconfig, makeWrapper
-, libsndfile, jack2Full
-, libGLU, libGL, lv2, cairo
-, ladspaH, php, expat }:
+{ stdenv
+, fetchFromGitHub
+, pkgconfig
+, makeWrapper
+, libsndfile
+, jack2Full
+, libGLU
+, libGL
+, lv2
+, cairo
+, ladspaH
+, php
+, expat
+}:
 
 stdenv.mkDerivation rec {
   pname = "lsp-plugins";
@@ -49,7 +59,8 @@ stdenv.mkDerivation rec {
   buildFlags = "release";
 
   meta = with stdenv.lib;
-    { description = "Collection of open-source audio plugins";
+    {
+      description = "Collection of open-source audio plugins";
       longDescription = ''
         Compatible with follwing formats:
 

@@ -12,7 +12,9 @@ stdenv.mkDerivation rec {
 
   mesonFlags = appstream.mesonFlags ++ [ "-Dqt=true" ];
 
-  meta = appstream.meta // {
-    description = "Software metadata handling library - Qt";
- };
+  meta = appstream.meta
+    // {
+         description = "Software metadata handling library - Qt";
+       }
+    ;
 }

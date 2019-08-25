@@ -16,10 +16,11 @@ let
   version = "1003.1-2008";
 
   singleBinary = cmd: providers: let
-      provider = providers.${stdenv.hostPlatform.parsed.kernel.name} or providers.linux;
-      bin = "${getBin provider}/bin/${cmd}";
-      manpage = "${getOutput "man" provider}/share/man/man1/${cmd}.1.gz";
-    in runCommand "${cmd}-${version}" {
+    provider = providers.${stdenv.hostPlatform.parsed.kernel.name} or providers.linux;
+    bin = "${getBin provider}/bin/${cmd}";
+    manpage = "${getOutput "man" provider}/share/man/man1/${cmd}.1.gz";
+  in
+    runCommand "${cmd}-${version}" {
       meta = {
         priority = 10;
         platforms = lib.platforms.${stdenv.hostPlatform.parsed.kernel.name} or lib.platforms.all;
@@ -67,12 +68,12 @@ let
     };
     getconf = {
       linux = if stdenv.hostPlatform.libc == "glibc" then pkgs.glibc
-              else pkgs.netbsd.getconf;
+      else pkgs.netbsd.getconf;
       darwin = pkgs.darwin.system_cmds;
     };
     getent = {
       linux = if stdenv.hostPlatform.libc == "glibc" then pkgs.glibc
-              else pkgs.netbsd.getent;
+      else pkgs.netbsd.getent;
       darwin = pkgs.netbsd.getent;
     };
     getopt = {
@@ -188,8 +189,20 @@ let
   # Provided for old usage of these commands.
   compat = with bins; lib.mapAttrs makeCompat {
     procps = [ ps sysctl top watch ];
-    utillinux = [ fsck fdisk getopt hexdump mount
-                  script umount whereis write col column ];
+    utillinux = [
+      fsck
+      fdisk
+      getopt
+      hexdump
+      mount
+      script
+      umount
+      whereis
+      write
+      col
+      column
+    ];
     nettools = [ arp hostname ifconfig netstat route ];
   };
-in bins // compat
+in
+bins // compat

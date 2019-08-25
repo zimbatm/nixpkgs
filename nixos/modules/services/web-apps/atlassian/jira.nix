@@ -6,22 +6,24 @@ let
 
   cfg = config.services.jira;
 
-  pkg = cfg.package.override (optionalAttrs cfg.sso.enable {
-    enableSSO = cfg.sso.enable;
-    crowdProperties = ''
-      application.name                        ${cfg.sso.applicationName}
-      application.password                    ${cfg.sso.applicationPassword}
-      application.login.url                   ${cfg.sso.crowd}/console/
+  pkg = cfg.package.override (
+    optionalAttrs cfg.sso.enable {
+      enableSSO = cfg.sso.enable;
+      crowdProperties = ''
+        application.name                        ${cfg.sso.applicationName}
+        application.password                    ${cfg.sso.applicationPassword}
+        application.login.url                   ${cfg.sso.crowd}/console/
 
-      crowd.server.url                        ${cfg.sso.crowd}/services/
-      crowd.base.url                          ${cfg.sso.crowd}/
+        crowd.server.url                        ${cfg.sso.crowd}/services/
+        crowd.base.url                          ${cfg.sso.crowd}/
 
-      session.isauthenticated                 session.isauthenticated
-      session.tokenkey                        session.tokenkey
-      session.validationinterval              ${toString cfg.sso.validationInterval}
-      session.lastvalidation                  session.lastvalidation
-    '';
-  });
+        session.isauthenticated                 session.isauthenticated
+        session.tokenkey                        session.tokenkey
+        session.validationinterval              ${toString cfg.sso.validationInterval}
+        session.lastvalidation                  session.lastvalidation
+      '';
+    }
+  );
 
 in
 
@@ -186,11 +188,16 @@ in
         mkdir -p ${cfg.home}/{logs,work,temp,deploy}
 
         sed -e 's,port="8080",port="${toString cfg.listenPort}" address="${cfg.listenAddress}",' \
-        '' + (lib.optionalString cfg.proxy.enable ''
-          -e 's,protocol="HTTP/1.1",protocol="HTTP/1.1" proxyName="${cfg.proxy.name}" proxyPort="${toString cfg.proxy.port}" scheme="${cfg.proxy.scheme}" secure="${toString cfg.proxy.secure}",' \
-        '') + ''
-          ${pkg}/conf/server.xml.dist > ${cfg.home}/server.xml
-      '';
+      ''
+      + (
+          lib.optionalString cfg.proxy.enable ''
+            -e 's,protocol="HTTP/1.1",protocol="HTTP/1.1" proxyName="${cfg.proxy.name}" proxyPort="${toString cfg.proxy.port}" scheme="${cfg.proxy.scheme}" secure="${toString cfg.proxy.secure}",' \
+          ''
+        )
+      + ''
+        ${pkg}/conf/server.xml.dist > ${cfg.home}/server.xml
+      ''
+      ;
 
       serviceConfig = {
         User = cfg.user;

@@ -10,8 +10,10 @@ let
     PORT = cfg.port;
     USERS = cfg.users;
     SECURE_ONLY = cfg.secureOnly;
-  } // lib.optionalAttrs (cfg.adTag != null) { AD_TAG = cfg.adTag; }
-    // cfg.extraConfig;
+  }
+  // lib.optionalAttrs (cfg.adTag != null) { AD_TAG = cfg.adTag; }
+  // cfg.extraConfig
+  ;
 
   convertOption = opt:
     if isString opt || isInt opt then

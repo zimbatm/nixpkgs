@@ -49,9 +49,11 @@ in
       mkdir -p /run/lib
       ln -sfn ${package}/lib ${package.libCompatDir}
       ln -sfn ${package} /run/amdgpu-pro
-    '' + optionalString opengl.driSupport32Bit ''
-      ln -sfn ${package32}/lib ${package32.libCompatDir}
-    '';
+    ''
+    + optionalString opengl.driSupport32Bit ''
+        ln -sfn ${package32}/lib ${package32.libCompatDir}
+      ''
+    ;
 
     system.requiredKernelConfig = with config.lib.kernelConfig; [
       (isYes "KALLSYMS_ALL")

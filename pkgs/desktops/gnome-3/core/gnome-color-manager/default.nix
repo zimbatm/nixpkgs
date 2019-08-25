@@ -3,7 +3,8 @@
 let
   pname = "gnome-color-manager";
   version = "3.32.0";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "${pname}-${version}";
 
   src = fetchurl {

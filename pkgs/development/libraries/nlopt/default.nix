@@ -21,11 +21,13 @@ stdenv.mkDerivation rec {
     "--without-guile"
     "--without-python"
     "--without-matlab"
-  ] ++ stdenv.lib.optionals (octave != null) [
-    "--with-octave"
-    "M_INSTALL_DIR=$(out)/${octave.sitePath}/m"
-    "OCT_INSTALL_DIR=$(out)/${octave.sitePath}/oct"
-  ];
+  ]
+  ++ stdenv.lib.optionals (octave != null) [
+       "--with-octave"
+       "M_INSTALL_DIR=$(out)/${octave.sitePath}/m"
+       "OCT_INSTALL_DIR=$(out)/${octave.sitePath}/oct"
+     ]
+  ;
 
   meta = {
     homepage = "https://nlopt.readthedocs.io/en/latest/";

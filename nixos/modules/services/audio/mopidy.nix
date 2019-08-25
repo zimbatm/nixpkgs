@@ -20,7 +20,8 @@ let
         --prefix PYTHONPATH : $out/${python.sitePackages}
     '';
   };
-in {
+in
+{
 
   options = {
 
@@ -79,7 +80,7 @@ in {
       after = [ "network.target" "sound.target" ];
       description = "mopidy music player daemon";
       serviceConfig = {
-        ExecStart = "${mopidyEnv}/bin/mopidy --config ${concatStringsSep ":" ([mopidyConf] ++ cfg.extraConfigFiles)}";
+        ExecStart = "${mopidyEnv}/bin/mopidy --config ${concatStringsSep ":" ([ mopidyConf ] ++ cfg.extraConfigFiles)}";
         User = "mopidy";
       };
     };
@@ -87,7 +88,7 @@ in {
     systemd.services.mopidy-scan = {
       description = "mopidy local files scanner";
       serviceConfig = {
-        ExecStart = "${mopidyEnv}/bin/mopidy --config ${concatStringsSep ":" ([mopidyConf] ++ cfg.extraConfigFiles)} local scan";
+        ExecStart = "${mopidyEnv}/bin/mopidy --config ${concatStringsSep ":" ([ mopidyConf ] ++ cfg.extraConfigFiles)} local scan";
         User = "mopidy";
         Type = "oneshot";
       };

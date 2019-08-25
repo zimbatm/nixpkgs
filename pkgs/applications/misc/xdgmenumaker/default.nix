@@ -27,7 +27,7 @@ stdenv.mkDerivation rec {
       --prefix XDG_DATA_DIRS : "$out/share"
     wrapPythonPrograms
   '';
-  
+
   meta = with stdenv.lib; {
     description = "Command line tool that generates XDG menus for several window managers";
     homepage = https://github.com/gapan/xdgmenumaker;

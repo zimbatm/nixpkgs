@@ -1,7 +1,17 @@
-{
-  stdenv, fetchFromGitHub, cmake, pkgconfig, lxqt-build-tools,
-  qtbase, qttools, qtx11extras, qtsvg, polkit-qt, kwindowsystem, liblxqt,
-  libqtxdg, pcre
+{ stdenv
+, fetchFromGitHub
+, cmake
+, pkgconfig
+, lxqt-build-tools
+, qtbase
+, qttools
+, qtx11extras
+, qtsvg
+, polkit-qt
+, kwindowsystem
+, liblxqt
+, libqtxdg
+, pcre
 }:
 
 stdenv.mkDerivation rec {

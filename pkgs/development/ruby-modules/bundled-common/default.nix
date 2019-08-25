@@ -1,11 +1,15 @@
-{ stdenv, runCommand, ruby, lib
-, defaultGemConfig, buildRubyGem, buildEnv
+{ stdenv
+, runCommand
+, ruby
+, lib
+, defaultGemConfig
+, buildRubyGem
+, buildEnv
 , makeWrapper
 , bundler
 }@defs:
 
-{
-  name ? null
+{ name ? null
 , pname ? null
 , mainGemName ? null
 , gemdir ? null
@@ -31,13 +35,14 @@ let
   gemFiles = bundlerFiles args;
 
   importedGemset = if builtins.typeOf gemFiles.gemset != "set"
-    then import gemFiles.gemset
-    else gemFiles.gemset;
+  then import gemFiles.gemset
+  else gemFiles.gemset;
 
   filteredGemset = filterGemset { inherit ruby groups; } importedGemset;
 
-  configuredGemset = lib.flip lib.mapAttrs filteredGemset (name: attrs:
-    applyGemConfigs (attrs // { inherit ruby; gemName = name; })
+  configuredGemset = lib.flip lib.mapAttrs filteredGemset (
+    name: attrs:
+      applyGemConfigs (attrs // { inherit ruby; gemName = name; })
   );
 
   hasBundler = builtins.hasAttr "bundler" filteredGemset;
@@ -62,17 +67,18 @@ let
   else
     name;
 
-  copyIfBundledByPath = { bundledByPath ? false, ...}:
-  (if bundledByPath then
-      assert gemFiles.gemdir != null; "cp -a ${gemFiles.gemdir}/* $out/" #*/
-    else ""
-  );
+  copyIfBundledByPath = { bundledByPath ? false, ... }:
+    (
+      if bundledByPath then
+        assert gemFiles.gemdir != null; "cp -a ${gemFiles.gemdir}/* $out/" #*/
+      else ""
+    );
 
   maybeCopyAll = pkgname: if pkgname == null then "" else
-  let
-    mainGem = gems."${pkgname}" or (throw "bundlerEnv: gem ${pkgname} not found");
-  in
-    copyIfBundledByPath mainGem;
+    let
+      mainGem = gems."${pkgname}" or (throw "bundlerEnv: gem ${pkgname} not found");
+    in
+      copyIfBundledByPath mainGem;
 
   # We have to normalize the Gemfile.lock, otherwise bundler tries to be
   # helpful by doing so at run time, causing executables to immediately bail
@@ -88,10 +94,10 @@ let
     let
       gemAttrs = composeGemAttrs ruby gems name attrs;
     in
-    if gemAttrs.type == "path" then
-      pathDerivation (gemAttrs.source // gemAttrs)
-    else
-      buildRubyGem gemAttrs
+      if gemAttrs.type == "path" then
+        pathDerivation (gemAttrs.source // gemAttrs)
+      else
+        buildRubyGem gemAttrs
   );
 
   envPaths = lib.attrValues gems ++ lib.optional (!hasBundler) bundler;
@@ -104,10 +110,15 @@ let
     paths = envPaths;
     pathsToLink = [ "/lib" ];
 
-    postBuild = genStubsScript (defs // args // {
-      inherit confFiles bundler groups;
-      binPaths = envPaths;
-    }) + lib.optionalString (postBuild != null) postBuild;
+    postBuild = genStubsScript (
+      defs // args
+      // {
+           inherit confFiles bundler groups;
+           binPaths = envPaths;
+         }
+    )
+    + lib.optionalString (postBuild != null) postBuild
+    ;
 
     meta = { platforms = ruby.meta.platforms; } // meta;
 
@@ -138,7 +149,8 @@ let
           require 'rubygems'
           require 'bundler/setup'
         '';
-        in stdenv.mkDerivation {
+      in
+        stdenv.mkDerivation {
           name = "${pname'}-interactive-environment";
           nativeBuildInputs = [ wrappedRuby basicEnv ];
           shellHook = ''
@@ -155,4 +167,4 @@ let
     };
   };
 in
-  basicEnv
+basicEnv

@@ -31,10 +31,12 @@ stdenv.mkDerivation rec {
   patches = [
     # correctly declare json-glib in .pc file
     # https://github.com/alexlarsson/gthree/pull/61
-    (fetchpatch {
-      url = https://github.com/alexlarsson/gthree/commit/784b1f20e0b6eb15f113a51f74c2cba871249861.patch;
-      sha256 = "07vxafaxris5a98w751aw04nlw0l45np1lba08xd16wdzmkadz0x";
-    })
+    (
+      fetchpatch {
+        url = https://github.com/alexlarsson/gthree/commit/784b1f20e0b6eb15f113a51f74c2cba871249861.patch;
+        sha256 = "07vxafaxris5a98w751aw04nlw0l45np1lba08xd16wdzmkadz0x";
+      }
+    )
   ];
 
   nativeBuildInputs = [

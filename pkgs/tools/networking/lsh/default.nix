@@ -1,5 +1,17 @@
-{ stdenv, fetchurl, gperf, guile, gmp, zlib, liboop, readline, gnum4, pam
-, nettools, lsof, procps }:
+{ stdenv
+, fetchurl
+, gperf
+, guile
+, gmp
+, zlib
+, liboop
+, readline
+, gnum4
+, pam
+, nettools
+, lsof
+, procps
+}:
 
 stdenv.mkDerivation rec {
   name = "lsh-2.0.4";
@@ -45,7 +57,7 @@ stdenv.mkDerivation rec {
     homepage = http://www.lysator.liu.se/~nisse/lsh/;
     license = stdenv.lib.licenses.gpl2Plus;
 
-    maintainers = [ ];
+    maintainers = [];
     platforms = [ "x86_64-linux" ];
   };
 }

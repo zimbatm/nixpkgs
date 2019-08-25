@@ -9,8 +9,8 @@ let
   # This middle-ground solution ensures *an* sshd can do their basic validation
   # on the configuration.
   validationPackage = if pkgs.stdenv.buildPlatform == pkgs.stdenv.hostPlatform
-    then [ cfgc.package ]
-    else [ pkgs.buildPackages.openssh ];
+  then [ cfgc.package ]
+  else [ pkgs.buildPackages.openssh ];
 
   sshconf = pkgs.runCommand "sshd.conf-validated" { nativeBuildInputs = [ validationPackage ]; } ''
     cat >$out <<EOL
@@ -21,7 +21,7 @@ let
     sshd -t -f $out -h mock-hostkey
   '';
 
-  cfg  = config.services.openssh;
+  cfg = config.services.openssh;
   cfgc = config.programs.ssh;
 
   nssModulesPath = config.system.nssModules.path;
@@ -66,10 +66,14 @@ let
         ${concatMapStrings (f: readFile f + "\n") u.openssh.authorizedKeys.keyFiles}
       '';
     };
-    usersWithKeys = attrValues (flip filterAttrs config.users.users (n: u:
-      length u.openssh.authorizedKeys.keys != 0 || length u.openssh.authorizedKeys.keyFiles != 0
-    ));
-  in listToAttrs (map mkAuthKeyFile usersWithKeys);
+    usersWithKeys = attrValues (
+      flip filterAttrs config.users.users (
+        n: u:
+          length u.openssh.authorizedKeys.keys != 0 || length u.openssh.authorizedKeys.keyFiles != 0
+      )
+    );
+  in
+    listToAttrs (map mkAuthKeyFile usersWithKeys);
 
 in
 
@@ -129,7 +133,7 @@ in
 
       permitRootLogin = mkOption {
         default = "prohibit-password";
-        type = types.enum ["yes" "without-password" "prohibit-password" "forced-commands-only" "no"];
+        type = types.enum [ "yes" "without-password" "prohibit-password" "forced-commands-only" "no" ];
         description = ''
           Whether the root user can login using ssh.
         '';
@@ -148,7 +152,7 @@ in
 
       ports = mkOption {
         type = types.listOf types.port;
-        default = [22];
+        default = [ 22 ];
         description = ''
           Specifies on which ports the SSH daemon listens.
         '';
@@ -163,24 +167,26 @@ in
       };
 
       listenAddresses = mkOption {
-        type = with types; listOf (submodule {
-          options = {
-            addr = mkOption {
-              type = types.nullOr types.str;
-              default = null;
-              description = ''
-                Host, IPv4 or IPv6 address to listen to.
-              '';
+        type = with types; listOf (
+          submodule {
+            options = {
+              addr = mkOption {
+                type = types.nullOr types.str;
+                default = null;
+                description = ''
+                  Host, IPv4 or IPv6 address to listen to.
+                '';
+              };
+              port = mkOption {
+                type = types.nullOr types.int;
+                default = null;
+                description = ''
+                  Port to listen to.
+                '';
+              };
             };
-            port = mkOption {
-              type = types.nullOr types.int;
-              default = null;
-              description = ''
-                Port to listen to.
-              '';
-            };
-          };
-        });
+          }
+        );
         default = [];
         example = [ { addr = "192.168.3.1"; port = 22; } { addr = "0.0.0.0"; port = 64022; } ];
         description = ''
@@ -212,11 +218,13 @@ in
       hostKeys = mkOption {
         type = types.listOf types.attrs;
         default =
-          [ { type = "rsa"; bits = 4096; path = "/etc/ssh/ssh_host_rsa_key"; }
+          [
+            { type = "rsa"; bits = 4096; path = "/etc/ssh/ssh_host_rsa_key"; }
             { type = "ed25519"; path = "/etc/ssh/ssh_host_ed25519_key"; }
           ];
         example =
-          [ { type = "rsa"; bits = 4096; path = "/etc/ssh/ssh_host_rsa_key"; rounds = 100; openSSHFormat = true; }
+          [
+            { type = "rsa"; bits = 4096; path = "/etc/ssh/ssh_host_rsa_key"; rounds = 100; openSSHFormat = true; }
             { type = "ed25519"; path = "/etc/ssh/ssh_host_ed25519_key"; rounds = 100; comment = "key comment"; }
           ];
         description = ''
@@ -348,21 +356,25 @@ in
   config = mkIf cfg.enable {
 
     users.users.sshd =
-      { isSystemUser = true;
+      {
+        isSystemUser = true;
         description = "SSH privilege separation user";
       };
 
     services.openssh.moduliFile = mkDefault "${cfgc.package}/etc/ssh/moduli";
 
-    environment.etc = authKeysFiles //
-      { "ssh/moduli".source = cfg.moduliFile;
-        "ssh/sshd_config".source = sshconf;
-      };
+    environment.etc = authKeysFiles
+      // {
+           "ssh/moduli".source = cfg.moduliFile;
+           "ssh/sshd_config".source = sshconf;
+         }
+      ;
 
     systemd =
       let
         service =
-          { description = "SSH Daemon";
+          {
+            description = "SSH Daemon";
             wantedBy = optional (!cfg.startWhenNeeded) "multi-user.target";
             after = [ "network.target" ];
             stopIfChanged = false;
@@ -381,7 +393,8 @@ in
 
                 mkdir -m 0755 -p /etc/ssh
 
-                ${flip concatMapStrings cfg.hostKeys (k: ''
+                ${flip concatMapStrings cfg.hostKeys (
+                k: ''
                   if ! [ -f "${k.path}" ]; then
                       ssh-keygen \
                         -t "${k.type}" \
@@ -392,50 +405,60 @@ in
                         -f "${k.path}" \
                         -N ""
                   fi
-                '')}
+                ''
+              )}
               '';
 
             serviceConfig =
-              { ExecStart =
-                  (optionalString cfg.startWhenNeeded "-") +
-                  "${cfgc.package}/bin/sshd " + (optionalString cfg.startWhenNeeded "-i ") +
-                  "-f /etc/ssh/sshd_config";
+              {
+                ExecStart =
+                  (optionalString cfg.startWhenNeeded "-")
+                  + "${cfgc.package}/bin/sshd "
+                  + (optionalString cfg.startWhenNeeded "-i ")
+                  + "-f /etc/ssh/sshd_config"
+                  ;
                 KillMode = "process";
-              } // (if cfg.startWhenNeeded then {
-                StandardInput = "socket";
-                StandardError = "journal";
-              } else {
-                Restart = "always";
-                Type = "simple";
-              });
+              }
+              // (
+                   if cfg.startWhenNeeded then {
+                     StandardInput = "socket";
+                     StandardError = "journal";
+                   } else {
+                     Restart = "always";
+                     Type = "simple";
+                   }
+                 )
+            ;
 
           };
       in
 
-      if cfg.startWhenNeeded then {
+        if cfg.startWhenNeeded then {
 
-        sockets.sshd =
-          { description = "SSH Socket";
-            wantedBy = [ "sockets.target" ];
-            socketConfig.ListenStream = if cfg.listenAddresses != [] then
-              map (l: "${l.addr}:${toString (if l.port != null then l.port else 22)}") cfg.listenAddresses
-            else
-              cfg.ports;
-            socketConfig.Accept = true;
-          };
+          sockets.sshd =
+            {
+              description = "SSH Socket";
+              wantedBy = [ "sockets.target" ];
+              socketConfig.ListenStream = if cfg.listenAddresses != [] then
+                map (l: "${l.addr}:${toString (if l.port != null then l.port else 22)}") cfg.listenAddresses
+              else
+                cfg.ports;
+              socketConfig.Accept = true;
+            };
 
-        services."sshd@" = service;
+          services."sshd@" = service;
 
-      } else {
+        } else {
 
-        services.sshd = service;
+          services.sshd = service;
 
-      };
+        };
 
     networking.firewall.allowedTCPPorts = if cfg.openFirewall then cfg.ports else [];
 
     security.pam.services.sshd =
-      { startSession = true;
+      {
+        startSession = true;
         showMotd = true;
         unixAuth = cfg.passwordAuthentication;
       };
@@ -451,27 +474,31 @@ in
         UsePAM yes
 
         AddressFamily ${if config.networking.enableIPv6 then "any" else "inet"}
-        ${concatMapStrings (port: ''
+        ${concatMapStrings (
+        port: ''
           Port ${toString port}
-        '') cfg.ports}
+        ''
+      ) cfg.ports}
 
-        ${concatMapStrings ({ port, addr, ... }: ''
+        ${concatMapStrings (
+        { port, addr, ... }: ''
           ListenAddress ${addr}${if port != null then ":" + toString port else ""}
-        '') cfg.listenAddresses}
+        ''
+      ) cfg.listenAddresses}
 
         ${optionalString cfgc.setXAuthLocation ''
-            XAuthLocation ${pkgs.xorg.xauth}/bin/xauth
-        ''}
+        XAuthLocation ${pkgs.xorg.xauth}/bin/xauth
+      ''}
 
         ${if cfg.forwardX11 then ''
-          X11Forwarding yes
-        '' else ''
-          X11Forwarding no
-        ''}
+        X11Forwarding yes
+      '' else ''
+        X11Forwarding no
+      ''}
 
         ${optionalString cfg.allowSFTP ''
-          Subsystem sftp ${cfgc.package}/libexec/sftp-server ${concatStringsSep " " cfg.sftpFlags}
-        ''}
+        Subsystem sftp ${cfgc.package}/libexec/sftp-server ${concatStringsSep " " cfg.sftpFlags}
+      ''}
 
         PermitRootLogin ${cfg.permitRootLogin}
         GatewayPorts ${cfg.gatewayPorts}
@@ -482,9 +509,11 @@ in
 
         AuthorizedKeysFile ${toString cfg.authorizedKeysFiles}
 
-        ${flip concatMapStrings cfg.hostKeys (k: ''
+        ${flip concatMapStrings cfg.hostKeys (
+        k: ''
           HostKey ${k.path}
-        '')}
+        ''
+      )}
 
         KexAlgorithms ${concatStringsSep "," cfg.kexAlgorithms}
         Ciphers ${concatStringsSep "," cfg.ciphers}
@@ -493,19 +522,26 @@ in
         LogLevel ${cfg.logLevel}
 
         ${if cfg.useDns then ''
-          UseDNS yes
-        '' else ''
-          UseDNS no
-        ''}
+        UseDNS yes
+      '' else ''
+        UseDNS no
+      ''}
 
       '';
 
-    assertions = [{ assertion = if cfg.forwardX11 then cfgc.setXAuthLocation else true;
-                    message = "cannot enable X11 forwarding without setting xauth location";}]
-      ++ forEach cfg.listenAddresses ({ addr, ... }: {
-        assertion = addr != null;
-        message = "addr must be specified in each listenAddresses entry";
-      });
+    assertions = [
+      {
+        assertion = if cfg.forwardX11 then cfgc.setXAuthLocation else true;
+        message = "cannot enable X11 forwarding without setting xauth location";
+      }
+    ]
+    ++ forEach cfg.listenAddresses (
+         { addr, ... }: {
+           assertion = addr != null;
+           message = "addr must be specified in each listenAddresses entry";
+         }
+       )
+    ;
 
   };
 

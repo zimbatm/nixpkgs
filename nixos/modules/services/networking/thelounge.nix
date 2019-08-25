@@ -5,10 +5,13 @@ with lib;
 let
   cfg = config.services.thelounge;
   dataDir = "/var/lib/thelounge";
-  configJsData = "module.exports = " + builtins.toJSON (
-    { private = cfg.private; port = cfg.port; } // cfg.extraConfig
-  );
-in {
+  configJsData = "module.exports = "
+    + builtins.toJSON (
+        { private = cfg.private; port = cfg.port; } // cfg.extraConfig
+      )
+    ;
+in
+{
   options.services.thelounge = {
     enable = mkEnableOption "The Lounge web IRC client";
 

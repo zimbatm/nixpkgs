@@ -17,12 +17,12 @@ buildOcaml rec {
 
   hasSharedObjects = true;
 
-  buildPhase =  ''
-     make XEN=false libffi.config ctypes-base ctypes-stubs
-     make XEN=false ctypes-foreign
+  buildPhase = ''
+    make XEN=false libffi.config ctypes-base ctypes-stubs
+    make XEN=false ctypes-foreign
   '';
 
-  installPhase =  ''
+  installPhase = ''
     make install XEN=false
   '';
 

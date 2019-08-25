@@ -28,8 +28,9 @@ stdenv.mkDerivation rec {
   };
 
   patches =
-       stdenv.lib.optionals stdenv.hostPlatform.isDarwin [ patch-argp-fmtstream ]
-    ++ stdenv.lib.optionals stdenv.hostPlatform.isLinux [ patch-throw-in-funcdef patch-shared ];
+    stdenv.lib.optionals stdenv.hostPlatform.isDarwin [ patch-argp-fmtstream ]
+    ++ stdenv.lib.optionals stdenv.hostPlatform.isLinux [ patch-throw-in-funcdef patch-shared ]
+    ;
 
   patchFlags = stdenv.lib.optionalString stdenv.hostPlatform.isDarwin "-p0";
 

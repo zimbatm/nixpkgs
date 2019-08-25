@@ -1,7 +1,21 @@
-{ lib, fetchurl, stdenv, libgcrypt, libevent, libidn, gnutls
-, libxml2, zlib, guile, texinfo, cppunit, killall }:
+{ lib
+, fetchurl
+, stdenv
+, libgcrypt
+, libevent
+, libidn
+, gnutls
+, libxml2
+, zlib
+, guile
+, texinfo
+, cppunit
+, killall
+}:
 
-let version = "0.11"; in
+let
+  version = "0.11";
+in
 
 stdenv.mkDerivation rec {
   name = "myserver-${version}";
@@ -15,7 +29,14 @@ stdenv.mkDerivation rec {
     [ ./disable-dns-lookup-in-chroot.patch ];
 
   buildInputs = [
-    libgcrypt libevent libidn gnutls libxml2 zlib guile texinfo
+    libgcrypt
+    libevent
+    libidn
+    gnutls
+    libxml2
+    zlib
+    guile
+    texinfo
   ];
 
   checkInputs = [ cppunit ];

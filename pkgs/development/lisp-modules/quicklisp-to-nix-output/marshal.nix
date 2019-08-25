@@ -5,7 +5,7 @@ rec {
 
   description = ''marshal: Simple (de)serialization of Lisp datastructures.'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/cl-marshal/2018-03-28/cl-marshal-20180328-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "marshal";
 
-  asdFilesToKeep = ["marshal.asd"];
+  asdFilesToKeep = [ "marshal.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM marshal DESCRIPTION

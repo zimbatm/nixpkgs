@@ -1,4 +1,4 @@
-{stdenv, fetchFromGitHub, python2, which}:
+{ stdenv, fetchFromGitHub, python2, which }:
 stdenv.mkDerivation rec {
   name = "redo-apenwarr-${version}";
 
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
     sha256 = "1dj20w29najqjyvk0jh5kqbcd10k32rad986q5mzv4v49qcwdc1q";
   };
 
-  DESTDIR="";
+  DESTDIR = "";
   PREFIX = placeholder "out";
 
   patchPhase = ''

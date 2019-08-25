@@ -2,7 +2,7 @@
 
 with lib;
 
-let 
+let
   cfg = config.services.rsnapshot;
   cfgfile = pkgs.writeText "rsnapshot.conf" ''
     config_version	1.2
@@ -62,14 +62,18 @@ in
     };
   };
 
-  config = mkIf cfg.enable (mkMerge [
-    {
-      services.cron.systemCronJobs =
-        mapAttrsToList (interval: time: "${time} root ${pkgs.rsnapshot}/bin/rsnapshot -c ${cfgfile} ${interval}") cfg.cronIntervals;
-    }
-    (mkIf cfg.enableManualRsnapshot {
-      environment.systemPackages = [ pkgs.rsnapshot ];
-      environment.etc."rsnapshot.conf".source = cfgfile;
-    })
-  ]);
+  config = mkIf cfg.enable (
+    mkMerge [
+      {
+        services.cron.systemCronJobs =
+          mapAttrsToList (interval: time: "${time} root ${pkgs.rsnapshot}/bin/rsnapshot -c ${cfgfile} ${interval}") cfg.cronIntervals;
+      }
+      (
+        mkIf cfg.enableManualRsnapshot {
+          environment.systemPackages = [ pkgs.rsnapshot ];
+          environment.etc."rsnapshot.conf".source = cfgfile;
+        }
+      )
+    ]
+  );
 }

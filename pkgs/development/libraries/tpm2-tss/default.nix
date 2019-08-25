@@ -1,6 +1,17 @@
-{ stdenv, lib, fetchurl
-, cmocka, doxygen, ibm-sw-tpm2, iproute, openssl, perl, pkgconfig, procps
-, uthash, which }:
+{ stdenv
+, lib
+, fetchurl
+, cmocka
+, doxygen
+, ibm-sw-tpm2
+, iproute
+, openssl
+, perl
+, pkgconfig
+, procps
+, uthash
+, which
+}:
 
 stdenv.mkDerivation rec {
   pname = "tpm2-tss";
@@ -12,14 +23,20 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    doxygen perl pkgconfig
+    doxygen
+    perl
+    pkgconfig
     # For unit tests and integration tests.
-    ibm-sw-tpm2 iproute procps which
+    ibm-sw-tpm2
+    iproute
+    procps
+    which
   ];
   buildInputs = [
     openssl
     # For unit tests and integration tests.
-    cmocka uthash
+    cmocka
+    uthash
   ];
 
   postPatch = "patchShebangs script";

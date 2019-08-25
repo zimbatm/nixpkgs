@@ -1,5 +1,9 @@
-{ stdenv, buildPythonPackage, fetchPypi,
-  mistune, docutils } :
+{ stdenv
+, buildPythonPackage
+, fetchPypi
+, mistune
+, docutils
+}:
 buildPythonPackage rec {
   pname = "m2r";
   version = "0.2.1";
@@ -19,6 +23,6 @@ buildPythonPackage rec {
     homepage = https://github.com/miyakogi/m2r;
     description = "converts a markdown file including reST markups to a valid reST format";
     license = licenses.mit;
-    maintainers = [ ];
+    maintainers = [];
   };
 }

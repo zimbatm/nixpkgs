@@ -3,7 +3,7 @@
 , contrib
 , lib
 }:
-build-idris-package  {
+build-idris-package {
   name = "heyting-algebra";
   version = "2017-08-18";
 

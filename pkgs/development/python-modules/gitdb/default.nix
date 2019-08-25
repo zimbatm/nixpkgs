@@ -16,7 +16,7 @@ buildPythonPackage rec {
 
   meta = {
     description = "Git Object Database";
-    maintainers = [ ];
+    maintainers = [];
     homepage = https://github.com/gitpython-developers/gitdb;
     license = lib.licenses.bsd3;
   };

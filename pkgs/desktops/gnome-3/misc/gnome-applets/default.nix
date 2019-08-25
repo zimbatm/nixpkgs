@@ -27,7 +27,8 @@
 let
   pname = "gnome-applets";
   version = "3.32.0";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "${pname}-${version}";
 
   src = fetchurl {

@@ -61,7 +61,7 @@ in
       createHome = false;
     };
 
-    users.groups.osrm = { };
+    users.groups.osrm = {};
 
     systemd.services.osrm = {
       description = "OSRM service";

@@ -1,10 +1,28 @@
-{ lib, buildPythonPackage, fetchFromGitHub, xdg_utils
-, requests, filetype, pyparsing, configparser, arxiv2bib
-, pyyaml, chardet, beautifulsoup4, colorama, bibtexparser
-, pylibgen, click, python-slugify, habanero, isbnlib
-, prompt_toolkit, pygments
-#, optional, dependencies
-, jinja2, whoosh, pytest
+{ lib
+, buildPythonPackage
+, fetchFromGitHub
+, xdg_utils
+, requests
+, filetype
+, pyparsing
+, configparser
+, arxiv2bib
+, pyyaml
+, chardet
+, beautifulsoup4
+, colorama
+, bibtexparser
+, pylibgen
+, click
+, python-slugify
+, habanero
+, isbnlib
+, prompt_toolkit
+, pygments
+  #, optional, dependencies
+, jinja2
+, whoosh
+, pytest
 , stdenv
 }:
 
@@ -21,21 +39,39 @@ buildPythonPackage rec {
   };
 
   propagatedBuildInputs = [
-    requests filetype pyparsing configparser arxiv2bib
-    pyyaml chardet beautifulsoup4 colorama bibtexparser
-    pylibgen click python-slugify habanero isbnlib
-    prompt_toolkit pygments
+    requests
+    filetype
+    pyparsing
+    configparser
+    arxiv2bib
+    pyyaml
+    chardet
+    beautifulsoup4
+    colorama
+    bibtexparser
+    pylibgen
+    click
+    python-slugify
+    habanero
+    isbnlib
+    prompt_toolkit
+    pygments
     # optional dependencies
-    jinja2 whoosh
+    jinja2
+    whoosh
   ];
 
   doCheck = !stdenv.isDarwin;
 
-  checkInputs = ([
-    pytest
-  ]) ++ [
-    xdg_utils
-  ];
+  checkInputs = (
+    [
+      pytest
+    ]
+  )
+  ++ [
+       xdg_utils
+     ]
+  ;
 
   # most of the downloader tests and 4 other tests require a network connection
   # test_export_yaml and test_citations check for the exact output produced by pyyaml 3.x and

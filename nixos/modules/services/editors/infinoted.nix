@@ -4,7 +4,8 @@ with lib;
 
 let
   cfg = config.services.infinoted;
-in {
+in
+{
   options.services.infinoted = {
     enable = mkEnableOption "infinoted";
 
@@ -43,7 +44,7 @@ in {
     };
 
     securityPolicy = mkOption {
-      type = types.enum ["no-tls" "allow-tls" "require-tls"];
+      type = types.enum [ "no-tls" "allow-tls" "require-tls" ];
       default = "require-tls";
       description = ''
         How strictly to enforce clients connection with TLS.
@@ -112,16 +113,19 @@ in {
 
   config = mkIf (cfg.enable) {
     users.users = optional (cfg.user == "infinoted")
-      { name = "infinoted";
+      {
+        name = "infinoted";
         description = "Infinoted user";
         group = cfg.group;
       };
     users.groups = optional (cfg.group == "infinoted")
-      { name = "infinoted";
+      {
+        name = "infinoted";
       };
 
     systemd.services.infinoted =
-      { description = "Gobby Dedicated Server";
+      {
+        description = "Gobby Dedicated Server";
 
         wantedBy = [ "multi-user.target" ];
         after = [ "network.target" ];

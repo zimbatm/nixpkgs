@@ -13,10 +13,12 @@ stdenv.mkDerivation rec {
 
   patches = [
     # IPv6 support
-    (fetchpatch {
-      url = https://github.com/volth/libvmod-geoip-1/commit/0966fe8.patch;
-      sha256 = "053im8h2y8qzs37g95ksr00sf625p23r5ps1j0a2h4lfg70vf4ry";
-    })
+    (
+      fetchpatch {
+        url = https://github.com/volth/libvmod-geoip-1/commit/0966fe8.patch;
+        sha256 = "053im8h2y8qzs37g95ksr00sf625p23r5ps1j0a2h4lfg70vf4ry";
+      }
+    )
   ];
 
   nativeBuildInputs = [ autoreconfHook pkgconfig docutils ];

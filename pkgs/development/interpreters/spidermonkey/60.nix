@@ -1,11 +1,24 @@
-{ stdenv, fetchurl, fetchpatch, autoconf213, pkgconfig, perl, python2, zip, buildPackages
-, which, readline, zlib, icu }:
+{ stdenv
+, fetchurl
+, fetchpatch
+, autoconf213
+, pkgconfig
+, perl
+, python2
+, zip
+, buildPackages
+, which
+, readline
+, zlib
+, icu
+}:
 
 with stdenv.lib;
 
 let
   version = "60.4.0";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "spidermonkey-${version}";
 
   src = fetchurl {
@@ -17,10 +30,12 @@ in stdenv.mkDerivation rec {
   nativeBuildInputs = [ autoconf213 pkgconfig perl which python2 zip ];
 
   patches = [
-    (fetchpatch {
-      url = https://bug1415202.bmoattachments.org/attachment.cgi?id=8926363;
-      sha256 = "082ryrvqa3lvs67v3sq9kf2jshf4qp1fpi195wffc40jdrl8fnin";
-    })
+    (
+      fetchpatch {
+        url = https://bug1415202.bmoattachments.org/attachment.cgi?id=8926363;
+        sha256 = "082ryrvqa3lvs67v3sq9kf2jshf4qp1fpi195wffc40jdrl8fnin";
+      }
+    )
   ];
 
   preConfigure = ''
@@ -47,12 +62,14 @@ in stdenv.mkDerivation rec {
     # https://src.fedoraproject.org/rpms/mozjs38/c/761399aba092bcb1299bb4fccfd60f370ab4216e
     "--enable-optimize"
     "--enable-release"
-  ] ++ optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
-    # Spidermonkey seems to use different host/build terminology for cross
-    # compilation here.
-    "--host=${stdenv.buildPlatform.config}"
-    "--target=${stdenv.hostPlatform.config}"
-  ];
+  ]
+  ++ optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
+       # Spidermonkey seems to use different host/build terminology for cross
+       # compilation here.
+       "--host=${stdenv.buildPlatform.config}"
+       "--target=${stdenv.hostPlatform.config}"
+     ]
+  ;
 
   configurePlatforms = [];
 

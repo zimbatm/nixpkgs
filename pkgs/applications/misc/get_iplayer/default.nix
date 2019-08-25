@@ -1,4 +1,4 @@
-{stdenv, fetchFromGitHub, atomicparsley, flvstreamer, ffmpeg, makeWrapper, perl, perlPackages, rtmpdump}:
+{ stdenv, fetchFromGitHub, atomicparsley, flvstreamer, ffmpeg, makeWrapper, perl, perlPackages, rtmpdump }:
 
 with stdenv.lib;
 
@@ -15,7 +15,7 @@ perlPackages.buildPerlPackage rec {
 
   nativeBuildInputs = [ makeWrapper ];
   buildInputs = [ perl ];
-  propagatedBuildInputs = with perlPackages; [HTMLParser HTTPCookies LWP XMLLibXML XMLSimple];
+  propagatedBuildInputs = with perlPackages; [ HTMLParser HTTPCookies LWP XMLLibXML XMLSimple ];
 
   preConfigure = "touch Makefile.PL";
   doCheck = false;

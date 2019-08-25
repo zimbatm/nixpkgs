@@ -1,17 +1,51 @@
-{ config, stdenv, lib, fetchurl, boost, cmake, ffmpeg, gettext, glew
-, ilmbase, libXi, libX11, libXext, libXrender
-, libjpeg, libpng, libsamplerate, libsndfile
-, libtiff, libGLU_combined, openal, opencolorio, openexr, openimageio, openjpeg_1, python3Packages
-, zlib, fftw, opensubdiv, freetype, jemalloc, ocl-icd, addOpenGLRunpath
-, jackaudioSupport ? false, libjack2
-, cudaSupport ? config.cudaSupport or false, cudatoolkit
-, colladaSupport ? true, opencollada
-, enableNumpy ? false, makeWrapper
+{ config
+, stdenv
+, lib
+, fetchurl
+, boost
+, cmake
+, ffmpeg
+, gettext
+, glew
+, ilmbase
+, libXi
+, libX11
+, libXext
+, libXrender
+, libjpeg
+, libpng
+, libsamplerate
+, libsndfile
+, libtiff
+, libGLU_combined
+, openal
+, opencolorio
+, openexr
+, openimageio
+, openjpeg_1
+, python3Packages
+, zlib
+, fftw
+, opensubdiv
+, freetype
+, jemalloc
+, ocl-icd
+, addOpenGLRunpath
+, jackaudioSupport ? false
+, libjack2
+, cudaSupport ? config.cudaSupport or false
+, cudatoolkit
+, colladaSupport ? true
+, opencollada
+, enableNumpy ? false
+, makeWrapper
 }:
 
 with lib;
 
-let python = python3Packages.python; in
+let
+  python = python3Packages.python;
+in
 
 stdenv.mkDerivation rec {
   pname = "blender";
@@ -24,16 +58,39 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ cmake ] ++ optional cudaSupport addOpenGLRunpath;
   buildInputs =
-    [ boost ffmpeg gettext glew ilmbase
-      libXi libX11 libXext libXrender
-      freetype libjpeg libpng libsamplerate libsndfile libtiff libGLU_combined openal
-      opencolorio openexr openimageio openjpeg_1 python zlib fftw jemalloc
+    [
+      boost
+      ffmpeg
+      gettext
+      glew
+      ilmbase
+      libXi
+      libX11
+      libXext
+      libXrender
+      freetype
+      libjpeg
+      libpng
+      libsamplerate
+      libsndfile
+      libtiff
+      libGLU_combined
+      openal
+      opencolorio
+      openexr
+      openimageio
+      openjpeg_1
+      python
+      zlib
+      fftw
+      jemalloc
       (opensubdiv.override { inherit cudaSupport; })
       makeWrapper
     ]
     ++ optional jackaudioSupport libjack2
     ++ optional cudaSupport cudatoolkit
-    ++ optional colladaSupport opencollada;
+    ++ optional colladaSupport opencollada
+  ;
 
   postPatch =
     ''
@@ -41,7 +98,8 @@ stdenv.mkDerivation rec {
     '';
 
   cmakeFlags =
-    [ "-DWITH_MOD_OCEANSIM=ON"
+    [
+      "-DWITH_MOD_OCEANSIM=ON"
       "-DWITH_CODEC_FFMPEG=ON"
       "-DWITH_CODEC_SNDFILE=ON"
       "-DWITH_INSTALL_PORTABLE=OFF"
@@ -59,7 +117,8 @@ stdenv.mkDerivation rec {
     ]
     ++ optional jackaudioSupport "-DWITH_JACK=ON"
     ++ optional cudaSupport "-DWITH_CYCLES_CUDA_BINARIES=ON"
-    ++ optional colladaSupport "-DWITH_OPENCOLLADA=ON";
+    ++ optional colladaSupport "-DWITH_OPENCOLLADA=ON"
+  ;
 
   NIX_CFLAGS_COMPILE = "-I${ilmbase.dev}/include/OpenEXR -I${python}/include/${python.libPrefix}";
 

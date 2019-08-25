@@ -25,9 +25,11 @@ runCommand "configured-ghcjs-src" {
     happy
     alex
     cabal-install
-  ] ++ lib.optionals stdenv.isDarwin [
-    gcc # https://github.com/ghcjs/ghcjs/issues/663
-  ];
+  ]
+  ++ lib.optionals stdenv.isDarwin [
+       gcc # https://github.com/ghcjs/ghcjs/issues/663
+     ]
+  ;
   inherit ghcjsSrc;
 } ''
   export HOME=$(pwd)

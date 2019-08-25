@@ -1,5 +1,14 @@
-{ emscriptenVersion, stdenv, fetchFromGitHub, emscriptenfastcomp, python, nodejs, closurecompiler
-, jre, binaryen, enableWasm ? true ,  cmake
+{ emscriptenVersion
+, stdenv
+, fetchFromGitHub
+, emscriptenfastcomp
+, python
+, nodejs
+, closurecompiler
+, jre
+, binaryen
+, enableWasm ? true
+, cmake
 }:
 
 let
@@ -45,10 +54,9 @@ stdenv.mkDerivation {
     echo "SPIDERMONKEY_ENGINE = []" >> $out/${appdir}/config
   ''
   + stdenv.lib.optionalString enableWasm ''
-    echo "BINARYEN_ROOT = '${binaryenVersioned}'" >> $out/share/emscripten/config
-  ''
-  +
-  ''
+      echo "BINARYEN_ROOT = '${binaryenVersioned}'" >> $out/share/emscripten/config
+    ''
+  + ''
     echo "--------------- running test -----------------"
     # quick hack to get the test working
     HOME=$TMPDIR
@@ -58,7 +66,8 @@ stdenv.mkDerivation {
     #export EMCC_DEBUG=2  
     ${python}/bin/python $src/tests/runner.py test_hello_world
     echo "--------------- /running test -----------------"
-  '';
+  ''
+  ;
 
   meta = with stdenv.lib; {
     homepage = https://github.com/emscripten-core/emscripten;

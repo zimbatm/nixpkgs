@@ -1,9 +1,11 @@
 { stdenv, fetchurl, xorg, jre, makeWrapper, makeDesktopItem }:
 
 let
-  rpath = stdenv.lib.makeLibraryPath (with xorg; [
-    libXtst
-  ]);
+  rpath = stdenv.lib.makeLibraryPath (
+    with xorg; [
+      libXtst
+    ]
+  );
 
   desktopItem = makeDesktopItem {
     name = "apache-directory-studio";

@@ -1,12 +1,29 @@
-{ stdenv, fetchurl, pkgconfig, gtk3, gnome3, gdk-pixbuf
-, librsvg, libcanberra-gtk3, libmanette
-, gettext, itstool, libxml2, clutter, clutter-gtk, wrapGAppsHook
-, meson, ninja, python3, vala, desktop-file-utils
+{ stdenv
+, fetchurl
+, pkgconfig
+, gtk3
+, gnome3
+, gdk-pixbuf
+, librsvg
+, libcanberra-gtk3
+, libmanette
+, gettext
+, itstool
+, libxml2
+, clutter
+, clutter-gtk
+, wrapGAppsHook
+, meson
+, ninja
+, python3
+, vala
+, desktop-file-utils
 }:
 
 let
   pname = "quadrapassel";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "${pname}-${version}";
   version = "3.32.0";
 
@@ -16,13 +33,27 @@ in stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    meson ninja python3 vala desktop-file-utils
-    pkgconfig gnome3.adwaita-icon-theme
-    libxml2 itstool gettext wrapGAppsHook
+    meson
+    ninja
+    python3
+    vala
+    desktop-file-utils
+    pkgconfig
+    gnome3.adwaita-icon-theme
+    libxml2
+    itstool
+    gettext
+    wrapGAppsHook
   ];
   buildInputs = [
-    gtk3 gdk-pixbuf librsvg libmanette
-    libcanberra-gtk3 clutter libxml2 clutter-gtk
+    gtk3
+    gdk-pixbuf
+    librsvg
+    libmanette
+    libcanberra-gtk3
+    clutter
+    libxml2
+    clutter-gtk
   ];
 
   enableParallelBuilding = true;

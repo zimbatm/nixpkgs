@@ -3,7 +3,8 @@
 let
   name = "sleepyhead-${version}";
   version = "1.0.0-beta-git";
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   inherit name;
 
   src = fetchgit {
@@ -13,7 +14,9 @@ in stdenv.mkDerivation {
   };
 
   buildInputs = [
-    qt5.qtbase qt5.qtwebkit qt5.qtserialport
+    qt5.qtbase
+    qt5.qtwebkit
+    qt5.qtserialport
     zlib
     libGLU
     libX11

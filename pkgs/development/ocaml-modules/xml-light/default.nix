@@ -1,4 +1,4 @@
-{stdenv, fetchurl, ocaml, findlib}:
+{ stdenv, fetchurl, ocaml, findlib }:
 let
   pname = "xml-light";
   version = "2.4";
@@ -19,7 +19,7 @@ stdenv.mkDerivation {
     make all
     make opt
   '';
-  
+
   installPhase = ''
     make install_ocamlfind
     mkdir -p $out/share

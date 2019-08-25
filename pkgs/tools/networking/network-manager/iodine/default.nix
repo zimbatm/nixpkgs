@@ -1,10 +1,21 @@
-{ stdenv, fetchurl, substituteAll, iodine, intltool, pkgconfig, networkmanager, libsecret, gtk3
-, withGnome ? true, gnome3 }:
+{ stdenv
+, fetchurl
+, substituteAll
+, iodine
+, intltool
+, pkgconfig
+, networkmanager
+, libsecret
+, gtk3
+, withGnome ? true
+, gnome3
+}:
 
 let
   pname = "NetworkManager-iodine";
   version = "1.2.0";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "${pname}${if withGnome then "-gnome" else ""}-${version}";
 
   src = fetchurl {
@@ -13,14 +24,17 @@ in stdenv.mkDerivation rec {
   };
 
   patches = [
-    (substituteAll {
-      src = ./fix-paths.patch;
-      inherit iodine;
-    })
+    (
+      substituteAll {
+        src = ./fix-paths.patch;
+        inherit iodine;
+      }
+    )
   ];
 
   buildInputs = [ iodine networkmanager ]
-    ++ stdenv.lib.optionals withGnome [ gtk3 libsecret gnome3.networkmanagerapplet ];
+    ++ stdenv.lib.optionals withGnome [ gtk3 libsecret gnome3.networkmanagerapplet ]
+    ;
 
   nativeBuildInputs = [ intltool pkgconfig ];
 

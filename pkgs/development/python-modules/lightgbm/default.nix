@@ -42,9 +42,11 @@ buildPythonPackage rec {
 
   postConfigure = ''
     export HOME=$(mktemp -d)
-  '' + stdenv.lib.optionalString stdenv.cc.isClang ''
-    export NIX_LDFLAGS="$NIX_LDFLAGS -L${llvmPackages.openmp}/lib -lomp"
-  '';
+  ''
+  + stdenv.lib.optionalString stdenv.cc.isClang ''
+      export NIX_LDFLAGS="$NIX_LDFLAGS -L${llvmPackages.openmp}/lib -lomp"
+    ''
+  ;
 
   # The pypi package doesn't distribute the tests from the GitHub
   # repository. It contains c++ tests which don't seem to wired up to

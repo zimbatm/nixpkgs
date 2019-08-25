@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
 
   configureFlags = stdenv.lib.optional (stdenv ? glibc)
     "--with-charmaps=${stdenv.glibc.out}/share/i18n/charmaps"
-  ;
+    ;
 
   meta = {
     homepage = https://www.nongnu.org/m17n/;

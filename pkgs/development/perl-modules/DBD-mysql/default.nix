@@ -9,10 +9,10 @@ buildPerlPackage rec {
     sha256 = "0y4djb048i09dk19av7mzfb3khr72vw11p3ayw2p82jsy4gm8j2g";
   };
 
-  buildInputs = [ mysql.connector-c DevelChecklib ] ;
+  buildInputs = [ mysql.connector-c DevelChecklib ];
   propagatedBuildInputs = [ DBI ];
 
   doCheck = false;
 
-#  makeMakerFlags = "MYSQL_HOME=${mysql}";
+  #  makeMakerFlags = "MYSQL_HOME=${mysql}";
 }

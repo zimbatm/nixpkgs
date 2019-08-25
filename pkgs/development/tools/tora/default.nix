@@ -1,23 +1,46 @@
-{ mkDerivation, lib, fetchFromGitHub, cmake, extra-cmake-modules, makeWrapper
-, boost, doxygen, openssl, mysql, postgresql, graphviz, loki, qscintilla, qtbase }:
+{ mkDerivation
+, lib
+, fetchFromGitHub
+, cmake
+, extra-cmake-modules
+, makeWrapper
+, boost
+, doxygen
+, openssl
+, mysql
+, postgresql
+, graphviz
+, loki
+, qscintilla
+, qtbase
+}:
 
 let
   qscintillaLib = (qscintilla.override { withQt5 = true; });
 
-in mkDerivation rec {
+in
+mkDerivation rec {
   name = "tora-${version}";
   version = "3.1";
 
   src = fetchFromGitHub {
-    owner  = "tora-tool";
-    repo   = "tora";
-    rev    = "v${version}";
+    owner = "tora-tool";
+    repo = "tora";
+    rev = "v${version}";
     sha256 = "0wninl10bcgiljf6wnhn2rv8kmzryw78x5qvbw8s2zfjlnxjsbn7";
   };
 
   nativeBuildInputs = [ cmake extra-cmake-modules makeWrapper ];
   buildInputs = [
-    boost doxygen graphviz loki mysql.connector-c openssl postgresql qscintillaLib qtbase
+    boost
+    doxygen
+    graphviz
+    loki
+    mysql.connector-c
+    openssl
+    postgresql
+    qscintillaLib
+    qtbase
   ];
 
   preConfigure = ''

@@ -1,10 +1,14 @@
-{ stdenv, fetchurl, python, buildPythonApplication
-# Propagated to blivet
+{ stdenv
+, fetchurl
+, python
+, buildPythonApplication
+  # Propagated to blivet
 , useNixUdev ? true
-# Needed by NixOps
+  # Needed by NixOps
 , udevSoMajor ? null
-# Propagated dependencies
-, pkgs, urlgrabber
+  # Propagated dependencies
+, pkgs
+, urlgrabber
 }:
 
 let
@@ -53,7 +57,8 @@ let
     inherit (pkgs) pkgconfig e2fsprogs;
   };
 
-in buildPythonApplication rec {
+in
+buildPythonApplication rec {
   name = "nixpart-${version}";
   version = "0.4.1";
 

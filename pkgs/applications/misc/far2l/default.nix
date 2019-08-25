@@ -1,5 +1,26 @@
-{ stdenv, fetchFromGitHub, fetchpatch, makeWrapper, cmake, pkgconfig, wxGTK30, glib, pcre, m4, bash,
-  xdg_utils, gvfs, zip, unzip, gzip, bzip2, gnutar, p7zip, xz, imagemagick, darwin }:
+{ stdenv
+, fetchFromGitHub
+, fetchpatch
+, makeWrapper
+, cmake
+, pkgconfig
+, wxGTK30
+, glib
+, pcre
+, m4
+, bash
+, xdg_utils
+, gvfs
+, zip
+, unzip
+, gzip
+, bzip2
+, gnutar
+, p7zip
+, xz
+, imagemagick
+, darwin
+}:
 
 with stdenv.lib;
 stdenv.mkDerivation rec {
@@ -16,15 +37,18 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ cmake pkgconfig m4 makeWrapper imagemagick ];
 
   buildInputs = [ wxGTK30 glib pcre ]
-    ++ optional stdenv.isDarwin darwin.apple_sdk.frameworks.Cocoa;
+    ++ optional stdenv.isDarwin darwin.apple_sdk.frameworks.Cocoa
+    ;
 
   postPatch = optionalString stdenv.isLinux ''
     substituteInPlace far2l/bootstrap/trash.sh \
       --replace 'gvfs-trash'  '${gvfs}/bin/gvfs-trash'
-  '' + optionalString stdenv.isDarwin ''
-    substituteInPlace far2l/CMakeLists.txt \
-      --replace "-framework System" -lSystem
-  '' + ''
+  ''
+  + optionalString stdenv.isDarwin ''
+      substituteInPlace far2l/CMakeLists.txt \
+        --replace "-framework System" -lSystem
+    ''
+  + ''
     echo 'echo ${build}' > far2l/bootstrap/scripts/vbuild.sh
     substituteInPlace far2l/bootstrap/open.sh              \
       --replace 'xdg-open'    '${xdg_utils}/bin/xdg-open'
@@ -44,13 +68,14 @@ stdenv.mkDerivation rec {
 
     ( cd colorer/configs/base
       patch -p2 <  ${ fetchpatch {
-                        name   = "nix-language-highlighting.patch";
-                        url    = https://github.com/colorer/Colorer-schemes/commit/64bd06de0a63224b431cd8fc42cd9fa84b8ba7c0.patch;
-                        sha256 = "1mrj1wyxmk7sll9j1jzw6miwi0sfavf654klms24wngnh6hadsch";
-                      }
-                    }
+      name = "nix-language-highlighting.patch";
+      url = https://github.com/colorer/Colorer-schemes/commit/64bd06de0a63224b431cd8fc42cd9fa84b8ba7c0.patch;
+      sha256 = "1mrj1wyxmk7sll9j1jzw6miwi0sfavf654klms24wngnh6hadsch";
+    }
+    }
     )
-  '';
+  ''
+  ;
 
   installPhase = ''
     mkdir -p $out/bin $out/share/applications $out/share/icons/hicolor/scalable/apps
@@ -67,9 +92,11 @@ stdenv.mkDerivation rec {
       mkdir -p $out/share/icons/hicolor/$size/apps
       convert -size $size ../far2l/DE/icons/hicolor/$size/apps/far2l.svg $out/share/icons/hicolor/$size/apps/far2l.png
     done
-  '' + stdenv.lib.optionalString stdenv.isDarwin ''
-    wrapProgram $out/bin/far2l --argv0 $out/bin/far2l
-  '';
+  ''
+  + stdenv.lib.optionalString stdenv.isDarwin ''
+      wrapProgram $out/bin/far2l --argv0 $out/bin/far2l
+    ''
+  ;
 
   stripDebugList = "bin share";
 

@@ -33,19 +33,23 @@ buildPythonPackage rec {
     export CVXOPT_LAPACK_LIB=openblas
     export CVXOPT_SUITESPARSE_LIB_DIR=${suitesparse}/lib
     export CVXOPT_SUITESPARSE_INC_DIR=${suitesparse}/include
-  '' + lib.optionalString withGsl ''
-    export CVXOPT_BUILD_GSL=1
-    export CVXOPT_GSL_LIB_DIR=${gsl}/lib
-    export CVXOPT_GSL_INC_DIR=${gsl}/include
-  '' + lib.optionalString withGlpk ''
-    export CVXOPT_BUILD_GLPK=1
-    export CVXOPT_GLPK_LIB_DIR=${glpk}/lib
-    export CVXOPT_GLPK_INC_DIR=${glpk}/include
-  '' + lib.optionalString withFftw ''
-    export CVXOPT_BUILD_FFTW=1
-    export CVXOPT_FFTW_LIB_DIR=${fftw}/lib
-    export CVXOPT_FFTW_INC_DIR=${fftw.dev}/include
-  '';
+  ''
+  + lib.optionalString withGsl ''
+      export CVXOPT_BUILD_GSL=1
+      export CVXOPT_GSL_LIB_DIR=${gsl}/lib
+      export CVXOPT_GSL_INC_DIR=${gsl}/include
+    ''
+  + lib.optionalString withGlpk ''
+      export CVXOPT_BUILD_GLPK=1
+      export CVXOPT_GLPK_LIB_DIR=${glpk}/lib
+      export CVXOPT_GLPK_INC_DIR=${glpk}/include
+    ''
+  + lib.optionalString withFftw ''
+      export CVXOPT_BUILD_FFTW=1
+      export CVXOPT_FFTW_LIB_DIR=${fftw}/lib
+      export CVXOPT_FFTW_INC_DIR=${fftw.dev}/include
+    ''
+  ;
 
   checkPhase = ''
     ${python.interpreter} -m unittest discover -s tests

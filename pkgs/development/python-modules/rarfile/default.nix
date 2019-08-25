@@ -1,6 +1,13 @@
-{ stdenv, buildPythonPackage, fetchFromGitHub, pytest, nose, libarchive, glibcLocales
-# unrar is non-free software
-, useUnrar ? false, unrar
+{ stdenv
+, buildPythonPackage
+, fetchFromGitHub
+, pytest
+, nose
+, libarchive
+, glibcLocales
+  # unrar is non-free software
+, useUnrar ? false
+, unrar
 }:
 
 assert useUnrar -> unrar != null;
@@ -20,14 +27,18 @@ buildPythonPackage rec {
 
   prePatch = ''
     substituteInPlace rarfile.py \
-  '' + (if useUnrar then
+  ''
+  + (
+      if useUnrar then
         ''--replace 'UNRAR_TOOL = "unrar"' "UNRAR_TOOL = \"${unrar}/bin/unrar\""
         ''
-       else
+      else
         ''--replace 'ALT_TOOL = "bsdtar"' "ALT_TOOL = \"${libarchive}/bin/bsdtar\""
-        '')
-     + ''
-   '';
+        ''
+    )
+  + ''
+   ''
+  ;
   # the tests only work with the standard unrar package
   doCheck = useUnrar;
   LC_ALL = "en_US.UTF-8";

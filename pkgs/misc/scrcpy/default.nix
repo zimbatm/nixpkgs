@@ -1,4 +1,7 @@
-{ stdenv, fetchurl, fetchFromGitHub, makeWrapper
+{ stdenv
+, fetchurl
+, fetchFromGitHub
+, makeWrapper
 , meson
 , ninja
 , pkgconfig
@@ -41,10 +44,14 @@ stdenv.mkDerivation rec {
   buildInputs = [ ffmpeg SDL2 ];
 
   # FIXME: remove on update to > 1.10
-  patches = [(fetchpatch {
-    url = "https://github.com/Genymobile/scrcpy/commit/c05056343b56be65ae887f8b7ead61a8072622b9.diff";
-    sha256 = "1xh24gr2g2i9rk0zyv19jx54hswrq12ssp227vxbhsbamin9ir5b";
-  })];
+  patches = [
+    (
+      fetchpatch {
+        url = "https://github.com/Genymobile/scrcpy/commit/c05056343b56be65ae887f8b7ead61a8072622b9.diff";
+        sha256 = "1xh24gr2g2i9rk0zyv19jx54hswrq12ssp227vxbhsbamin9ir5b";
+      }
+    )
+  ];
 
   # Manually install the server jar to prevent Meson from "fixing" it
   preConfigure = ''

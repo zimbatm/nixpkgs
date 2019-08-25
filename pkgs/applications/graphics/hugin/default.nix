@@ -1,7 +1,36 @@
-{ stdenv, cmake, fetchurl, gnumake, makeWrapper, pkgconfig, fetchpatch
-, autopanosiftc, boost, cairo, enblend-enfuse, exiv2, fftw, flann, gettext
-, glew, ilmbase, lcms2, lensfun, libjpeg, libpng, libtiff, libX11, libXi
-, libXmu, libGLU_combined, openexr, panotools, perlPackages, sqlite, vigra, wxGTK, zlib
+{ stdenv
+, cmake
+, fetchurl
+, gnumake
+, makeWrapper
+, pkgconfig
+, fetchpatch
+, autopanosiftc
+, boost
+, cairo
+, enblend-enfuse
+, exiv2
+, fftw
+, flann
+, gettext
+, glew
+, ilmbase
+, lcms2
+, lensfun
+, libjpeg
+, libpng
+, libtiff
+, libX11
+, libXi
+, libXmu
+, libGLU_combined
+, openexr
+, panotools
+, perlPackages
+, sqlite
+, vigra
+, wxGTK
+, zlib
 }:
 
 stdenv.mkDerivation rec {
@@ -14,16 +43,38 @@ stdenv.mkDerivation rec {
 
   patches = [
     # Fixes build with exiv2 0.27.1
-    (fetchpatch {
-      url = "https://git.archlinux.org/svntogit/community.git/plain/trunk/hugin-exiv2-0.27.1.patch?h=packages/hugin";
-      sha256 = "1yxvlpvrhyrfd2w6kwx1w3mncsvlzdhp0w7xchy8q6kc2kd5nf7r";
-    })
+    (
+      fetchpatch {
+        url = "https://git.archlinux.org/svntogit/community.git/plain/trunk/hugin-exiv2-0.27.1.patch?h=packages/hugin";
+        sha256 = "1yxvlpvrhyrfd2w6kwx1w3mncsvlzdhp0w7xchy8q6kc2kd5nf7r";
+      }
+    )
   ];
 
   buildInputs = [
-    boost cairo exiv2 fftw flann gettext glew ilmbase lcms2 lensfun libjpeg
-    libpng libtiff libX11 libXi libXmu libGLU_combined openexr panotools sqlite vigra
-    wxGTK zlib
+    boost
+    cairo
+    exiv2
+    fftw
+    flann
+    gettext
+    glew
+    ilmbase
+    lcms2
+    lensfun
+    libjpeg
+    libpng
+    libtiff
+    libX11
+    libXi
+    libXmu
+    libGLU_combined
+    openexr
+    panotools
+    sqlite
+    vigra
+    wxGTK
+    zlib
   ];
 
   nativeBuildInputs = [ cmake makeWrapper pkgconfig ];

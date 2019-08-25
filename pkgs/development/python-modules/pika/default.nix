@@ -24,7 +24,8 @@ buildPythonPackage rec {
   doCheck = !isPy3k;
 
   buildInputs = [ nose mock pyyaml unittest2 pyev ]
-    ++ stdenv.lib.optionals (!isPy3k) [ twisted tornado ];
+    ++ stdenv.lib.optionals (!isPy3k) [ twisted tornado ]
+    ;
 
   meta = with stdenv.lib; {
     description = "Pure-Python implementation of the AMQP 0-9-1 protocol";

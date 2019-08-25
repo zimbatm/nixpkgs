@@ -3,7 +3,8 @@
 let
   version = "2.2.3";
   pname = "enchant";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "${pname}-${version}";
 
   outputs = [ "out" "dev" ];

@@ -1,7 +1,7 @@
 { stdenv, lib, fetchFromGitLab, autoconf, gtk-doc, automake, libtool, pkgconfig, glib, libsoup, gobject-introspection }:
 
 stdenv.mkDerivation rec {
-  version="0.5.0";
+  version = "0.5.0";
   name = "uhttpmock-${version}";
 
   src = fetchFromGitLab {
@@ -20,7 +20,7 @@ stdenv.mkDerivation rec {
     description = "Project for mocking web service APIs which use HTTP or HTTPS";
     homepage = https://gitlab.com/groups/uhttpmock/;
     license = licenses.lgpl21;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
     platforms = with platforms; linux;
   };
 }

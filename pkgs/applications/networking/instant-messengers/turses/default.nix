@@ -20,10 +20,12 @@ buildPythonPackage rec {
   propagatedBuildInputs = [ urwid tweepy future ];
 
   patches = [
-    (fetchpatch {
-      url = "https://github.com/louipc/turses/commit/be0961b51f502d49fd9e2e5253ac130e543a31c7.patch";
-      sha256 = "17s1n0275mcj03vkf3n39dmc09niwv4y7ssrfk7k3vqx22kppzg3";
-    })
+    (
+      fetchpatch {
+        url = "https://github.com/louipc/turses/commit/be0961b51f502d49fd9e2e5253ac130e543a31c7.patch";
+        sha256 = "17s1n0275mcj03vkf3n39dmc09niwv4y7ssrfk7k3vqx22kppzg3";
+      }
+    )
   ];
 
   checkPhase = ''
@@ -45,7 +47,7 @@ buildPythonPackage rec {
     homepage = https://github.com/louipc/turses;
     description = "A Twitter client for the console";
     license = licenses.gpl3;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
     platforms = platforms.unix;
   };
 }

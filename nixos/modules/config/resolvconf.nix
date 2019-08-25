@@ -10,7 +10,8 @@ let
 
   resolvconfOptions = cfg.extraOptions
     ++ optional cfg.dnsSingleRequest "single-request"
-    ++ optional cfg.dnsExtensionMechanism "edns0";
+    ++ optional cfg.dnsExtensionMechanism "edns0"
+    ;
 
   configText =
     ''
@@ -18,17 +19,22 @@ let
       # a collision with an apparently unrelated environment
       # variable with the same name exported by dhcpcd.
       interface_order='lo lo[0-9]*'
-    '' + optionalString config.services.nscd.enable ''
-      # Invalidate the nscd cache whenever resolv.conf is
-      # regenerated.
-      libc_restart='${pkgs.systemd}/bin/systemctl try-restart --no-block nscd.service 2> /dev/null'
-    '' + optionalString (length resolvconfOptions > 0) ''
-      # Options as described in resolv.conf(5)
-      resolv_conf_options='${concatStringsSep " " resolvconfOptions}'
-    '' + optionalString cfg.useLocalResolver ''
-      # This hosts runs a full-blown DNS resolver.
-      name_servers='127.0.0.1'
-    '' + cfg.extraConfig;
+    ''
+    + optionalString config.services.nscd.enable ''
+        # Invalidate the nscd cache whenever resolv.conf is
+        # regenerated.
+        libc_restart='${pkgs.systemd}/bin/systemctl try-restart --no-block nscd.service 2> /dev/null'
+      ''
+    + optionalString (length resolvconfOptions > 0) ''
+        # Options as described in resolv.conf(5)
+        resolv_conf_options='${concatStringsSep " " resolvconfOptions}'
+      ''
+    + optionalString cfg.useLocalResolver ''
+        # This hosts runs a full-blown DNS resolver.
+        name_servers='127.0.0.1'
+      ''
+    + cfg.extraConfig
+  ;
 
 in
 
@@ -125,25 +131,27 @@ in
         else configText;
     }
 
-    (mkIf cfg.enable {
-      environment.systemPackages = [ pkgs.openresolv ];
+    (
+      mkIf cfg.enable {
+        environment.systemPackages = [ pkgs.openresolv ];
 
-      systemd.services.resolvconf = {
-        description = "resolvconf update";
+        systemd.services.resolvconf = {
+          description = "resolvconf update";
 
-        before = [ "network-pre.target" ];
-        wants = [ "network-pre.target" ];
-        wantedBy = [ "multi-user.target" ];
-        restartTriggers = [ config.environment.etc."resolvconf.conf".source ];
+          before = [ "network-pre.target" ];
+          wants = [ "network-pre.target" ];
+          wantedBy = [ "multi-user.target" ];
+          restartTriggers = [ config.environment.etc."resolvconf.conf".source ];
 
-        serviceConfig = {
-          Type = "oneshot";
-          ExecStart = "${pkgs.openresolv}/bin/resolvconf -u";
-          RemainAfterExit = true;
+          serviceConfig = {
+            Type = "oneshot";
+            ExecStart = "${pkgs.openresolv}/bin/resolvconf -u";
+            RemainAfterExit = true;
+          };
         };
-      };
 
-    })
+      }
+    )
   ];
 
 }

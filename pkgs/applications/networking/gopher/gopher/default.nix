@@ -1,4 +1,4 @@
-{stdenv, fetchurl, ncurses}:
+{ stdenv, fetchurl, ncurses }:
 
 stdenv.mkDerivation rec {
   name = "gopher-${version}";

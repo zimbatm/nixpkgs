@@ -24,10 +24,12 @@ stdenv.mkDerivation rec {
 
     # fix build with gupnp 1.2
     # https://github.com/intel/dleyna-core/pull/52
-    (fetchpatch {
-      url = https://github.com/intel/dleyna-core/commit/41b2e56f67b6fc9c8c256b86957d281644b9b846.patch;
-      sha256 = "1h758cp65v7qyfpvyqdri7q0gwx85mhdpkb2y8waq735q5q9ib39";
-    })
+    (
+      fetchpatch {
+        url = https://github.com/intel/dleyna-core/commit/41b2e56f67b6fc9c8c256b86957d281644b9b846.patch;
+        sha256 = "1h758cp65v7qyfpvyqdri7q0gwx85mhdpkb2y8waq735q5q9ib39";
+      }
+    )
   ];
 
   nativeBuildInputs = [

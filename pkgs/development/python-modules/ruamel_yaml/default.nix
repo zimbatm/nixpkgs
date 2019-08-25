@@ -19,7 +19,8 @@ buildPythonPackage rec {
   doCheck = false;
 
   propagatedBuildInputs = [ ruamel_base ]
-    ++ stdenv.lib.optional (!isPy3k) ruamel_ordereddict;
+    ++ stdenv.lib.optional (!isPy3k) ruamel_ordereddict
+    ;
 
   meta = with stdenv.lib; {
     description = "YAML parser/emitter that supports roundtrip preservation of comments, seq/map flow style, and map key order";

@@ -9,7 +9,7 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ autoreconfHook ];
-  buildInputs = [ ];
+  buildInputs = [];
   propagatedBuildInputs = [ libgcrypt ];
 
   meta = with stdenv.lib; {

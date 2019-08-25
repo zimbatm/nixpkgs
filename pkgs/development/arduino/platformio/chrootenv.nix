@@ -7,30 +7,39 @@ let
         packageOverrides = self: super: {
 
           # https://github.com/platformio/platformio-core/issues/349
-          click = super.click.overridePythonAttrs (oldAttrs: rec {
-            version = "5.1";
-            src = oldAttrs.src.override {
-              inherit version;
-              sha256 = "678c98275431fad324275dec63791e4a17558b40e5a110e20a82866139a85a5a";
-            };
-            postPatch = "";
-          });
+          click = super.click.overridePythonAttrs (
+            oldAttrs: rec {
+              version = "5.1";
+              src = oldAttrs.src.override {
+                inherit version;
+                sha256 = "678c98275431fad324275dec63791e4a17558b40e5a110e20a82866139a85a5a";
+              };
+              postPatch = "";
+            }
+          );
 
-          platformio = self.callPackage ./core.nix { };
+          platformio = self.callPackage ./core.nix {};
         };
       };
-    in (with pkgs; [
-      zlib
-      git
-    ]) ++ (with python.pkgs; [
-      python
-      setuptools
-      pip
-      bottle
-      platformio
-    ]);
+    in
+      (
+        with pkgs; [
+          zlib
+          git
+        ]
+      )
+      ++ (
+           with python.pkgs; [
+             python
+             setuptools
+             pip
+             bottle
+             platformio
+           ]
+         );
 
-in buildFHSUserEnv {
+in
+buildFHSUserEnv {
   name = "platformio";
 
   targetPkgs = pio-pkgs;

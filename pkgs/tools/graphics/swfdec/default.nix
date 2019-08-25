@@ -1,6 +1,17 @@
-{stdenv, fetchurl
-, cairo, pango, glib, liboil, zlib, gstreamer, gst-plugins-base
-, gst-plugins-good , gtk2, libsoup, alsaLib, pkgconfig
+{ stdenv
+, fetchurl
+, cairo
+, pango
+, glib
+, liboil
+, zlib
+, gstreamer
+, gst-plugins-base
+, gst-plugins-good
+, gtk2
+, libsoup
+, alsaLib
+, pkgconfig
 }:
 
 stdenv.mkDerivation rec {
@@ -14,10 +25,20 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [
-    cairo glib liboil pango zlib gstreamer gst-plugins-base gst-plugins-good
-    gtk2 libsoup alsaLib pkgconfig
+    cairo
+    glib
+    liboil
+    pango
+    zlib
+    gstreamer
+    gst-plugins-base
+    gst-plugins-good
+    gtk2
+    libsoup
+    alsaLib
+    pkgconfig
   ];
-  
+
   postInstall = ''
     mkdir "$out/bin"
     cp tools/.libs/swfdec-extract "$out/bin"
@@ -30,8 +51,8 @@ stdenv.mkDerivation rec {
   meta = {
     inherit version;
     description = "Decoder/renderer for Macromedia Flash animations";
-    license = stdenv.lib.licenses.lgpl21 ;
-    maintainers = [stdenv.lib.maintainers.raskin];
+    license = stdenv.lib.licenses.lgpl21;
+    maintainers = [ stdenv.lib.maintainers.raskin ];
     platforms = stdenv.lib.platforms.linux;
     homepage = https://swfdec.freedesktop.org/wiki/;
   };

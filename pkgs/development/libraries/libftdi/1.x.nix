@@ -1,7 +1,16 @@
-{ stdenv, fetchurl, cmake, pkgconfig, libusb1, libconfuse
-, cppSupport ? true, boost ? null
-, pythonSupport ? true, python ? null, swig ? null
-, docSupport ? true, doxygen ? null
+{ stdenv
+, fetchurl
+, cmake
+, pkgconfig
+, libusb1
+, libconfuse
+, cppSupport ? true
+, boost ? null
+, pythonSupport ? true
+, python ? null
+, swig ? null
+, docSupport ? true
+, doxygen ? null
 }:
 
 assert cppSupport -> boost != null;
@@ -32,10 +41,12 @@ stdenv.mkDerivation rec {
     mkdir -p "$out/etc/udev/rules.d/"
     cp ../packages/99-libftdi.rules "$out/etc/udev/rules.d/"
     cp -r doc/man "$out/share/"
-  '' + stdenv.lib.optionalString docSupport ''
-    mkdir -p "$out/share/libftdi/doc/"
-    cp -r doc/html "$out/share/libftdi/doc/"
-  '';
+  ''
+  + stdenv.lib.optionalString docSupport ''
+      mkdir -p "$out/share/libftdi/doc/"
+      cp -r doc/html "$out/share/libftdi/doc/"
+    ''
+  ;
 
   meta = with stdenv.lib; {
     description = "A library to talk to FTDI chips using libusb";

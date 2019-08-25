@@ -1,8 +1,20 @@
-{ lib, stdenv, fetchFromGitHub
-, dbus, cmake, pkgconfig, bash-completion
-, gsl, popt, clightd, systemd, libconfig
-, withGeoclue ? true, geoclue2
-, withUpower ? true, upower }:
+{ lib
+, stdenv
+, fetchFromGitHub
+, dbus
+, cmake
+, pkgconfig
+, bash-completion
+, gsl
+, popt
+, clightd
+, systemd
+, libconfig
+, withGeoclue ? true
+, geoclue2
+, withUpower ? true
+, upower
+}:
 
 stdenv.mkDerivation rec {
   pname = "clight";
@@ -42,7 +54,8 @@ stdenv.mkDerivation rec {
     systemd
     geoclue2
     libconfig
-  ] ++ optional withGeoclue geoclue2
+  ]
+    ++ optional withGeoclue geoclue2
     ++ optional withUpower upower;
 
   meta = with lib; {

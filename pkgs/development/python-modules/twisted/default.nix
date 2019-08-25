@@ -54,6 +54,6 @@ buildPythonPackage rec {
       and licensed under the MIT license.
     '';
     license = licenses.mit;
-    maintainers = [ ];
+    maintainers = [];
   };
 }

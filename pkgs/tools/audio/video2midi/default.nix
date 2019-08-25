@@ -1,12 +1,15 @@
 { stdenv, fetchFromGitHub, pythonPackages, opencv3 }:
 
 let
-  opencv3_ = pythonPackages.toPythonModule (opencv3.override {
-    inherit pythonPackages;
-    enablePython = true;
-    enableFfmpeg = true;
-  });
-in pythonPackages.buildPythonApplication rec {
+  opencv3_ = pythonPackages.toPythonModule (
+    opencv3.override {
+      inherit pythonPackages;
+      enablePython = true;
+      enableFfmpeg = true;
+    }
+  );
+in
+pythonPackages.buildPythonApplication rec {
   pname = "video2midi";
   version = "0.3.9.1";
 

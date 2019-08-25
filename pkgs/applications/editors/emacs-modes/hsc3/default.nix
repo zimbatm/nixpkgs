@@ -3,9 +3,11 @@
 # this package installs the emacs-mode which
 # resides in the hsc3 sources.
 
-let version = "0.15";
+let
+  version = "0.15";
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "hsc3-mode-${version}";
   src = fetchurl {
     url = mirror://hackage/hsc3-0.15/hsc3-0.15.tar.gz;

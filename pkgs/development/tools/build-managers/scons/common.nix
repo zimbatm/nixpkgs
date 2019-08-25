@@ -2,8 +2,10 @@
 
 { stdenv, fetchurl, python2Packages }:
 
-let name = "scons";
-in python2Packages.buildPythonApplication {
+let
+  name = "scons";
+in
+python2Packages.buildPythonApplication {
   name = "${name}-${version}";
 
   src = fetchurl {

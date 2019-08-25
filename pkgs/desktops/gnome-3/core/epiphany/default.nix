@@ -1,8 +1,35 @@
-{ stdenv, meson, ninja, gettext, fetchurl, pkgconfig, gtk3, glib, icu
-, wrapGAppsHook, gnome3, libxml2, libxslt, itstool
-, webkitgtk, libsoup, glib-networking, libsecret, gnome-desktop, libnotify, p11-kit
-, sqlite, gcr, isocodes, desktop-file-utils, python3
-, gdk-pixbuf, gst_all_1, json-glib, libdazzle, libhandy }:
+{ stdenv
+, meson
+, ninja
+, gettext
+, fetchurl
+, pkgconfig
+, gtk3
+, glib
+, icu
+, wrapGAppsHook
+, gnome3
+, libxml2
+, libxslt
+, itstool
+, webkitgtk
+, libsoup
+, glib-networking
+, libsecret
+, gnome-desktop
+, libnotify
+, p11-kit
+, sqlite
+, gcr
+, isocodes
+, desktop-file-utils
+, python3
+, gdk-pixbuf
+, gst_all_1
+, json-glib
+, libdazzle
+, libhandy
+}:
 
 stdenv.mkDerivation rec {
   name = "epiphany-${version}";
@@ -17,16 +44,43 @@ stdenv.mkDerivation rec {
   mesonFlags = [ "-Dunit_tests=disabled" ];
 
   nativeBuildInputs = [
-    meson ninja libxslt pkgconfig itstool gettext wrapGAppsHook desktop-file-utils python3
+    meson
+    ninja
+    libxslt
+    pkgconfig
+    itstool
+    gettext
+    wrapGAppsHook
+    desktop-file-utils
+    python3
   ];
 
   buildInputs = [
-    gtk3 glib webkitgtk libsoup libxml2 libsecret gnome-desktop libnotify
-    sqlite isocodes p11-kit icu libhandy
-    gdk-pixbuf gnome3.adwaita-icon-theme gcr
-    glib-networking gst_all_1.gstreamer gst_all_1.gst-plugins-base
-    gst_all_1.gst-plugins-good gst_all_1.gst-plugins-bad gst_all_1.gst-plugins-ugly
-    gst_all_1.gst-libav json-glib libdazzle
+    gtk3
+    glib
+    webkitgtk
+    libsoup
+    libxml2
+    libsecret
+    gnome-desktop
+    libnotify
+    sqlite
+    isocodes
+    p11-kit
+    icu
+    libhandy
+    gdk-pixbuf
+    gnome3.adwaita-icon-theme
+    gcr
+    glib-networking
+    gst_all_1.gstreamer
+    gst_all_1.gst-plugins-base
+    gst_all_1.gst-plugins-good
+    gst_all_1.gst-plugins-bad
+    gst_all_1.gst-plugins-ugly
+    gst_all_1.gst-libav
+    json-glib
+    libdazzle
   ];
 
   postPatch = ''

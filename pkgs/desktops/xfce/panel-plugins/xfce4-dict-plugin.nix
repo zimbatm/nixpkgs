@@ -1,8 +1,8 @@
-{ stdenv, fetchurl, pkgconfig, intltool, libxfce4util, xfce4-panel, libxfce4ui, libxfcegui4, xfconf, gtk}:
+{ stdenv, fetchurl, pkgconfig, intltool, libxfce4util, xfce4-panel, libxfce4ui, libxfcegui4, xfconf, gtk }:
 
 with stdenv.lib;
 stdenv.mkDerivation rec {
-  p_name  = "xfce4-dict-plugin";
+  p_name = "xfce4-dict-plugin";
   ver_maj = "0.3";
   ver_min = "0";
 

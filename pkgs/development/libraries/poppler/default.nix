@@ -1,13 +1,33 @@
-{ stdenv, lib, fetchurl, cmake, ninja, pkgconfig, libiconv, libintl
-, zlib, curl, cairo, freetype, fontconfig, lcms, libjpeg, openjpeg
-, withData ? true, poppler_data
-, qt5Support ? false, qtbase ? null
-, introspectionSupport ? false, gobject-introspection ? null
-, utils ? false, nss ? null
-, minimal ? false, suffix ? "glib"
+{ stdenv
+, lib
+, fetchurl
+, cmake
+, ninja
+, pkgconfig
+, libiconv
+, libintl
+, zlib
+, curl
+, cairo
+, freetype
+, fontconfig
+, lcms
+, libjpeg
+, openjpeg
+, withData ? true
+, poppler_data
+, qt5Support ? false
+, qtbase ? null
+, introspectionSupport ? false
+, gobject-introspection ? null
+, utils ? false
+, nss ? null
+, minimal ? false
+, suffix ? "glib"
 }:
 
-let # beware: updates often break cups-filters build
+let
+  # beware: updates often break cups-filters build
   version = "0.74.0";
   mkFlag = optset: flag: "-DENABLE_${flag}=${if optset then "on" else "off"}";
 in

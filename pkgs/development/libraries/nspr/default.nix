@@ -1,8 +1,12 @@
-{ stdenv, fetchurl
+{ stdenv
+, fetchurl
 , CoreServices ? null
-, buildPackages }:
+, buildPackages
+}:
 
-let version = "4.21"; in
+let
+  version = "4.21";
+in
 
 stdenv.mkDerivation {
   name = "nspr-${version}";
@@ -21,17 +25,21 @@ stdenv.mkDerivation {
 
   preConfigure = ''
     cd nspr
-  '' + stdenv.lib.optionalString stdenv.isDarwin ''
-    substituteInPlace configure --replace '@executable_path/' "$out/lib/"
-    substituteInPlace configure.in --replace '@executable_path/' "$out/lib/"
-  '';
+  ''
+  + stdenv.lib.optionalString stdenv.isDarwin ''
+      substituteInPlace configure --replace '@executable_path/' "$out/lib/"
+      substituteInPlace configure.in --replace '@executable_path/' "$out/lib/"
+    ''
+  ;
 
   HOST_CC = "cc";
   depsBuildBuild = [ buildPackages.stdenv.cc ];
   configureFlags = [
     "--enable-optimize"
     "--disable-debug"
-  ] ++ stdenv.lib.optional stdenv.is64bit "--enable-64bit";
+  ]
+  ++ stdenv.lib.optional stdenv.is64bit "--enable-64bit"
+  ;
 
   postInstall = ''
     find $out -name "*.a" -delete

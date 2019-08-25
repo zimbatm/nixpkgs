@@ -1,14 +1,66 @@
-{ stdenv, fetchurl, cmake, alsaLib, atk, cairo, cups, dbus, expat, fontconfig
-, GConf, gdk-pixbuf, glib, gtk2, libX11, libxcb, libXcomposite, libXcursor
-, libXdamage, libXext, libXfixes, libXi, libXrandr, libXrender, libXScrnSaver
-, libXtst, nspr, nss, pango, libpulseaudio, systemd }:
+{ stdenv
+, fetchurl
+, cmake
+, alsaLib
+, atk
+, cairo
+, cups
+, dbus
+, expat
+, fontconfig
+, GConf
+, gdk-pixbuf
+, glib
+, gtk2
+, libX11
+, libxcb
+, libXcomposite
+, libXcursor
+, libXdamage
+, libXext
+, libXfixes
+, libXi
+, libXrandr
+, libXrender
+, libXScrnSaver
+, libXtst
+, nspr
+, nss
+, pango
+, libpulseaudio
+, systemd
+}:
 
 let
   libPath =
     stdenv.lib.makeLibraryPath [
-      alsaLib atk cairo cups dbus expat fontconfig GConf gdk-pixbuf glib gtk2
-      libX11 libxcb libXcomposite libXcursor libXdamage libXext libXfixes libXi
-      libXrandr libXrender libXScrnSaver libXtst nspr nss pango libpulseaudio
+      alsaLib
+      atk
+      cairo
+      cups
+      dbus
+      expat
+      fontconfig
+      GConf
+      gdk-pixbuf
+      glib
+      gtk2
+      libX11
+      libxcb
+      libXcomposite
+      libXcursor
+      libXdamage
+      libXext
+      libXfixes
+      libXi
+      libXrandr
+      libXrender
+      libXScrnSaver
+      libXtst
+      nspr
+      nss
+      pango
+      libpulseaudio
       systemd
     ];
 in

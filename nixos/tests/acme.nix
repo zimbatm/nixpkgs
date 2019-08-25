@@ -1,6 +1,7 @@
 let
   commonConfig = ./common/letsencrypt/common.nix;
-in import ./make-test.nix {
+in
+import ./make-test.nix {
   name = "acme";
 
   nodes = {

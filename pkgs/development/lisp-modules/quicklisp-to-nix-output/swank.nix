@@ -5,7 +5,7 @@ rec {
 
   description = '''';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/slime/2019-01-07/slime-v2.23.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "swank";
 
-  asdFilesToKeep = ["swank.asd"];
+  asdFilesToKeep = [ "swank.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM swank DESCRIPTION NIL SHA256

@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
   preConfigure = ''
     substituteInPlace CMakeLists.txt --replace "#find_package(Serialport REQUIRED)" "find_package(Qt5SerialPort REQUIRED)"
   '';
-  buildInputs = [qtbase qtserialport cmake];
+  buildInputs = [ qtbase qtserialport cmake ];
 
   meta = {
     description = "A graphical serial terminal";

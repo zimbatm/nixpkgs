@@ -1,4 +1,4 @@
-{pkgs, lib, config, ...}:
+{ pkgs, lib, config, ... }:
 
 with lib;
 
@@ -6,12 +6,13 @@ let
   cfg = config.dysnomia;
 
   printProperties = properties:
-    concatMapStrings (propertyName:
-      let
-        property = properties."${propertyName}";
-      in
-      if isList property then "${propertyName}=(${lib.concatMapStrings (elem: "\"${toString elem}\" ") (properties."${propertyName}")})\n"
-      else "${propertyName}=\"${toString property}\"\n"
+    concatMapStrings (
+      propertyName:
+        let
+          property = properties."${propertyName}";
+        in
+          if isList property then "${propertyName}=(${lib.concatMapStrings (elem: "\"${toString elem}\" ") (properties."${propertyName}")})\n"
+          else "${propertyName}=\"${toString property}\"\n"
     ) (builtins.attrNames properties);
 
   properties = pkgs.stdenv.mkDerivation {
@@ -29,30 +30,32 @@ let
       mkdir -p $out
       cd $out
 
-      ${concatMapStrings (containerName:
+      ${concatMapStrings (
+      containerName:
         let
           containerProperties = cfg.containers."${containerName}";
         in
-        ''
-          cat > ${containerName} <<EOF
-          ${printProperties containerProperties}
-          type=${containerName}
-          EOF
-        ''
-      ) (builtins.attrNames cfg.containers)}
+          ''
+            cat > ${containerName} <<EOF
+            ${printProperties containerProperties}
+            type=${containerName}
+            EOF
+          ''
+    ) (builtins.attrNames cfg.containers)}
     '';
   };
 
-  linkMutableComponents = {containerName}:
+  linkMutableComponents = { containerName }:
     ''
       mkdir ${containerName}
 
-      ${concatMapStrings (componentName:
+      ${concatMapStrings (
+      componentName:
         let
           component = cfg.components."${containerName}"."${componentName}";
         in
-        "ln -s ${component} ${containerName}/${componentName}\n"
-      ) (builtins.attrNames (cfg.components."${containerName}" or {}))}
+          "ln -s ${component} ${containerName}/${componentName}\n"
+    ) (builtins.attrNames (cfg.components."${containerName}" or {}))}
     '';
 
   componentsDir = pkgs.stdenv.mkDerivation {
@@ -61,9 +64,10 @@ let
       mkdir -p $out
       cd $out
 
-      ${concatMapStrings (containerName:
+      ${concatMapStrings (
+      containerName:
         linkMutableComponents { inherit containerName; }
-      ) (builtins.attrNames cfg.components)}
+    ) (builtins.attrNames cfg.components)}
     '';
   };
 in
@@ -142,65 +146,84 @@ in
 
     environment.systemPackages = [ cfg.package ];
 
-    dysnomia.package = pkgs.dysnomia.override (origArgs: {
-      enableApacheWebApplication = config.services.httpd.enable;
-      enableAxis2WebService = config.services.tomcat.axis2.enable;
-      enableEjabberdDump = config.services.ejabberd.enable;
-      enableMySQLDatabase = config.services.mysql.enable;
-      enablePostgreSQLDatabase = config.services.postgresql.enable;
-      enableSubversionRepository = config.services.svnserve.enable;
-      enableTomcatWebApplication = config.services.tomcat.enable;
-      enableMongoDatabase = config.services.mongodb.enable;
-    });
+    dysnomia.package = pkgs.dysnomia.override (
+      origArgs: {
+        enableApacheWebApplication = config.services.httpd.enable;
+        enableAxis2WebService = config.services.tomcat.axis2.enable;
+        enableEjabberdDump = config.services.ejabberd.enable;
+        enableMySQLDatabase = config.services.mysql.enable;
+        enablePostgreSQLDatabase = config.services.postgresql.enable;
+        enableSubversionRepository = config.services.svnserve.enable;
+        enableTomcatWebApplication = config.services.tomcat.enable;
+        enableMongoDatabase = config.services.mongodb.enable;
+      }
+    );
 
     dysnomia.properties = {
       hostname = config.networking.hostName;
       inherit (config.nixpkgs.localSystem) system;
 
-      supportedTypes = (import "${pkgs.stdenv.mkDerivation {
-        name = "supportedtypes";
-        buildCommand = ''
-          ( echo -n "[ "
-            cd ${cfg.package}/libexec/dysnomia
-            for i in *
-            do
-                echo -n "\"$i\" "
-            done
-            echo -n " ]") > $out
-        '';
-      }}");
+      supportedTypes = (
+        import "${pkgs.stdenv.mkDerivation {
+          name = "supportedtypes";
+          buildCommand = ''
+            ( echo -n "[ "
+              cd ${cfg.package}/libexec/dysnomia
+              for i in *
+              do
+                  echo -n "\"$i\" "
+              done
+              echo -n " ]") > $out
+          '';
+        }}"
+      );
     };
 
-    dysnomia.containers = lib.recursiveUpdate ({
-      process = {};
-      wrapper = {};
-    }
-    // lib.optionalAttrs (config.services.httpd.enable) { apache-webapplication = {
-      documentRoot = config.services.httpd.documentRoot;
-    }; }
-    // lib.optionalAttrs (config.services.tomcat.axis2.enable) { axis2-webservice = {}; }
-    // lib.optionalAttrs (config.services.ejabberd.enable) { ejabberd-dump = {
-      ejabberdUser = config.services.ejabberd.user;
-    }; }
-    // lib.optionalAttrs (config.services.mysql.enable) { mysql-database = {
-        mysqlPort = config.services.mysql.port;
-      } // lib.optionalAttrs cfg.enableAuthentication {
-        mysqlUsername = "root";
-        mysqlPassword = builtins.readFile (config.services.mysql.rootPassword);
-      };
-    }
-    // lib.optionalAttrs (config.services.postgresql.enable) { postgresql-database = {
-      } // lib.optionalAttrs (cfg.enableAuthentication) {
-        postgresqlUsername = "postgres";
-      };
-    }
-    // lib.optionalAttrs (config.services.tomcat.enable) { tomcat-webapplication = {
-      tomcatPort = 8080;
-    }; }
-    // lib.optionalAttrs (config.services.mongodb.enable) { mongo-database = {}; }
-    // lib.optionalAttrs (config.services.svnserve.enable) { subversion-repository = {
-      svnBaseDir = config.services.svnserve.svnBaseDir;
-    }; }) cfg.extraContainerProperties;
+    dysnomia.containers = lib.recursiveUpdate (
+      {
+        process = {};
+        wrapper = {};
+      }
+      // lib.optionalAttrs (config.services.httpd.enable) {
+           apache-webapplication = {
+             documentRoot = config.services.httpd.documentRoot;
+           };
+         }
+      // lib.optionalAttrs (config.services.tomcat.axis2.enable) { axis2-webservice = {}; }
+      // lib.optionalAttrs (config.services.ejabberd.enable) {
+           ejabberd-dump = {
+             ejabberdUser = config.services.ejabberd.user;
+           };
+         }
+      // lib.optionalAttrs (config.services.mysql.enable) {
+           mysql-database = {
+             mysqlPort = config.services.mysql.port;
+           }
+           // lib.optionalAttrs cfg.enableAuthentication {
+                mysqlUsername = "root";
+                mysqlPassword = builtins.readFile (config.services.mysql.rootPassword);
+              }
+           ;
+         }
+      // lib.optionalAttrs (config.services.postgresql.enable) {
+           postgresql-database = {}
+           // lib.optionalAttrs (cfg.enableAuthentication) {
+                postgresqlUsername = "postgres";
+              }
+           ;
+         }
+      // lib.optionalAttrs (config.services.tomcat.enable) {
+           tomcat-webapplication = {
+             tomcatPort = 8080;
+           };
+         }
+      // lib.optionalAttrs (config.services.mongodb.enable) { mongo-database = {}; }
+      // lib.optionalAttrs (config.services.svnserve.enable) {
+           subversion-repository = {
+             svnBaseDir = config.services.svnserve.svnBaseDir;
+           };
+         }
+    ) cfg.extraContainerProperties;
 
     system.activationScripts.dysnomia = ''
       mkdir -p /etc/systemd-mutable/system

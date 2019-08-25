@@ -26,12 +26,14 @@ let
         motd = cfg.motd;
       }
     );
-  in with pkgs; runCommand "config.yml" {} ''
-    ${remarshal}/bin/remarshal -if yaml -of json ${src} -o src.json
-    ${jq}/bin/jq -s '(.[0] | with_entries( select(.key == "bootstrap-nodes"))) * .[1]' src.json ${confJSON} > $out
-  '';
+  in
+    with pkgs; runCommand "config.yml" {} ''
+      ${remarshal}/bin/remarshal -if yaml -of json ${src} -o src.json
+      ${jq}/bin/jq -s '(.[0] | with_entries( select(.key == "bootstrap-nodes"))) * .[1]' src.json ${confJSON} > $out
+    '';
 
-in {
+in
+{
   options.services.tox-node = {
     enable = mkEnableOption "Tox Node service";
 

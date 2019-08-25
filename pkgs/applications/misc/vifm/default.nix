@@ -1,7 +1,12 @@
-{ stdenv, fetchurl
+{ stdenv
+, fetchurl
 , pkgconfig
-, ncurses, libX11
-, utillinux, file, which, groff
+, ncurses
+, libX11
+, utillinux
+, file
+, which
+, groff
 }:
 
 stdenv.mkDerivation rec {
@@ -27,4 +32,3 @@ stdenv.mkDerivation rec {
     updateWalker = true;
   };
 }
-

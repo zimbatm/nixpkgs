@@ -1,9 +1,35 @@
-{ stdenv, fetchFromGitHub, fetchurl
-, ocaml, findlib, ocamlbuild, ocaml_oasis,
- bitstring, camlzip, cmdliner, core_kernel, ezjsonm, fileutils, ocaml_lwt, ocamlgraph, ocurl, re, uri, zarith, piqi, piqi-ocaml, uuidm, llvm_38, frontc, ounit, ppx_jane, parsexp,
- utop,
- ppx_tools_versioned,
- which, makeWrapper, writeText
+{ stdenv
+, fetchFromGitHub
+, fetchurl
+, ocaml
+, findlib
+, ocamlbuild
+, ocaml_oasis
+, bitstring
+, camlzip
+, cmdliner
+, core_kernel
+, ezjsonm
+, fileutils
+, ocaml_lwt
+, ocamlgraph
+, ocurl
+, re
+, uri
+, zarith
+, piqi
+, piqi-ocaml
+, uuidm
+, llvm_38
+, frontc
+, ounit
+, ppx_jane
+, parsexp
+, utop
+, ppx_tools_versioned
+, which
+, makeWrapper
+, writeText
 }:
 
 stdenv.mkDerivation rec {
@@ -17,8 +43,8 @@ stdenv.mkDerivation rec {
   };
 
   sigs = fetchurl {
-     url = "https://github.com/BinaryAnalysisPlatform/bap/releases/download/v${version}/sigs.zip";
-     sha256 = "0d69jd28z4g64mglq94kj5imhmk5f6sgcsh9q2nij3b0arpcliwk";
+    url = "https://github.com/BinaryAnalysisPlatform/bap/releases/download/v${version}/sigs.zip";
+    sha256 = "0d69jd28z4g64mglq94kj5imhmk5f6sgcsh9q2nij3b0arpcliwk";
   };
 
   createFindlibDestdir = true;
@@ -30,12 +56,37 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ which makeWrapper ];
 
-  buildInputs = [ ocaml findlib ocamlbuild ocaml_oasis
-                  llvm_38 ppx_tools_versioned
-                  utop ];
+  buildInputs = [
+    ocaml
+    findlib
+    ocamlbuild
+    ocaml_oasis
+    llvm_38
+    ppx_tools_versioned
+    utop
+  ];
 
-  propagatedBuildInputs = [ bitstring camlzip cmdliner ppx_jane core_kernel ezjsonm fileutils ocaml_lwt ocamlgraph ocurl re uri zarith piqi parsexp
-                            piqi-ocaml uuidm frontc ounit ];
+  propagatedBuildInputs = [
+    bitstring
+    camlzip
+    cmdliner
+    ppx_jane
+    core_kernel
+    ezjsonm
+    fileutils
+    ocaml_lwt
+    ocamlgraph
+    ocurl
+    re
+    uri
+    zarith
+    piqi
+    parsexp
+    piqi-ocaml
+    uuidm
+    frontc
+    ounit
+  ];
 
   installPhase = ''
     export OCAMLPATH=$OCAMLPATH:$OCAMLFIND_DESTDIR;

@@ -5,7 +5,7 @@ rec {
 
   description = ''MIT Regression Tester'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/rt/2010-10-06/rt-20101006-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "rt";
 
-  asdFilesToKeep = ["rt.asd"];
+  asdFilesToKeep = [ "rt.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM rt DESCRIPTION MIT Regression Tester SHA256

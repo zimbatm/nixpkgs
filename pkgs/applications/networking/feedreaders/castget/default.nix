@@ -1,4 +1,6 @@
-{ lib, stdenv, fetchFromGitHub
+{ lib
+, stdenv
+, fetchFromGitHub
 , autoreconfHook
 , pkgconfig
 , glib
@@ -17,7 +19,7 @@ stdenv.mkDerivation rec {
     repo = pname;
     # Upstream uses `_` instead of `.` for the version, let's hope it will
     # change in the next release
-    rev = "rel_${lib.replaceStrings ["."] ["_"] version}";
+    rev = "rel_${lib.replaceStrings [ "." ] [ "_" ] version}";
     sha256 = "1pfrjmsikv35cc0praxgim26zq4r7dfp1pkn6n9fz3fm73gxylyv";
   };
   # Otherwise, the autoreconfHook fails since Makefile.am requires it

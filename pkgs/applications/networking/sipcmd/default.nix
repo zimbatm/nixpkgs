@@ -5,7 +5,7 @@ stdenv.mkDerivation rec {
   rev = "3090e9f";
 
   name = "sipcmd-${rev}";
-  
+
   src = fetchFromGitHub {
     repo = "sipcmd";
     owner = "tmakkonen";
@@ -31,4 +31,3 @@ stdenv.mkDerivation rec {
     license = stdenv.lib.licenses.gpl2;
   };
 }
-

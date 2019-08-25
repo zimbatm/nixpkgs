@@ -1,5 +1,13 @@
-{ stdenv, fetchFromGitHub, autoreconfHook, pkgconfig, gtk-doc, intltool
-, audit, glib, libusb, libxml2
+{ stdenv
+, fetchFromGitHub
+, autoreconfHook
+, pkgconfig
+, gtk-doc
+, intltool
+, audit
+, glib
+, libusb
+, libxml2
 , wrapGAppsHook
 , gstreamer ? null
 , gst-plugins-base ? null
@@ -38,7 +46,7 @@ in
     src = fetchFromGitHub {
       owner = "AravisProject";
       repo = pname;
-      rev= "ARAVIS_${builtins.replaceStrings ["."] ["_"] version}";
+      rev = "ARAVIS_${builtins.replaceStrings [ "." ] [ "_" ] version}";
       sha256 = "0lmgx854z522dwcxsg37bxdyiai9fnycpx1nvgayksj38h39kfn2";
     };
 
@@ -49,30 +57,34 @@ in
       pkgconfig
       intltool
       gtk-doc
-    ] ++ stdenv.lib.optional enableViewer wrapGAppsHook;
+    ]
+    ++ stdenv.lib.optional enableViewer wrapGAppsHook
+    ;
 
     buildInputs =
       [ glib libxml2 ]
       ++ stdenv.lib.optional enableUsb libusb
       ++ stdenv.lib.optional enablePacketSocket audit
       ++ stdenv.lib.optionals (enableViewer || enableGstPlugin) [ gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad ]
-      ++ stdenv.lib.optionals (enableViewer) [ libnotify gtk3 gnome3.adwaita-icon-theme ];
+      ++ stdenv.lib.optionals (enableViewer) [ libnotify gtk3 gnome3.adwaita-icon-theme ]
+      ;
 
     preAutoreconf = ''./autogen.sh'';
 
     configureFlags =
       stdenv.lib.optional enableUsb "--enable-usb"
-        ++ stdenv.lib.optional enablePacketSocket "--enable-packet-socket"
-        ++ stdenv.lib.optional enableViewer "--enable-viewer"
-        ++ stdenv.lib.optional enableGstPlugin
-        (if gstreamerAtLeastVersion1 then "--enable-gst-plugin" else "--enable-gst-0.10-plugin")
-        ++ stdenv.lib.optional enableCppTest "--enable-cpp-test"
-        ++ stdenv.lib.optional enableFastHeartbeat "--enable-fast-heartbeat"
-        ++ stdenv.lib.optional enableAsan "--enable-asan";
+      ++ stdenv.lib.optional enablePacketSocket "--enable-packet-socket"
+      ++ stdenv.lib.optional enableViewer "--enable-viewer"
+      ++ stdenv.lib.optional enableGstPlugin
+           (if gstreamerAtLeastVersion1 then "--enable-gst-plugin" else "--enable-gst-0.10-plugin")
+      ++ stdenv.lib.optional enableCppTest "--enable-cpp-test"
+      ++ stdenv.lib.optional enableFastHeartbeat "--enable-fast-heartbeat"
+      ++ stdenv.lib.optional enableAsan "--enable-asan"
+      ;
 
     postPatch = ''
-        ln -s ${gtk-doc}/share/gtk-doc/data/gtk-doc.make .
-      '';
+      ln -s ${gtk-doc}/share/gtk-doc/data/gtk-doc.make .
+    '';
 
     doCheck = true;
 
@@ -87,4 +99,3 @@ in
       platforms = stdenv.lib.platforms.unix;
     };
   }
-

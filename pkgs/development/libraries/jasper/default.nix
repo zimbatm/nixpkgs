@@ -12,11 +12,13 @@ stdenv.mkDerivation rec {
   };
 
   patches = [
-    (fetchpatch {
-      name = "CVE-2018-9055.patch";
-      url = "http://paste.opensuse.org/view/raw/330751ce";
-      sha256 = "0m798m6c4v9yyhql7x684j5kppcm6884n1rrb9ljz8p9aqq2jqnm";
-    })
+    (
+      fetchpatch {
+        name = "CVE-2018-9055.patch";
+        url = "http://paste.opensuse.org/view/raw/330751ce";
+        sha256 = "0m798m6c4v9yyhql7x684j5kppcm6884n1rrb9ljz8p9aqq2jqnm";
+      }
+    )
   ];
 
 

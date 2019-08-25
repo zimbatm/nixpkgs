@@ -1,5 +1,17 @@
-{ stdenv, fetchFromGitHub, ncurses, asciidoc, xmlto, docbook_xsl, docbook_xml_dtd_45
-, readline, makeWrapper, git, libiconv, autoreconfHook, findXMLCatalogs, pkgconfig
+{ stdenv
+, fetchFromGitHub
+, ncurses
+, asciidoc
+, xmlto
+, docbook_xsl
+, docbook_xml_dtd_45
+, readline
+, makeWrapper
+, git
+, libiconv
+, autoreconfHook
+, findXMLCatalogs
+, pkgconfig
 }:
 
 stdenv.mkDerivation rec {
@@ -19,11 +31,12 @@ stdenv.mkDerivation rec {
   autoreconfFlags = "-I tools -v";
 
   buildInputs = [ ncurses readline git ]
-    ++ stdenv.lib.optionals stdenv.isDarwin [ libiconv ];
+    ++ stdenv.lib.optionals stdenv.isDarwin [ libiconv ]
+    ;
 
   # those files are inherently impure, we'll handle the corresponding dependencies.
   postPatch = ''
-      rm -f contrib/config.make-*
+    rm -f contrib/config.make-*
   '';
 
   enableParallelBuilding = true;

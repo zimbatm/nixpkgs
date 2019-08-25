@@ -1,7 +1,23 @@
-{ stdenv, fetchFromGitHub
-, autoreconfHook, pkgconfig, docbook_xsl, libxslt, docbook_xml_dtd_45
-, acl, attr, boost, btrfs-progs, dbus, diffutils, e2fsprogs, libxml2
-, lvm2, pam, python, utillinux }:
+{ stdenv
+, fetchFromGitHub
+, autoreconfHook
+, pkgconfig
+, docbook_xsl
+, libxslt
+, docbook_xml_dtd_45
+, acl
+, attr
+, boost
+, btrfs-progs
+, dbus
+, diffutils
+, e2fsprogs
+, libxml2
+, lvm2
+, pam
+, python
+, utillinux
+}:
 
 stdenv.mkDerivation rec {
   name = "snapper-${version}";
@@ -15,12 +31,25 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    autoreconfHook pkgconfig
-    docbook_xsl libxslt docbook_xml_dtd_45
+    autoreconfHook
+    pkgconfig
+    docbook_xsl
+    libxslt
+    docbook_xml_dtd_45
   ];
   buildInputs = [
-    acl attr boost btrfs-progs dbus diffutils e2fsprogs libxml2
-    lvm2 pam python utillinux
+    acl
+    attr
+    boost
+    btrfs-progs
+    dbus
+    diffutils
+    e2fsprogs
+    libxml2
+    lvm2
+    pam
+    python
+    utillinux
   ];
 
   postPatch = ''
@@ -36,7 +65,7 @@ stdenv.mkDerivation rec {
   '';
 
   configureFlags = [
-    "--disable-ext4"	# requires patched kernel & e2fsprogs
+    "--disable-ext4" # requires patched kernel & e2fsprogs
   ];
 
   enableParallelBuilding = true;

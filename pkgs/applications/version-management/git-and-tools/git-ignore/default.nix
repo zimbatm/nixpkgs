@@ -17,9 +17,10 @@ buildRustPackage rec {
 
   nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ openssl ]
-  ++ stdenv.lib.optionals stdenv.isDarwin [
-    darwin.apple_sdk.frameworks.Security
-  ];
+    ++ stdenv.lib.optionals stdenv.isDarwin [
+         darwin.apple_sdk.frameworks.Security
+       ]
+    ;
 
   outputs = [ "out" "man" ];
   preFixup = ''

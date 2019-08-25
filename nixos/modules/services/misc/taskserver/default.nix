@@ -10,11 +10,13 @@ let
   mkManualPkiOption = desc: mkOption {
     type = types.nullOr types.path;
     default = null;
-    description = desc + ''
+    description = desc
+      + ''
       <note><para>
       Setting this option will prevent automatic CA creation and handling.
       </para></note>
-    '';
+    ''
+      ;
   };
 
   manualPkiOptions = {
@@ -74,15 +76,19 @@ let
   needToCreateCA = let
     notFound = path: let
       dotted = concatStringsSep "." path;
-    in throw "Can't find option definitions for path `${dotted}'.";
+    in
+      throw "Can't find option definitions for path `${dotted}'.";
     findPkiDefinitions = path: attrs: let
       mkSublist = key: val: let
         newPath = path ++ singleton key;
-      in if isOption val
-         then attrByPath newPath (notFound newPath) cfg.pki.manual
-         else findPkiDefinitions newPath val;
-    in flatten (mapAttrsToList mkSublist attrs);
-  in all (x: x == null) (findPkiDefinitions [] manualPkiOptions);
+      in
+        if isOption val
+        then attrByPath newPath (notFound newPath) cfg.pki.manual
+        else findPkiDefinitions newPath val;
+    in
+      flatten (mapAttrsToList mkSublist attrs);
+  in
+    all (x: x == null) (findPkiDefinitions [] manualPkiOptions);
 
   orgOptions = { ... }: {
     options.users = mkOption {
@@ -112,14 +118,14 @@ let
     src = pkgs.runCommand "nixos-taskserver-src" { preferLocalBuild = true; } ''
       mkdir -p "$out"
       cat "${pkgs.substituteAll {
-        src = ./helper-tool.py;
-        inherit taskd certtool;
-        inherit (cfg) dataDir user group fqdn;
-        certBits = cfg.pki.auto.bits;
-        clientExpiration = cfg.pki.auto.expiration.client;
-        crlExpiration = cfg.pki.auto.expiration.crl;
-        isAutoConfig = if needToCreateCA then "True" else "False";
-      }}" > "$out/main.py"
+      src = ./helper-tool.py;
+      inherit taskd certtool;
+      inherit (cfg) dataDir user group fqdn;
+      certBits = cfg.pki.auto.bits;
+      clientExpiration = cfg.pki.auto.expiration.client;
+      crlExpiration = cfg.pki.auto.expiration.crl;
+      isAutoConfig = if needToCreateCA then "True" else "False";
+    }}" > "$out/main.py"
       cat > "$out/setup.py" <<EOF
       from setuptools import setup
       setup(name="nixos-taskserver",
@@ -132,7 +138,8 @@ let
     propagatedBuildInputs = [ pkgs.pythonPackages.click ];
   };
 
-in {
+in
+{
   options = {
     services.taskserver = {
       enable = mkOption {
@@ -171,10 +178,11 @@ in {
         example = "NORMAL:-VERS-SSL3.0";
         description = let
           url = "https://gnutls.org/manual/html_node/Priority-Strings.html";
-        in ''
-          List of GnuTLS ciphers to use. See the GnuTLS documentation about
-          priority strings at <link xlink:href="${url}"/> for full details.
-        '';
+        in
+          ''
+            List of GnuTLS ciphers to use. See the GnuTLS documentation about
+            priority strings at <link xlink:href="${url}"/> for full details.
+          '';
       };
 
       organisations = mkOption {
@@ -337,231 +345,248 @@ in {
           the right values Taskserver would expect.
         '';
         apply = let
-          mkKey = path: if path == ["server" "listen"] then "server"
-                        else concatStringsSep "." path;
+          mkKey = path: if path == [ "server" "listen" ] then "server"
+          else concatStringsSep "." path;
           recurse = path: attrs: let
             mapper = name: val: let
               newPath = path ++ [ name ];
               scalar = if val == true then "true"
-                       else if val == false then "false"
-                       else toString val;
-            in if isAttrs val then recurse newPath val
-               else [ "${mkKey newPath}=${scalar}" ];
-          in concatLists (mapAttrsToList mapper attrs);
-        in recurse [];
+              else if val == false then "false"
+              else toString val;
+            in
+              if isAttrs val then recurse newPath val
+              else [ "${mkKey newPath}=${scalar}" ];
+          in
+            concatLists (mapAttrsToList mapper attrs);
+        in
+          recurse [];
       };
     };
   };
 
   imports = [
-    (mkRemovedOptionModule ["services" "taskserver" "extraConfig"] ''
-      This option was removed in favor of `services.taskserver.config` with
-      different semantics (it's now a list of attributes instead of lines).
+    (
+      mkRemovedOptionModule [ "services" "taskserver" "extraConfig" ] ''
+        This option was removed in favor of `services.taskserver.config` with
+        different semantics (it's now a list of attributes instead of lines).
 
-      Please look up the documentation of `services.taskserver.config' to get
-      more information about the new way to pass additional configuration
-      options.
-    '')
+        Please look up the documentation of `services.taskserver.config' to get
+        more information about the new way to pass additional configuration
+        options.
+      ''
+    )
   ];
 
   config = mkMerge [
-    (mkIf cfg.enable {
-      environment.systemPackages = [ nixos-taskserver ];
+    (
+      mkIf cfg.enable {
+        environment.systemPackages = [ nixos-taskserver ];
 
-      users.users = optional (cfg.user == "taskd") {
-        name = "taskd";
-        uid = config.ids.uids.taskd;
-        description = "Taskserver user";
-        group = cfg.group;
-      };
-
-      users.groups = optional (cfg.group == "taskd") {
-        name = "taskd";
-        gid = config.ids.gids.taskd;
-      };
-
-      services.taskserver.config = {
-        # systemd related
-        daemon = false;
-        log = "-";
-
-        # logging
-        debug = cfg.debug;
-        ip.log = cfg.ipLog;
-
-        # general
-        ciphers = cfg.ciphers;
-        confirmation = cfg.confirmation;
-        extensions = cfg.extensions;
-        queue.size = cfg.queueSize;
-        request.limit = cfg.requestLimit;
-
-        # client
-        client.allow = cfg.allowedClientIDs;
-        client.deny = cfg.disallowedClientIDs;
-
-        # server
-        trust = cfg.trust;
-        server = {
-          listen = "${cfg.listenHost}:${toString cfg.listenPort}";
-        } // (if needToCreateCA then {
-          cert = "${cfg.dataDir}/keys/server.cert";
-          key = "${cfg.dataDir}/keys/server.key";
-          crl = "${cfg.dataDir}/keys/server.crl";
-        } else {
-          cert = "${cfg.pki.manual.server.cert}";
-          key = "${cfg.pki.manual.server.key}";
-          ${mapNullable (_: "crl") cfg.pki.manual.server.crl} = "${cfg.pki.manual.server.crl}";
-        });
-
-        ca.cert = if needToCreateCA then "${cfg.dataDir}/keys/ca.cert"
-                  else "${cfg.pki.manual.ca.cert}";
-      };
-
-      systemd.services.taskserver-init = {
-        wantedBy = [ "taskserver.service" ];
-        before = [ "taskserver.service" ];
-        description = "Initialize Taskserver Data Directory";
-
-        preStart = ''
-          mkdir -m 0770 -p "${cfg.dataDir}"
-          chown "${cfg.user}:${cfg.group}" "${cfg.dataDir}"
-        '';
-
-        script = ''
-          ${taskd} init
-          touch "${cfg.dataDir}/.is_initialized"
-        '';
-
-        environment.TASKDDATA = cfg.dataDir;
-
-        unitConfig.ConditionPathExists = "!${cfg.dataDir}/.is_initialized";
-
-        serviceConfig.Type = "oneshot";
-        serviceConfig.User = cfg.user;
-        serviceConfig.Group = cfg.group;
-        serviceConfig.PermissionsStartOnly = true;
-        serviceConfig.PrivateNetwork = true;
-        serviceConfig.PrivateDevices = true;
-        serviceConfig.PrivateTmp = true;
-      };
-
-      systemd.services.taskserver = {
-        description = "Taskwarrior Server";
-
-        wantedBy = [ "multi-user.target" ];
-        after = [ "network.target" ];
-
-        environment.TASKDDATA = cfg.dataDir;
-
-        preStart = let
-          jsonOrgs = builtins.toJSON cfg.organisations;
-          jsonFile = pkgs.writeText "orgs.json" jsonOrgs;
-          helperTool = "${nixos-taskserver}/bin/nixos-taskserver";
-        in "${helperTool} process-json '${jsonFile}'";
-
-        serviceConfig = {
-          ExecStart = let
-            mkCfgFlag = flag: escapeShellArg "--${flag}";
-            cfgFlags = concatMapStringsSep " " mkCfgFlag cfg.config;
-          in "@${taskd} taskd server ${cfgFlags}";
-          ExecReload = "${pkgs.coreutils}/bin/kill -USR1 $MAINPID";
-          Restart = "on-failure";
-          PermissionsStartOnly = true;
-          PrivateTmp = true;
-          PrivateDevices = true;
-          User = cfg.user;
-          Group = cfg.group;
+        users.users = optional (cfg.user == "taskd") {
+          name = "taskd";
+          uid = config.ids.uids.taskd;
+          description = "Taskserver user";
+          group = cfg.group;
         };
-      };
-    })
-    (mkIf (cfg.enable && needToCreateCA) {
-      systemd.services.taskserver-ca = {
-        wantedBy = [ "taskserver.service" ];
-        after = [ "taskserver-init.service" ];
-        before = [ "taskserver.service" ];
-        description = "Initialize CA for TaskServer";
-        serviceConfig.Type = "oneshot";
-        serviceConfig.UMask = "0077";
-        serviceConfig.PrivateNetwork = true;
-        serviceConfig.PrivateTmp = true;
 
-        script = ''
-          silent_certtool() {
-            if ! output="$("${certtool}" "$@" 2>&1)"; then
-              echo "GNUTLS certtool invocation failed with output:" >&2
-              echo "$output" >&2
-            fi
+        users.groups = optional (cfg.group == "taskd") {
+          name = "taskd";
+          gid = config.ids.gids.taskd;
+        };
+
+        services.taskserver.config = {
+          # systemd related
+          daemon = false;
+          log = "-";
+
+          # logging
+          debug = cfg.debug;
+          ip.log = cfg.ipLog;
+
+          # general
+          ciphers = cfg.ciphers;
+          confirmation = cfg.confirmation;
+          extensions = cfg.extensions;
+          queue.size = cfg.queueSize;
+          request.limit = cfg.requestLimit;
+
+          # client
+          client.allow = cfg.allowedClientIDs;
+          client.deny = cfg.disallowedClientIDs;
+
+          # server
+          trust = cfg.trust;
+          server = {
+            listen = "${cfg.listenHost}:${toString cfg.listenPort}";
           }
+          // (
+               if needToCreateCA then {
+                 cert = "${cfg.dataDir}/keys/server.cert";
+                 key = "${cfg.dataDir}/keys/server.key";
+                 crl = "${cfg.dataDir}/keys/server.crl";
+               } else {
+                 cert = "${cfg.pki.manual.server.cert}";
+                 key = "${cfg.pki.manual.server.key}";
+                 ${mapNullable (_: "crl") cfg.pki.manual.server.crl} = "${cfg.pki.manual.server.crl}";
+               }
+             )
+          ;
 
-          mkdir -m 0700 -p "${cfg.dataDir}/keys"
-          chown root:root "${cfg.dataDir}/keys"
+          ca.cert = if needToCreateCA then "${cfg.dataDir}/keys/ca.cert"
+          else "${cfg.pki.manual.ca.cert}";
+        };
 
-          if [ ! -e "${cfg.dataDir}/keys/ca.key" ]; then
-            silent_certtool -p \
-              --bits ${toString cfg.pki.auto.bits} \
-              --outfile "${cfg.dataDir}/keys/ca.key"
-            silent_certtool -s \
-              --template "${pkgs.writeText "taskserver-ca.template" ''
-                cn = ${cfg.fqdn}
-                expiration_days = ${toString cfg.pki.auto.expiration.ca}
-                cert_signing_key
-                ca
-              ''}" \
-              --load-privkey "${cfg.dataDir}/keys/ca.key" \
-              --outfile "${cfg.dataDir}/keys/ca.cert"
+        systemd.services.taskserver-init = {
+          wantedBy = [ "taskserver.service" ];
+          before = [ "taskserver.service" ];
+          description = "Initialize Taskserver Data Directory";
 
-            chgrp "${cfg.group}" "${cfg.dataDir}/keys/ca.cert"
-            chmod g+r "${cfg.dataDir}/keys/ca.cert"
-          fi
+          preStart = ''
+            mkdir -m 0770 -p "${cfg.dataDir}"
+            chown "${cfg.user}:${cfg.group}" "${cfg.dataDir}"
+          '';
 
-          if [ ! -e "${cfg.dataDir}/keys/server.key" ]; then
-            silent_certtool -p \
-              --bits ${toString cfg.pki.auto.bits} \
-              --outfile "${cfg.dataDir}/keys/server.key"
+          script = ''
+            ${taskd} init
+            touch "${cfg.dataDir}/.is_initialized"
+          '';
 
-            silent_certtool -c \
-              --template "${pkgs.writeText "taskserver-cert.template" ''
-                cn = ${cfg.fqdn}
-                expiration_days = ${toString cfg.pki.auto.expiration.server}
-                tls_www_server
-                encryption_key
-                signing_key
-              ''}" \
-              --load-ca-privkey "${cfg.dataDir}/keys/ca.key" \
-              --load-ca-certificate "${cfg.dataDir}/keys/ca.cert" \
-              --load-privkey "${cfg.dataDir}/keys/server.key" \
-              --outfile "${cfg.dataDir}/keys/server.cert"
+          environment.TASKDDATA = cfg.dataDir;
 
-            chgrp "${cfg.group}" \
-              "${cfg.dataDir}/keys/server.key" \
-              "${cfg.dataDir}/keys/server.cert"
+          unitConfig.ConditionPathExists = "!${cfg.dataDir}/.is_initialized";
 
-            chmod g+r \
-              "${cfg.dataDir}/keys/server.key" \
-              "${cfg.dataDir}/keys/server.cert"
-          fi
+          serviceConfig.Type = "oneshot";
+          serviceConfig.User = cfg.user;
+          serviceConfig.Group = cfg.group;
+          serviceConfig.PermissionsStartOnly = true;
+          serviceConfig.PrivateNetwork = true;
+          serviceConfig.PrivateDevices = true;
+          serviceConfig.PrivateTmp = true;
+        };
 
-          if [ ! -e "${cfg.dataDir}/keys/server.crl" ]; then
-            silent_certtool --generate-crl \
-              --template "${pkgs.writeText "taskserver-crl.template" ''
-                expiration_days = ${toString cfg.pki.auto.expiration.crl}
-              ''}" \
-              --load-ca-privkey "${cfg.dataDir}/keys/ca.key" \
-              --load-ca-certificate "${cfg.dataDir}/keys/ca.cert" \
-              --outfile "${cfg.dataDir}/keys/server.crl"
+        systemd.services.taskserver = {
+          description = "Taskwarrior Server";
 
-            chgrp "${cfg.group}" "${cfg.dataDir}/keys/server.crl"
-            chmod g+r "${cfg.dataDir}/keys/server.crl"
-          fi
+          wantedBy = [ "multi-user.target" ];
+          after = [ "network.target" ];
 
-          chmod go+x "${cfg.dataDir}/keys"
-        '';
-      };
-    })
-    (mkIf (cfg.enable && cfg.listenHost != "localhost") {
-      networking.firewall.allowedTCPPorts = [ cfg.listenPort ];
-    })
+          environment.TASKDDATA = cfg.dataDir;
+
+          preStart = let
+            jsonOrgs = builtins.toJSON cfg.organisations;
+            jsonFile = pkgs.writeText "orgs.json" jsonOrgs;
+            helperTool = "${nixos-taskserver}/bin/nixos-taskserver";
+          in
+            "${helperTool} process-json '${jsonFile}'";
+
+          serviceConfig = {
+            ExecStart = let
+              mkCfgFlag = flag: escapeShellArg "--${flag}";
+              cfgFlags = concatMapStringsSep " " mkCfgFlag cfg.config;
+            in
+              "@${taskd} taskd server ${cfgFlags}";
+            ExecReload = "${pkgs.coreutils}/bin/kill -USR1 $MAINPID";
+            Restart = "on-failure";
+            PermissionsStartOnly = true;
+            PrivateTmp = true;
+            PrivateDevices = true;
+            User = cfg.user;
+            Group = cfg.group;
+          };
+        };
+      }
+    )
+    (
+      mkIf (cfg.enable && needToCreateCA) {
+        systemd.services.taskserver-ca = {
+          wantedBy = [ "taskserver.service" ];
+          after = [ "taskserver-init.service" ];
+          before = [ "taskserver.service" ];
+          description = "Initialize CA for TaskServer";
+          serviceConfig.Type = "oneshot";
+          serviceConfig.UMask = "0077";
+          serviceConfig.PrivateNetwork = true;
+          serviceConfig.PrivateTmp = true;
+
+          script = ''
+            silent_certtool() {
+              if ! output="$("${certtool}" "$@" 2>&1)"; then
+                echo "GNUTLS certtool invocation failed with output:" >&2
+                echo "$output" >&2
+              fi
+            }
+
+            mkdir -m 0700 -p "${cfg.dataDir}/keys"
+            chown root:root "${cfg.dataDir}/keys"
+
+            if [ ! -e "${cfg.dataDir}/keys/ca.key" ]; then
+              silent_certtool -p \
+                --bits ${toString cfg.pki.auto.bits} \
+                --outfile "${cfg.dataDir}/keys/ca.key"
+              silent_certtool -s \
+                --template "${pkgs.writeText "taskserver-ca.template" ''
+            cn = ${cfg.fqdn}
+            expiration_days = ${toString cfg.pki.auto.expiration.ca}
+            cert_signing_key
+            ca
+          ''}" \
+                --load-privkey "${cfg.dataDir}/keys/ca.key" \
+                --outfile "${cfg.dataDir}/keys/ca.cert"
+
+              chgrp "${cfg.group}" "${cfg.dataDir}/keys/ca.cert"
+              chmod g+r "${cfg.dataDir}/keys/ca.cert"
+            fi
+
+            if [ ! -e "${cfg.dataDir}/keys/server.key" ]; then
+              silent_certtool -p \
+                --bits ${toString cfg.pki.auto.bits} \
+                --outfile "${cfg.dataDir}/keys/server.key"
+
+              silent_certtool -c \
+                --template "${pkgs.writeText "taskserver-cert.template" ''
+            cn = ${cfg.fqdn}
+            expiration_days = ${toString cfg.pki.auto.expiration.server}
+            tls_www_server
+            encryption_key
+            signing_key
+          ''}" \
+                --load-ca-privkey "${cfg.dataDir}/keys/ca.key" \
+                --load-ca-certificate "${cfg.dataDir}/keys/ca.cert" \
+                --load-privkey "${cfg.dataDir}/keys/server.key" \
+                --outfile "${cfg.dataDir}/keys/server.cert"
+
+              chgrp "${cfg.group}" \
+                "${cfg.dataDir}/keys/server.key" \
+                "${cfg.dataDir}/keys/server.cert"
+
+              chmod g+r \
+                "${cfg.dataDir}/keys/server.key" \
+                "${cfg.dataDir}/keys/server.cert"
+            fi
+
+            if [ ! -e "${cfg.dataDir}/keys/server.crl" ]; then
+              silent_certtool --generate-crl \
+                --template "${pkgs.writeText "taskserver-crl.template" ''
+            expiration_days = ${toString cfg.pki.auto.expiration.crl}
+          ''}" \
+                --load-ca-privkey "${cfg.dataDir}/keys/ca.key" \
+                --load-ca-certificate "${cfg.dataDir}/keys/ca.cert" \
+                --outfile "${cfg.dataDir}/keys/server.crl"
+
+              chgrp "${cfg.group}" "${cfg.dataDir}/keys/server.crl"
+              chmod g+r "${cfg.dataDir}/keys/server.crl"
+            fi
+
+            chmod go+x "${cfg.dataDir}/keys"
+          '';
+        };
+      }
+    )
+    (
+      mkIf (cfg.enable && cfg.listenHost != "localhost") {
+        networking.firewall.allowedTCPPorts = [ cfg.listenPort ];
+      }
+    )
   ];
 
   meta.doc = ./doc.xml;

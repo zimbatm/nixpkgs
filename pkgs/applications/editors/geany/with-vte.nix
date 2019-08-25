@@ -1,5 +1,6 @@
 { runCommand, makeWrapper, geany, gnome2 }:
-let name = builtins.replaceStrings ["geany-"] ["geany-with-vte-"] geany.name;
+let
+  name = builtins.replaceStrings [ "geany-" ] [ "geany-with-vte-" ] geany.name;
 in
 runCommand "${name}" { nativeBuildInputs = [ makeWrapper ]; inherit (geany.meta); } "
    mkdir -p $out

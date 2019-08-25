@@ -1,7 +1,16 @@
-{ stdenv, lib, fetchurl, gfortran, pkgconfig
-, blas, zlib, bzip2
-, withGurobi ? false, gurobi
-, withCplex ? false, cplex }:
+{ stdenv
+, lib
+, fetchurl
+, gfortran
+, pkgconfig
+, blas
+, zlib
+, bzip2
+, withGurobi ? false
+, gurobi
+, withCplex ? false
+, cplex
+}:
 
 stdenv.mkDerivation rec {
   pname = "osi";
@@ -15,11 +24,13 @@ stdenv.mkDerivation rec {
   buildInputs =
     [ blas zlib bzip2 ]
     ++ lib.optional withGurobi gurobi
-    ++ lib.optional withCplex cplex;
+    ++ lib.optional withCplex cplex
+    ;
   nativeBuildInputs = [ gfortran pkgconfig ];
   configureFlags =
     lib.optionals withGurobi [ "--with-gurobi-incdir=${gurobi}/include" "--with-gurobi-lib=-lgurobi${gurobi.libSuffix}" ]
-    ++ lib.optionals withCplex [ "--with-cplex-incdir=${cplex}/cplex/include/ilcplex" "--with-cplex-lib=-lcplex${cplex.libSuffix}" ];
+    ++ lib.optionals withCplex [ "--with-cplex-incdir=${cplex}/cplex/include/ilcplex" "--with-cplex-lib=-lcplex${cplex.libSuffix}" ]
+    ;
 
   NIX_LDFLAGS =
     lib.optional withCplex "-L${cplex}/cplex/bin/${cplex.libArch}";

@@ -14,11 +14,11 @@ with lib;
   };
 
   config = mkIf config.xdg.icons.enable {
-    environment.pathsToLink = [ 
-      "/share/icons" 
-      "/share/pixmaps" 
+    environment.pathsToLink = [
+      "/share/icons"
+      "/share/pixmaps"
     ];
-    
+
     environment.profileRelativeEnvVars = {
       XCURSOR_PATH = [ "/share/icons" ];
     };

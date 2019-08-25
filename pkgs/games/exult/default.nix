@@ -22,7 +22,8 @@ stdenv.mkDerivation rec {
   configureFlags = [ "--disable-tools" ];
 
   patches =
-    [ # Arch Linux patch set.
+    [
+      # Arch Linux patch set.
       ./arch.patch
     ];
 

@@ -14,13 +14,14 @@ stdenv.mkDerivation rec {
   enableParallelBuilding = true;
   nativeBuildInputs = [ bison flex ];
   buildInputs = [ perl gmp mpfr ]
-    ++ stdenv.lib.optional enableGist qtbase;
+    ++ stdenv.lib.optional enableGist qtbase
+    ;
 
   meta = with stdenv.lib; {
     license = licenses.mit;
     homepage = https://www.gecode.org;
     description = "Toolkit for developing constraint-based systems";
     platforms = platforms.all;
-    maintainers = [ ];
+    maintainers = [];
   };
 }

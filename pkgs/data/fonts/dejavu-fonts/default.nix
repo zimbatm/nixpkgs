@@ -25,12 +25,12 @@ let
 
   full-ttf = stdenv.mkDerivation {
     name = "dejavu-fonts-full-${version}";
-    nativeBuildInputs = [fontforge perl perlPackages.IOString perlPackages.FontTTF];
+    nativeBuildInputs = [ fontforge perl perlPackages.IOString perlPackages.FontTTF ];
 
     src = fetchFromGitHub {
       owner = "dejavu-fonts";
       repo = "dejavu-fonts";
-      rev = "version_${stdenv.lib.replaceStrings ["."] ["_"] version}";
+      rev = "version_${stdenv.lib.replaceStrings [ "." ] [ "_" ] version}";
       sha256 = "1xknlg2h287dx34v2n5r33bpcl4biqf0cv7nak657rjki7s0k4bk";
     };
 
@@ -50,7 +50,8 @@ let
     '';
     inherit meta;
   };
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "dejavu-fonts-${version}";
   buildCommand = ''
     install -m444 -Dt $out/share/fonts/truetype ${full-ttf}/share/fonts/truetype/*.ttf

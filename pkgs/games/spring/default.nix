@@ -1,7 +1,30 @@
-{ stdenv, fetchurl, cmake, lzma, boost, libdevil, zlib, p7zip
-, openal, libvorbis, glew, freetype, xorg, SDL2, libGLU_combined
-, asciidoc, libxslt, docbook_xsl, docbook_xsl_ns, curl, makeWrapper
-, jdk ? null, python ? null, systemd, libunwind, which, minizip
+{ stdenv
+, fetchurl
+, cmake
+, lzma
+, boost
+, libdevil
+, zlib
+, p7zip
+, openal
+, libvorbis
+, glew
+, freetype
+, xorg
+, SDL2
+, libGLU_combined
+, asciidoc
+, libxslt
+, docbook_xsl
+, docbook_xsl_ns
+, curl
+, makeWrapper
+, jdk ? null
+, python ? null
+, systemd
+, libunwind
+, which
+, minizip
 , withAI ? true # support for AI Interfaces and Skirmish AIs
 }:
 
@@ -25,15 +48,41 @@ stdenv.mkDerivation rec {
     rm rts/build/cmake/FindGLEW.cmake
   '';
 
-  cmakeFlags = ["-DCMAKE_BUILD_WITH_INSTALL_RPATH:BOOL=ON"
-                "-DCMAKE_INSTALL_RPATH_USE_LINK_PATH:BOOL=ON"
-                "-DPREFER_STATIC_LIBS:BOOL=OFF"];
+  cmakeFlags = [
+    "-DCMAKE_BUILD_WITH_INSTALL_RPATH:BOOL=ON"
+    "-DCMAKE_INSTALL_RPATH_USE_LINK_PATH:BOOL=ON"
+    "-DPREFER_STATIC_LIBS:BOOL=OFF"
+  ];
 
-  buildInputs = [ cmake lzma boost libdevil zlib p7zip openal libvorbis freetype SDL2
-    xorg.libX11 xorg.libXcursor libGLU_combined glew asciidoc libxslt docbook_xsl curl makeWrapper
-    docbook_xsl_ns systemd libunwind which minizip ]
-    ++ stdenv.lib.optional withAI jdk
-    ++ stdenv.lib.optional withAI python;
+  buildInputs = [
+    cmake
+    lzma
+    boost
+    libdevil
+    zlib
+    p7zip
+    openal
+    libvorbis
+    freetype
+    SDL2
+    xorg.libX11
+    xorg.libXcursor
+    libGLU_combined
+    glew
+    asciidoc
+    libxslt
+    docbook_xsl
+    curl
+    makeWrapper
+    docbook_xsl_ns
+    systemd
+    libunwind
+    which
+    minizip
+  ]
+  ++ stdenv.lib.optional withAI jdk
+  ++ stdenv.lib.optional withAI python
+  ;
 
   enableParallelBuilding = true;
 

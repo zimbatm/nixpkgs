@@ -1,9 +1,45 @@
-{ stdenv, fetchurl, makeWrapper, getopt, jre, cpio, gawk, gnugrep, gnused,
-  procps, which, gtk2, atk, glib, pango, gdk-pixbuf, cairo, freetype,
-  fontconfig, dbus, gconf, nss, nspr, alsaLib, cups, expat, udev,
-  libX11, libxcb, libXi, libXcursor, libXdamage, libXrandr, libXcomposite,
-  libXext, libXfixes, libXrender, libXtst, libXScrnSaver, nodePackages,
-  maxRam ? "1024m" }:
+{ stdenv
+, fetchurl
+, makeWrapper
+, getopt
+, jre
+, cpio
+, gawk
+, gnugrep
+, gnused
+, procps
+, which
+, gtk2
+, atk
+, glib
+, pango
+, gdk-pixbuf
+, cairo
+, freetype
+, fontconfig
+, dbus
+, gconf
+, nss
+, nspr
+, alsaLib
+, cups
+, expat
+, udev
+, libX11
+, libxcb
+, libXi
+, libXcursor
+, libXdamage
+, libXrandr
+, libXcomposite
+, libXext
+, libXfixes
+, libXrender
+, libXtst
+, libXScrnSaver
+, nodePackages
+, maxRam ? "1024m"
+}:
 
 stdenv.mkDerivation rec {
   version = "6.7.0";
@@ -86,10 +122,36 @@ stdenv.mkDerivation rec {
   postFixup = ''
     patchelf --set-interpreter ${stdenv.glibc}/lib/ld-linux-x86-64.so.2 $out/electron/crashplan
     wrapProgram $out/bin/CrashPlanDesktop --prefix LD_LIBRARY_PATH ":" "${stdenv.lib.makeLibraryPath [
-      stdenv.cc.cc.lib gtk2 atk glib pango gdk-pixbuf cairo freetype
-      fontconfig dbus gconf nss nspr alsaLib cups expat udev
-      libX11 libxcb libXi libXcursor libXdamage libXrandr libXcomposite
-      libXext libXfixes libXrender libXtst libXScrnSaver]}"
+    stdenv.cc.cc.lib
+    gtk2
+    atk
+    glib
+    pango
+    gdk-pixbuf
+    cairo
+    freetype
+    fontconfig
+    dbus
+    gconf
+    nss
+    nspr
+    alsaLib
+    cups
+    expat
+    udev
+    libX11
+    libxcb
+    libXi
+    libXcursor
+    libXdamage
+    libXrandr
+    libXcomposite
+    libXext
+    libXfixes
+    libXrender
+    libXtst
+    libXScrnSaver
+  ]}"
   '';
 
   meta = with stdenv.lib; {

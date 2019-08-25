@@ -1,8 +1,21 @@
-{ config, lib, stdenv, fetchgit, fetchFromGitHub, cmake
-, openblas, opencv3, libzip, boost, protobuf, openmpi
+{ config
+, lib
+, stdenv
+, fetchgit
+, fetchFromGitHub
+, cmake
+, openblas
+, opencv3
+, libzip
+, boost
+, protobuf
+, openmpi
 , onebitSGDSupport ? false
-, cudaSupport ? config.cudaSupport or false, cudatoolkit, nvidia_x11
-, cudnnSupport ? cudaSupport, cudnn
+, cudaSupport ? config.cudaSupport or false
+, cudatoolkit
+, nvidia_x11
+, cudnnSupport ? cudaSupport
+, cudnn
 }:
 
 assert cudnnSupport -> cudaSupport;
@@ -16,7 +29,8 @@ let
     sha256 = "0ksd5n1lxqhm5l5cd2lps4cszhjkf6gmzahaycs7nxb06qci8c66";
   };
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "CNTK-${version}";
   version = "2.7";
 
@@ -30,8 +44,9 @@ in stdenv.mkDerivation rec {
   nativeBuildInputs = [ cmake ];
 
   buildInputs = [ openblas opencv3 libzip boost protobuf openmpi ]
-             ++ lib.optional cudaSupport cudatoolkit
-             ++ lib.optional cudnnSupport cudnn;
+    ++ lib.optional cudaSupport cudatoolkit
+    ++ lib.optional cudnnSupport cudnn
+    ;
 
   configureFlags = [
     "--with-opencv=${opencv3}"
@@ -43,12 +58,15 @@ in stdenv.mkDerivation rec {
     "--cuda=${if cudaSupport then "yes" else "no"}"
     # FIXME
     "--asgd=no"
-  ] ++ lib.optionals cudaSupport [
-    "--with-cuda=${cudatoolkit}"
-    "--with-gdk-include=${cudatoolkit}/include"
-    "--with-gdk-nvml-lib=${nvidia_x11}/lib"
-    "--with-cub=${cub}"
-  ] ++ lib.optional onebitSGDSupport "--1bitsgd=yes";
+  ]
+  ++ lib.optionals cudaSupport [
+       "--with-cuda=${cudatoolkit}"
+       "--with-gdk-include=${cudatoolkit}/include"
+       "--with-gdk-nvml-lib=${nvidia_x11}/lib"
+       "--with-cub=${cub}"
+     ]
+  ++ lib.optional onebitSGDSupport "--1bitsgd=yes"
+  ;
 
   configurePhase = ''
     sed -i \
@@ -65,10 +83,10 @@ in stdenv.mkDerivation rec {
     mkdir build
     cd build
     ${lib.optionalString cudnnSupport ''
-      mkdir cuda
-      ln -s ${cudnn}/include cuda
-      export configureFlags="$configureFlags --with-cudnn=$PWD"
-    ''}
+    mkdir cuda
+    ln -s ${cudnn}/include cuda
+    export configureFlags="$configureFlags --with-cudnn=$PWD"
+  ''}
     ../configure $configureFlags
   '';
 

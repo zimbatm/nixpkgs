@@ -1,6 +1,8 @@
 { stdenv, fetchzip, ocaml }:
 
-let version = "0.1.10"; in
+let
+  version = "0.1.10";
+in
 
 stdenv.mkDerivation {
   name = "obuild-${version}";

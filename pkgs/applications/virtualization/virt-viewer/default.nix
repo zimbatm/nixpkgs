@@ -1,14 +1,36 @@
-{ stdenv, fetchurl, pkgconfig, intltool, glib, libxml2, gtk3, gtk-vnc, gmp
-, libgcrypt, gnupg, cyrus_sasl, shared-mime-info, libvirt, yajl
-, gsettings-desktop-schemas, wrapGAppsHook, libvirt-glib, libcap_ng, numactl
-, libapparmor, gst_all_1
+{ stdenv
+, fetchurl
+, pkgconfig
+, intltool
+, glib
+, libxml2
+, gtk3
+, gtk-vnc
+, gmp
+, libgcrypt
+, gnupg
+, cyrus_sasl
+, shared-mime-info
+, libvirt
+, yajl
+, gsettings-desktop-schemas
+, wrapGAppsHook
+, libvirt-glib
+, libcap_ng
+, numactl
+, libapparmor
+, gst_all_1
 , spiceSupport ? true
-, spice-gtk ? null, spice-protocol ? null, libcap ? null, gdbm ? null
-, xenSupport ? false, xen ? null
+, spice-gtk ? null
+, spice-protocol ? null
+, libcap ? null
+, gdbm ? null
+, xenSupport ? false
+, xen ? null
 }:
 
-assert spiceSupport ->
-  spice-gtk != null && spice-protocol != null && libcap != null && gdbm != null;
+assert spiceSupport
+-> spice-gtk != null && spice-protocol != null && libcap != null && gdbm != null;
 
 with stdenv.lib;
 
@@ -24,14 +46,33 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ pkgconfig intltool wrapGAppsHook ];
   buildInputs = [
-    glib libxml2 gtk3 gtk-vnc gmp libgcrypt gnupg cyrus_sasl shared-mime-info
-    libvirt yajl gsettings-desktop-schemas libvirt-glib
-    libcap_ng numactl libapparmor
-  ] ++ optionals xenSupport [
-    xen
-  ] ++ optionals spiceSupport [
-    spice-gtk spice-protocol libcap gdbm
-  ];
+    glib
+    libxml2
+    gtk3
+    gtk-vnc
+    gmp
+    libgcrypt
+    gnupg
+    cyrus_sasl
+    shared-mime-info
+    libvirt
+    yajl
+    gsettings-desktop-schemas
+    libvirt-glib
+    libcap_ng
+    numactl
+    libapparmor
+  ]
+  ++ optionals xenSupport [
+       xen
+     ]
+  ++ optionals spiceSupport [
+       spice-gtk
+       spice-protocol
+       libcap
+       gdbm
+     ]
+  ;
 
   # Required for USB redirection PolicyKit rules file
   propagatedUserEnvPkgs = optional spiceSupport spice-gtk;

@@ -30,7 +30,8 @@
 let
   pname = "konversation";
   version = "1.7.5";
-in mkDerivation rec {
+in
+mkDerivation rec {
   name = "${pname}-${version}";
 
   src = fetchurl {

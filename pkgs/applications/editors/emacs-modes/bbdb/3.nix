@@ -13,8 +13,8 @@ stdenv.mkDerivation rec {
   # Hack to disable documentation as there is no way to tell bbdb to
   # NOT build pdfs. I really don't want to pull in TexLive here...
   preConfigure = ''
-   substituteInPlace ./Makefile.in \
-     --replace "SUBDIRS = lisp doc tex" "SUBDIRS = lisp"
+    substituteInPlace ./Makefile.in \
+      --replace "SUBDIRS = lisp doc tex" "SUBDIRS = lisp"
   '';
 
   meta = {

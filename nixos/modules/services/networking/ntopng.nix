@@ -11,7 +11,7 @@ let
     pkgs.writeText "ntopng.conf" ''
       ${cfg.configText}
     ''
-    else
+  else
     pkgs.writeText "ntopng.conf" ''
       ${concatStringsSep " " (map (e: "--interface=" + e) cfg.interfaces)}
       --http-port=${toString cfg.http-port}

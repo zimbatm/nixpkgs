@@ -25,10 +25,28 @@ pythonPackages.buildPythonApplication rec {
 
   buildInputs = [ glibcLocales ];
   propagatedBuildInputs = with pythonPackages; [
-    webtest bottle threadpool rocket-errbot requests jinja2
-    pyopenssl colorlog Yapsy markdown ansi pygments dnspython pep8
-    daemonize pygments-markdown-lexer telegram irc slackclient
-    sleekxmpp hypchat pytest
+    webtest
+    bottle
+    threadpool
+    rocket-errbot
+    requests
+    jinja2
+    pyopenssl
+    colorlog
+    Yapsy
+    markdown
+    ansi
+    pygments
+    dnspython
+    pep8
+    daemonize
+    pygments-markdown-lexer
+    telegram
+    irc
+    slackclient
+    sleekxmpp
+    hypchat
+    pytest
   ];
 
   meta = with stdenv.lib; {

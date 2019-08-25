@@ -1,14 +1,22 @@
-{stdenv, fetchurl, lib, gfortran
+{ stdenv
+, fetchurl
+, lib
+, gfortran
 , ncurses
 , withXaw3d ? false
-#, withPVMlib ? false
-, tcl, tk, withTk ? true
-, gtk2, withGtk ? false # working ?
-#, withF2c ? false
-, ocaml, withOCaml ? true
-#, withJava ? false
-#, atlasMath, withAtlas ? false
-, xlibsWrapper, withX ? true
+  #, withPVMlib ? false
+, tcl
+, tk
+, withTk ? true
+, gtk2
+, withGtk ? false # working ?
+  #, withF2c ? false
+, ocaml
+, withOCaml ? true
+  #, withJava ? false
+  #, atlasMath, withAtlas ? false
+, xlibsWrapper
+, withX ? true
 }:
 
 stdenv.mkDerivation rec {
@@ -19,19 +27,20 @@ stdenv.mkDerivation rec {
     sha256 = "1adk6jqlj7i3gjklvlf1j3il1nb22axnp4rvwl314an62siih0sc";
   };
 
-  buildInputs = [gfortran ncurses]
-  ++ lib.optionals withGtk [gtk2]
-  ++ lib.optionals withOCaml [ocaml]
-  ++ lib.optional withX xlibsWrapper
-  ;
+  buildInputs = [ gfortran ncurses ]
+    ++ lib.optionals withGtk [ gtk2 ]
+    ++ lib.optionals withOCaml [ ocaml ]
+    ++ lib.optional withX xlibsWrapper
+    ;
 
 
-/*
-  --with-atlas-library=DIR  Atlas library files are in DIR and we use Atlas
-*/
+  /*
+    --with-atlas-library=DIR  Atlas library files are in DIR and we use Atlas
+  */
   configureFlags = [
     # use gcc C compiler and gnu Fortran compiler (g77 or gfortran)
-    "--with-gcc" "--with-g77"
+    "--with-gcc"
+    "--with-g77"
     # do not compile with PVM library
     "--without-pvm"
     # compile with GTK
@@ -44,14 +53,15 @@ stdenv.mkDerivation rec {
     # use the X Window System
     (stdenv.lib.withFeature withX "x")
     # compile with TCL/TK
-  ] ++ lib.optionals withTk [
-    "--with-tk"
-    "--with-tcl-library=${tcl}/lib"
-    "--with-tcl-include=${tcl}/include"
-    "--with-tk-library=${tk}/lib"
-    "--with-tk-include=${tk}/include"
-  ]    # use Xaw3d widgets given with Scilab
-    ++ lib.optional (!withXaw3d) "--with-local-xaw"
+  ]
+  ++ lib.optionals withTk [
+       "--with-tk"
+       "--with-tcl-library=${tcl}/lib"
+       "--with-tcl-include=${tcl}/include"
+       "--with-tk-library=${tk}/lib"
+       "--with-tk-include=${tk}/include"
+     ]    # use Xaw3d widgets given with Scilab
+  ++ lib.optional (!withXaw3d) "--with-local-xaw"
   ;
 
   makeFlags = "all";

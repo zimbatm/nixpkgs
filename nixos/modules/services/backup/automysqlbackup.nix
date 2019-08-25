@@ -65,7 +65,8 @@ in
   config = mkIf cfg.enable {
 
     assertions = [
-      { assertion = !config.services.mysqlBackup.enable;
+      {
+        assertion = !config.services.mysqlBackup.enable;
         message = "Please choose one of services.mysqlBackup or services.automysqlbackup.";
       }
     ];
@@ -100,7 +101,7 @@ in
     environment.systemPackages = [ pkg ];
 
     users.users.${user}.group = group;
-    users.groups.${group} = { };
+    users.groups.${group} = {};
 
     systemd.tmpfiles.rules = [
       "d '${cfg.config.backup_dir}' 0750 ${user} ${group} - -"

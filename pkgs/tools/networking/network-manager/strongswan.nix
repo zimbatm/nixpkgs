@@ -1,5 +1,13 @@
-{ stdenv, fetchurl, intltool, pkgconfig, networkmanager, strongswanNM
-, gtk3, gnome3, libsecret }:
+{ stdenv
+, fetchurl
+, intltool
+, pkgconfig
+, networkmanager
+, strongswanNM
+, gtk3
+, gnome3
+, libsecret
+}:
 
 stdenv.mkDerivation rec {
   name = "${pname}-${version}";

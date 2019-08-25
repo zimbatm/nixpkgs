@@ -16,7 +16,8 @@ rustPlatform.buildRustPackage rec {
   nativeBuildInputs = [ pkgconfig ];
 
   buildInputs = [ openssl ]
-    ++ stdenv.lib.optionals stdenv.isDarwin [ curl libiconv Security ];
+    ++ stdenv.lib.optionals stdenv.isDarwin [ curl libiconv Security ]
+    ;
 
   meta = with stdenv.lib; {
     description = "Cleanup stale Git branches of pull requests";

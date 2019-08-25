@@ -1,5 +1,13 @@
-{ stdenv, buildGoPackage, trousers, dclxvi, wrapGAppsHook, pkgconfig, gtk3, gtkspell3,
-  fetchgit }:
+{ stdenv
+, buildGoPackage
+, trousers
+, dclxvi
+, wrapGAppsHook
+, pkgconfig
+, gtk3
+, gtkspell3
+, fetchgit
+}:
 
 let
   gui = true; # Might be implemented with nixpkgs config.
@@ -22,7 +30,8 @@ buildGoPackage rec {
   nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ trousers gtk3 gtkspell3 ]
     ++ stdenv.lib.optional stdenv.hostPlatform.isx86_64 dclxvi
-    ++ stdenv.lib.optionals gui [ wrapGAppsHook ];
+    ++ stdenv.lib.optionals gui [ wrapGAppsHook ]
+    ;
   buildFlags = stdenv.lib.optionalString (!gui) "-tags nogui";
   excludedPackages = "\\(appengine\\|bn256cgo\\)";
   postPatch = stdenv.lib.optionalString stdenv.hostPlatform.isx86_64 ''

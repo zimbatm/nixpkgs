@@ -1,13 +1,50 @@
-{ config, stdenv, fetchurl, lib, iasl, dev86, pam, libxslt, libxml2, wrapQtAppsHook
-, libX11, xorgproto, libXext, libXcursor, libXmu, libIDL, SDL, libcap, libGL
-, libpng, glib, lvm2, libXrandr, libXinerama, libopus, qtbase, qtx11extras
-, qttools, pkgconfig, which, docbook_xsl, docbook_xml_dtd_43
-, alsaLib, curl, libvpx, nettools, dbus
-, makeself, perl
-, javaBindings ? true, jdk ? null # Almost doesn't affect closure size
-, pythonBindings ? false, python3 ? null
-, extensionPack ? null, fakeroot ? null
-, pulseSupport ? config.pulseaudio or stdenv.isLinux, libpulseaudio ? null
+{ config
+, stdenv
+, fetchurl
+, lib
+, iasl
+, dev86
+, pam
+, libxslt
+, libxml2
+, wrapQtAppsHook
+, libX11
+, xorgproto
+, libXext
+, libXcursor
+, libXmu
+, libIDL
+, SDL
+, libcap
+, libGL
+, libpng
+, glib
+, lvm2
+, libXrandr
+, libXinerama
+, libopus
+, qtbase
+, qtx11extras
+, qttools
+, pkgconfig
+, which
+, docbook_xsl
+, docbook_xml_dtd_43
+, alsaLib
+, curl
+, libvpx
+, nettools
+, dbus
+, makeself
+, perl
+, javaBindings ? true
+, jdk ? null # Almost doesn't affect closure size
+, pythonBindings ? false
+, python3 ? null
+, extensionPack ? null
+, fakeroot ? null
+, pulseSupport ? config.pulseaudio or stdenv.isLinux
+, libpulseaudio ? null
 , enableHardening ? false
 , headless ? false
 , enable32bitGuests ? true
@@ -23,7 +60,8 @@ let
   # guest-additions/default.nix as well.
   main = "11sxx2zaablkvjiw0i5g5i5ibak6bsq6fldrcxwbcby6318shnhv";
   version = "6.0.8";
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "virtualbox-${version}";
 
   src = fetchurl {
@@ -34,20 +72,43 @@ in stdenv.mkDerivation {
   outputs = [ "out" "modsrc" ];
 
   nativeBuildInputs = [ pkgconfig which docbook_xsl docbook_xml_dtd_43 patchelfUnstable ]
-    ++ optional (!headless) wrapQtAppsHook;
+    ++ optional (!headless) wrapQtAppsHook
+    ;
 
   # Wrap manually because we just need to wrap one executable
   dontWrapQtApps = true;
 
   buildInputs =
-    [ iasl dev86 libxslt libxml2 xorgproto libX11 libXext libXcursor libIDL
-      libcap glib lvm2 alsaLib curl libvpx pam makeself perl
-      libXmu libpng libopus python ]
+    [
+      iasl
+      dev86
+      libxslt
+      libxml2
+      xorgproto
+      libX11
+      libXext
+      libXcursor
+      libIDL
+      libcap
+      glib
+      lvm2
+      alsaLib
+      curl
+      libvpx
+      pam
+      makeself
+      perl
+      libXmu
+      libpng
+      libopus
+      python
+    ]
     ++ optional javaBindings jdk
     ++ optional pythonBindings python # Python is needed even when not building bindings
     ++ optional pulseSupport libpulseaudio
     ++ optionals (headless) [ libXrandr libGL ]
-    ++ optionals (!headless) [ qtbase qtx11extras libXinerama SDL ];
+    ++ optionals (!headless) [ qtbase qtx11extras libXinerama SDL ]
+  ;
 
   hardeningDisable = [ "format" "fortify" "pic" "stackprotector" ];
 
@@ -57,14 +118,14 @@ in stdenv.mkDerivation {
         -e 's@PYTHONDIR=.*@PYTHONDIR=${if pythonBindings then python else ""}@' \
         -e 's@CXX_FLAGS="\(.*\)"@CXX_FLAGS="-std=c++11 \1"@' \
         ${optionalString (!headless) ''
-        -e 's@TOOLQT5BIN=.*@TOOLQT5BIN="${getDev qtbase}/bin"@' \
-        ''} -i configure
+    -e 's@TOOLQT5BIN=.*@TOOLQT5BIN="${getDev qtbase}/bin"@' \
+  ''} -i configure
     ls kBuild/bin/linux.x86/k* tools/linux.x86/bin/* | xargs -n 1 patchelf --set-interpreter ${stdenv.glibc.out}/lib/ld-linux.so.2
     ls kBuild/bin/linux.amd64/k* tools/linux.amd64/bin/* | xargs -n 1 patchelf --set-interpreter ${stdenv.glibc.out}/lib/ld-linux-x86-64.so.2
 
     grep 'libpulse\.so\.0'      src include -rI --files-with-match | xargs sed -i -e '
       ${optionalString pulseSupport
-        ''s@"libpulse\.so\.0"@"${libpulseaudio.out}/lib/libpulse.so.0"@g''}'
+    ''s@"libpulse\.so\.0"@"${libpulseaudio.out}/lib/libpulse.so.0"@g''}'
 
     grep 'libdbus-1\.so\.3'     src include -rI --files-with-match | xargs sed -i -e '
       s@"libdbus-1\.so\.3"@"${dbus.lib}/lib/libdbus-1.so.3"@g'
@@ -77,10 +138,11 @@ in stdenv.mkDerivation {
   '';
 
   patches =
-     optional enableHardening ./hardened.patch
-  ++ [
-    ./qtx11extras.patch
-  ];
+    optional enableHardening ./hardened.patch
+    ++ [
+         ./qtx11extras.patch
+       ]
+    ;
 
   postPatch = ''
     sed -i -e 's|/sbin/ifconfig|${nettools}/bin/ifconfig|' \
@@ -107,12 +169,12 @@ in stdenv.mkDerivation {
     VBOX_PATH_APP_DOCS             := $out/doc
     ${optionalString javaBindings ''
     VBOX_JAVA_HOME                 := ${jdk}
-    ''}
+  ''}
     ${optionalString (!headless) ''
     PATH_QT5_X11_EXTRAS_LIB        := ${getLib qtx11extras}/lib
     PATH_QT5_X11_EXTRAS_INC        := ${getDev qtx11extras}/include
     TOOL_QT5_LRC                   := ${getDev qttools}/bin/lrelease
-    ''}
+  ''}
     LOCAL_CONFIG
 
     ./configure \
@@ -154,29 +216,29 @@ in stdenv.mkDerivation {
     done
 
     ${optionalString (extensionPack != null) ''
-      mkdir -p "$share"
-      "${fakeroot}/bin/fakeroot" "${stdenv.shell}" <<EXTHELPER
-      "$libexec/VBoxExtPackHelperApp" install \
-        --base-dir "$share/ExtensionPacks" \
-        --cert-dir "$share/ExtPackCertificates" \
-        --name "Oracle VM VirtualBox Extension Pack" \
-        --tarball "${extensionPack}" \
-        --sha-256 "${extensionPack.outputHash}"
-      EXTHELPER
-    ''}
+    mkdir -p "$share"
+    "${fakeroot}/bin/fakeroot" "${stdenv.shell}" <<EXTHELPER
+    "$libexec/VBoxExtPackHelperApp" install \
+      --base-dir "$share/ExtensionPacks" \
+      --cert-dir "$share/ExtPackCertificates" \
+      --name "Oracle VM VirtualBox Extension Pack" \
+      --tarball "${extensionPack}" \
+      --sha-256 "${extensionPack.outputHash}"
+    EXTHELPER
+  ''}
 
     ${optionalString (!headless) ''
-      # Create and fix desktop item
-      mkdir -p $out/share/applications
-      sed -i -e "s|Icon=VBox|Icon=$libexec/VBox.png|" $libexec/virtualbox.desktop
-      ln -sfv $libexec/virtualbox.desktop $out/share/applications
-      # Icons
-      mkdir -p $out/share/icons/hicolor
-      for size in `ls -1 $libexec/icons`; do
-        mkdir -p $out/share/icons/hicolor/$size/apps
-        ln -s $libexec/icons/$size/*.png $out/share/icons/hicolor/$size/apps
-      done
-    ''}
+    # Create and fix desktop item
+    mkdir -p $out/share/applications
+    sed -i -e "s|Icon=VBox|Icon=$libexec/VBox.png|" $libexec/virtualbox.desktop
+    ln -sfv $libexec/virtualbox.desktop $out/share/applications
+    # Icons
+    mkdir -p $out/share/icons/hicolor
+    for size in `ls -1 $libexec/icons`; do
+      mkdir -p $out/share/icons/hicolor/$size/apps
+      ln -s $libexec/icons/$size/*.png $out/share/icons/hicolor/$size/apps
+    done
+  ''}
 
     cp -rv out/linux.*/${buildType}/bin/src "$modsrc"
   '';

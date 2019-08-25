@@ -1,11 +1,43 @@
-{ stdenv, lib, fetchurl, bash, cpio, autoconf, pkgconfig, file, which, unzip, zip, cups, freetype
-, alsaLib, bootjdk, perl, fontconfig, zlib, lndir
-, libX11, libICE, libXrender, libXext, libXt, libXtst, libXi, libXinerama, libXcursor, libXrandr
-, libjpeg, giflib
+{ stdenv
+, lib
+, fetchurl
+, bash
+, cpio
+, autoconf
+, pkgconfig
+, file
+, which
+, unzip
+, zip
+, cups
+, freetype
+, alsaLib
+, bootjdk
+, perl
+, fontconfig
+, zlib
+, lndir
+, libX11
+, libICE
+, libXrender
+, libXext
+, libXt
+, libXtst
+, libXi
+, libXinerama
+, libXcursor
+, libXrandr
+, libjpeg
+, giflib
 , setJavaClassPath
 , minimal ? false
-, enableJavaFX ? true, openjfx
-, enableGnome2 ? true, gtk3, gnome_vfs, glib, GConf
+, enableJavaFX ? true
+, openjfx
+, enableGnome2 ? true
+, gtk3
+, gnome_vfs
+, glib
+, GConf
 }:
 
 let
@@ -33,21 +65,52 @@ let
 
     nativeBuildInputs = [ pkgconfig ];
     buildInputs = [
-      autoconf cpio file which unzip zip perl bootjdk zlib cups freetype alsaLib
-      libjpeg giflib libX11 libICE libXext libXrender libXtst libXt libXtst
-      libXi libXinerama libXcursor libXrandr lndir fontconfig
-    ] ++ lib.optionals (!minimal && enableGnome2) [
-      gtk3 gnome_vfs GConf glib
-    ];
+      autoconf
+      cpio
+      file
+      which
+      unzip
+      zip
+      perl
+      bootjdk
+      zlib
+      cups
+      freetype
+      alsaLib
+      libjpeg
+      giflib
+      libX11
+      libICE
+      libXext
+      libXrender
+      libXtst
+      libXt
+      libXtst
+      libXi
+      libXinerama
+      libXcursor
+      libXrandr
+      lndir
+      fontconfig
+    ]
+    ++ lib.optionals (!minimal && enableGnome2) [
+         gtk3
+         gnome_vfs
+         GConf
+         glib
+       ]
+    ;
 
     patches = [
       ./fix-java-home-jdk10.patch
       ./read-truststore-from-env-jdk10.patch
       ./currency-date-range-jdk10.patch
       ./increase-javadoc-heap.patch
-    ] ++ lib.optionals (!minimal && enableGnome2) [
-      ./swing-use-gtk-jdk10.patch
-    ];
+    ]
+    ++ lib.optionals (!minimal && enableGnome2) [
+         ./swing-use-gtk-jdk10.patch
+       ]
+    ;
 
     preConfigure = ''
       chmod +x configure
@@ -75,14 +138,24 @@ let
     # https://bugzilla.redhat.com/show_bug.cgi?id=1306558
     # https://github.com/JetBrains/jdk8u/commit/eaa5e0711a43d64874111254d74893fa299d5716
     + stdenv.lib.optionalString stdenv.cc.isGNU ''
-      NIX_CFLAGS_COMPILE+=" -fno-lifetime-dse -fno-delete-null-pointer-checks -std=gnu++98 -Wno-error"
-    '';
+        NIX_CFLAGS_COMPILE+=" -fno-lifetime-dse -fno-delete-null-pointer-checks -std=gnu++98 -Wno-error"
+      ''
+    ;
 
-    NIX_LDFLAGS= lib.optionals (!minimal) [
-      "-lfontconfig" "-lcups" "-lXinerama" "-lXrandr" "-lmagic"
-    ] ++ lib.optionals (!minimal && enableGnome2) [
-      "-lgtk-3" "-lgio-2.0" "-lgnomevfs-2" "-lgconf-2"
-    ];
+    NIX_LDFLAGS = lib.optionals (!minimal) [
+      "-lfontconfig"
+      "-lcups"
+      "-lXinerama"
+      "-lXrandr"
+      "-lmagic"
+    ]
+    ++ lib.optionals (!minimal && enableGnome2) [
+         "-lgtk-3"
+         "-lgio-2.0"
+         "-lgnomevfs-2"
+         "-lgconf-2"
+       ]
+    ;
 
     buildFlags = [ "all" ];
 
@@ -105,8 +178,8 @@ let
       # Remove crap from the installation.
       rm -rf $out/lib/openjdk/demo
       ${lib.optionalString minimal ''
-        rm $out/lib/openjdk/lib/{libjsound,libfontmanager}.so
-      ''}
+      rm $out/lib/openjdk/lib/{libjsound,libfontmanager}.so
+    ''}
 
       ln -s $out/lib/openjdk/bin $out/bin
     '';
@@ -156,7 +229,7 @@ let
       license = licenses.gpl2;
       description = "The open-source Java Development Kit";
       maintainers = with maintainers; [ edwtjo ];
-      platforms = ["i686-linux" "x86_64-linux"];
+      platforms = [ "i686-linux" "x86_64-linux" ];
     };
 
     passthru = {
@@ -164,4 +237,5 @@ let
       home = "${openjdk}/lib/openjdk";
     };
   };
-in openjdk
+in
+openjdk

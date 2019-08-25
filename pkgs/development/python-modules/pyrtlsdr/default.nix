@@ -18,14 +18,18 @@ buildPythonPackage rec {
   # Replace pypandoc dependency by m2r
   # See https://github.com/roger-/pyrtlsdr/pull/78
   patches = [
-    (fetchpatch {
-      url = "${meta.homepage}/commit/2b7df0b.patch";
-      sha256 = "04h5z80969jgdgrf98b9ps56sybms09xacvmj6rwcfrmanli8rgf";
-    })
-    (fetchpatch {
-      url = "${meta.homepage}/commit/97dc3d0.patch";
-      sha256 = "1v1j0n91jwpsiam2j34yj71z4h39cvk4gi4565zgjrzsq6xr93i0";
-    })
+    (
+      fetchpatch {
+        url = "${meta.homepage}/commit/2b7df0b.patch";
+        sha256 = "04h5z80969jgdgrf98b9ps56sybms09xacvmj6rwcfrmanli8rgf";
+      }
+    )
+    (
+      fetchpatch {
+        url = "${meta.homepage}/commit/97dc3d0.patch";
+        sha256 = "1v1j0n91jwpsiam2j34yj71z4h39cvk4gi4565zgjrzsq6xr93i0";
+      }
+    )
   ];
 
   nativeBuildInputs = [ m2r ];

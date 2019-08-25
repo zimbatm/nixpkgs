@@ -1,9 +1,29 @@
-{ stdenv, fetchgit, jdk, gmp, readline, openssl, unixODBC, zlib
-, libarchive, db, pcre, libedit, libossp_uuid, libXpm
-, libSM, libXt, freetype, pkgconfig, fontconfig, makeWrapper ? stdenv.isDarwin
-, git, cacert, cmake, libyaml
+{ stdenv
+, fetchgit
+, jdk
+, gmp
+, readline
+, openssl
+, unixODBC
+, zlib
+, libarchive
+, db
+, pcre
+, libedit
+, libossp_uuid
+, libXpm
+, libSM
+, libXt
+, freetype
+, pkgconfig
+, fontconfig
+, makeWrapper ? stdenv.isDarwin
+, git
+, cacert
+, cmake
+, libyaml
 , extraLibraries ? [ jdk unixODBC libXpm libSM libXt freetype fontconfig ]
-, extraPacks     ? []
+, extraPacks ? []
 }:
 
 let
@@ -21,11 +41,25 @@ stdenv.mkDerivation {
     sha256 = "0qxa6f5dypwczxajlf0l736adbjb17cbak3qsh5g04hpv2bxm6dh";
   };
 
-  buildInputs = [ cacert git cmake gmp readline openssl
-    libarchive libyaml db pcre libedit libossp_uuid
-    zlib pkgconfig ]
+  buildInputs = [
+    cacert
+    git
+    cmake
+    gmp
+    readline
+    openssl
+    libarchive
+    libyaml
+    db
+    pcre
+    libedit
+    libossp_uuid
+    zlib
+    pkgconfig
+  ]
   ++ extraLibraries
-  ++ stdenv.lib.optional stdenv.isDarwin makeWrapper;
+  ++ stdenv.lib.optional stdenv.isDarwin makeWrapper
+  ;
 
   hardeningDisable = [ "format" ];
 
@@ -47,8 +81,10 @@ stdenv.mkDerivation {
     mkdir -p $out/lib/swipl/pack
   ''
   + builtins.concatStringsSep "\n"
-  ( builtins.map (packInstall "$out") extraPacks
-  );
+      (
+        builtins.map (packInstall "$out") extraPacks
+      )
+  ;
 
   # For macOS: still not fixed in upstream: "abort trap 6" when called
   # through symlink, so wrap binary.

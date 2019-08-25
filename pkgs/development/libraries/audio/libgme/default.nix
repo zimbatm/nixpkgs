@@ -1,7 +1,8 @@
 { stdenv, fetchFromBitbucket, cmake }:
 let
   version = "0.6.2";
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "libgme-${version}";
 
   meta = with stdenv.lib; {

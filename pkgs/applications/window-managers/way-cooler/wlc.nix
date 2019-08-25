@@ -1,8 +1,27 @@
-{ stdenv, fetchFromGitHub, cmake, pkgconfig
-, wayland, pixman, libxkbcommon, libinput, xcbutilwm, xcbutilimage, libGL
-, libX11, dbus, wayland-protocols, libdrm, mesa
-, libpthreadstubs, libXdmcp, libXext, libXfixes
-, withOptionalPackages ? true, zlib, valgrind, doxygen
+{ stdenv
+, fetchFromGitHub
+, cmake
+, pkgconfig
+, wayland
+, pixman
+, libxkbcommon
+, libinput
+, xcbutilwm
+, xcbutilimage
+, libGL
+, libX11
+, dbus
+, wayland-protocols
+, libdrm
+, mesa
+, libpthreadstubs
+, libXdmcp
+, libXext
+, libXfixes
+, withOptionalPackages ? true
+, zlib
+, valgrind
+, doxygen
 }:
 
 stdenv.mkDerivation rec {
@@ -20,10 +39,25 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ cmake pkgconfig ];
 
   buildInputs = [
-    wayland pixman libxkbcommon libinput xcbutilwm xcbutilimage libGL
-    libX11 libXfixes dbus wayland-protocols
-    libpthreadstubs libXdmcp libXext libdrm mesa ]
-    ++ stdenv.lib.optionals withOptionalPackages [ zlib valgrind doxygen ];
+    wayland
+    pixman
+    libxkbcommon
+    libinput
+    xcbutilwm
+    xcbutilimage
+    libGL
+    libX11
+    libXfixes
+    dbus
+    wayland-protocols
+    libpthreadstubs
+    libXdmcp
+    libXext
+    libdrm
+    mesa
+  ]
+  ++ stdenv.lib.optionals withOptionalPackages [ zlib valgrind doxygen ]
+  ;
 
   doCheck = true;
   checkTarget = "test";
@@ -31,9 +65,9 @@ stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "A library for making a simple Wayland compositor";
-    homepage    = https://github.com/Cloudef/wlc;
-    license     = licenses.mit;
-    platforms   = platforms.linux;
+    homepage = https://github.com/Cloudef/wlc;
+    license = licenses.mit;
+    platforms = platforms.linux;
     maintainers = with maintainers; [ primeos ]; # Trying to keep it up-to-date.
   };
 }

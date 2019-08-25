@@ -1,4 +1,6 @@
-{ stdenv, fetchFromGitHub, fetchpatch
+{ stdenv
+, fetchFromGitHub
+, fetchpatch
 , openssl
 }:
 
@@ -16,18 +18,24 @@ stdenv.mkDerivation rec {
   buildInputs = [ openssl ];
 
   patches = [
-    (fetchpatch {
-      url = "https://github.com/katmagic/Shallot/commit/c913088dfaaaf249494514f20a62f2a17b5c6606.patch";
-      sha256 = "19l1ppbxpdb0736f7plhybj08wh6rqk1lr3bxsp8jpzpnkh114b2";
-    })
-    (fetchpatch {
-      url = "https://github.com/katmagic/Shallot/commit/cd6628d97b981325e700a38f408a43df426fd569.patch";
-      sha256 = "1gaffp5wp1l5p2qdk0ix3i5fhzpx4xphl0haa6ajhqn8db7hbr9y";
-    })
-    (fetchpatch {
-      url = "https://github.com/katmagic/Shallot/commit/5c7c1ccecbbad5a121c50ba7153cbbee7ee0ebf9.patch";
-      sha256 = "1zmll4iqz39zwk8vj40n1dpvyq3403l64p2127gsjgh2l2v91s4k";
-    })
+    (
+      fetchpatch {
+        url = "https://github.com/katmagic/Shallot/commit/c913088dfaaaf249494514f20a62f2a17b5c6606.patch";
+        sha256 = "19l1ppbxpdb0736f7plhybj08wh6rqk1lr3bxsp8jpzpnkh114b2";
+      }
+    )
+    (
+      fetchpatch {
+        url = "https://github.com/katmagic/Shallot/commit/cd6628d97b981325e700a38f408a43df426fd569.patch";
+        sha256 = "1gaffp5wp1l5p2qdk0ix3i5fhzpx4xphl0haa6ajhqn8db7hbr9y";
+      }
+    )
+    (
+      fetchpatch {
+        url = "https://github.com/katmagic/Shallot/commit/5c7c1ccecbbad5a121c50ba7153cbbee7ee0ebf9.patch";
+        sha256 = "1zmll4iqz39zwk8vj40n1dpvyq3403l64p2127gsjgh2l2v91s4k";
+      }
+    )
   ];
 
   installPhase = ''

@@ -1,4 +1,4 @@
-{stdenv, pkgconfig, fetchurl}:
+{ stdenv, pkgconfig, fetchurl }:
 
 stdenv.mkDerivation rec {
   name = "libspiro-${version}";
@@ -8,7 +8,7 @@ stdenv.mkDerivation rec {
     sha256 = "0z4zpxd3nwwchqdsbmmjbp13aw5jg8v5p1993190bpykkrjlh6nv";
   };
 
-  nativeBuildInputs = [pkgconfig];
+  nativeBuildInputs = [ pkgconfig ];
 
   meta = with stdenv.lib; {
     description = "A library that simplifies the drawing of beautiful curves";

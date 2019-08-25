@@ -14,10 +14,12 @@ stdenv.mkDerivation rec {
 
   patches = [
     ./external-lib-paths.patch
-    (substituteAll {
-      src = ./qttools-bins.patch;
-      qttools = "${qttools.dev}/bin";
-    })
+    (
+      substituteAll {
+        src = ./qttools-bins.patch;
+        qttools = "${qttools.dev}/bin";
+      }
+    )
   ];
 
   buildInputs = [ qtbase qttools libGLU.dev ];

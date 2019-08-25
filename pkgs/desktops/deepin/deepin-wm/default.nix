@@ -1,7 +1,24 @@
-{ stdenv, fetchFromGitHub, pkgconfig, intltool, libtool, vala, gnome3,
-  dbus, bamf, clutter-gtk, pantheon, libgee, libcanberra-gtk3,
-  libwnck3, deepin-menu, deepin-mutter, deepin-wallpapers,
-  deepin-desktop-schemas, wrapGAppsHook, deepin }:
+{ stdenv
+, fetchFromGitHub
+, pkgconfig
+, intltool
+, libtool
+, vala
+, gnome3
+, dbus
+, bamf
+, clutter-gtk
+, pantheon
+, libgee
+, libcanberra-gtk3
+, libwnck3
+, deepin-menu
+, deepin-mutter
+, deepin-wallpapers
+, deepin-desktop-schemas
+, wrapGAppsHook
+, deepin
+}:
 
 stdenv.mkDerivation rec {
   name = "${pname}-${version}";

@@ -1,5 +1,12 @@
-{ stdenv, lib, fetchFromGitHub, cmake, pkgconfig, libpng, libjpeg
-, guiSupport ? false, libX11
+{ stdenv
+, lib
+, fetchFromGitHub
+, cmake
+, pkgconfig
+, libpng
+, libjpeg
+, guiSupport ? false
+, libX11
 
   # see http://dlib.net/compile.html
 , avxSupport ? true
@@ -12,7 +19,7 @@ stdenv.mkDerivation rec {
   src = fetchFromGitHub {
     owner = "davisking";
     repo = "dlib";
-    rev ="v${version}";
+    rev = "v${version}";
     sha256 = "0g11ilma6cll3bd2ahm66j1sjb9v4rxz3xjbfkcg5pjsvb49n029";
   };
 

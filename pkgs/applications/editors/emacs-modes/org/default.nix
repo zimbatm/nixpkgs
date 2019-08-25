@@ -9,9 +9,14 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [ emacs ];
-  nativeBuildInputs = [ (texlive.combine {
-    inherit (texlive) scheme-small cm-super;
-  }) texinfo ];
+  nativeBuildInputs = [
+    (
+      texlive.combine {
+        inherit (texlive) scheme-small cm-super;
+      }
+    )
+    texinfo
+  ];
 
   configurePhase =
     '' sed -i mk/default.mk \

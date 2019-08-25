@@ -1,4 +1,4 @@
-{stdenv, fetchurl, openssl, ncurses}:
+{ stdenv, fetchurl, openssl, ncurses }:
 
 stdenv.mkDerivation rec {
   name = "imapproxy-1.2.7";

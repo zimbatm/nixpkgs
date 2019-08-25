@@ -1,12 +1,23 @@
-{ stdenv, fetchFromGitHub
-, xorg, xkeyboard_config, zlib
-, libjpeg_turbo, pixman, fltk
+{ stdenv
+, fetchFromGitHub
+, xorg
+, xkeyboard_config
+, zlib
+, libjpeg_turbo
+, pixman
+, fltk
 , fontDirectories
-, cmake, gettext, libtool
+, cmake
+, gettext
+, libtool
 , libGLU
-, gnutls, pam, nettle
-, xterm, openssh
-, makeWrapper}:
+, gnutls
+, pam
+, nettle
+, xterm
+, openssh
+, makeWrapper
+}:
 
 with stdenv.lib;
 
@@ -78,13 +89,28 @@ stdenv.mkDerivation rec {
   '';
 
   buildInputs = with xorg; [
-    libjpeg_turbo fltk pixman
-    gnutls pam nettle
+    libjpeg_turbo
+    fltk
+    pixman
+    gnutls
+    pam
+    nettle
     xorgproto
-    utilmacros libXtst libXext libX11 libXext libICE libXi libSM libXft
-    libxkbfile libXfont2 libpciaccess
+    utilmacros
+    libXtst
+    libXext
+    libX11
+    libXext
+    libICE
+    libXi
+    libSM
+    libXft
+    libxkbfile
+    libXfont2
+    libpciaccess
     libGLU
-  ] ++ xorg.xorgserver.buildInputs;
+  ]
+    ++ xorg.xorgserver.buildInputs;
 
   nativeBuildInputs = with xorg; [ cmake zlib gettext libtool utilmacros fontutil makeWrapper ]
     ++ xorg.xorgserver.nativeBuildInputs;
@@ -97,7 +123,7 @@ stdenv.mkDerivation rec {
     homepage = http://www.tigervnc.org/;
     license = stdenv.lib.licenses.gpl2Plus;
     description = "Fork of tightVNC, made in cooperation with VirtualGL";
-    maintainers = with stdenv.lib.maintainers; [viric];
+    maintainers = with stdenv.lib.maintainers; [ viric ];
     platforms = with stdenv.lib.platforms; linux;
     # Prevent a store collision.
     priority = 4;

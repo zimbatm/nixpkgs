@@ -12,8 +12,8 @@ stdenv.mkDerivation rec {
   buildInputs = [ ocaml findlib ocamlbuild ounit ];
 
   configurePhase = "ocaml setup.ml -configure --prefix $out --enable-tests";
-  buildPhase     = "ocaml setup.ml -build";
-  installPhase   = "ocaml setup.ml -install";
+  buildPhase = "ocaml setup.ml -build";
+  installPhase = "ocaml setup.ml -install";
 
   doCheck = true;
 

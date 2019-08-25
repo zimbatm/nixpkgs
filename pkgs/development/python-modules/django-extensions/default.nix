@@ -1,8 +1,19 @@
-{ lib, buildPythonPackage, fetchFromGitHub, pythonOlder
-, six, typing
-, django, shortuuid, python-dateutil, pytest
-, pytest-django, pytestcov, mock, vobject
-, werkzeug, glibcLocales
+{ lib
+, buildPythonPackage
+, fetchFromGitHub
+, pythonOlder
+, six
+, typing
+, django
+, shortuuid
+, python-dateutil
+, pytest
+, pytest-django
+, pytestcov
+, mock
+, vobject
+, werkzeug
+, glibcLocales
 }:
 
 buildPythonPackage rec {
@@ -23,9 +34,16 @@ buildPythonPackage rec {
   propagatedBuildInputs = [ six ] ++ lib.optional (pythonOlder "3.5") typing;
 
   checkInputs = [
-    django shortuuid python-dateutil pytest
-    pytest-django pytestcov mock vobject
-    werkzeug glibcLocales
+    django
+    shortuuid
+    python-dateutil
+    pytest
+    pytest-django
+    pytestcov
+    mock
+    vobject
+    werkzeug
+    glibcLocales
   ];
 
   LC_ALL = "en_US.UTF-8";

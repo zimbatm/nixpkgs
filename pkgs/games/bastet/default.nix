@@ -14,10 +14,12 @@ stdenv.mkDerivation rec {
 
   patches = [
     # Compatibility with new Boost
-    (fetchpatch {
-      url = "https://github.com/fph/bastet/commit/0e03f8d4d6bc6949cf1c447e632ce0d1b98c4be1.patch";
-      sha256 = "1475hisbm44jirsrhdlnddppsyn83xmvcx09gfkm9drcix05alzj";
-    })
+    (
+      fetchpatch {
+        url = "https://github.com/fph/bastet/commit/0e03f8d4d6bc6949cf1c447e632ce0d1b98c4be1.patch";
+        sha256 = "1475hisbm44jirsrhdlnddppsyn83xmvcx09gfkm9drcix05alzj";
+      }
+    )
   ];
 
   installPhase = ''

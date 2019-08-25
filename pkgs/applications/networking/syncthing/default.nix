@@ -7,9 +7,9 @@ let
       name = "${stname}-${version}";
 
       src = fetchFromGitHub {
-        owner  = "syncthing";
-        repo   = "syncthing";
-        rev    = "v${version}";
+        owner = "syncthing";
+        repo = "syncthing";
+        rev = "v${version}";
         sha256 = "0q1x6kd5kaij8mvs6yll2vqfzrbb31y5hpg6g5kjc8gngwv4rl6v";
       };
 
@@ -20,8 +20,8 @@ let
       patches = [
         ./add-stcli-target.patch
       ];
-      BUILD_USER="nix";
-      BUILD_HOST="nix";
+      BUILD_USER = "nix";
+      BUILD_HOST = "nix";
 
       buildPhase = ''
         runHook preBuild
@@ -46,7 +46,8 @@ let
       };
     };
 
-in {
+in
+{
   syncthing = common {
     stname = "syncthing";
     target = "syncthing";
@@ -60,21 +61,23 @@ in {
         install -Dm644 "$mf" "$mandir/$(basename "$mf")"
       done
 
-    '' + lib.optionalString (stdenv.isLinux) ''
-      mkdir -p $out/lib/systemd/{system,user}
+    ''
+    + lib.optionalString (stdenv.isLinux) ''
+        mkdir -p $out/lib/systemd/{system,user}
 
-      substitute etc/linux-systemd/system/syncthing-resume.service \
-                 $out/lib/systemd/system/syncthing-resume.service \
-                 --replace /usr/bin/pkill ${procps}/bin/pkill
+        substitute etc/linux-systemd/system/syncthing-resume.service \
+                   $out/lib/systemd/system/syncthing-resume.service \
+                   --replace /usr/bin/pkill ${procps}/bin/pkill
 
-      substitute etc/linux-systemd/system/syncthing@.service \
-                 $out/lib/systemd/system/syncthing@.service \
-                 --replace /usr/bin/syncthing $out/bin/syncthing
+        substitute etc/linux-systemd/system/syncthing@.service \
+                   $out/lib/systemd/system/syncthing@.service \
+                   --replace /usr/bin/syncthing $out/bin/syncthing
 
-      substitute etc/linux-systemd/user/syncthing.service \
-                 $out/lib/systemd/user/syncthing.service \
-                 --replace /usr/bin/syncthing $out/bin/syncthing
-    '';
+        substitute etc/linux-systemd/user/syncthing.service \
+                   $out/lib/systemd/user/syncthing.service \
+                   --replace /usr/bin/syncthing $out/bin/syncthing
+      ''
+    ;
   };
 
   syncthing-cli = common {

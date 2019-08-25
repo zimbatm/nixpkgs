@@ -31,7 +31,8 @@ let
 
   # Perform substitutions in all udev rules files.
   udevRules = pkgs.runCommand "udev-rules"
-    { preferLocalBuild = true;
+    {
+      preferLocalBuild = true;
       allowSubstitutes = false;
       packages = unique (map toString cfg.packages);
     }
@@ -120,14 +121,15 @@ let
       # udev's 80-drivers.rules file, which contains rules for
       # automatically calling modprobe.
       ${optionalString (!config.boot.hardwareScan) ''
-        ln -s /dev/null $out/80-drivers.rules
-      ''}
+      ln -s /dev/null $out/80-drivers.rules
+    ''}
     ''; # */
 
   hwdbBin = pkgs.runCommand "hwdb.bin"
-    { preferLocalBuild = true;
+    {
+      preferLocalBuild = true;
       allowSubstitutes = false;
-      packages = unique (map toString ([udev] ++ cfg.packages));
+      packages = unique (map toString ([ udev ] ++ cfg.packages));
     }
     ''
       mkdir -p etc/udev/hwdb.d
@@ -281,10 +283,13 @@ in
     boot.kernelParams = mkIf (!config.networking.usePredictableInterfaceNames) [ "net.ifnames=0" ];
 
     environment.etc =
-      [ { source = udevRules;
+      [
+        {
+          source = udevRules;
           target = "udev/rules.d";
         }
-        { source = hwdbBin;
+        {
+          source = hwdbBin;
           target = "udev/hwdb.bin";
         }
       ];
@@ -311,7 +316,8 @@ in
       '';
 
     systemd.services.systemd-udevd =
-      { restartTriggers = cfg.packages;
+      {
+        restartTriggers = cfg.packages;
       };
 
   };

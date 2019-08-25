@@ -5,14 +5,17 @@ let
 
   cfg = config.services.ipfs;
 
-  ipfsFlags = toString ([
-    (optionalString  cfg.autoMount                   "--mount")
-    #(optionalString  cfg.autoMigrate                 "--migrate")
-    (optionalString  cfg.enableGC                    "--enable-gc")
-    (optionalString (cfg.serviceFdlimit != null)     "--manage-fdlimit=false")
-    (optionalString (cfg.defaultMode == "offline")   "--offline")
-    (optionalString (cfg.defaultMode == "norouting") "--routing=none")
-  ] ++ cfg.extraFlags);
+  ipfsFlags = toString (
+    [
+      (optionalString cfg.autoMount "--mount")
+      #(optionalString  cfg.autoMigrate                 "--migrate")
+      (optionalString cfg.enableGC "--enable-gc")
+      (optionalString (cfg.serviceFdlimit != null) "--manage-fdlimit=false")
+      (optionalString (cfg.defaultMode == "offline") "--offline")
+      (optionalString (cfg.defaultMode == "norouting") "--routing=none")
+    ]
+    ++ cfg.extraFlags
+  );
 
   defaultDataDir = if versionAtLeast config.system.stateVersion "17.09" then
     "/var/lib/ipfs" else
@@ -39,34 +42,48 @@ let
     # NB: migration must be performed prior to pre-start, else we get the failure message!
     preStart = ''
       ipfs repo fsck # workaround for BUG #4212 (https://github.com/ipfs/go-ipfs/issues/4214)
-    '' + optionalString cfg.autoMount ''
-      ipfs --local config Mounts.FuseAllowOther --json true
-      ipfs --local config Mounts.IPFS ${cfg.ipfsMountDir}
-      ipfs --local config Mounts.IPNS ${cfg.ipnsMountDir}
-    '' + concatStringsSep "\n" (collect
+    ''
+    + optionalString cfg.autoMount ''
+        ipfs --local config Mounts.FuseAllowOther --json true
+        ipfs --local config Mounts.IPFS ${cfg.ipfsMountDir}
+        ipfs --local config Mounts.IPNS ${cfg.ipnsMountDir}
+      ''
+    + concatStringsSep "\n" (
+        collect
           isString
-          (mapAttrsRecursive
-            (path: value:
-            # Using heredoc below so that the value is never improperly quoted
-            ''
-              read value <<EOF
-              ${builtins.toJSON value}
-              EOF
-              ipfs --local config --json "${concatStringsSep "." path}" "$value"
-            '')
-            ({ Addresses.API = cfg.apiAddress;
-               Addresses.Gateway = cfg.gatewayAddress;
-               Addresses.Swarm = cfg.swarmAddress;
-            } //
-            cfg.extraConfig))
-        );
+          (
+            mapAttrsRecursive
+              (
+                path: value:
+                # Using heredoc below so that the value is never improperly quoted
+                  ''
+                    read value <<EOF
+                    ${builtins.toJSON value}
+                    EOF
+                    ipfs --local config --json "${concatStringsSep "." path}" "$value"
+                  ''
+              )
+              (
+                {
+                  Addresses.API = cfg.apiAddress;
+                  Addresses.Gateway = cfg.gatewayAddress;
+                  Addresses.Swarm = cfg.swarmAddress;
+                }
+                // cfg.extraConfig
+              )
+          )
+      )
+    ;
     serviceConfig = {
       ExecStart = "${wrapped}/bin/ipfs daemon ${ipfsFlags}";
       Restart = "on-failure";
       RestartSec = 1;
-    } // optionalAttrs (cfg.serviceFdlimit != null) { LimitNOFILE = cfg.serviceFdlimit; };
+    }
+    // optionalAttrs (cfg.serviceFdlimit != null) { LimitNOFILE = cfg.serviceFdlimit; }
+    ;
   };
-in {
+in
+{
 
   ###### interface
 
@@ -198,7 +215,7 @@ in {
         type = types.nullOr types.int;
         default = null;
         description = "The fdlimit for the IPFS systemd unit or <literal>null</literal> to have the daemon attempt to manage it";
-        example = 64*1024;
+        example = 64 * 1024;
       };
 
     };
@@ -228,10 +245,12 @@ in {
 
     systemd.tmpfiles.rules = [
       "d '${cfg.dataDir}' - ${cfg.user} ${cfg.group} - -"
-    ] ++ optionals cfg.autoMount [
-      "d '${cfg.ipfsMountDir}' - ${cfg.user} ${cfg.group} - -"
-      "d '${cfg.ipnsMountDir}' - ${cfg.user} ${cfg.group} - -"
-    ];
+    ]
+    ++ optionals cfg.autoMount [
+         "d '${cfg.ipfsMountDir}' - ${cfg.user} ${cfg.group} - -"
+         "d '${cfg.ipnsMountDir}' - ${cfg.user} ${cfg.group} - -"
+       ]
+    ;
 
     systemd.services.ipfs-init = recursiveUpdate commonEnv {
       description = "IPFS Initializer";
@@ -245,9 +264,9 @@ in {
             ${optionalString (! cfg.localDiscovery) "--profile=server"}
         else
           ${if cfg.localDiscovery
-            then "ipfs config profile apply local-discovery"
-            else "ipfs config profile apply server"
-          }
+      then "ipfs config profile apply local-discovery"
+      else "ipfs config profile apply server"
+      }
         fi
       '';
 
@@ -264,21 +283,21 @@ in {
       description = "IPFS Daemon";
       wantedBy = mkIf (cfg.defaultMode == "online") [ "multi-user.target" ];
       after = [ "network.target" "local-fs.target" "ipfs-init.service" ];
-      conflicts = [ "ipfs-offline.service" "ipfs-norouting.service"];
+      conflicts = [ "ipfs-offline.service" "ipfs-norouting.service" ];
     };
 
     systemd.services.ipfs-offline = recursiveUpdate baseService {
       description = "IPFS Daemon (offline mode)";
       wantedBy = mkIf (cfg.defaultMode == "offline") [ "multi-user.target" ];
       after = [ "local-fs.target" "ipfs-init.service" ];
-      conflicts = [ "ipfs.service" "ipfs-norouting.service"];
+      conflicts = [ "ipfs.service" "ipfs-norouting.service" ];
     };
 
     systemd.services.ipfs-norouting = recursiveUpdate baseService {
       description = "IPFS Daemon (no routing mode)";
       wantedBy = mkIf (cfg.defaultMode == "norouting") [ "multi-user.target" ];
       after = [ "local-fs.target" "ipfs-init.service" ];
-      conflicts = [ "ipfs.service" "ipfs-offline.service"];
+      conflicts = [ "ipfs.service" "ipfs-offline.service" ];
     };
 
   };

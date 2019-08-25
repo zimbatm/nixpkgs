@@ -2,7 +2,7 @@
 buildPythonPackage rec {
   pname = "typed-ast";
   version = "1.3.5";
-  src = fetchPypi{
+  src = fetchPypi {
     inherit pname version;
     sha256 = "1m7pr6qpana3cvqwiw7mlvrgvmw27ch5mx1592572xhlki8g85ak";
   };

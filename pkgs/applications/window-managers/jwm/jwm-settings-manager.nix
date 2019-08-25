@@ -3,7 +3,7 @@
 stdenv.mkDerivation rec {
   name = "jwm-settings-manager-${version}";
   version = "2018-10-19";
-  
+
   src = fetchFromGitHub {
     owner = "Israel-D";
     repo = "jwm-settings-manager";

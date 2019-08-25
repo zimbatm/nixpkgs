@@ -1,5 +1,16 @@
-{stdenv, fetchurl, SDL2, SDL2_image, libGLU_combined, cmake, physfs, boost, zip, zlib
-, pkgconfig, unzip}:
+{ stdenv
+, fetchurl
+, SDL2
+, SDL2_image
+, libGLU_combined
+, cmake
+, physfs
+, boost
+, zip
+, zlib
+, pkgconfig
+, unzip
+}:
 stdenv.mkDerivation rec {
   version = "1.0";
   name = "blobby-volley-${version}";
@@ -10,10 +21,19 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ pkgconfig ];
-  buildInputs = [SDL2 SDL2_image libGLU_combined cmake physfs boost zip zlib
-    unzip];
+  buildInputs = [
+    SDL2
+    SDL2_image
+    libGLU_combined
+    cmake
+    physfs
+    boost
+    zip
+    zlib
+    unzip
+  ];
 
-  preConfigure=''
+  preConfigure = ''
     sed -e '1i#include <iostream>' -i src/NetworkMessage.cpp
   '';
 
@@ -30,7 +50,7 @@ stdenv.mkDerivation rec {
     description = ''A blobby volleyball game'';
     license = stdenv.lib.licenses.bsd3;
     platforms = with stdenv.lib.platforms; linux;
-    maintainers = with stdenv.lib.maintainers; [raskin];
+    maintainers = with stdenv.lib.maintainers; [ raskin ];
     homepage = http://blobby.sourceforge.net/;
     downloadPage = "https://sourceforge.net/projects/blobby/files/Blobby%20Volley%202%20%28Linux%29/";
     inherit version;

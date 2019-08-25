@@ -8,7 +8,7 @@ buildGoPackage rec {
 
   # These dependencies pulled (in `drone` buildprocess) via Makefile,
   # so I extracted them here, all revisions pinned by same date, as ${version}
-  goDeps= ./deps.nix;
+  goDeps = ./deps.nix;
 
   nativeBuildInputs = [ go-bindata go-bindata-assetfs ];
 

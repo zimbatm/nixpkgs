@@ -1,5 +1,21 @@
-{ thinkpad ? false, stdenv, fetchFromGitHub, fetchurl, pkgconfig, meson, ninja, libusb, pixman, glib, nss, gtk3
-, coreutils, gtk-doc, docbook_xsl, docbook_xml_dtd_43, openssl ? null }:
+{ thinkpad ? false
+, stdenv
+, fetchFromGitHub
+, fetchurl
+, pkgconfig
+, meson
+, ninja
+, libusb
+, pixman
+, glib
+, nss
+, gtk3
+, coreutils
+, gtk-doc
+, docbook_xsl
+, docbook_xml_dtd_43
+, openssl ? null
+}:
 
 assert thinkpad -> openssl != null;
 
@@ -22,7 +38,8 @@ stdenv.mkDerivation rec {
   }.${pname};
 
   buildInputs = [ libusb pixman glib nss gtk3 ]
-    ++ stdenv.lib.optional thinkpad openssl;
+    ++ stdenv.lib.optional thinkpad openssl
+    ;
 
   nativeBuildInputs = [ pkgconfig meson ninja gtk-doc docbook_xsl docbook_xml_dtd_43 ];
 

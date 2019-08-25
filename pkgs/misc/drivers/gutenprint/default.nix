@@ -1,8 +1,17 @@
 # this package was called gimp-print in the past
-{ stdenv, lib, fetchurl, makeWrapper, pkgconfig
-, ijs, zlib
-, gimp2Support ? false, gimp
-, cupsSupport ? true, cups, libusb, perl
+{ stdenv
+, lib
+, fetchurl
+, makeWrapper
+, pkgconfig
+, ijs
+, zlib
+, gimp2Support ? false
+, gimp
+, cupsSupport ? true
+, cups
+, libusb
+, perl
 }:
 
 stdenv.mkDerivation rec {
@@ -17,7 +26,8 @@ stdenv.mkDerivation rec {
   buildInputs =
     [ ijs zlib ]
     ++ lib.optionals gimp2Support [ gimp.gtk gimp ]
-    ++ lib.optionals cupsSupport [ cups libusb perl ];
+    ++ lib.optionals cupsSupport [ cups libusb perl ]
+    ;
 
   configureFlags = lib.optionals cupsSupport [
     "--disable-static-genppd" # should be harmless on NixOS
@@ -31,11 +41,13 @@ stdenv.mkDerivation rec {
       -e "s,cups_conf_serverbin=.*,cups_conf_serverbin=\"$out/lib/cups\",g" \
       -e "s,cups_conf_serverroot=.*,cups_conf_serverroot=\"$out/etc/cups\",g" \
       configure
-  '' + lib.optionalString gimp2Support ''
-    sed -i \
-      -e "s,gimp2_plug_indir=.*,gimp2_plug_indir=\"$out/lib/gimp/${gimp.majorVersion}\",g" \
-      configure
-  '';
+  ''
+  + lib.optionalString gimp2Support ''
+      sed -i \
+        -e "s,gimp2_plug_indir=.*,gimp2_plug_indir=\"$out/lib/gimp/${gimp.majorVersion}\",g" \
+        configure
+    ''
+  ;
 
   enableParallelBuilding = true;
 

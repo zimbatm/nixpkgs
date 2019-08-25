@@ -1,5 +1,10 @@
-{ stdenv, fetchurl, meson, ninja, pkgconfig
-, gettext, gobject-introspection
+{ stdenv
+, fetchurl
+, meson
+, ninja
+, pkgconfig
+, gettext
+, gobject-introspection
 , gst-plugins-base
 , gst-plugins-bad
 }:
@@ -10,12 +15,12 @@ stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "Gstreamer RTSP server";
-    homepage    = "https://gstreamer.freedesktop.org";
+    homepage = "https://gstreamer.freedesktop.org";
     longDescription = ''
       a library on top of GStreamer for building an RTSP server.
     '';
-    license     = licenses.lgpl2Plus;
-    platforms   = platforms.linux ++ platforms.darwin;
+    license = licenses.lgpl2Plus;
+    platforms = platforms.linux ++ platforms.darwin;
     maintainers = with maintainers; [ bkchr ];
   };
 

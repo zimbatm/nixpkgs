@@ -1,6 +1,8 @@
 { stdenv, fetchurl }:
 
-let version = "0.2"; in
+let
+  version = "0.2";
+in
 stdenv.mkDerivation {
   name = "regionset-${version}";
 

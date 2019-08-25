@@ -1,5 +1,10 @@
-{ python3Packages, fetchurl, lib,
-  yubikey-personalization, libu2f-host, libusb1 }:
+{ python3Packages
+, fetchurl
+, lib
+, yubikey-personalization
+, libu2f-host
+, libusb1
+}:
 
 python3Packages.buildPythonPackage rec {
   pname = "yubikey-manager";
@@ -19,14 +24,17 @@ python3Packages.buildPythonPackage rec {
       pyopenssl
       six
       fido2
-    ] ++ [
-      libu2f-host
-      libusb1
-      yubikey-personalization
-    ];
+    ]
+    ++ [
+         libu2f-host
+         libusb1
+         yubikey-personalization
+       ];
 
   makeWrapperArgs = [
-    "--prefix" "LD_LIBRARY_PATH" ":"
+    "--prefix"
+    "LD_LIBRARY_PATH"
+    ":"
     (lib.makeLibraryPath [ libu2f-host libusb1 yubikey-personalization ])
   ];
 

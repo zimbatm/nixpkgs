@@ -1,6 +1,15 @@
-{ stdenv, mkDerivation, fetchFromGitHub, pkgconfig, cmake, qtbase, qttools
-, seafile-shared, ccnet
-, withShibboleth ? true, qtwebengine }:
+{ stdenv
+, mkDerivation
+, fetchFromGitHub
+, pkgconfig
+, cmake
+, qtbase
+, qttools
+, seafile-shared
+, ccnet
+, withShibboleth ? true
+, qtwebengine
+}:
 
 with stdenv.lib;
 
@@ -17,10 +26,12 @@ mkDerivation rec {
 
   nativeBuildInputs = [ pkgconfig cmake ];
   buildInputs = [ qtbase qttools seafile-shared ]
-    ++ optional withShibboleth qtwebengine;
+    ++ optional withShibboleth qtwebengine
+    ;
 
   cmakeFlags = [ "-DCMAKE_BUILD_TYPE=Release" ]
-    ++ optional withShibboleth "-DBUILD_SHIBBOLETH_SUPPORT=ON";
+    ++ optional withShibboleth "-DBUILD_SHIBBOLETH_SUPPORT=ON"
+    ;
 
   qtWrapperArgs = [
     "--suffix PATH : ${stdenv.lib.makeBinPath [ ccnet seafile-shared ]}"
@@ -31,6 +42,6 @@ mkDerivation rec {
     description = "Desktop client for Seafile, the Next-generation Open Source Cloud Storage";
     license = licenses.asl20;
     platforms = platforms.linux;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
   };
 }

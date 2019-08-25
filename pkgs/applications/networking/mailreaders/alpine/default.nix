@@ -1,4 +1,10 @@
-{stdenv, fetchurl, ncurses, tcl, openssl, pam, kerberos
+{ stdenv
+, fetchurl
+, ncurses
+, tcl
+, openssl
+, pam
+, kerberos
 , openldap
 }:
 
@@ -12,7 +18,12 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [
-    ncurses tcl openssl pam kerberos openldap
+    ncurses
+    tcl
+    openssl
+    pam
+    kerberos
+    openldap
   ];
 
   hardeningDisable = [ "format" ];
@@ -25,7 +36,7 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Console mail reader";
     license = stdenv.lib.licenses.asl20;
-    maintainers = [stdenv.lib.maintainers.raskin];
+    maintainers = [ stdenv.lib.maintainers.raskin ];
     platforms = stdenv.lib.platforms.linux;
     homepage = https://www.washington.edu/alpine/;
   };

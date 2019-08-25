@@ -53,11 +53,13 @@ stdenv.mkDerivation rec {
 
 
   patches = [
-    (fetchpatch {
-      name = "CVE-2019-11459.patch";
-      url = "https://gitlab.gnome.org/GNOME/evince/commit/3e38d5ad724a042eebadcba8c2d57b0f48b7a8c7.patch";
-      sha256 = "1ds6iwr2r9i86nwrly8cx7p1kbvf1gljjplcffa67znxqmwx4n74";
-    })
+    (
+      fetchpatch {
+        name = "CVE-2019-11459.patch";
+        url = "https://gitlab.gnome.org/GNOME/evince/commit/3e38d5ad724a042eebadcba8c2d57b0f48b7a8c7.patch";
+        sha256 = "1ds6iwr2r9i86nwrly8cx7p1kbvf1gljjplcffa67znxqmwx4n74";
+      }
+    )
   ];
 
   postPatch = ''
@@ -99,9 +101,19 @@ stdenv.mkDerivation rec {
     dbus # only needed to find the service directory
     texlive.bin.core # kpathsea for DVI support
     t1lib
-  ] ++ stdenv.lib.optional supportXPS libgxps
-    ++ stdenv.lib.optionals supportMultimedia (with gst_all_1; [
-      gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-libav ]);
+  ]
+  ++ stdenv.lib.optional supportXPS libgxps
+  ++ stdenv.lib.optionals supportMultimedia (
+       with gst_all_1; [
+         gstreamer
+         gst-plugins-base
+         gst-plugins-good
+         gst-plugins-bad
+         gst-plugins-ugly
+         gst-libav
+       ]
+     )
+  ;
 
   mesonFlags = [
     "-Dnautilus=false"

@@ -1,6 +1,16 @@
-{ stdenv, fetchFromGitHub, rustPlatform
-, openssh, openssl, pkgconfig, cmake, zlib, curl, libiconv
-, CoreFoundation, Security }:
+{ stdenv
+, fetchFromGitHub
+, rustPlatform
+, openssh
+, openssl
+, pkgconfig
+, cmake
+, zlib
+, curl
+, libiconv
+, CoreFoundation
+, Security
+}:
 
 rustPlatform.buildRustPackage rec {
   pname = "rls";
@@ -17,14 +27,15 @@ rustPlatform.buildRustPackage rec {
   '';
 
   # a nightly compiler is required unless we use this cheat code.
-  RUSTC_BOOTSTRAP=1;
+  RUSTC_BOOTSTRAP = 1;
 
   # rls-rustc links to rustc_private crates
   CARGO_BUILD_RUSTFLAGS = if stdenv.isDarwin then "-C rpath" else null;
 
   nativeBuildInputs = [ pkgconfig cmake ];
   buildInputs = [ openssh openssl curl zlib libiconv ]
-    ++ (stdenv.lib.optionals stdenv.isDarwin [ CoreFoundation Security ]);
+    ++ (stdenv.lib.optionals stdenv.isDarwin [ CoreFoundation Security ])
+    ;
 
   doCheck = true;
 

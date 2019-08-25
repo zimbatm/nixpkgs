@@ -5,10 +5,10 @@ import ./make-test.nix {
     master =
       { pkgs, ... }:
 
-      {
-        services.riak.enable = true;
-        services.riak.package = pkgs.riak;
-      };
+        {
+          services.riak.enable = true;
+          services.riak.package = pkgs.riak;
+        };
   };
 
   testScript = ''

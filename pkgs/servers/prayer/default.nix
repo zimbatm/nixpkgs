@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, perl, openssl, db, zlib, uwimap, html-tidy, pam}:
+{ stdenv, fetchurl, perl, openssl, db, zlib, uwimap, html-tidy, pam }:
 
 let
   ssl = stdenv.lib.optionals uwimap.withSSL
@@ -22,10 +22,12 @@ stdenv.mkDerivation rec {
       Config
     sed -i -e s,/usr/bin/perl,${perl}/bin/perl, \
       templates/src/*.pl
-  '' + /* html-tidy updates */ ''
+  ''
+  + /* html-tidy updates */ ''
     substituteInPlace ./session/html_secure_tidy.c \
       --replace buffio.h tidybuffio.h
-  '';
+  ''
+  ;
 
   buildInputs = [ openssl db zlib uwimap html-tidy pam ];
   nativeBuildInputs = [ perl ];

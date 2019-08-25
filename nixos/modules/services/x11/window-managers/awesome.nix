@@ -6,10 +6,12 @@ let
 
   cfg = config.services.xserver.windowManager.awesome;
   awesome = cfg.package;
-  getLuaPath = lib : dir : "${lib}/${dir}/lua/${pkgs.luaPackages.lua.luaversion}";
-  makeSearchPath = lib.concatMapStrings (path:
-    " --search " + (getLuaPath path "share") +
-    " --search " + (getLuaPath path "lib")
+  getLuaPath = lib: dir: "${lib}/${dir}/lua/${pkgs.luaPackages.lua.luaversion}";
+  makeSearchPath = lib.concatMapStrings (
+    path:
+      " --search " + (getLuaPath path "share")
+      + " --search "
+      + (getLuaPath path "lib")
   );
 in
 
@@ -52,7 +54,8 @@ in
   config = mkIf cfg.enable {
 
     services.xserver.windowManager.session = singleton
-      { name = "awesome";
+      {
+        name = "awesome";
         start =
           ''
             ${awesome}/bin/awesome ${lib.optionalString cfg.noArgb "--no-argb"} ${makeSearchPath cfg.luaModules} &

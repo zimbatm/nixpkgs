@@ -1,5 +1,17 @@
-{ stdenv, fetchPypi, python, buildPythonPackage
-, cython, bzip2, lzo, numpy, numexpr, hdf5, six, c-blosc, mock }:
+{ stdenv
+, fetchPypi
+, python
+, buildPythonPackage
+, cython
+, bzip2
+, lzo
+, numpy
+, numexpr
+, hdf5
+, six
+, c-blosc
+, mock
+}:
 
 buildPythonPackage rec {
   version = "3.5.2";
@@ -16,7 +28,8 @@ buildPythonPackage rec {
   # The setup script complains about missing run-paths, but they are
   # actually set.
   setupPyBuildFlags =
-    [ "--hdf5=${hdf5}"
+    [
+      "--hdf5=${hdf5}"
       "--lzo=${lzo}"
       "--bzip2=${bzip2.dev}"
       "--blosc=${c-blosc}"

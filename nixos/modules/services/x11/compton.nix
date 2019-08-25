@@ -13,31 +13,39 @@ let
     addCheck str (x: versionAtLeast x a && versionOlder x b);
 
   toConf = attrs: concatStringsSep "\n"
-    (mapAttrsToList
-      (k: v: let
-        sep = if isAttrs v then ":" else "=";
-        # Basically a tinkered lib.generators.mkKeyValueDefault
-        mkValueString = v:
-          if isBool v        then boolToString v
-          else if isInt v    then toString v
-          else if isFloat v  then toString v
-          else if isString v then ''"${escape [ ''"'' ] v}"''
-          else if isList v   then "[ "
-            + concatMapStringsSep " , " mkValueString v
-            + " ]"
-          else if isAttrs v  then "{ "
-            + concatStringsSep " "
-              (mapAttrsToList
-                (key: value: "${toString key}=${mkValueString value};")
-                v)
-            + " }"
-          else abort "compton.mkValueString: unexpected type (v = ${v})";
-      in "${escape [ sep ] k}${sep}${mkValueString v};")
-      attrs);
+    (
+      mapAttrsToList
+        (
+          k: v: let
+            sep = if isAttrs v then ":" else "=";
+            # Basically a tinkered lib.generators.mkKeyValueDefault
+            mkValueString = v:
+              if isBool v then boolToString v
+              else if isInt v then toString v
+              else if isFloat v then toString v
+              else if isString v then ''"${escape [ ''"'' ] v}"''
+              else if isList v then "[ "
+              + concatMapStringsSep " , " mkValueString v
+              + " ]"
+              else if isAttrs v then "{ "
+              + concatStringsSep " "
+                  (
+                    mapAttrsToList
+                      (key: value: "${toString key}=${mkValueString value};")
+                      v
+                  )
+              + " }"
+              else abort "compton.mkValueString: unexpected type (v = ${v})";
+          in
+            "${escape [ sep ] k}${sep}${mkValueString v};"
+        )
+        attrs
+    );
 
   configFile = pkgs.writeText "compton.conf" (toConf cfg.settings);
 
-in {
+in
+{
 
   options.services.compton = {
     enable = mkOption {
@@ -193,7 +201,8 @@ in {
         let
           res = x != "none";
           msg = "The type of services.compton.vSync has changed to bool:"
-                + " interpreting ${x} as ${boolToString res}";
+            + " interpreting ${x} as ${boolToString res}"
+            ;
         in
           if isBool x then x
           else warn msg res;
@@ -210,7 +219,7 @@ in {
       default = 0;
       example = 60;
       description = ''
-       Screen refresh rate (0 = automatically detect).
+        Screen refresh rate (0 = automatically detect).
       '';
     };
 
@@ -218,13 +227,14 @@ in {
       configTypes = with types; oneOf [ bool int float str ];
       # types.loaOf converts lists to sets
       loaOf = t: with types; either (listOf t) (attrsOf t);
-    in mkOption {
-      type = loaOf (types.either configTypes (loaOf (types.either configTypes (loaOf configTypes))));
-      default = {};
-      description = ''
-        Additional Compton configuration.
-      '';
-    };
+    in
+      mkOption {
+        type = loaOf (types.either configTypes (loaOf (types.either configTypes (loaOf configTypes))));
+        default = {};
+        description = ''
+          Additional Compton configuration.
+        '';
+      };
   };
 
   config = mkIf cfg.enable {
@@ -232,37 +242,39 @@ in {
       # Hard conversion to float, literally lib.toInt but toFloat
       toFloat = str: let
         may_be_float = builtins.fromJSON str;
-      in if builtins.isFloat may_be_float
+      in
+        if builtins.isFloat may_be_float
         then may_be_float
         else throw "Could not convert ${str} to float.";
-    in {
-      # fading
-      fading           = mkDefault cfg.fade;
-      fade-delta       = mkDefault cfg.fadeDelta;
-      fade-in-step     = mkDefault (toFloat (elemAt cfg.fadeSteps 0));
-      fade-out-step    = mkDefault (toFloat (elemAt cfg.fadeSteps 1));
-      fade-exclude     = mkDefault cfg.fadeExclude;
+    in
+      {
+        # fading
+        fading = mkDefault cfg.fade;
+        fade-delta = mkDefault cfg.fadeDelta;
+        fade-in-step = mkDefault (toFloat (elemAt cfg.fadeSteps 0));
+        fade-out-step = mkDefault (toFloat (elemAt cfg.fadeSteps 1));
+        fade-exclude = mkDefault cfg.fadeExclude;
 
-      # shadows
-      shadow           = mkDefault cfg.shadow;
-      shadow-offset-x  = mkDefault (elemAt cfg.shadowOffsets 0);
-      shadow-offset-y  = mkDefault (elemAt cfg.shadowOffsets 1);
-      shadow-opacity   = mkDefault (toFloat cfg.shadowOpacity);
-      shadow-exclude   = mkDefault cfg.shadowExclude;
+        # shadows
+        shadow = mkDefault cfg.shadow;
+        shadow-offset-x = mkDefault (elemAt cfg.shadowOffsets 0);
+        shadow-offset-y = mkDefault (elemAt cfg.shadowOffsets 1);
+        shadow-opacity = mkDefault (toFloat cfg.shadowOpacity);
+        shadow-exclude = mkDefault cfg.shadowExclude;
 
-      # opacity
-      active-opacity   = mkDefault (toFloat cfg.activeOpacity);
-      inactive-opacity = mkDefault (toFloat cfg.inactiveOpacity);
+        # opacity
+        active-opacity = mkDefault (toFloat cfg.activeOpacity);
+        inactive-opacity = mkDefault (toFloat cfg.inactiveOpacity);
 
-      wintypes         = mkDefault cfg.wintypes;
+        wintypes = mkDefault cfg.wintypes;
 
-      opacity-rule     = mkDefault cfg.opacityRules;
+        opacity-rule = mkDefault cfg.opacityRules;
 
-      # other options
-      backend          = mkDefault cfg.backend;
-      vsync            = mkDefault cfg.vSync;
-      refresh-rate     = mkDefault cfg.refreshRate;
-    };
+        # other options
+        backend = mkDefault cfg.backend;
+        vsync = mkDefault cfg.vSync;
+        refresh-rate = mkDefault cfg.refreshRate;
+      };
 
     systemd.user.services.compton = {
       description = "Compton composite manager";

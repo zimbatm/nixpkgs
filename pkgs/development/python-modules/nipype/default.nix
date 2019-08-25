@@ -2,7 +2,7 @@
 , buildPythonPackage
 , fetchPypi
 , isPy3k
-# python dependencies
+  # python dependencies
 , click
 , configparser ? null
 , dateutil
@@ -26,7 +26,7 @@
 , xvfbwrapper
 , pytestcov
 , codecov
-# other dependencies
+  # other dependencies
 , which
 , bash
 , glibcLocales
@@ -37,8 +37,8 @@ assert !isPy3k -> configparser != null;
 
 let
 
- # This is a temporary convenience package for changes waiting to be merged into the primary rdflib repo.
- neurdflib = callPackage ./neurdflib.nix { };
+  # This is a temporary convenience package for changes waiting to be merged into the primary rdflib repo.
+  neurdflib = callPackage ./neurdflib.nix {};
 
 in
 
@@ -73,10 +73,12 @@ buildPythonPackage rec {
     simplejson
     traits
     xvfbwrapper
-  ] ++ stdenv.lib.optional (!isPy3k) [
-    configparser
-    futures
-  ];
+  ]
+  ++ stdenv.lib.optional (!isPy3k) [
+       configparser
+       futures
+     ]
+  ;
 
   checkInputs = [
     codecov

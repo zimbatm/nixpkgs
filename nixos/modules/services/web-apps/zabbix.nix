@@ -113,12 +113,14 @@ in
       };
 
       virtualHost = mkOption {
-        type = types.submodule ({
-          options = import ../web-servers/apache-httpd/per-server-options.nix {
-            inherit lib;
-            forMainServer = false;
-          };
-        });
+        type = types.submodule (
+          {
+            options = import ../web-servers/apache-httpd/per-server-options.nix {
+              inherit lib;
+              forMainServer = false;
+            };
+          }
+        );
         example = {
           hostName = "zabbix.example.org";
           enableSSL = true;
@@ -174,39 +176,49 @@ in
         always_populate_raw_post_data = -1
         # https://bbs.archlinux.org/viewtopic.php?pid=1745214#p1745214
         session.save_path = ${stateDir}/session
-      '' + optionalString (config.time.timeZone != null) ''
-        date.timezone = "${config.time.timeZone}"
-      '' + optionalString (cfg.database.type == "oracle") ''
-        extension=${pkgs.phpPackages.oci8}/lib/php/extensions/oci8.so
-      '';
+      ''
+      + optionalString (config.time.timeZone != null) ''
+          date.timezone = "${config.time.timeZone}"
+        ''
+      + optionalString (cfg.database.type == "oracle") ''
+          extension=${pkgs.phpPackages.oci8}/lib/php/extensions/oci8.so
+        ''
+      ;
       phpEnv.ZABBIX_CONFIG = zabbixConfig;
       settings = {
         "listen.owner" = config.services.httpd.user;
         "listen.group" = config.services.httpd.group;
-      } // cfg.poolConfig;
+      }
+      // cfg.poolConfig
+      ;
     };
 
     services.httpd = {
       enable = true;
       adminAddr = mkDefault cfg.virtualHost.adminAddr;
       extraModules = [ "proxy_fcgi" ];
-      virtualHosts = [ (mkMerge [
-        cfg.virtualHost {
-          documentRoot = mkForce "${cfg.package}/share/zabbix";
-          extraConfig = ''
-            <Directory "${cfg.package}/share/zabbix">
-              <FilesMatch "\.php$">
-                <If "-f %{REQUEST_FILENAME}">
-                  SetHandler "proxy:unix:${fpm.listen}|fcgi://localhost/"
-                </If>
-              </FilesMatch>
-              AllowOverride all
-              Options -Indexes
-              DirectoryIndex index.php
-            </Directory>
-          '';
-        }
-      ]) ];
+      virtualHosts = [
+        (
+          mkMerge [
+            cfg.virtualHost
+            {
+              documentRoot = mkForce "${cfg.package}/share/zabbix";
+              extraConfig = ''
+                <Directory "${cfg.package}/share/zabbix">
+                  <FilesMatch "\.php$">
+                    <If "-f %{REQUEST_FILENAME}">
+                      SetHandler "proxy:unix:${fpm.listen}|fcgi://localhost/"
+                    </If>
+                  </FilesMatch>
+                  AllowOverride all
+                  Options -Indexes
+                  DirectoryIndex index.php
+                </Directory>
+              '';
+            }
+          ]
+        )
+      ];
     };
 
     users.users.${user} = mapAttrs (name: mkDefault) {

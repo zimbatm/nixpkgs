@@ -13,8 +13,14 @@
 , broken ? false
 }:
 
-{ stdenv, callPackage, pkgs, pkgsi686Linux, fetchurl
-, kernel ? null, perl, nukeReferences
+{ stdenv
+, callPackage
+, pkgs
+, pkgsi686Linux
+, fetchurl
+, kernel ? null
+, perl
+, nukeReferences
 , # Whether to build the libraries only (i.e. not the kernel module or
   # nvidia-settings).  Used to support 32-bit binaries on 64-bit
   # Linux.
@@ -32,8 +38,15 @@ let
   pkgSuffix = optionalString (versionOlder version "304") "-pkg0";
   i686bundled = versionAtLeast version "391";
 
-  libPathFor = pkgs: pkgs.lib.makeLibraryPath [ pkgs.xorg.libXext pkgs.xorg.libX11
-    pkgs.xorg.libXv pkgs.xorg.libXrandr pkgs.xorg.libxcb pkgs.zlib pkgs.stdenv.cc.cc ];
+  libPathFor = pkgs: pkgs.lib.makeLibraryPath [
+    pkgs.xorg.libXext
+    pkgs.xorg.libX11
+    pkgs.xorg.libXv
+    pkgs.xorg.libXrandr
+    pkgs.xorg.libxcb
+    pkgs.zlib
+    pkgs.stdenv.cc.cc
+  ];
 
   self = stdenv.mkDerivation {
     name = "nvidia-x11-${version}${nameSuffix}";
@@ -60,8 +73,9 @@ let
     inherit i686bundled;
 
     outputs = [ "out" ]
-        ++ optional i686bundled "lib32"
-        ++ optional (!libsOnly) "bin";
+      ++ optional i686bundled "lib32"
+      ++ optional (!libsOnly) "bin"
+      ;
     outputDev = if libsOnly then null else "bin";
 
     kernel = if libsOnly then null else kernel.dev;
@@ -76,7 +90,8 @@ let
     libPath32 = optionalString i686bundled (libPathFor pkgsi686Linux);
 
     nativeBuildInputs = [ perl nukeReferences ]
-      ++ optionals (!libsOnly) kernel.moduleBuildDependencies;
+      ++ optionals (!libsOnly) kernel.moduleBuildDependencies
+      ;
 
     disallowedReferences = optional (!libsOnly) [ kernel.dev ];
 
@@ -85,7 +100,7 @@ let
         withGtk2 = preferGtk2;
         withGtk3 = !preferGtk2;
       };
-      persistenced = mapNullable (hash: callPackage (import ./persistenced.nix self hash) { }) persistencedSha256;
+      persistenced = mapNullable (hash: callPackage (import ./persistenced.nix self hash) {}) persistencedSha256;
     };
 
     meta = with stdenv.lib; {
@@ -99,4 +114,5 @@ let
     };
   };
 
-in self
+in
+self

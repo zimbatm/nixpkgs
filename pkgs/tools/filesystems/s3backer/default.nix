@@ -1,6 +1,11 @@
-{ stdenv, fetchFromGitHub
-, autoreconfHook, pkgconfig
-, fuse, curl, expat }:
+{ stdenv
+, fetchFromGitHub
+, autoreconfHook
+, pkgconfig
+, fuse
+, curl
+, expat
+}:
 
 stdenv.mkDerivation rec {
   name = "s3backer-${version}";

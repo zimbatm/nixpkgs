@@ -1,5 +1,19 @@
-{ stdenv, fetchFromGitHub, tzdata, iana-etc, go_bootstrap, runCommand, writeScriptBin
-, perl, which, pkgconfig, patch, procps, pcre, cacert, Security, Foundation
+{ stdenv
+, fetchFromGitHub
+, tzdata
+, iana-etc
+, go_bootstrap
+, runCommand
+, writeScriptBin
+, perl
+, which
+, pkgconfig
+, patch
+, procps
+, pcre
+, cacert
+, Security
+, Foundation
 , fetchpatch
 }:
 
@@ -39,7 +53,8 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ perl which pkgconfig patch procps ];
   buildInputs = [ cacert pcre ]
     ++ optionals stdenv.isLinux [ stdenv.cc.libc.out ]
-    ++ optionals (stdenv.hostPlatform.libc == "glibc") [ stdenv.cc.libc.static ];
+    ++ optionals (stdenv.hostPlatform.libc == "glibc") [ stdenv.cc.libc.static ]
+    ;
   propagatedBuildInputs = optionals stdenv.isDarwin [ Security Foundation ];
 
   hardeningDisable = [ "all" ];
@@ -88,34 +103,38 @@ stdenv.mkDerivation rec {
     # Disable cgo lookup tests not works, they depend on resolver
     rm src/net/cgo_unix_test.go
 
-  '' + optionalString stdenv.isLinux ''
-    sed -i 's,/usr/share/zoneinfo/,${tzdata}/share/zoneinfo/,' src/time/zoneinfo_unix.go
-  '' + optionalString stdenv.isAarch32 ''
-    sed -i '/TestCurrent/areturn' src/os/user/user_test.go
-    echo '#!${stdenv.shell}' > misc/cgo/testplugin/test.bash
-  '' + optionalString stdenv.isDarwin ''
-    substituteInPlace src/race.bash --replace \
-      "sysctl machdep.cpu.extfeatures | grep -qv EM64T" true
-    sed -i 's,strings.Contains(.*sysctl.*,true {,' src/cmd/dist/util.go
-    sed -i 's,"/etc","'"$TMPDIR"'",' src/os/os_test.go
-    sed -i 's,/_go_os_test,'"$TMPDIR"'/_go_os_test,' src/os/path_test.go
+  ''
+  + optionalString stdenv.isLinux ''
+      sed -i 's,/usr/share/zoneinfo/,${tzdata}/share/zoneinfo/,' src/time/zoneinfo_unix.go
+    ''
+  + optionalString stdenv.isAarch32 ''
+      sed -i '/TestCurrent/areturn' src/os/user/user_test.go
+      echo '#!${stdenv.shell}' > misc/cgo/testplugin/test.bash
+    ''
+  + optionalString stdenv.isDarwin ''
+      substituteInPlace src/race.bash --replace \
+        "sysctl machdep.cpu.extfeatures | grep -qv EM64T" true
+      sed -i 's,strings.Contains(.*sysctl.*,true {,' src/cmd/dist/util.go
+      sed -i 's,"/etc","'"$TMPDIR"'",' src/os/os_test.go
+      sed -i 's,/_go_os_test,'"$TMPDIR"'/_go_os_test,' src/os/path_test.go
 
-    sed -i '/TestChdirAndGetwd/areturn' src/os/os_test.go
-    sed -i '/TestCredentialNoSetGroups/areturn' src/os/exec/exec_posix_test.go
-    sed -i '/TestCurrent/areturn' src/os/user/user_test.go
-    sed -i '/TestNohup/areturn' src/os/signal/signal_test.go
-    sed -i '/TestRead0/areturn' src/os/os_test.go
-    sed -i '/TestSystemRoots/areturn' src/crypto/x509/root_darwin_test.go
+      sed -i '/TestChdirAndGetwd/areturn' src/os/os_test.go
+      sed -i '/TestCredentialNoSetGroups/areturn' src/os/exec/exec_posix_test.go
+      sed -i '/TestCurrent/areturn' src/os/user/user_test.go
+      sed -i '/TestNohup/areturn' src/os/signal/signal_test.go
+      sed -i '/TestRead0/areturn' src/os/os_test.go
+      sed -i '/TestSystemRoots/areturn' src/crypto/x509/root_darwin_test.go
 
-    sed -i '/TestGoInstallRebuildsStalePackagesInOtherGOPATH/areturn' src/cmd/go/go_test.go
-    sed -i '/TestBuildDashIInstallsDependencies/areturn' src/cmd/go/go_test.go
+      sed -i '/TestGoInstallRebuildsStalePackagesInOtherGOPATH/areturn' src/cmd/go/go_test.go
+      sed -i '/TestBuildDashIInstallsDependencies/areturn' src/cmd/go/go_test.go
 
-    sed -i '/TestDisasmExtld/areturn' src/cmd/objdump/objdump_test.go
+      sed -i '/TestDisasmExtld/areturn' src/cmd/objdump/objdump_test.go
 
-    sed -i 's/unrecognized/unknown/' src/cmd/link/internal/ld/lib.go
+      sed -i 's/unrecognized/unknown/' src/cmd/link/internal/ld/lib.go
 
-    touch $TMPDIR/group $TMPDIR/hosts $TMPDIR/passwd
-  '';
+      touch $TMPDIR/group $TMPDIR/hosts $TMPDIR/passwd
+    ''
+  ;
 
   patches = [
     ./remove-tools-1.9.patch
@@ -124,20 +143,22 @@ stdenv.mkDerivation rec {
     ./creds-test.patch
     ./go-1.9-skip-flaky-19608.patch
     ./go-1.9-skip-flaky-20072.patch
-    (fetchpatch {
-      name = "missing_cpuHog_in_pprof_output.diff";
-      url = "https://github.com/golang/go/commit/33110e2c.diff";
-      sha256 = "04vh9lflbpz9xjvymyzhd91gkxiiwwz4lhglzl3r8z0lk45p96qn";
-    })
+    (
+      fetchpatch {
+        name = "missing_cpuHog_in_pprof_output.diff";
+        url = "https://github.com/golang/go/commit/33110e2c.diff";
+        sha256 = "04vh9lflbpz9xjvymyzhd91gkxiiwwz4lhglzl3r8z0lk45p96qn";
+      }
+    )
   ];
 
   GOOS = if stdenv.isDarwin then "darwin" else "linux";
   GOARCH = if stdenv.isDarwin then "amd64"
-           else if stdenv.hostPlatform.system == "i686-linux" then "386"
-           else if stdenv.hostPlatform.system == "x86_64-linux" then "amd64"
-           else if stdenv.isAarch32 then "arm"
-           else if stdenv.isAarch64 then "arm64"
-           else throw "Unsupported system";
+  else if stdenv.hostPlatform.system == "i686-linux" then "386"
+  else if stdenv.hostPlatform.system == "x86_64-linux" then "amd64"
+  else if stdenv.isAarch32 then "arm"
+  else if stdenv.isAarch64 then "arm64"
+  else throw "Unsupported system";
   GOARM = optionalString (stdenv.hostPlatform.system == "armv5tel-linux") "5";
   GO386 = 387; # from Arch: don't assume sse2 on i686
   CGO_ENABLED = 1;

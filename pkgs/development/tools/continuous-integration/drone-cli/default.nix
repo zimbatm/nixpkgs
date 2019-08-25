@@ -7,7 +7,7 @@ buildGoPackage rec {
   revision = "v${version}";
   goPackagePath = "github.com/drone/drone-cli";
 
-  goDeps= ./deps.nix;
+  goDeps = ./deps.nix;
 
   src = fetchFromGitHub {
     owner = "drone";

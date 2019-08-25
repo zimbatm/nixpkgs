@@ -1,10 +1,22 @@
-{ stdenv, fetchFromGitHub
-, meson, ninja, pkgconfig, python3, sphinx
-, acl, curl, fuse, libselinux, udev, xz, zstd
+{ stdenv
+, fetchFromGitHub
+, meson
+, ninja
+, pkgconfig
+, python3
+, sphinx
+, acl
+, curl
+, fuse
+, libselinux
+, udev
+, xz
+, zstd
 , fuseSupport ? true
 , selinuxSupport ? true
 , udevSupport ? true
-, glibcLocales, rsync
+, glibcLocales
+, rsync
 }:
 
 stdenv.mkDerivation rec {
@@ -12,16 +24,17 @@ stdenv.mkDerivation rec {
   version = "2-152-ge4a3c5e";
 
   src = fetchFromGitHub {
-    owner  = "systemd";
-    repo   = "casync";
-    rev    = "e4a3c5efc8f11e0e99f8cc97bd417665d92b40a9";
+    owner = "systemd";
+    repo = "casync";
+    rev = "e4a3c5efc8f11e0e99f8cc97bd417665d92b40a9";
     sha256 = "0zx6zvj5a6rr3w9s207rvpfw7gwssiqmp1p3c75bsirmz4nmsdf0";
   };
 
   buildInputs = [ acl curl xz zstd ]
-                ++ stdenv.lib.optionals (fuseSupport) [ fuse ]
-                ++ stdenv.lib.optionals (selinuxSupport) [ libselinux ]
-                ++ stdenv.lib.optionals (udevSupport) [ udev ];
+    ++ stdenv.lib.optionals (fuseSupport) [ fuse ]
+    ++ stdenv.lib.optionals (selinuxSupport) [ libselinux ]
+    ++ stdenv.lib.optionals (udevSupport) [ udev ]
+    ;
   nativeBuildInputs = [ meson ninja pkgconfig python3 sphinx ];
   checkInputs = [ glibcLocales rsync ];
 
@@ -34,8 +47,9 @@ stdenv.mkDerivation rec {
 
   PKG_CONFIG_UDEV_UDEVDIR = "lib/udev";
   mesonFlags = stdenv.lib.optionals (!fuseSupport) [ "-Dfuse=false" ]
-               ++ stdenv.lib.optionals (!udevSupport) [ "-Dudev=false" ]
-               ++ stdenv.lib.optionals (!selinuxSupport) [ "-Dselinux=false" ];
+    ++ stdenv.lib.optionals (!udevSupport) [ "-Dudev=false" ]
+    ++ stdenv.lib.optionals (!selinuxSupport) [ "-Dselinux=false" ]
+    ;
 
   doCheck = true;
   preCheck = ''
@@ -44,9 +58,9 @@ stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "Content-Addressable Data Synchronizer";
-    homepage    = https://github.com/systemd/casync;
-    license     = licenses.lgpl21;
-    platforms   = platforms.linux;
+    homepage = https://github.com/systemd/casync;
+    license = licenses.lgpl21;
+    platforms = platforms.linux;
     maintainers = with maintainers; [ flokli ];
   };
 }

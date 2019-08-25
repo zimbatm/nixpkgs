@@ -1,6 +1,8 @@
-{ stdenv, fetchFromGitHub
+{ stdenv
+, fetchFromGitHub
 , cmake
-, qtbase, qtquickcontrols2
+, qtbase
+, qtquickcontrols2
 , SDL
 , python3
 }:
@@ -20,7 +22,8 @@ stdenv.mkDerivation rec {
     (python3.withPackages (pp: with pp; [ pyyaml jinja2 ]))
   ];
   buildInputs = [
-    qtbase qtquickcontrols2
+    qtbase
+    qtquickcontrols2
     SDL
   ];
   configurePhase = "cmake . -DCMAKE_INSTALL_PREFIX=$out";
@@ -33,4 +36,3 @@ stdenv.mkDerivation rec {
     platforms = platforms.linux;
   };
 }
-

@@ -2,7 +2,8 @@
 
 let
   version = "12.1.4";
-in fetchzip {
+in
+fetchzip {
   name = "babelstone-han-${version}";
 
   url = http://www.babelstone.co.uk/Fonts/Download/BabelStoneHan.zip;

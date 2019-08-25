@@ -3,7 +3,8 @@
 let
   version = "5.4.10";
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "masterpdfeditor-${version}";
 
   src = fetchurl {

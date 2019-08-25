@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, cmake, expat, proj, bzip2, zlib, boost, postgresql, lua}:
+{ stdenv, fetchFromGitHub, cmake, expat, proj, bzip2, zlib, boost, postgresql, lua }:
 
 stdenv.mkDerivation rec {
   name = "osm2pgsql-${version}";

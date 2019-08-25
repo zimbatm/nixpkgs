@@ -1,6 +1,10 @@
-{ stdenv, fetchFromGitHub,
-  fetchHex, erlang,
-  tree, hexRegistrySnapshot }:
+{ stdenv
+, fetchFromGitHub
+, fetchHex
+, erlang
+, tree
+, hexRegistrySnapshot
+}:
 
 let
   version = "3.11.1";
@@ -132,7 +136,7 @@ stdenv.mkDerivation rec {
       of build configuration work. rebar also provides dependency management,
       enabling application writers to easily re-use common libraries from a
       variety of locations (hex.pm, git, hg, and so on).
-      '';
+    '';
 
     platforms = stdenv.lib.platforms.unix;
     maintainers = with stdenv.lib.maintainers; [ gleber tazjin ];

@@ -1,5 +1,14 @@
-{ stdenv, fetchFromGitHub, pkgconfig, cmake, libeb, lzo, qtbase
-, qtmultimedia, qttools, qtwebengine }:
+{ stdenv
+, fetchFromGitHub
+, pkgconfig
+, cmake
+, libeb
+, lzo
+, qtbase
+, qtmultimedia
+, qttools
+, qtwebengine
+}:
 
 stdenv.mkDerivation rec {
   name = "qolibri-${version}";
@@ -14,7 +23,12 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ pkgconfig cmake ];
   buildInputs = [
-    libeb lzo qtbase qtmultimedia qttools qtwebengine
+    libeb
+    lzo
+    qtbase
+    qtmultimedia
+    qttools
+    qtwebengine
   ];
 
   enableParallelBuilding = true;

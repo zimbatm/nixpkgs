@@ -7,7 +7,10 @@
 , python
 , ocl-icd
 , opencl-headers
-, Accelerate, CoreGraphics, CoreVideo, OpenCL
+, Accelerate
+, CoreGraphics
+, CoreVideo
+, OpenCL
 }:
 
 stdenv.mkDerivation rec {
@@ -32,7 +35,7 @@ stdenv.mkDerivation rec {
   '';
 
   cmakeFlags = [
-     "-DBUILD_TEST=OFF"
+    "-DBUILD_TEST=OFF"
   ];
 
   buildInputs = [
@@ -41,14 +44,17 @@ stdenv.mkDerivation rec {
     blas
     python
     boost
-  ] ++ stdenv.lib.optionals (!stdenv.isDarwin) [
-    ocl-icd
-    opencl-headers
-  ] ++ stdenv.lib.optionals stdenv.isDarwin [
-    Accelerate
-    CoreGraphics
-    CoreVideo
-  ];
+  ]
+  ++ stdenv.lib.optionals (!stdenv.isDarwin) [
+       ocl-icd
+       opencl-headers
+     ]
+  ++ stdenv.lib.optionals stdenv.isDarwin [
+       Accelerate
+       CoreGraphics
+       CoreVideo
+     ]
+  ;
   propagatedBuildInputs = stdenv.lib.optionals stdenv.isDarwin [
     OpenCL
   ];

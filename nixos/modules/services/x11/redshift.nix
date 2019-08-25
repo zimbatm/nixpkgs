@@ -7,7 +7,8 @@ let
   cfg = config.services.redshift;
   lcfg = config.location;
 
-in {
+in
+{
 
   options.services.redshift = {
     enable = mkOption {
@@ -87,27 +88,27 @@ in {
     };
 
     systemd.user.services.redshift =
-    let
-      providerString = if lcfg.provider == "manual"
+      let
+        providerString = if lcfg.provider == "manual"
         then "${toString lcfg.latitude}:${toString lcfg.longitude}"
         else lcfg.provider;
-    in
-    {
-      description = "Redshift colour temperature adjuster";
-      wantedBy = [ "graphical-session.target" ];
-      partOf = [ "graphical-session.target" ];
-      serviceConfig = {
-        ExecStart = ''
-          ${cfg.package}/bin/redshift \
-            -l ${providerString} \
-            -t ${toString cfg.temperature.day}:${toString cfg.temperature.night} \
-            -b ${toString cfg.brightness.day}:${toString cfg.brightness.night} \
-            ${lib.strings.concatStringsSep " " cfg.extraOptions}
-        '';
-        RestartSec = 3;
-        Restart = "always";
-      };
-    };
+      in
+        {
+          description = "Redshift colour temperature adjuster";
+          wantedBy = [ "graphical-session.target" ];
+          partOf = [ "graphical-session.target" ];
+          serviceConfig = {
+            ExecStart = ''
+              ${cfg.package}/bin/redshift \
+                -l ${providerString} \
+                -t ${toString cfg.temperature.day}:${toString cfg.temperature.night} \
+                -b ${toString cfg.brightness.day}:${toString cfg.brightness.night} \
+                ${lib.strings.concatStringsSep " " cfg.extraOptions}
+            '';
+            RestartSec = 3;
+            Restart = "always";
+          };
+        };
   };
 
 }

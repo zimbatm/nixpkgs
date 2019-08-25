@@ -1,6 +1,19 @@
-{ stdenv, buildPackages, fetchurl, which, autoconf, automake, flex
-, yacc , glibc, perl, kerberos, libxslt, docbook_xsl
-, docbook_xml_dtd_43 , libtool_2, removeReferencesTo
+{ stdenv
+, buildPackages
+, fetchurl
+, which
+, autoconf
+, automake
+, flex
+, yacc
+, glibc
+, perl
+, kerberos
+, libxslt
+, docbook_xsl
+, docbook_xml_dtd_43
+, libtool_2
+, removeReferencesTo
 , ncurses # Extra ncurses utilities. Only needed for debugging.
 , tsmbac ? null # Tivoli Storage Manager Backup Client from IBM
 }:
@@ -12,8 +25,17 @@ stdenv.mkDerivation rec {
   inherit version srcs;
 
   depsBuildBuild = [ buildPackages.stdenv.cc ];
-  nativeBuildInputs = [ autoconf automake flex libxslt libtool_2 perl
-    removeReferencesTo which yacc ];
+  nativeBuildInputs = [
+    autoconf
+    automake
+    flex
+    libxslt
+    libtool_2
+    perl
+    removeReferencesTo
+    which
+    yacc
+  ];
 
   buildInputs = [ kerberos ncurses ];
 
@@ -29,7 +51,7 @@ stdenv.mkDerivation rec {
   dontDisableStatic = true;
 
   # Fixes broken format string in 1.8.2
-  hardeningDisable=[ "format" ];
+  hardeningDisable = [ "format" ];
 
   preConfigure = ''
     patchShebangs .
@@ -59,10 +81,12 @@ stdenv.mkDerivation rec {
       "--disable-linux-d_splice-alias-extra-iput"
       "--libexecdir=$server/libexec"
     )
-  '' + stdenv.lib.optionalString (tsmbac != null) ''
-    export XBSA_CFLAGS="-Dxbsa -DNEW_XBSA -I${tsmbac}/lib64/sample -DXBSA_TSMLIB=\\\"${tsmbac}/lib64/libApiTSM64.so\\\""
-    export XBSA_XLIBS="-ldl"
-  '';
+  ''
+  + stdenv.lib.optionalString (tsmbac != null) ''
+      export XBSA_CFLAGS="-Dxbsa -DNEW_XBSA -I${tsmbac}/lib64/sample -DXBSA_TSMLIB=\\\"${tsmbac}/lib64/libApiTSM64.so\\\""
+      export XBSA_XLIBS="-ldl"
+    ''
+  ;
 
   buildFlags = [ "all_nolibafs" ];
 

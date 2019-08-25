@@ -1,6 +1,26 @@
-{ stdenv, lib, fetchurl, unzip, glib, systemd, nss, nspr, gtk3-x11, gnome2,
-atk, cairo, gdk-pixbuf, xorg, xorg_sys_opengl, utillinux, alsaLib, dbus, at-spi2-atk,
-cups, vivaldi-ffmpeg-codecs, libpulseaudio }:
+{ stdenv
+, lib
+, fetchurl
+, unzip
+, glib
+, systemd
+, nss
+, nspr
+, gtk3-x11
+, gnome2
+, atk
+, cairo
+, gdk-pixbuf
+, xorg
+, xorg_sys_opengl
+, utillinux
+, alsaLib
+, dbus
+, at-spi2-atk
+, cups
+, vivaldi-ffmpeg-codecs
+, libpulseaudio
+}:
 
 stdenv.mkDerivation rec {
   pname = "exodus";
@@ -13,17 +33,17 @@ stdenv.mkDerivation rec {
 
   sourceRoot = ".";
   unpackCmd = ''
-			${unzip}/bin/unzip "$src" -x "Exodus*/lib*so"
+    			${unzip}/bin/unzip "$src" -x "Exodus*/lib*so"
   '';
 
   installPhase = ''
-		mkdir -p $out/bin $out/share/applications
-		cd Exodus-linux-x64
-		cp -r . $out
-		ln -s $out/Exodus $out/bin/Exodus
-		ln -s $out/exodus.desktop $out/share/applications
-		substituteInPlace $out/share/applications/exodus.desktop \
-				  --replace 'Exec=bash -c "cd `dirname %k` && ./Exodus"' "Exec=Exodus"
+    		mkdir -p $out/bin $out/share/applications
+    		cd Exodus-linux-x64
+    		cp -r . $out
+    		ln -s $out/Exodus $out/bin/Exodus
+    		ln -s $out/exodus.desktop $out/share/applications
+    		substituteInPlace $out/share/applications/exodus.desktop \
+    				  --replace 'Exec=bash -c "cd `dirname %k` && ./Exodus"' "Exec=Exodus"
   '';
 
   dontPatchELF = true;
@@ -31,42 +51,43 @@ stdenv.mkDerivation rec {
 
   preFixup = let
     libPath = lib.makeLibraryPath [
-			glib
-			nss
-			nspr
-			gtk3-x11
-			gnome2.pango
-			atk
-			cairo
-			gdk-pixbuf
-			xorg.libX11
-			xorg.libxcb
-			xorg.libXcomposite
-			xorg.libXcursor
-			xorg.libXdamage
-			xorg.libXext
-			xorg.libXfixes
-			xorg.libXi
-			xorg.libXrender
-			xorg.libXtst
-			xorg_sys_opengl
-			utillinux
-			xorg.libXrandr
-			xorg.libXScrnSaver
-			alsaLib
-			dbus.lib
-			at-spi2-atk
-			cups.lib
-			libpulseaudio
-			systemd
-			vivaldi-ffmpeg-codecs
+      glib
+      nss
+      nspr
+      gtk3-x11
+      gnome2.pango
+      atk
+      cairo
+      gdk-pixbuf
+      xorg.libX11
+      xorg.libxcb
+      xorg.libXcomposite
+      xorg.libXcursor
+      xorg.libXdamage
+      xorg.libXext
+      xorg.libXfixes
+      xorg.libXi
+      xorg.libXrender
+      xorg.libXtst
+      xorg_sys_opengl
+      utillinux
+      xorg.libXrandr
+      xorg.libXScrnSaver
+      alsaLib
+      dbus.lib
+      at-spi2-atk
+      cups.lib
+      libpulseaudio
+      systemd
+      vivaldi-ffmpeg-codecs
     ];
-  in ''
-    patchelf \
-      --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
-      --set-rpath "${libPath}" \
-      $out/Exodus
-  '';
+  in
+    ''
+      patchelf \
+        --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
+        --set-rpath "${libPath}" \
+        $out/Exodus
+    '';
 
   meta = with stdenv.lib; {
     homepage = "https://www.exodus.io/";

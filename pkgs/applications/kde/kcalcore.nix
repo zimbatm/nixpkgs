@@ -1,7 +1,10 @@
-{
-  mkDerivation, lib, kdepimTeam,
-  extra-cmake-modules, kdoctools,
-  kdelibs4support, libical
+{ mkDerivation
+, lib
+, kdepimTeam
+, extra-cmake-modules
+, kdoctools
+, kdelibs4support
+, libical
 }:
 
 mkDerivation {

@@ -10,17 +10,22 @@ let
     nativeBuildInputs = with pkgs; [ makeWrapper ];
     buildCommand = ''
       mkdir -p $out/bin
-      ${lib.concatStringsSep "\n" (lib.mapAttrsToList (command: binary: ''
-      cat <<_EOF >$out/bin/${command}
-      #!${pkgs.stdenv.shell} -e
-      /run/wrappers/bin/firejail ${binary} "\$@"
-      _EOF
-      chmod 0755 $out/bin/${command}
-      '') cfg.wrappedBinaries)}
+      ${lib.concatStringsSep "\n" (
+      lib.mapAttrsToList (
+        command: binary: ''
+          cat <<_EOF >$out/bin/${command}
+          #!${pkgs.stdenv.shell} -e
+          /run/wrappers/bin/firejail ${binary} "\$@"
+          _EOF
+          chmod 0755 $out/bin/${command}
+        ''
+      ) cfg.wrappedBinaries
+    )}
     '';
   };
 
-in {
+in
+{
   options.programs.firejail = {
     enable = mkEnableOption "firejail";
 

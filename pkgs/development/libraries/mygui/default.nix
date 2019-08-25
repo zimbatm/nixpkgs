@@ -1,9 +1,22 @@
-{  stdenv, fetchFromGitHub, libX11, unzip, cmake, ois, freetype, libuuid,
-   boost, pkgconfig, withOgre ? false, ogre ? null, libGLU_combined ? null } :
+{ stdenv
+, fetchFromGitHub
+, libX11
+, unzip
+, cmake
+, ois
+, freetype
+, libuuid
+, boost
+, pkgconfig
+, withOgre ? false
+, ogre ? null
+, libGLU_combined ? null
+}:
 
 let
   renderSystem = if withOgre then "3" else "4";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "mygui-${version}";
   version = "3.2.2";
 

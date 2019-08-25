@@ -1,5 +1,21 @@
-{ stdenv, fetchurl, libGLU_combined, glew, pkgconfig, openalSoft, freealut, wxGTK, libogg
-, freetype, libvorbis, fftwSinglePrec, SDL, SDL_net, expat, libjpeg, libpng }:
+{ stdenv
+, fetchurl
+, libGLU_combined
+, glew
+, pkgconfig
+, openalSoft
+, freealut
+, wxGTK
+, libogg
+, freetype
+, libvorbis
+, fftwSinglePrec
+, SDL
+, SDL_net
+, expat
+, libjpeg
+, libpng
+}:
 
 stdenv.mkDerivation rec {
   version = "44";
@@ -10,18 +26,33 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs =
-    [ libGLU_combined glew openalSoft freealut wxGTK libogg freetype libvorbis
-      SDL SDL_net expat libjpeg libpng fftwSinglePrec
+    [
+      libGLU_combined
+      glew
+      openalSoft
+      freealut
+      wxGTK
+      libogg
+      freetype
+      libvorbis
+      SDL
+      SDL_net
+      expat
+      libjpeg
+      libpng
+      fftwSinglePrec
     ];
 
   nativeBuildInputs = [ pkgconfig ];
 
   patches = [
     ./file-existence.patch
-    (fetchurl {
-      url = "https://gitweb.gentoo.org/repo/gentoo.git/plain/games-strategy/scorched3d/files/scorched3d-44-fix-c++14.patch?id=1bbcfc9ae3dfdfcbdd35151cb7b6050776215e4d";
-      sha256 = "1farmjxbc2wm4scsdbdnvh29fipnb6mp6z85hxz4bx6n9kbc8y7n";
-    })
+    (
+      fetchurl {
+        url = "https://gitweb.gentoo.org/repo/gentoo.git/plain/games-strategy/scorched3d/files/scorched3d-44-fix-c++14.patch?id=1bbcfc9ae3dfdfcbdd35151cb7b6050776215e4d";
+        sha256 = "1farmjxbc2wm4scsdbdnvh29fipnb6mp6z85hxz4bx6n9kbc8y7n";
+      }
+    )
   ];
 
   sourceRoot = "scorched";

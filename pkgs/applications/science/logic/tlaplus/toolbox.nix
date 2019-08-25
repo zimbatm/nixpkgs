@@ -1,5 +1,12 @@
-{ lib, fetchzip, makeWrapper, makeDesktopItem, stdenv
-, gtk, libXtst, glib, zlib
+{ lib
+, fetchzip
+, makeWrapper
+, makeDesktopItem
+, stdenv
+, gtk
+, libXtst
+, glib
+, zlib
 }:
 
 let
@@ -20,14 +27,15 @@ let
   };
 
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "tla-toolbox-${version}";
   src = fetchzip {
     url = "https://tla.msr-inria.inria.fr/tlatoolbox/products/TLAToolbox-${version}-linux.gtk.${arch}.zip";
     sha256 = "1mgx4p5qykf9q0p4cp6kcpc7fx8g5f2w1g40kdgas24hqwrgs3cm";
   };
 
-  buildInputs = [ makeWrapper  ];
+  buildInputs = [ makeWrapper ];
 
   phases = [ "installPhase" ];
 

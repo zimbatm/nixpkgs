@@ -1,4 +1,7 @@
-{ stdenv, closureInfo, xorriso, syslinux
+{ stdenv
+, closureInfo
+, xorriso
+, syslinux
 
 , # The file name of the resulting ISO image.
   isoName ? "cd.iso"

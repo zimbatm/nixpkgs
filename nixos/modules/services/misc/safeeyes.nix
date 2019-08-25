@@ -33,7 +33,7 @@ in
       description = "Safeeyes";
 
       wantedBy = [ "graphical-session.target" ];
-      partOf   = [ "graphical-session.target" ];
+      partOf = [ "graphical-session.target" ];
 
       serviceConfig = {
         ExecStart = ''

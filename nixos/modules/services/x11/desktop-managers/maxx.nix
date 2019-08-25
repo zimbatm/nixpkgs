@@ -5,7 +5,8 @@ with lib;
 let
   xcfg = config.services.xserver;
   cfg = xcfg.desktopManager.maxx;
-in {
+in
+{
   options.services.xserver.desktopManager.maxx = {
     enable = mkEnableOption "MaXX desktop environment";
   };
@@ -20,11 +21,13 @@ in {
     '';
 
     services.xserver.desktopManager.session = [
-    { name = "MaXX";
-      start = ''
-        exec ${pkgs.maxx}/opt/MaXX/etc/skel/Xsession.dt
-      '';
-    }];
+      {
+        name = "MaXX";
+        start = ''
+          exec ${pkgs.maxx}/opt/MaXX/etc/skel/Xsession.dt
+        '';
+      }
+    ];
   };
 
   meta.maintainers = [ maintainers.gnidorah ];

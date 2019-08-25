@@ -1,8 +1,26 @@
-{ stdenv, fetchgit, fetchNodeModules, buildPythonPackage
-, pgpy, flask, bleach, misaka, humanize, markdown, psycopg2, pygments, requests
-, sqlalchemy, flask_login, beautifulsoup4, sqlalchemy-utils, celery, alembic
-, sassc, nodejs-11_x
-, writeText }:
+{ stdenv
+, fetchgit
+, fetchNodeModules
+, buildPythonPackage
+, pgpy
+, flask
+, bleach
+, misaka
+, humanize
+, markdown
+, psycopg2
+, pygments
+, requests
+, sqlalchemy
+, flask_login
+, beautifulsoup4
+, sqlalchemy-utils
+, celery
+, alembic
+, sassc
+, nodejs-11_x
+, writeText
+}:
 
 buildPythonPackage rec {
   pname = "srht";
@@ -64,12 +82,13 @@ buildPythonPackage rec {
       [meta.sr.ht]
       origin=http://meta.sr.ht.local
     '';
-  in ''
-    # Validation needs config option(s)
-    # webhooks <- ( private-key )
-    # meta.sr.ht <- ( origin )
-    cp ${config} config.ini
-  '';
+  in
+    ''
+      # Validation needs config option(s)
+      # webhooks <- ( private-key )
+      # meta.sr.ht <- ( origin )
+      cp ${config} config.ini
+    '';
 
   meta = with stdenv.lib; {
     homepage = https://git.sr.ht/~sircmpwn/srht;

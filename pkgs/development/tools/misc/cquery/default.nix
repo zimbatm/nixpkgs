@@ -1,6 +1,10 @@
-{ fetchFromGitHub, makeWrapper
-, cmake, llvmPackages, ncurses
-, runtimeShell }:
+{ fetchFromGitHub
+, makeWrapper
+, cmake
+, llvmPackages
+, ncurses
+, runtimeShell
+}:
 
 let
   src = fetchFromGitHub {
@@ -15,7 +19,7 @@ let
 
 in
 stdenv.mkDerivation rec {
-  name    = "cquery-${version}";
+  name = "cquery-${version}";
   version = "2018-10-14";
 
   inherit src;
@@ -57,9 +61,9 @@ stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "A c/c++ language server powered by libclang";
-    homepage    = https://github.com/cquery-project/cquery;
-    license     = licenses.mit;
-    platforms   = platforms.linux ++ platforms.darwin;
+    homepage = https://github.com/cquery-project/cquery;
+    license = licenses.mit;
+    platforms = platforms.linux ++ platforms.darwin;
     maintainers = [ maintainers.tobim ];
   };
 }

@@ -4,7 +4,8 @@ with lib;
 
 let
   cfg = config.services.fcgiwrap;
-in {
+in
+{
 
   options = {
     services.fcgiwrap = {
@@ -54,12 +55,16 @@ in {
 
       serviceConfig = {
         ExecStart = "${pkgs.fcgiwrap}/sbin/fcgiwrap -c ${builtins.toString cfg.preforkProcesses} ${
-          if (cfg.socketType != "unix") then "-s ${cfg.socketType}:${cfg.socketAddress}" else ""
+        if (cfg.socketType != "unix") then "-s ${cfg.socketType}:${cfg.socketAddress}" else ""
         }";
-      } // (if cfg.user != null && cfg.group != null then {
-        User = cfg.user;
-        Group = cfg.group;
-      } else { } );
+      }
+      // (
+           if cfg.user != null && cfg.group != null then {
+             User = cfg.user;
+             Group = cfg.group;
+           } else {}
+         )
+      ;
     };
 
     systemd.sockets = if (cfg.socketType == "unix") then {
@@ -67,6 +72,6 @@ in {
         wantedBy = [ "sockets.target" ];
         socketConfig.ListenStream = cfg.socketAddress;
       };
-    } else { };
+    } else {};
   };
 }

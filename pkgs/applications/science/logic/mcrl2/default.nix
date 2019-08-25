@@ -1,4 +1,4 @@
-{stdenv, fetchurl, cmake, libGLU_combined, qt5, boost}:
+{ stdenv, fetchurl, cmake, libGLU_combined, qt5, boost }:
 
 stdenv.mkDerivation rec {
   version = "201707";

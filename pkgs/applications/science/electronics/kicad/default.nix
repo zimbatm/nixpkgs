@@ -1,10 +1,32 @@
-{ wxGTK, lib, stdenv, fetchurl, fetchFromGitHub, cmake, libGLU_combined, zlib
-, libX11, gettext, glew, glm, cairo, curl, openssl, boost, pkgconfig
-, doxygen, pcre, libpthreadstubs, libXdmcp
+{ wxGTK
+, lib
+, stdenv
+, fetchurl
+, fetchFromGitHub
+, cmake
+, libGLU_combined
+, zlib
+, libX11
+, gettext
+, glew
+, glm
+, cairo
+, curl
+, openssl
+, boost
+, pkgconfig
+, doxygen
+, pcre
+, libpthreadstubs
+, libXdmcp
 , wrapGAppsHook
-, oceSupport ? true, opencascade
-, ngspiceSupport ? true, libngspice
-, swig, python, pythonPackages
+, oceSupport ? true
+, opencascade
+, ngspiceSupport ? true
+, libngspice
+, swig
+, python
+, pythonPackages
 , lndir
 }:
 
@@ -12,20 +34,24 @@ assert ngspiceSupport -> libngspice != null;
 
 with lib;
 let
-  mkLib = version: name: sha256: attrs: stdenv.mkDerivation ({
-    name = "kicad-${name}-${version}";
-    src = fetchFromGitHub {
-      owner = "KiCad";
-      repo = "kicad-${name}";
-      rev = "${version}";
-      inherit sha256 name;
-    };
-    nativeBuildInputs = [
-      cmake
-    ];
-  } // attrs);
+  mkLib = version: name: sha256: attrs: stdenv.mkDerivation (
+    {
+      name = "kicad-${name}-${version}";
+      src = fetchFromGitHub {
+        owner = "KiCad";
+        repo = "kicad-${name}";
+        rev = "${version}";
+        inherit sha256 name;
+      };
+      nativeBuildInputs = [
+        cmake
+      ];
+    }
+    // attrs
+  );
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "kicad-${version}";
   series = "5.0";
   version = "5.1.2";
@@ -48,8 +74,10 @@ in stdenv.mkDerivation rec {
     # as assumed. We explicitely set the header location.
     "-DCMAKE_CXX_FLAGS=-I${pythonPackages.wxPython}/include/wx-3.0"
     "-DwxPYTHON_INCLUDE_DIRS=${pythonPackages.wxPython}/include/wx-3.0"
-  ] ++ optionals (oceSupport) [ "-DKICAD_USE_OCE=ON" "-DOCE_DIR=${opencascade}" ]
-    ++ optional (ngspiceSupport) "-DKICAD_SPICE=ON";
+  ]
+  ++ optionals (oceSupport) [ "-DKICAD_USE_OCE=ON" "-DOCE_DIR=${opencascade}" ]
+  ++ optional (ngspiceSupport) "-DKICAD_SPICE=ON"
+  ;
 
   nativeBuildInputs = [
     cmake
@@ -63,11 +91,25 @@ in stdenv.mkDerivation rec {
   propagatedBuildInputs = [ pythonPackages.wxPython ];
 
   buildInputs = [
-    libGLU_combined zlib libX11 wxGTK pcre libXdmcp glew glm libpthreadstubs
-    cairo curl openssl boost
-    swig python
-  ] ++ optional (oceSupport) opencascade
-    ++ optional (ngspiceSupport) libngspice;
+    libGLU_combined
+    zlib
+    libX11
+    wxGTK
+    pcre
+    libXdmcp
+    glew
+    glm
+    libpthreadstubs
+    cairo
+    curl
+    openssl
+    boost
+    swig
+    python
+  ]
+  ++ optional (oceSupport) opencascade
+  ++ optional (ngspiceSupport) libngspice
+  ;
 
   # this breaks other applications in kicad
   dontWrapGApps = true;

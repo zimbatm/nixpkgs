@@ -4,10 +4,10 @@ let
 
   bin = {
     bash = writeBashBin "test_writers" ''
-     if [[ "test" == "test" ]]; then echo "success"; fi
+      if [[ "test" == "test" ]]; then echo "success"; fi
     '';
 
-    c = writeCBin "test_writers" { libraries = [ ]; } ''
+    c = writeCBin "test_writers" { libraries = []; } ''
       #include <stdio.h>
       int main() {
         printf("success\n");
@@ -16,7 +16,7 @@ let
     '';
 
     dash = writeDashBin "test_writers" ''
-     test '~' = '~' && echo 'success'
+      test '~' = '~' && echo 'success'
     '';
 
     haskell = writeHaskellBin "test_writers" { libraries = [ haskellPackages.acme-default ]; } ''
@@ -67,10 +67,10 @@ let
 
   simple = {
     bash = writeBash "test_bash" ''
-     if [[ "test" == "test" ]]; then echo "success"; fi
+      if [[ "test" == "test" ]]; then echo "success"; fi
     '';
 
-    c = writeC "test_c" { libraries = [ ]; } ''
+    c = writeC "test_c" { libraries = []; } ''
       #include <stdio.h>
       int main() {
         printf("success\n");
@@ -79,7 +79,7 @@ let
     '';
 
     dash = writeDash "test_dash" ''
-     test '~' = '~' && echo 'success'
+      test '~' = '~' && echo 'success'
     '';
 
     haskell = writeHaskell "test_haskell" { libraries = [ haskellPackages.acme-default ]; } ''
@@ -130,20 +130,24 @@ let
 
 
   path = {
-    bash = writeBash "test_bash" (writeText "test" ''
-      if [[ "test" == "test" ]]; then echo "success"; fi
-    '');
-    haskell = writeHaskell "test_haskell" { libraries = [ haskellPackages.acme-default ]; } (writeText "test" ''
-      import Data.Default
+    bash = writeBash "test_bash" (
+      writeText "test" ''
+        if [[ "test" == "test" ]]; then echo "success"; fi
+      ''
+    );
+    haskell = writeHaskell "test_haskell" { libraries = [ haskellPackages.acme-default ]; } (
+      writeText "test" ''
+        import Data.Default
 
-      int :: Int
-      int = def
+        int :: Int
+        int = def
 
-      main :: IO ()
-      main = case int of
-        18871 -> putStrLn $ id "success"
-        _ -> print "fail"
-    '');
+        main :: IO ()
+        main = case int of
+          18871 -> putStrLn $ id "success"
+          _ -> print "fail"
+      ''
+    );
   };
 
   writeTest = expectedValue: test:
@@ -154,7 +158,8 @@ let
       fi
     '';
 
-in runCommand "test-writers" {
+in
+runCommand "test-writers" {
   passthru = { inherit writeTest bin simple; };
   meta.platforms = stdenv.lib.platforms.all;
 } ''
@@ -165,4 +170,3 @@ in runCommand "test-writers" {
   echo 'nix-writers successfully tested' >&2
   touch $out
 ''
-

@@ -1,4 +1,7 @@
-{ lib, buildPythonPackage, fetchPypi, isPy27
+{ lib
+, buildPythonPackage
+, fetchPypi
+, isPy27
 , attrs
 , pyrsistent
 , six
@@ -22,7 +25,9 @@ buildPythonPackage rec {
     pyrsistent
     six
     lockfile
-  ] ++ lib.optional isPy27 functools32;
+  ]
+  ++ lib.optional isPy27 functools32
+  ;
 
   # tests for latest version rely on custom version of betterpaths that is
   # difficult to deal with and isn't used on master

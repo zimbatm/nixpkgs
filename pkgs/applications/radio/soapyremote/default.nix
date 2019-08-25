@@ -3,7 +3,8 @@
 let
   version = "0.5.1";
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "soapyremote-${version}";
 
   src = fetchFromGitHub {

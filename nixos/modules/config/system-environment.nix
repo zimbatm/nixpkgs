@@ -32,11 +32,14 @@ in
   config = {
 
     system.build.pamEnvironment = pkgs.writeText "pam-environment"
-       ''
-         ${concatStringsSep "\n" (
-           (mapAttrsToList (n: v: ''${n}="${concatStringsSep ":" v}"'')
-             (zipAttrsWith (const concatLists) ([ (mapAttrs (n: v: [ v ]) cfg.sessionVariables) ]))))}
-       '';
+      ''
+        ${concatStringsSep "\n" (
+        (
+          mapAttrsToList (n: v: ''${n}="${concatStringsSep ":" v}"'')
+            (zipAttrsWith (const concatLists) ([ (mapAttrs (n: v: [ v ]) cfg.sessionVariables) ]))
+        )
+      )}
+      '';
 
   };
 

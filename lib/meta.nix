@@ -24,7 +24,7 @@ rec {
   /* Change the symbolic name of a package for presentation purposes
      (i.e., so that nix-env users can tell them apart).
   */
-  setName = name: drv: drv // {inherit name;};
+  setName = name: drv: drv // { inherit name; };
 
 
   /* Like `setName', but takes the previous name as an argument.
@@ -32,13 +32,15 @@ rec {
      Example:
        updateName (oldName: oldName + "-experimental") somePkg
   */
-  updateName = updater: drv: drv // {name = updater (drv.name);};
+  updateName = updater: drv: drv // { name = updater (drv.name); };
 
 
   /* Append a suffix to the name of a package (before the version
      part). */
-  appendToName = suffix: updateName (name:
-    let x = builtins.parseDrvName name; in "${x.name}-${suffix}-${x.version}");
+  appendToName = suffix: updateName (
+    name:
+      let x = builtins.parseDrvName name; in "${x.name}-${suffix}-${x.version}"
+  );
 
 
   /* Apply a function to each derivation and only to derivations in an attrset.
@@ -82,9 +84,10 @@ rec {
      and then match that.
   */
   platformMatch = platform: elem: let
-      pattern =
-        if builtins.isString elem
-        then { system = elem; }
-        else { parsed = elem; };
-    in lib.matchAttrs pattern platform;
+    pattern =
+      if builtins.isString elem
+      then { system = elem; }
+      else { parsed = elem; };
+  in
+    lib.matchAttrs pattern platform;
 }

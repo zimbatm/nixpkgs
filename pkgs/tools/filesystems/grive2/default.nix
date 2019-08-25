@@ -7,7 +7,7 @@ stdenv.mkDerivation rec {
   src = fetchFromGitHub {
     owner = "vitalif";
     repo = "grive2";
-    rev =  "v${version}";
+    rev = "v${version}";
     sha256 = "0gyic9228j25l5x8qj9xxxp2cgbw6y4skxqx0xrq6qilhv4lj23c";
   };
 

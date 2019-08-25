@@ -1,12 +1,35 @@
-{ stdenv, mkDerivation, fetchFromGitHub, pkgconfig, cmake, qtbase, qttools,
-  qtwebchannel, qtx11extras,
-  gnome2, nss, nspr, alsaLib, atk, cairo, cups, dbus,
-  expat, fontconfig, gdk-pixbuf, glib, gtk2,
-  libxcb, pango, pulseaudio, xorg, deepin }:
+{ stdenv
+, mkDerivation
+, fetchFromGitHub
+, pkgconfig
+, cmake
+, qtbase
+, qttools
+, qtwebchannel
+, qtx11extras
+, gnome2
+, nss
+, nspr
+, alsaLib
+, atk
+, cairo
+, cups
+, dbus
+, expat
+, fontconfig
+, gdk-pixbuf
+, glib
+, gtk2
+, libxcb
+, pango
+, pulseaudio
+, xorg
+, deepin
+}:
 
 let
   rpahtLibraries = [
-    stdenv.cc.cc.lib  # libstdc++.so.6
+    stdenv.cc.cc.lib # libstdc++.so.6
     alsaLib
     atk
     cairo
@@ -44,20 +67,24 @@ mkDerivation rec {
   version = "1.1.6";
 
   srcs = [
-    (fetchFromGitHub {
-      owner = "linuxdeepin";
-      repo = pname;
-      rev = version;
-      sha256 = "1x0vb4nkfa1lq0nh6iqpxfvsqmb6qfn305pbc92bsqpgiqd7jvb1";
-      name = pname;
-    })
-    (fetchFromGitHub {
-      owner = "linuxdeepin";
-      repo = "cef-binary";
-      rev = "059a0c9cef4e289a50dc7a2f4c91fe69db95035e";
-      sha256 = "1h7cq63n94y2a6fprq4g63admh49rcci7avl5z9kdimkhqb2jb84";
-      name = "cef-binary";
-    })
+    (
+      fetchFromGitHub {
+        owner = "linuxdeepin";
+        repo = pname;
+        rev = version;
+        sha256 = "1x0vb4nkfa1lq0nh6iqpxfvsqmb6qfn305pbc92bsqpgiqd7jvb1";
+        name = pname;
+      }
+    )
+    (
+      fetchFromGitHub {
+        owner = "linuxdeepin";
+        repo = "cef-binary";
+        rev = "059a0c9cef4e289a50dc7a2f4c91fe69db95035e";
+        sha256 = "1h7cq63n94y2a6fprq4g63admh49rcci7avl5z9kdimkhqb2jb84";
+        name = "cef-binary";
+      }
+    )
   ];
 
   sourceRoot = pname;
@@ -73,7 +100,9 @@ mkDerivation rec {
     qtbase
     qtwebchannel
     qtx11extras
-  ] ++ rpahtLibraries;
+  ]
+  ++ rpahtLibraries
+  ;
 
   postUnpack = ''
     rmdir ${pname}/cef
@@ -98,7 +127,7 @@ mkDerivation rec {
     homepage = https://github.com/linuxdeepin/qcef;
     license = licenses.lgpl3;
     platforms = platforms.linux;
-    badPlatforms = [ "aarch64-linux" ];  # the cef-binary is not available
+    badPlatforms = [ "aarch64-linux" ]; # the cef-binary is not available
     maintainers = with maintainers; [ romildo ];
   };
 }

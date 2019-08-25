@@ -13,7 +13,8 @@ let
     ln -s ${cfg.package}/sbin/smtpctl $out/bin/sendmail
   '';
 
-in {
+in
+{
 
   ###### interface
 
@@ -107,24 +108,25 @@ in {
         paths = [ cfg.package ] ++ cfg.procPackages;
         pathsToLink = [ "/libexec/opensmtpd" ];
       };
-    in {
-      wantedBy = [ "multi-user.target" ];
-      after = [ "network.target" ];
-      preStart = ''
-        mkdir -p /var/spool/smtpd
-        chmod 711 /var/spool/smtpd
+    in
+      {
+        wantedBy = [ "multi-user.target" ];
+        after = [ "network.target" ];
+        preStart = ''
+          mkdir -p /var/spool/smtpd
+          chmod 711 /var/spool/smtpd
 
-        mkdir -p /var/spool/smtpd/offline
-        chown root.smtpq /var/spool/smtpd/offline
-        chmod 770 /var/spool/smtpd/offline
+          mkdir -p /var/spool/smtpd/offline
+          chown root.smtpq /var/spool/smtpd/offline
+          chmod 770 /var/spool/smtpd/offline
 
-        mkdir -p /var/spool/smtpd/purge
-        chown smtpq.root /var/spool/smtpd/purge
-        chmod 700 /var/spool/smtpd/purge
-      '';
-      serviceConfig.ExecStart = "${cfg.package}/sbin/smtpd -d -f ${conf} ${args}";
-      environment.OPENSMTPD_PROC_PATH = "${procEnv}/libexec/opensmtpd";
-    };
+          mkdir -p /var/spool/smtpd/purge
+          chown smtpq.root /var/spool/smtpd/purge
+          chmod 700 /var/spool/smtpd/purge
+        '';
+        serviceConfig.ExecStart = "${cfg.package}/sbin/smtpd -d -f ${conf} ${args}";
+        environment.OPENSMTPD_PROC_PATH = "${procEnv}/libexec/opensmtpd";
+      };
 
     environment.systemPackages = mkIf cfg.addSendmailToSystemPath [ sendmail ];
   };

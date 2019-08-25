@@ -54,22 +54,28 @@ stdenv.mkDerivation rec {
   '';
 
   patches = [
-    (substituteAll {
-      src = ./fix-paths.patch;
-      inherit shadow coreutils;
-    })
+    (
+      substituteAll {
+        src = ./fix-paths.patch;
+        inherit shadow coreutils;
+      }
+    )
     ./no-create-dirs.patch
     ./Disable-methods-that-change-files-in-etc.patch
     # Systemd unit improvements. Notably using StateDirectory eliminating the
     # need of an ad-hoc script.
-    (fetchpatch {
-      url = "https://gitlab.freedesktop.org/accountsservice/accountsservice/commit/152b845bbd3ca2a64516691493a160825f1a2046.patch";
-      sha256 = "114wrf5mwj5bgc5v1g05md4ridcnwdrwppr3bjz96sknwh5hk8s5";
-    })
-    (fetchpatch {
-      url = "https://gitlab.freedesktop.org/accountsservice/accountsservice/commit/0e712e935abd26499ff5995ab363e5bfd9ee7c4c.patch";
-      sha256 = "1y60a5fmgfqjzprwpizilrazqn3mggdlgc5sgcpsprsp62fv78rl";
-    })
+    (
+      fetchpatch {
+        url = "https://gitlab.freedesktop.org/accountsservice/accountsservice/commit/152b845bbd3ca2a64516691493a160825f1a2046.patch";
+        sha256 = "114wrf5mwj5bgc5v1g05md4ridcnwdrwppr3bjz96sknwh5hk8s5";
+      }
+    )
+    (
+      fetchpatch {
+        url = "https://gitlab.freedesktop.org/accountsservice/accountsservice/commit/0e712e935abd26499ff5995ab363e5bfd9ee7c4c.patch";
+        sha256 = "1y60a5fmgfqjzprwpizilrazqn3mggdlgc5sgcpsprsp62fv78rl";
+      }
+    )
   ];
 
   meta = with stdenv.lib; {

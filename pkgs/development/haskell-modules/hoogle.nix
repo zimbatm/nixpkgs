@@ -23,7 +23,11 @@
 # This will build mmorph and monadControl, and have the hoogle installation
 # refer to their documentation via symlink so they are not garbage collected.
 
-{ lib, stdenv, hoogle, writeText, ghc
+{ lib
+, stdenv
+, hoogle
+, writeText
+, ghc
 , packages
 }:
 
@@ -38,7 +42,7 @@ let
   ghcDocLibDir =
     if !isGhcjs
     then ghc.doc + ''/share/doc/ghc*/html/libraries''
-    else ghc     + ''/doc/lib'';
+    else ghc + ''/doc/lib'';
   # On GHCJS, use a stripped down version of GHC's prologue.txt
   prologue =
     if !isGhcjs
@@ -55,7 +59,7 @@ let
 in
 stdenv.mkDerivation {
   name = "hoogle-local-0.1";
-  buildInputs = [ghc hoogle];
+  buildInputs = [ ghc hoogle ];
 
   phases = [ "buildPhase" ];
 
@@ -63,9 +67,11 @@ stdenv.mkDerivation {
 
   buildPhase = ''
     ${lib.optionalString (packages != [] -> docPackages == [])
-       ("echo WARNING: localHoogle package list empty, even though"
-       + " the following were specified: "
-       + lib.concatMapStringsSep ", " (p: p.name) packages)}
+    (
+      "echo WARNING: localHoogle package list empty, even though"
+      + " the following were specified: "
+      + lib.concatMapStringsSep ", " (p: p.name) packages
+    )}
     mkdir -p $out/share/doc/hoogle
 
     echo importing builtin packages
@@ -78,13 +84,23 @@ stdenv.mkDerivation {
     done
 
     echo importing other packages
-    ${lib.concatMapStringsSep "\n" (el: ''
-        ln -sfn ${el.haddockDir} "$out/share/doc/hoogle/${el.name}"
-      '')
-      (lib.filter (el: el.haddockDir != null)
-        (builtins.map (p: { haddockDir = if p ? haddockDir then p.haddockDir p else null;
-                            name = p.pname; })
-          docPackages))}
+    ${lib.concatMapStringsSep "\n" (
+    el: ''
+      ln -sfn ${el.haddockDir} "$out/share/doc/hoogle/${el.name}"
+    ''
+  )
+    (
+      lib.filter (el: el.haddockDir != null)
+        (
+          builtins.map (
+            p: {
+              haddockDir = if p ? haddockDir then p.haddockDir p else null;
+              name = p.pname;
+            }
+          )
+            docPackages
+        )
+    )}
 
     echo building hoogle database
     hoogle generate --database $out/share/doc/hoogle/default.hoo --local=$out/share/doc/hoogle

@@ -1,10 +1,11 @@
 { stdenv, fetchurl }:
 
-let arch = if stdenv.isx86_64 then "x86-64" else
-           if stdenv.isi686 then "x86-32" else
-           "unknown";
+let
+  arch = if stdenv.isx86_64 then "x86-64" else
+    if stdenv.isi686 then "x86-32" else
+      "unknown";
 
-    version = "10";
+  version = "10";
 in
 
 stdenv.mkDerivation {
@@ -28,9 +29,9 @@ stdenv.mkDerivation {
     longDescription = ''
       Stockfish is one of the strongest chess engines in the world. It is also
       much stronger than the best human chess grandmasters.
-      '';
+    '';
     maintainers = with maintainers; [ luispedro peti ];
-    platforms = ["x86_64-linux" "i686-linux"];
+    platforms = [ "x86_64-linux" "i686-linux" ];
     license = licenses.gpl2;
   };
 

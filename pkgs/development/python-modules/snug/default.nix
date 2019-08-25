@@ -1,6 +1,13 @@
-{ buildPythonPackage, lib, fetchFromGitHub, glibcLocales
-, pytest, pytest-mock, gentools
-, typing, singledispatch, pythonOlder
+{ buildPythonPackage
+, lib
+, fetchFromGitHub
+, glibcLocales
+, pytest
+, pytest-mock
+, gentools
+, typing
+, singledispatch
+, pythonOlder
 }:
 
 buildPythonPackage rec {
@@ -21,8 +28,9 @@ buildPythonPackage rec {
   LC_ALL = "en_US.UTF-8";
 
   propagatedBuildInputs =
-    lib.optionals (pythonOlder "3.4") [ singledispatch ] ++
-    lib.optionals (pythonOlder "3.5") [ typing ];
+    lib.optionals (pythonOlder "3.4") [ singledispatch ]
+    ++ lib.optionals (pythonOlder "3.5") [ typing ]
+    ;
 
   checkInputs = [ pytest pytest-mock gentools ];
   checkPhase = "pytest";

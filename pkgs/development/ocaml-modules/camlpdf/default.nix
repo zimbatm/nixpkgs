@@ -22,10 +22,10 @@ stdenv.mkDerivation rec {
   '';
 
   makeFlags = with stdenv.lib;
-  optionals (versionAtLeast ocaml.version "4.06") [
-    "OCAMLBCFLAGS+=-unsafe-string"
-    "OCAMLNCFLAGS+=-unsafe-string"
-  ];
+    optionals (versionAtLeast ocaml.version "4.06") [
+      "OCAMLBCFLAGS+=-unsafe-string"
+      "OCAMLNCFLAGS+=-unsafe-string"
+    ];
 
   createFindlibDestdir = true;
 
@@ -33,6 +33,6 @@ stdenv.mkDerivation rec {
     description = "An OCaml library for reading, writing and modifying PDF files";
     homepage = https://github.com/johnwhitington/camlpdf;
     license = licenses.lgpl21Plus;
-    maintainers = with maintainers; [vbgl];
+    maintainers = with maintainers; [ vbgl ];
   };
 }

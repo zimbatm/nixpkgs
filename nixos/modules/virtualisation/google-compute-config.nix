@@ -74,8 +74,8 @@ in
       "google-instance-setup.service"
       "google-network-setup.service"
     ];
-    requires = ["network.target"];
-    wantedBy = ["multi-user.target"];
+    requires = [ "network.target" ];
+    wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       Type = "simple";
       ExecStart = "${gce}/bin/google_clock_skew_daemon --debug";
@@ -84,9 +84,9 @@ in
 
   systemd.services.google-instance-setup = {
     description = "Google Compute Engine Instance Setup";
-    after = ["local-fs.target" "network-online.target" "network.target" "rsyslog.service"];
-    before = ["sshd.service"];
-    wants = ["local-fs.target" "network-online.target" "network.target"];
+    after = [ "local-fs.target" "network-online.target" "network.target" "rsyslog.service" ];
+    before = [ "sshd.service" ];
+    wants = [ "local-fs.target" "network-online.target" "network.target" ];
     wantedBy = [ "sshd.service" "multi-user.target" ];
     path = with pkgs; [ ethtool openssh ];
     serviceConfig = {
@@ -97,10 +97,10 @@ in
 
   systemd.services.google-network-daemon = {
     description = "Google Compute Engine Network Daemon";
-    after = ["local-fs.target" "network-online.target" "network.target" "rsyslog.service" "google-instance-setup.service"];
-    wants = ["local-fs.target" "network-online.target" "network.target"];
-    requires = ["network.target"];
-    partOf = ["network.target"];
+    after = [ "local-fs.target" "network-online.target" "network.target" "rsyslog.service" "google-instance-setup.service" ];
+    wants = [ "local-fs.target" "network-online.target" "network.target" ];
+    requires = [ "network.target" ];
+    partOf = [ "network.target" ];
     wantedBy = [ "multi-user.target" ];
     path = with pkgs; [ iproute ];
     serviceConfig = {
@@ -119,7 +119,7 @@ in
       "google-instance-setup.service"
       "google-network-daemon.service"
     ];
-    wants = [ "local-fs.target" "network-online.target" "network.target"];
+    wants = [ "local-fs.target" "network-online.target" "network.target" ];
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       ExecStart = "${pkgs.coreutils}/bin/true";
@@ -140,7 +140,7 @@ in
       "google-instance-setup.service"
       "google-network-daemon.service"
     ];
-    wants = ["local-fs.target" "network-online.target" "network.target"];
+    wants = [ "local-fs.target" "network-online.target" "network.target" ];
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       ExecStart = "${gce}/bin/google_metadata_script_runner --debug --script-type startup";

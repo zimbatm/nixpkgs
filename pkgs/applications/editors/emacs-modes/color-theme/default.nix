@@ -1,4 +1,4 @@
-{stdenv, fetchurl, emacs}:
+{ stdenv, fetchurl, emacs }:
 
 stdenv.mkDerivation rec {
   name = "color-theme-6.6.0";

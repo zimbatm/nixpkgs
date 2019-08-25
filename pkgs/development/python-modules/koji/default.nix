@@ -24,7 +24,7 @@ buildPythonPackage rec {
   '';
 
   meta = {
-    maintainers = [ ];
+    maintainers = [];
     platforms = stdenv.lib.platforms.unix;
   };
 }

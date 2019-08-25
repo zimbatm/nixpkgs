@@ -2,7 +2,8 @@
 
 let
   version = "1.4.9";
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "gogui-${version}";
   buildInputs = [ unzip makeWrapper ];
   src = fetchurl {

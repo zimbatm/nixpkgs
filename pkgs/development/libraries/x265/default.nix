@@ -1,4 +1,9 @@
-{ stdenv, fetchurl, fetchpatch, cmake, nasm, numactl
+{ stdenv
+, fetchurl
+, fetchpatch
+, cmake
+, nasm
+, numactl
 , numaSupport ? stdenv.hostPlatform.isLinux && (stdenv.hostPlatform.isx86 || stdenv.hostPlatform.isAarch64)  # Enabled by default on NUMA platforms
 , debugSupport ? false # Run-time sanity checks (debugging)
 , highbitdepthSupport ? false # false=8bits per channel, true=10/12bits per channel
@@ -31,10 +36,12 @@ stdenv.mkDerivation rec {
 
   patches = [
     # Fix build on ARM (#406)
-    (fetchpatch {
-      url = "https://bitbucket.org/multicoreware/x265/issues/attachments/406/multicoreware/x265/1527562952.26/406/X265-2.8-asm-primitives.patch";
-      sha256 = "1vf8bpl37gbd9dcbassgkq9i0rp24qm3bl6hx9zv325174bn402v";
-    })
+    (
+      fetchpatch {
+        url = "https://bitbucket.org/multicoreware/x265/issues/attachments/406/multicoreware/x265/1527562952.26/406/X265-2.8-asm-primitives.patch";
+        sha256 = "1vf8bpl37gbd9dcbassgkq9i0rp24qm3bl6hx9zv325174bn402v";
+      }
+    )
   ];
 
   postPatch = ''
@@ -66,9 +73,9 @@ stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "Library for encoding h.265/HEVC video streams";
-    homepage    = http://x265.org;
-    license     = licenses.gpl2;
+    homepage = http://x265.org;
+    license = licenses.gpl2;
     maintainers = with maintainers; [ codyopel ];
-    platforms   = platforms.all;
+    platforms = platforms.all;
   };
 }

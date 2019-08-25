@@ -1,6 +1,7 @@
 # To use this for hacking of your Yi config file, drop into a shell
 # with env attribute.
-{ stdenv, makeWrapper
+{ stdenv
+, makeWrapper
 , haskellPackages
 , extraPackages ? (s: [])
 }:

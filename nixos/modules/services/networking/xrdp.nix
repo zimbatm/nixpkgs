@@ -152,16 +152,16 @@ in
         restartIfChanged = false; # do not restart on "nixos-rebuild switch". like "display-manager", it can have many interactive programs as children
         serviceConfig = {
           ExecStart = "${cfg.package}/bin/xrdp-sesman --nodaemon --config ${confDir}/sesman.ini";
-          ExecStop  = "${pkgs.coreutils}/bin/kill -INT $MAINPID";
+          ExecStop = "${pkgs.coreutils}/bin/kill -INT $MAINPID";
         };
       };
 
     };
 
     users.users.xrdp = {
-      description   = "xrdp daemon user";
-      isSystemUser  = true;
-      group         = "xrdp";
+      description = "xrdp daemon user";
+      isSystemUser = true;
+      group = "xrdp";
     };
     users.groups.xrdp = {};
 

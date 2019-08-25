@@ -1,4 +1,4 @@
-{stdenv, fetchurl, ncurses, libpcap, automake}:
+{ stdenv, fetchurl, ncurses, libpcap, automake }:
 
 stdenv.mkDerivation rec {
   name = "iftop-1.0pre4";
@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
     cp ${automake}/share/automake*/config.{sub,guess} config
   '';
 
-  buildInputs = [ncurses libpcap];
+  buildInputs = [ ncurses libpcap ];
 
   meta = with stdenv.lib; {
     description = "Display bandwidth usage on a network interface";
@@ -28,6 +28,6 @@ stdenv.mkDerivation rec {
     license = licenses.gpl2Plus;
     homepage = http://ex-parrot.com/pdw/iftop/;
     platforms = platforms.unix;
-    maintainers = [ ];
+    maintainers = [];
   };
 }

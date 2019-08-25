@@ -1,4 +1,4 @@
-{stdenv, fetchurl, bison, flex}:
+{ stdenv, fetchurl, bison, flex }:
 
 stdenv.mkDerivation rec {
   name = "iasl-${version}";

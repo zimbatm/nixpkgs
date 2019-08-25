@@ -7,7 +7,7 @@ python.pkgs.buildPythonApplication rec {
   version = "2.6.1";
 
   src = fetchurl {
-    url    = "mirror://sourceforge/project/mnemosyne-proj/mnemosyne/mnemosyne-${version}/Mnemosyne-${version}.tar.gz";
+    url = "mirror://sourceforge/project/mnemosyne-proj/mnemosyne/mnemosyne-${version}/Mnemosyne-${version}.tar.gz";
     sha256 = "0xcwikq51abrlqfn5bv7kcw1ccd3ip0w6cjd5vnnzwnaqwdj8cb3";
   };
 

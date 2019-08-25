@@ -1,6 +1,15 @@
-{ stdenv, fetchFromGitHub, autoreconfHook, pkgconfig
-, cairo, ffmpeg, ffms, libjpeg, log4cpp, pango
-, avxeditSupport ? false, qt4 ? null
+{ stdenv
+, fetchFromGitHub
+, autoreconfHook
+, pkgconfig
+, cairo
+, ffmpeg
+, ffms
+, libjpeg
+, log4cpp
+, pango
+, avxeditSupport ? false
+, qt4 ? null
 }:
 
 let
@@ -30,7 +39,8 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ autoreconfHook pkgconfig ];
 
   buildInputs = [ cairo ffmpeg ffms libjpeg log4cpp pango ]
-    ++ optional avxeditSupport qt4;
+    ++ optional avxeditSupport qt4
+    ;
 
   meta = with stdenv.lib; {
     description = "A script system that allows advanced non-linear editing";

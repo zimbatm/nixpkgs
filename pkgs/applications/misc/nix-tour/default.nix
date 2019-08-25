@@ -1,4 +1,4 @@
-{ stdenv, fetchgit, electron, runtimeShell } :
+{ stdenv, fetchgit, electron, runtimeShell }:
 
 stdenv.mkDerivation rec {
   name = "nix-tour-${version}";

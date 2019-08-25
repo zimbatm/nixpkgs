@@ -10,7 +10,8 @@
 , hypothesis
 , future
 , pytest
-, pytest-timeout }:
+, pytest-timeout
+}:
 
 buildPythonPackage rec {
   pname = "python-can";

@@ -3,7 +3,8 @@
 let
   majorVersion = "2.8";
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "gsoap-${version}";
   version = "${majorVersion}.53";
 

@@ -13,39 +13,44 @@ let
   goPackagePath = "github.com/hashicorp/terraform";
 
   generic = { version, sha256, ... }@attrs:
-    let attrs' = builtins.removeAttrs attrs ["version" "sha256"]; in
-    buildGoPackage ({
-      name = "terraform-${version}";
+    let
+      attrs' = builtins.removeAttrs attrs [ "version" "sha256" ];
+    in
+      buildGoPackage (
+        {
+          name = "terraform-${version}";
 
-      inherit goPackagePath;
+          inherit goPackagePath;
 
-      src = fetchFromGitHub {
-        owner  = "hashicorp";
-        repo   = "terraform";
-        rev    = "v${version}";
-        inherit sha256;
-      };
+          src = fetchFromGitHub {
+            owner = "hashicorp";
+            repo = "terraform";
+            rev = "v${version}";
+            inherit sha256;
+          };
 
-      postInstall = ''
-        # remove all plugins, they are part of the main binary now
-        for i in $bin/bin/*; do
-          if [[ $(basename $i) != terraform ]]; then
-            rm "$i"
-          fi
-        done
-      '';
+          postInstall = ''
+            # remove all plugins, they are part of the main binary now
+            for i in $bin/bin/*; do
+              if [[ $(basename $i) != terraform ]]; then
+                rm "$i"
+              fi
+            done
+          '';
 
-      preCheck = ''
-        export HOME=$TMP
-      '';
+          preCheck = ''
+            export HOME=$TMP
+          '';
 
-      meta = with stdenv.lib; {
-        description = "Tool for building, changing, and versioning infrastructure";
-        homepage = https://www.terraform.io/;
-        license = licenses.mpl20;
-        maintainers = with maintainers; [ zimbatm peterhoeg kalbasit ];
-      };
-    } // attrs');
+          meta = with stdenv.lib; {
+            description = "Tool for building, changing, and versioning infrastructure";
+            homepage = https://www.terraform.io/;
+            license = licenses.mpl20;
+            maintainers = with maintainers; [ zimbatm peterhoeg kalbasit ];
+          };
+        }
+        // attrs'
+      );
 
   pluggable = terraform:
     let
@@ -69,8 +74,9 @@ let
           # Don't bother wrapping unless we actually have plugins, since the wrapper will stop automatic downloading
           # of plugins, which might be counterintuitive if someone just wants a vanilla Terraform.
           if actualPlugins == []
-            then terraform.overrideAttrs (orig: { passthru = orig.passthru // passthru; })
-            else lib.appendToName "with-plugins"(stdenv.mkDerivation {
+          then terraform.overrideAttrs (orig: { passthru = orig.passthru // passthru; })
+          else lib.appendToName "with-plugins" (
+            stdenv.mkDerivation {
               inherit (terraform) name;
               buildInputs = [ makeWrapper ];
 
@@ -82,26 +88,33 @@ let
               '';
 
               inherit passthru;
-            });
-    in withPlugins (_: []);
+            }
+          );
+    in
+      withPlugins (_: []);
 
-  plugins = removeAttrs terraform-providers ["override" "overrideDerivation" "recurseForDerivations"];
-in rec {
-  terraform_0_11 = pluggable (generic {
-    version = "0.11.14";
-    sha256 = "1bzz5wy13gh8j47mxxp6ij6yh20xmxd9n5lidaln3mf1bil19dmc";
-    patches = [ ./provider-path.patch ];
-    passthru = { inherit plugins; };
-  });
+  plugins = removeAttrs terraform-providers [ "override" "overrideDerivation" "recurseForDerivations" ];
+in
+rec {
+  terraform_0_11 = pluggable (
+    generic {
+      version = "0.11.14";
+      sha256 = "1bzz5wy13gh8j47mxxp6ij6yh20xmxd9n5lidaln3mf1bil19dmc";
+      patches = [ ./provider-path.patch ];
+      passthru = { inherit plugins; };
+    }
+  );
 
   terraform_0_11-full = terraform_0_11.full;
 
-  terraform_0_12 = pluggable (generic {
-    version = "0.12.7";
-    sha256 = "09zsak1a9z2mk88vb6xs9jaxfpazhs0p7x68mw62c9mm13m8kq02";
-    patches = [ ./provider-path.patch ];
-    passthru = { inherit plugins; };
-  });
+  terraform_0_12 = pluggable (
+    generic {
+      version = "0.12.7";
+      sha256 = "09zsak1a9z2mk88vb6xs9jaxfpazhs0p7x68mw62c9mm13m8kq02";
+      patches = [ ./provider-path.patch ];
+      passthru = { inherit plugins; };
+    }
+  );
 
   # Tests that the plugins are being used. Terraform looks at the specific
   # file pattern and if the plugin is not found it will try to download it
@@ -112,7 +125,7 @@ in rec {
       resource "random_id" "test" {}
     '';
     terraform = terraform_0_11.withPlugins (p: [ p.random ]);
-    test = runCommand "terraform-plugin-test" { buildInputs = [terraform]; }
+    test = runCommand "terraform-plugin-test" { buildInputs = [ terraform ]; }
       ''
         set -e
         # make it fail outside of sandbox
@@ -121,6 +134,7 @@ in rec {
         terraform init
         touch $out
       '';
-  in test;
+  in
+    test;
 
 }

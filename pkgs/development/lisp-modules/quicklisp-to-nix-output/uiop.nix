@@ -5,7 +5,7 @@ rec {
 
   description = '''';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/uiop/2018-07-11/uiop-3.3.2.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "uiop";
 
-  asdFilesToKeep = ["uiop.asd"];
+  asdFilesToKeep = [ "uiop.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM uiop DESCRIPTION NIL SHA256

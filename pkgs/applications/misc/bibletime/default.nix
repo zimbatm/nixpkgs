@@ -1,4 +1,4 @@
-{stdenv, fetchurl, cmake, sword, qt4, boost, clucene_core}:
+{ stdenv, fetchurl, cmake, sword, qt4, boost, clucene_core }:
 
 stdenv.mkDerivation rec {
 
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
     patchShebangs .;
   '';
 
-  preConfigure =  ''
+  preConfigure = ''
     export CLUCENE_HOME=${clucene_core};
     export SWORD_HOME=${sword};
   '';

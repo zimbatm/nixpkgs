@@ -17,7 +17,8 @@
    evaluation is taking place, and the configuration from environment variables
    or dot-files. */
 
-{ # The system packages will be built on. See the manual for the
+{
+  # The system packages will be built on. See the manual for the
   # subtle division of labor between these two `*System`s and the three
   # `*Platform`s.
   localSystem
@@ -40,11 +41,13 @@
   stdenvStages ? import ../stdenv
 } @ args:
 
-let # Rename the function arguments
+let
+  # Rename the function arguments
   config0 = config;
   crossSystem0 = crossSystem;
 
-in let
+in
+let
   lib = import ../../lib;
 
   # Allow both:
@@ -57,23 +60,28 @@ in let
 
   # From a minimum of `system` or `config` (actually a target triple, *not*
   # nixpkgs configuration), infer the other one and platform as needed.
-  localSystem = lib.systems.elaborate (if builtins.isAttrs args.localSystem then (
-    # Allow setting the platform in the config file. This take precedence over
-    # the inferred platform, but not over an explicitly passed-in one.
-    builtins.intersectAttrs { platform = null; } config1
-    // args.localSystem) else args.localSystem);
+  localSystem = lib.systems.elaborate (
+    if builtins.isAttrs args.localSystem then (
+      # Allow setting the platform in the config file. This take precedence over
+      # the inferred platform, but not over an explicitly passed-in one.
+      builtins.intersectAttrs { platform = null; } config1
+      // args.localSystem
+    ) else args.localSystem
+  );
 
   crossSystem = if crossSystem0 == null then localSystem
-                else lib.systems.elaborate crossSystem0;
+  else lib.systems.elaborate crossSystem0;
 
   configEval = lib.evalModules {
     modules = [
       ./config.nix
-      ({ options, ... }: {
-        _file = "nixpkgs.config";
-        # filter-out known options, FIXME: remove this eventually
-        config = builtins.intersectAttrs options config1;
-      })
+      (
+        { options, ... }: {
+          _file = "nixpkgs.config";
+          # filter-out known options, FIXME: remove this eventually
+          config = builtins.intersectAttrs options config1;
+        }
+      )
     ];
   };
 
@@ -110,9 +118,12 @@ in let
 
   # Partially apply some arguments for building bootstraping stage pkgs
   # sets. Only apply arguments which no stdenv would want to override.
-  allPackages = newArgs: import ./stage.nix ({
-    inherit lib nixpkgsFun;
-  } // newArgs);
+  allPackages = newArgs: import ./stage.nix (
+    {
+      inherit lib nixpkgsFun;
+    }
+    // newArgs
+  );
 
   boot = import ../stdenv/booter.nix { inherit lib allPackages; };
 
@@ -122,4 +133,5 @@ in let
 
   pkgs = boot stages;
 
-in pkgs
+in
+  pkgs

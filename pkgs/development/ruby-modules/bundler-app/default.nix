@@ -36,33 +36,42 @@
 let
   basicEnv = (callPackage ../bundled-common {}) args;
 
-  cmdArgs = removeAttrs args [ "pname" "postBuild" "gemConfig" "passthru" ] // {
-    inherit preferLocalBuild allowSubstitutes; # pass the defaults
+  cmdArgs = removeAttrs args [ "pname" "postBuild" "gemConfig" "passthru" ]
+    // {
+         inherit preferLocalBuild allowSubstitutes; # pass the defaults
 
-    buildInputs = buildInputs ++ lib.optional (scripts != []) makeWrapper;
+         buildInputs = buildInputs ++ lib.optional (scripts != []) makeWrapper;
 
-    meta = { platforms = ruby.meta.platforms; } // meta;
-    passthru = basicEnv.passthru // {
-      inherit basicEnv;
-      inherit (basicEnv) env;
-    } // passthru;
-  };
+         meta = { platforms = ruby.meta.platforms; } // meta;
+         passthru = basicEnv.passthru
+           // {
+                inherit basicEnv;
+                inherit (basicEnv) env;
+              }
+           // passthru
+           ;
+       }
+    ;
 in
-  runCommand basicEnv.name cmdArgs ''
-    mkdir -p $out/bin
-    ${(lib.concatMapStrings (x: "ln -s '${basicEnv}/bin/${x}' $out/bin/${x};\n") exes)}
-    ${(lib.concatMapStrings (s: "makeWrapper $out/bin/$(basename ${s}) $srcdir/${s} " +
-                                "--set BUNDLE_GEMFILE ${basicEnv.confFiles}/Gemfile "+
-                                "--set BUNDLE_PATH ${basicEnv}/${ruby.gemPath} "+
-                                "--set BUNDLE_FROZEN 1 "+
-                                "--set GEM_HOME ${basicEnv}/${ruby.gemPath} "+
-                                "--set GEM_PATH ${basicEnv}/${ruby.gemPath} "+
-                                "--run \"cd $srcdir\";\n") scripts)}
+runCommand basicEnv.name cmdArgs ''
+  mkdir -p $out/bin
+  ${(lib.concatMapStrings (x: "ln -s '${basicEnv}/bin/${x}' $out/bin/${x};\n") exes)}
+  ${(
+  lib.concatMapStrings (
+    s: "makeWrapper $out/bin/$(basename ${s}) $srcdir/${s} "
+    + "--set BUNDLE_GEMFILE ${basicEnv.confFiles}/Gemfile "
+    + "--set BUNDLE_PATH ${basicEnv}/${ruby.gemPath} "
+    + "--set BUNDLE_FROZEN 1 "
+    + "--set GEM_HOME ${basicEnv}/${ruby.gemPath} "
+    + "--set GEM_PATH ${basicEnv}/${ruby.gemPath} "
+    + "--run \"cd $srcdir\";\n"
+  ) scripts
+)}
 
-    ${lib.optionalString installManpages ''
-    for section in {1..9}; do
-      mandir="$out/share/man/man$section"
-      find -L ${basicEnv}/${ruby.gemPath}/gems/${basicEnv.name} \( -wholename "*/man/*.$section" -o -wholename "*/man/man$section/*.$section" \) -print -execdir mkdir -p $mandir \; -execdir cp '{}' $mandir \;
-    done
-    ''}
-  ''
+  ${lib.optionalString installManpages ''
+  for section in {1..9}; do
+    mandir="$out/share/man/man$section"
+    find -L ${basicEnv}/${ruby.gemPath}/gems/${basicEnv.name} \( -wholename "*/man/*.$section" -o -wholename "*/man/man$section/*.$section" \) -print -execdir mkdir -p $mandir \; -execdir cp '{}' $mandir \;
+  done
+''}
+''

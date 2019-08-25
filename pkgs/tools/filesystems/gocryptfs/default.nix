@@ -2,9 +2,13 @@
 { stdenv, buildGoPackage, fetchFromGitHub, openssl, pandoc, pkgconfig }:
 
 let
-  goFuseVersion = with stdenv.lib; substring 0 7 (head (filter (
-    d: d.goPackagePath == "github.com/hanwen/go-fuse"
-  ) (import ./deps.nix))).fetch.rev;
+  goFuseVersion = with stdenv.lib; substring 0 7 (
+    head (
+      filter (
+        d: d.goPackagePath == "github.com/hanwen/go-fuse"
+      ) (import ./deps.nix)
+    )
+  ).fetch.rev;
 in
 buildGoPackage rec {
   pname = "gocryptfs";

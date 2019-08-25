@@ -1,5 +1,8 @@
-{ stdenv, buildPackages
-, fetchurl, linuxHeaders, libiconvReal
+{ stdenv
+, buildPackages
+, fetchurl
+, linuxHeaders
+, libiconvReal
 , extraConfig ? ""
 }:
 
@@ -39,14 +42,16 @@ let
     UCLIBC_SUSV4_LEGACY y
     UCLIBC_HAS_THREADS_NATIVE y
     KERNEL_HEADERS "${linuxHeaders}/include"
-  '' + stdenv.lib.optionalString (stdenv.isAarch32 && stdenv.buildPlatform != stdenv.hostPlatform) ''
-    CONFIG_ARM_EABI y
-    ARCH_WANTS_BIG_ENDIAN n
-    ARCH_BIG_ENDIAN n
-    ARCH_WANTS_LITTLE_ENDIAN y
-    ARCH_LITTLE_ENDIAN y
-    UCLIBC_HAS_FPU n
-  '';
+  ''
+  + stdenv.lib.optionalString (stdenv.isAarch32 && stdenv.buildPlatform != stdenv.hostPlatform) ''
+      CONFIG_ARM_EABI y
+      ARCH_WANTS_BIG_ENDIAN n
+      ARCH_BIG_ENDIAN n
+      ARCH_WANTS_LITTLE_ENDIAN y
+      ARCH_LITTLE_ENDIAN y
+      UCLIBC_HAS_FPU n
+    ''
+  ;
 
   version = "1.0.31";
 in
@@ -83,9 +88,11 @@ stdenv.mkDerivation {
   makeFlags = [
     "ARCH=${stdenv.hostPlatform.parsed.cpu.name}"
     "VERBOSE=1"
-  ] ++ stdenv.lib.optionals (stdenv.buildPlatform != stdenv.hostPlatform) [
-    "CROSS=${stdenv.cc.targetPrefix}"
-  ];
+  ]
+  ++ stdenv.lib.optionals (stdenv.buildPlatform != stdenv.hostPlatform) [
+       "CROSS=${stdenv.cc.targetPrefix}"
+     ]
+  ;
 
   # `make libpthread/nptl/sysdeps/unix/sysv/linux/lowlevelrwlock.h`:
   # error: bits/sysnum.h: No such file or directory

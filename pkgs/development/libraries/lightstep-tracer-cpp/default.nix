@@ -1,5 +1,12 @@
-{ stdenv, lib, fetchFromGitHub, pkgconfig, protobuf, cmake, zlib
-, opentracing-cpp, enableGrpc ? false
+{ stdenv
+, lib
+, fetchFromGitHub
+, pkgconfig
+, protobuf
+, cmake
+, zlib
+, opentracing-cpp
+, enableGrpc ? false
 }:
 
 let
@@ -29,14 +36,16 @@ stdenv.mkDerivation rec {
     cp -r ${common}/* $sourceRoot/lightstep-tracer-common
   '';
 
-  cmakeFlags = ["-DOPENTRACING_INCLUDE_DIR=${opentracing-cpp}/include" "-DOPENTRACING_LIBRARY=${opentracing-cpp}/lib/libopentracing.so"] ++ lib.optional (!enableGrpc) [ "-DWITH_GRPC=OFF" ];
+  cmakeFlags = [ "-DOPENTRACING_INCLUDE_DIR=${opentracing-cpp}/include" "-DOPENTRACING_LIBRARY=${opentracing-cpp}/lib/libopentracing.so" ] ++ lib.optional (!enableGrpc) [ "-DWITH_GRPC=OFF" ];
 
   nativeBuildInputs = [
-    pkgconfig cmake
+    pkgconfig
+    cmake
   ];
 
   buildInputs = [
-    protobuf zlib
+    protobuf
+    zlib
   ];
 
   meta = with lib; {

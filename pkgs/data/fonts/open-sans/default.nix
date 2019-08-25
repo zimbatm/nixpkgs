@@ -3,7 +3,8 @@
 let
   pname = "open-sans";
   version = "1.11";
-in fetchFromGitLab rec {
+in
+fetchFromGitLab rec {
   name = "${pname}-${version}";
 
   domain = "salsa.debian.org";

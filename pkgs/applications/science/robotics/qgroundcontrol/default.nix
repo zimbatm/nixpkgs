@@ -1,8 +1,24 @@
-{ stdenv, fetchgit, git,  SDL2, udev, doxygen
-, qtbase, qtlocation, qtserialport, qtdeclarative, qtconnectivity, qtxmlpatterns
-, qtsvg, qtquick1, qtquickcontrols, qtgraphicaleffects, qmake, qtspeech
+{ stdenv
+, fetchgit
+, git
+, SDL2
+, udev
+, doxygen
+, qtbase
+, qtlocation
+, qtserialport
+, qtdeclarative
+, qtconnectivity
+, qtxmlpatterns
+, qtsvg
+, qtquick1
+, qtquickcontrols
+, qtgraphicaleffects
+, qmake
+, qtspeech
 , makeWrapper
-, gst_all_1, pkgconfig
+, gst_all_1
+, pkgconfig
 }:
 
 stdenv.mkDerivation rec {
@@ -10,12 +26,22 @@ stdenv.mkDerivation rec {
   version = "3.3.0";
 
   qtInputs = [
-    qtbase qtlocation qtserialport qtdeclarative qtconnectivity qtxmlpatterns qtsvg
-    qtquick1 qtquickcontrols qtgraphicaleffects qtspeech
+    qtbase
+    qtlocation
+    qtserialport
+    qtdeclarative
+    qtconnectivity
+    qtxmlpatterns
+    qtsvg
+    qtquick1
+    qtquickcontrols
+    qtgraphicaleffects
+    qtspeech
   ];
 
   gstInputs = with gst_all_1; [
-    gstreamer gst-plugins-base
+    gstreamer
+    gst-plugins-base
   ];
 
   enableParallelBuilding = true;

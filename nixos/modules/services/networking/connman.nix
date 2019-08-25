@@ -11,7 +11,8 @@ let
 
     ${cfg.extraConfig}
   '';
-in {
+in
+{
 
   ###### interface
 
@@ -54,7 +55,7 @@ in {
 
       extraFlags = mkOption {
         type = with types; listOf string;
-        default = [ ];
+        default = [];
         example = [ "--nodnsproxy" ];
         description = ''
           Extra flags to pass to connmand
@@ -69,16 +70,20 @@ in {
 
   config = mkIf cfg.enable {
 
-    assertions = [{
-      assertion = !config.networking.useDHCP;
-      message = "You can not use services.networking.connman with services.networking.useDHCP";
-    }{
-      assertion = config.networking.wireless.enable;
-      message = "You must use services.networking.connman with services.networking.wireless";
-    }{
-      assertion = !config.networking.networkmanager.enable;
-      message = "You can not use services.networking.connman with services.networking.networkmanager";
-    }];
+    assertions = [
+      {
+        assertion = !config.networking.useDHCP;
+        message = "You can not use services.networking.connman with services.networking.useDHCP";
+      }
+      {
+        assertion = config.networking.wireless.enable;
+        message = "You must use services.networking.connman with services.networking.wireless";
+      }
+      {
+        assertion = !config.networking.networkmanager.enable;
+        message = "You can not use services.networking.connman with services.networking.networkmanager";
+      }
+    ];
 
     environment.systemPackages = [ connman ];
 

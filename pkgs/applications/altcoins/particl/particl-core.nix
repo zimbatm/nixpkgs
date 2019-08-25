@@ -30,9 +30,11 @@ stdenv.mkDerivation rec {
   configureFlags = [
     "--disable-bench"
     "--with-boost-libdir=${boost.out}/lib"
-  ] ++ optionals (!doCheck) [
-    "--enable-tests=no"
-  ];
+  ]
+  ++ optionals (!doCheck) [
+       "--enable-tests=no"
+     ]
+  ;
 
   # Always check during Hydra builds
   doCheck = true;
@@ -41,7 +43,7 @@ stdenv.mkDerivation rec {
 
   meta = {
     description = "Privacy-Focused Marketplace & Decentralized Application Platform";
-    longDescription= ''
+    longDescription = ''
       An open source, decentralized privacy platform built for global person to person eCommerce.
       RPC daemon and CLI client only.
     '';

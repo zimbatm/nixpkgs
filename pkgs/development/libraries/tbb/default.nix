@@ -12,8 +12,8 @@ with stdenv.lib; stdenv.mkDerivation rec {
   };
 
   makeFlags = concatStringsSep " " (
-    optional (compiler != null) "compiler=${compiler}" ++
-    optional (stdver != null) "stdver=${stdver}"
+    optional (compiler != null) "compiler=${compiler}"
+    ++ optional (stdver != null) "stdver=${stdver}"
   );
 
   patches = stdenv.lib.optional stdenv.hostPlatform.isMusl ./glibc-struct-mallinfo.patch;

@@ -87,14 +87,16 @@ in
   config = mkIf cfg.enable {
 
     users.users = singleton
-      { name = "gpsd";
+      {
+        name = "gpsd";
         inherit uid;
         description = "gpsd daemon user";
         home = "/var/empty";
       };
 
     users.groups = singleton
-      { name = "gpsd";
+      {
+        name = "gpsd";
         inherit gid;
       };
 

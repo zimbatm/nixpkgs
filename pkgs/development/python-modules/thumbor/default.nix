@@ -1,8 +1,33 @@
-{ buildPythonPackage, python, tornado, pycrypto, pycurl, pytz
-, pillow, derpconf, python_magic, libthumbor, webcolors
-, piexif, futures, statsd, thumborPexif, fetchFromGitHub, isPy3k, lib
-, mock, raven, nose, yanc, remotecv, pyssim, cairosvg, preggy, opencv3
-, pkgs, coreutils, substituteAll
+{ buildPythonPackage
+, python
+, tornado
+, pycrypto
+, pycurl
+, pytz
+, pillow
+, derpconf
+, python_magic
+, libthumbor
+, webcolors
+, piexif
+, futures
+, statsd
+, thumborPexif
+, fetchFromGitHub
+, isPy3k
+, lib
+, mock
+, raven
+, nose
+, yanc
+, remotecv
+, pyssim
+, cairosvg
+, preggy
+, opencv3
+, pkgs
+, coreutils
+, substituteAll
 }:
 
 buildPythonPackage rec {
@@ -20,13 +45,15 @@ buildPythonPackage rec {
   };
 
   patches = [
-    (substituteAll {
-      src = ./0001-Don-t-use-which-implementation-to-find-required-exec.patch;
-      gifsicle = "${pkgs.gifsicle}/bin/gifsicle";
-      exiftool = "${pkgs.exiftool}/bin/exiftool";
-      jpegtran = "${pkgs.libjpeg}/bin/jpegtran";
-      ffmpeg = "${pkgs.ffmpeg}/bin/ffmpeg";
-    })
+    (
+      substituteAll {
+        src = ./0001-Don-t-use-which-implementation-to-find-required-exec.patch;
+        gifsicle = "${pkgs.gifsicle}/bin/gifsicle";
+        exiftool = "${pkgs.exiftool}/bin/exiftool";
+        jpegtran = "${pkgs.libjpeg}/bin/jpegtran";
+        ffmpeg = "${pkgs.ffmpeg}/bin/ffmpeg";
+      }
+    )
   ];
 
   postPatch = ''
@@ -69,7 +96,9 @@ buildPythonPackage rec {
     piexif
     statsd
     cairosvg
-  ] ++ lib.optionals (!isPy3k) [ futures thumborPexif ];
+  ]
+  ++ lib.optionals (!isPy3k) [ futures thumborPexif ]
+  ;
 
   # Remove the source tree before running nosetests because otherwise nosetests
   # uses that instead of the installed package. Is there some other way to

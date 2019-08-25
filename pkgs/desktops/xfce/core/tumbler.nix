@@ -1,7 +1,17 @@
-{ stdenv, fetchurl, pkgconfig, intltool, dbus-glib, gdk-pixbuf, curl, freetype
-, libgsf, poppler, bzip2 }:
+{ stdenv
+, fetchurl
+, pkgconfig
+, intltool
+, dbus-glib
+, gdk-pixbuf
+, curl
+, freetype
+, libgsf
+, poppler
+, bzip2
+}:
 let
-  p_name  = "tumbler";
+  p_name = "tumbler";
   ver_maj = "0.1";
   ver_min = "31";
 in
@@ -17,8 +27,14 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ pkgconfig ];
   buildInputs = [
-    intltool dbus-glib gdk-pixbuf curl freetype
-    poppler libgsf bzip2
+    intltool
+    dbus-glib
+    gdk-pixbuf
+    curl
+    freetype
+    poppler
+    libgsf
+    bzip2
   ];
 
   configureFlags = [
@@ -39,4 +55,3 @@ stdenv.mkDerivation rec {
     license = licenses.gpl2;
   };
 }
-

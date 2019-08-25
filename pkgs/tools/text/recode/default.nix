@@ -1,5 +1,14 @@
-{ stdenv, fetchFromGitHub, python, perl, intltool, flex, autoreconfHook
-, texinfo, libiconv, libintl }:
+{ stdenv
+, fetchFromGitHub
+, python
+, perl
+, intltool
+, flex
+, autoreconfHook
+, texinfo
+, libiconv
+, libintl
+}:
 
 stdenv.mkDerivation rec {
   name = "recode-3.7-2fd838565";

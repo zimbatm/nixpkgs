@@ -20,12 +20,15 @@ let
     nixpkgs = nixpkgsSrc;
   };
 
-  nixpkgs' = builtins.removeAttrs (import ../pkgs/top-level/release.nix {
-    inherit supportedSystems;
-    nixpkgs = nixpkgsSrc;
-  }) [ "unstable" ];
+  nixpkgs' = builtins.removeAttrs (
+    import ../pkgs/top-level/release.nix {
+      inherit supportedSystems;
+      nixpkgs = nixpkgsSrc;
+    }
+  ) [ "unstable" ];
 
-in rec {
+in
+rec {
 
   nixos = {
     inherit (nixos') channel manual iso_minimal dummy;
@@ -44,16 +47,19 @@ in rec {
         php-pcre
         predictable-interface-names
         proxy
-        simple;
+        simple
+        ;
       installer = {
         inherit (nixos'.tests.installer)
           lvm
           separateBoot
-          simple;
+          simple
+          ;
       };
       boot = {
         inherit (nixos'.tests.boot)
-          biosCdrom;
+          biosCdrom
+          ;
       };
     };
   };
@@ -80,21 +86,27 @@ in rec {
       stdenv
       subversion
       tarball
-      vim;
+      vim
+      ;
   };
 
-  tested = lib.hydraJob (pkgs.releaseTools.aggregate {
-    name = "nixos-${nixos.channel.version}";
-    meta = {
-      description = "Release-critical builds for the NixOS channel";
-      maintainers = [ lib.maintainers.eelco ];
-    };
-    constituents =
-      let all = x: map (system: x.${system}) supportedSystems; in
-      [ nixpkgs.tarball
-        (all nixpkgs.jdk)
-      ]
-      ++ lib.collect lib.isDerivation nixos;
-  });
+  tested = lib.hydraJob (
+    pkgs.releaseTools.aggregate {
+      name = "nixos-${nixos.channel.version}";
+      meta = {
+        description = "Release-critical builds for the NixOS channel";
+        maintainers = [ lib.maintainers.eelco ];
+      };
+      constituents =
+        let
+          all = x: map (system: x.${system}) supportedSystems;
+        in
+          [
+            nixpkgs.tarball
+            (all nixpkgs.jdk)
+          ]
+          ++ lib.collect lib.isDerivation nixos;
+    }
+  );
 
 }

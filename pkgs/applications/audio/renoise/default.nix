@@ -1,5 +1,14 @@
-{ stdenv, fetchurl, libX11, libXext, libXcursor, libXrandr, libjack2, alsaLib
-, mpg123, releasePath ? null }:
+{ stdenv
+, fetchurl
+, libX11
+, libXext
+, libXcursor
+, libXrandr
+, libjack2
+, alsaLib
+, mpg123
+, releasePath ? null
+}:
 
 with stdenv.lib;
 
@@ -19,20 +28,20 @@ stdenv.mkDerivation rec {
 
   src =
     if stdenv.hostPlatform.system == "x86_64-linux" then
-        if releasePath == null then
+      if releasePath == null then
         fetchurl {
           url = "https://files.renoise.com/demo/Renoise_${urlVersion version}_Demo_x86_64.tar.bz2";
           sha256 = "0pan68fr22xbj7a930y29527vpry3f07q3i9ya4fp6g7aawffsga";
         }
-        else
+      else
         releasePath
     else if stdenv.hostPlatform.system == "i686-linux" then
-        if releasePath == null then
+      if releasePath == null then
         fetchurl {
           url = "http://files.renoise.com/demo/Renoise_${urlVersion version}_Demo_x86.tar.bz2";
           sha256 = "1lccjj4k8hpqqxxham5v01v2rdwmx3c5kgy1p9lqvzqma88k4769";
         }
-        else
+      else
         releasePath
     else throw "Platform is not supported by Renoise";
 

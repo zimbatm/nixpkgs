@@ -1,6 +1,14 @@
-{
-  stdenv, makeWrapper, fetchFromGitHub,
-  imagemagick, i3lock-color, xdpyinfo, xrandr, bc, feh, procps, xrdb
+{ stdenv
+, makeWrapper
+, fetchFromGitHub
+, imagemagick
+, i3lock-color
+, xdpyinfo
+, xrandr
+, bc
+, feh
+, procps
+, xrdb
 }:
 
 stdenv.mkDerivation rec {
@@ -22,12 +30,13 @@ stdenv.mkDerivation rec {
     let
       PATH =
         stdenv.lib.makeBinPath
-        [imagemagick i3lock-color xdpyinfo xrandr bc feh procps xrdb];
-    in ''
-      mkdir -p $out/bin
-      cp betterlockscreen $out/bin/betterlockscreen
-      wrapProgram "$out/bin/betterlockscreen" --prefix PATH : "$out/bin:${PATH}"
-    '';
+          [ imagemagick i3lock-color xdpyinfo xrandr bc feh procps xrdb ];
+    in
+      ''
+        mkdir -p $out/bin
+        cp betterlockscreen $out/bin/betterlockscreen
+        wrapProgram "$out/bin/betterlockscreen" --prefix PATH : "$out/bin:${PATH}"
+      '';
 
   meta = with stdenv.lib; {
     description = "Betterlockscreen is a simple minimal lock screen which allows you to cache images with different filters and lockscreen with blazing speed.";

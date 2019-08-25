@@ -1,7 +1,16 @@
-{stdenv, fetchurl, pkgconfig, gettext, perlPackages, intltool
-, libxml2, glib}:
+{ stdenv
+, fetchurl
+, pkgconfig
+, gettext
+, perlPackages
+, intltool
+, libxml2
+, glib
+}:
 
-let version = "1.12"; in
+let
+  version = "1.12";
+in
 stdenv.mkDerivation rec {
   name = "shared-mime-info-${version}";
 

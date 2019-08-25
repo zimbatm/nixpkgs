@@ -49,19 +49,24 @@ stdenv.mkDerivation rec {
     opencv
     openssl
     unixODBC
-  ] ++ (with xorg; [
-    libX11
-    libXext
-    libXtst
-    libXi
-    libXmu
-    libXrender
-    libxcb
-  ]);
+  ]
+  ++ (
+       with xorg; [
+         libX11
+         libXext
+         libXtst
+         libXi
+         libXmu
+         libXrender
+         libxcb
+       ]
+     )
+  ;
 
   ldpath = stdenv.lib.makeLibraryPath buildInputs
     + stdenv.lib.optionalString (stdenv.hostPlatform.system == "x86_64-linux")
-      (":" + stdenv.lib.makeSearchPathOutput "lib" "lib64" buildInputs);
+        (":" + stdenv.lib.makeSearchPathOutput "lib" "lib64" buildInputs)
+    ;
 
   phases = "unpackPhase installPhase fixupPhase";
 

@@ -11,11 +11,12 @@ let
   elasticArch = archOverrides."${arch}" or arch;
   plat = elemAt info 1;
   shas = {
-    "x86_64-linux"  = "0hzr47hyw54b9j4c33n6f6n3pala6kjhyvinfszgikbghyhb7fsa";
-    "i686-linux"    = "0bka4h31cw10ii4pfygc81pwc3wr32pzw3v4k4bi8rnqbk280fmn";
+    "x86_64-linux" = "0hzr47hyw54b9j4c33n6f6n3pala6kjhyvinfszgikbghyhb7fsa";
+    "i686-linux" = "0bka4h31cw10ii4pfygc81pwc3wr32pzw3v4k4bi8rnqbk280fmn";
     "x86_64-darwin" = "0jqc2g89rqkla0alqxr14sh4pccfn514jrwr7mkjivxdapygh1ll";
   };
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "kibana-${version}";
   version = elk5Version;
 

@@ -5,7 +5,8 @@ with lib;
 
 {
   imports =
-    [ # Enable devices which are usually scanned, because we don't know the
+    [
+      # Enable devices which are usually scanned, because we don't know the
       # target system.
       ../installer/scan/detected.nix
       ../installer/scan/not-detected.nix
@@ -59,8 +60,8 @@ with lib;
       ''
 
         The "nixos" and "root" account have empty passwords.  ${
-          optionalString config.services.xserver.enable
-            "Type `sudo systemctl start display-manager' to\nstart the graphical user interface."}
+      optionalString config.services.xserver.enable
+        "Type `sudo systemctl start display-manager' to\nstart the graphical user interface."}
       '';
 
     # Allow sshd to be started manually through "systemctl start sshd".

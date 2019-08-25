@@ -5,9 +5,9 @@ stdenv.mkDerivation rec {
   version = "93v";
 
   src = fetchFromGitHub {
-    owner  = "att";
-    repo   = "ast";
-    rev    = "b8d88244ae87857e7bbd6da230ffbbc51165df70";
+    owner = "att";
+    repo = "ast";
+    rev = "b8d88244ae87857e7bbd6da230ffbbc51165df70";
     sha256 = "12kf14n8vz36hnsy3wp6lnyv1841p7hcq25y1d78w532dil69lx9";
   };
 
@@ -25,7 +25,7 @@ stdenv.mkDerivation rec {
     '';
     homepage = https://github.com/att/ast;
     license = licenses.cpl10;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
     platforms = platforms.all;
   };
 

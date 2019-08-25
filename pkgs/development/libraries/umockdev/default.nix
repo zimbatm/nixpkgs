@@ -1,6 +1,16 @@
-{ stdenv, fetchurl, fetchpatch, pkgconfig
-, gobject-introspection, glib, systemd, libgudev, vala
-, usbutils, which, python3 }:
+{ stdenv
+, fetchurl
+, fetchpatch
+, pkgconfig
+, gobject-introspection
+, glib
+, systemd
+, libgudev
+, vala
+, usbutils
+, which
+, python3
+}:
 
 stdenv.mkDerivation rec {
   name = "umockdev-${version}";
@@ -18,10 +28,12 @@ stdenv.mkDerivation rec {
     # https://github.com/NixOS/nixpkgs/commit/9960a2be9b32a6d868046c5bfa188b9a0dd66682#commitcomment-34734461
     ./disable-failed-test.patch
     # https://github.com/martinpitt/umockdev/pull/93
-    (fetchpatch {
-      url = "https://github.com/abbradar/umockdev/commit/ce22f893bf50de0b32760238a3e2cfb194db89e9.patch";
-      sha256 = "01q3qhs30x8hl23iigimsa2ikbiw8y8y0bpmh02mh1my87shpwnx";
-    })
+    (
+      fetchpatch {
+        url = "https://github.com/abbradar/umockdev/commit/ce22f893bf50de0b32760238a3e2cfb194db89e9.patch";
+        sha256 = "01q3qhs30x8hl23iigimsa2ikbiw8y8y0bpmh02mh1my87shpwnx";
+      }
+    )
   ];
 
   # autoreconfHook complains if we try to build the documentation

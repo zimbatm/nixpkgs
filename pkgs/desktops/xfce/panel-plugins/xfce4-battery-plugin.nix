@@ -2,7 +2,7 @@
 
 with stdenv.lib;
 stdenv.mkDerivation rec {
-  p_name  = "xfce4-battery-plugin";
+  p_name = "xfce4-battery-plugin";
   ver_maj = "1.0";
   ver_min = "5";
 

@@ -1,6 +1,15 @@
-{ stdenv, fetchzip, pkgconfig, ncurses, libev, dune
-, ocaml, findlib, cppo
-, ocaml-migrate-parsetree, ppx_tools_versioned, result
+{ stdenv
+, fetchzip
+, pkgconfig
+, ncurses
+, libev
+, dune
+, ocaml
+, findlib
+, cppo
+, ocaml-migrate-parsetree
+, ppx_tools_versioned
+, result
 , withP4 ? true
 , camlp4 ? null
 }:
@@ -19,9 +28,17 @@ stdenv.mkDerivation rec {
   '';
 
   nativeBuildInputs = [ pkgconfig ];
-  buildInputs = [ ncurses ocaml findlib dune cppo
-    ocaml-migrate-parsetree ppx_tools_versioned ]
-  ++ stdenv.lib.optional withP4 camlp4;
+  buildInputs = [
+    ncurses
+    ocaml
+    findlib
+    dune
+    cppo
+    ocaml-migrate-parsetree
+    ppx_tools_versioned
+  ]
+  ++ stdenv.lib.optional withP4 camlp4
+  ;
   propagatedBuildInputs = [ libev result ];
 
   installPhase = ''

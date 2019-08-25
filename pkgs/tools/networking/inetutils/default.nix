@@ -23,17 +23,21 @@ stdenv.mkDerivation rec {
   # https://git.congatec.com/yocto/meta-openembedded/blob/3402bfac6b595c622e4590a8ff5eaaa854e2a2a3/meta-networking/recipes-connectivity/inetutils/inetutils_1.9.1.bb#L44
   preConfigure = let
     isCross = stdenv.hostPlatform != stdenv.buildPlatform;
-  in lib.optionalString isCross ''
-    export HELP2MAN=true
-  '';
+  in
+    lib.optionalString isCross ''
+      export HELP2MAN=true
+    '';
 
   configureFlags = [ "--with-ncurses-include-dir=${ncurses.dev}/include" ]
-  ++ lib.optionals stdenv.hostPlatform.isMusl [ # Musl doesn't define rcmd
-    "--disable-rcp"
-    "--disable-rsh"
-    "--disable-rlogin"
-    "--disable-rexec"
-  ] ++ lib.optional stdenv.isDarwin  "--disable-servers";
+    ++ lib.optionals stdenv.hostPlatform.isMusl [
+         # Musl doesn't define rcmd
+         "--disable-rcp"
+         "--disable-rsh"
+         "--disable-rlogin"
+         "--disable-rexec"
+       ]
+    ++ lib.optional stdenv.isDarwin "--disable-servers"
+    ;
 
   # Test fails with "UNIX socket name too long", probably because our
   # $TMPDIR is too long.

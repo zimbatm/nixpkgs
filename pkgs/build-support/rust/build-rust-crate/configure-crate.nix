@@ -17,19 +17,22 @@
 , release
 , target_os
 , verbose
-, workspace_member }:
-let version_ = lib.splitString "-" crateVersion;
-    versionPre = if lib.tail version_ == [] then "" else builtins.elemAt version_ 1;
-    version = lib.splitString "." (lib.head version_);
-    rustcOpts = lib.lists.foldl' (opts: opt: opts + " " + opt)
-        (if release then "-C opt-level=3" else "-C debuginfo=2")
-        (["-C codegen-units=$NIX_BUILD_CORES"] ++ extraRustcOpts);
-    buildDeps = makeDeps buildDependencies;
-    authors = lib.concatStringsSep ":" crateAuthors;
-    optLevel = if release then 3 else 0;
-    completeDepsDir = lib.concatStringsSep " " completeDeps;
-    completeBuildDepsDir = lib.concatStringsSep " " completeBuildDeps;
-in ''
+, workspace_member
+}:
+let
+  version_ = lib.splitString "-" crateVersion;
+  versionPre = if lib.tail version_ == [] then "" else builtins.elemAt version_ 1;
+  version = lib.splitString "." (lib.head version_);
+  rustcOpts = lib.lists.foldl' (opts: opt: opts + " " + opt)
+    (if release then "-C opt-level=3" else "-C debuginfo=2")
+    ([ "-C codegen-units=$NIX_BUILD_CORES" ] ++ extraRustcOpts);
+  buildDeps = makeDeps buildDependencies;
+  authors = lib.concatStringsSep ":" crateAuthors;
+  optLevel = if release then 3 else 0;
+  completeDepsDir = lib.concatStringsSep " " completeDeps;
+  completeBuildDepsDir = lib.concatStringsSep " " completeBuildDeps;
+in
+''
   cd ${workspace_member}
   runHook preConfigure
   ${echo_build_heading colors}
@@ -149,4 +152,3 @@ in ''
   fi
   runHook postConfigure
 ''
-

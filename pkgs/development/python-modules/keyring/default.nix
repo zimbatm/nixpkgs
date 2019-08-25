@@ -1,6 +1,12 @@
-{ stdenv, buildPythonPackage, fetchPypi
-, setuptools_scm, entrypoints, secretstorage
-, pytest, pytest-flake8 }:
+{ stdenv
+, buildPythonPackage
+, fetchPypi
+, setuptools_scm
+, entrypoints
+, secretstorage
+, pytest
+, pytest-flake8
+}:
 
 buildPythonPackage rec {
   pname = "keyring";
@@ -25,9 +31,9 @@ buildPythonPackage rec {
 
   meta = with stdenv.lib; {
     description = "Store and access your passwords safely";
-    homepage    = "https://pypi.python.org/pypi/keyring";
-    license     = licenses.psfl;
+    homepage = "https://pypi.python.org/pypi/keyring";
+    license = licenses.psfl;
     maintainers = with maintainers; [ lovek323 ];
-    platforms   = platforms.unix;
+    platforms = platforms.unix;
   };
 }

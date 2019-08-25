@@ -1,9 +1,42 @@
-{ stdenv, intltool, pkgconfig, readline, openldap, cyrus_sasl, libupnp
-, zlib, libxml2, gtk2, libnotify, speex, ffmpeg, libX11, libsoup, udev
-, ortp, mediastreamer, sqlite, belle-sip, libosip, libexosip, bzrtp
-, mediastreamer-openh264, bctoolbox, makeWrapper, fetchFromGitHub, cmake
-, libmatroska, bcunit, doxygen, gdk-pixbuf, glib, cairo, pango, polarssl
-, python, graphviz, belcard
+{ stdenv
+, intltool
+, pkgconfig
+, readline
+, openldap
+, cyrus_sasl
+, libupnp
+, zlib
+, libxml2
+, gtk2
+, libnotify
+, speex
+, ffmpeg
+, libX11
+, libsoup
+, udev
+, ortp
+, mediastreamer
+, sqlite
+, belle-sip
+, libosip
+, libexosip
+, bzrtp
+, mediastreamer-openh264
+, bctoolbox
+, makeWrapper
+, fetchFromGitHub
+, cmake
+, libmatroska
+, bcunit
+, doxygen
+, gdk-pixbuf
+, glib
+, cairo
+, pango
+, polarssl
+, python
+, graphviz
+, belcard
 , withGui ? true
 }:
 
@@ -26,13 +59,44 @@ stdenv.mkDerivation rec {
   '';
 
   buildInputs = [
-    readline openldap cyrus_sasl libupnp zlib libxml2 gtk2 libnotify speex ffmpeg libX11
-    polarssl libsoup udev ortp mediastreamer sqlite belle-sip libosip libexosip
-    bctoolbox libmatroska bcunit gdk-pixbuf glib cairo pango bzrtp belcard
+    readline
+    openldap
+    cyrus_sasl
+    libupnp
+    zlib
+    libxml2
+    gtk2
+    libnotify
+    speex
+    ffmpeg
+    libX11
+    polarssl
+    libsoup
+    udev
+    ortp
+    mediastreamer
+    sqlite
+    belle-sip
+    libosip
+    libexosip
+    bctoolbox
+    libmatroska
+    bcunit
+    gdk-pixbuf
+    glib
+    cairo
+    pango
+    bzrtp
+    belcard
   ];
 
   nativeBuildInputs = [
-    intltool pkgconfig makeWrapper cmake doxygen graphviz
+    intltool
+    pkgconfig
+    makeWrapper
+    cmake
+    doxygen
+    graphviz
     (python.withPackages (ps: [ ps.pystache ps.six ]))
   ];
 

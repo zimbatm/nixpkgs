@@ -26,8 +26,10 @@ stdenv.mkDerivation {
     $out/bin/kubectl completion zsh > $out/share/zsh/site-functions/_kubectl
   '';
 
-  meta = kubernetes.meta // {
-    description = "Kubernetes CLI";
-    homepage = "https://github.com/kubernetes/kubectl";
-  };
+  meta = kubernetes.meta
+    // {
+         description = "Kubernetes CLI";
+         homepage = "https://github.com/kubernetes/kubectl";
+       }
+    ;
 }

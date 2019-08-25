@@ -24,7 +24,9 @@ buildGoPackage rec {
       xorg.libXinerama
       xorg.libXrandr
       xorg.libXxf86vm
-    ] ++ lib.optionals stdenv.isDarwin [ Carbon Cocoa Kernel ];
+    ]
+    ++ lib.optionals stdenv.isDarwin [ Carbon Cocoa Kernel ]
+  ;
 
   src = fetchFromGitHub {
     owner = "liamg";

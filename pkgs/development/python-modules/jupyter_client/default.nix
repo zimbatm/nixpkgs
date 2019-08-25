@@ -25,7 +25,9 @@ buildPythonPackage rec {
     pyzmq
     dateutil
     tornado
-  ] ++ lib.optional isPyPy py;
+  ]
+  ++ lib.optional isPyPy py
+  ;
 
   # Circular dependency with ipykernel
   doCheck = false;

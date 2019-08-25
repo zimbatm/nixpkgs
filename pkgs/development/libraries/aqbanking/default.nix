@@ -1,21 +1,32 @@
-{ stdenv, fetchurl, gmp, gwenhywfar, libtool, libxml2, libxslt
-, pkgconfig, gettext, xmlsec, zlib
+{ stdenv
+, fetchurl
+, gmp
+, gwenhywfar
+, libtool
+, libxml2
+, libxslt
+, pkgconfig
+, gettext
+, xmlsec
+, zlib
 }:
 
 let
   inherit ((import ./sources.nix).aqbanking) sha256 releaseId version;
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "aqbanking-${version}";
   inherit version;
 
   src = let
     qstring = "package=03&release=${releaseId}&file=02";
     mkURLs = map (base: "${base}/sites/download/download.php?${qstring}");
-  in fetchurl {
-    name = "${name}.tar.gz";
-    urls = mkURLs [ "http://www.aquamaniac.de" "http://www2.aquamaniac.de" ];
-    inherit sha256;
-  };
+  in
+    fetchurl {
+      name = "${name}.tar.gz";
+      urls = mkURLs [ "http://www.aquamaniac.de" "http://www2.aquamaniac.de" ];
+      inherit sha256;
+    };
 
   postPatch = ''
     sed -i -e '/^aqbanking_plugindir=/ {

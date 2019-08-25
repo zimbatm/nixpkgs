@@ -1,14 +1,21 @@
-{ stdenv, fetchFromGitHub, fetchpatch, makeWrapper
-, which, nodejs, yarn2nix, python2 }:
+{ stdenv
+, fetchFromGitHub
+, fetchpatch
+, makeWrapper
+, which
+, nodejs
+, yarn2nix
+, python2
+}:
 
 yarn2nix.mkYarnPackage rec {
   name = "codimd";
   version = "1.5.0";
 
   src = fetchFromGitHub {
-    owner  = "codimd";
-    repo   = "server";
-    rev    = version;
+    owner = "codimd";
+    repo = "server";
+    rev = version;
     sha256 = "1sd7r5ws1k7dxmr57m67c1k23pzbkn25k2wvcnbrqn7gza6mhlf0";
   };
 

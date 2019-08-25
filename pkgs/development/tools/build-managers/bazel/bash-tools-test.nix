@@ -8,9 +8,9 @@ let
   '';
 
   fileIn = writeText "input.txt" ''
-  one
-  two
-  three
+    one
+    two
+    three
   '';
 
   fileBUILD = writeText "BUILD" ''
@@ -41,4 +41,5 @@ let
     '';
   };
 
-in testBazel
+in
+testBazel

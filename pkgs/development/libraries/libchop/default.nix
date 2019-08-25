@@ -1,6 +1,17 @@
-{ fetchurl, stdenv, zlib, bzip2, libgcrypt
-, gdbm, gperf, tdb, gnutls, db, libuuid
-, lzo, pkgconfig, guile
+{ fetchurl
+, stdenv
+, zlib
+, bzip2
+, libgcrypt
+, gdbm
+, gperf
+, tdb
+, gnutls
+, db
+, libuuid
+, lzo
+, pkgconfig
+, guile
 }:
 
 stdenv.mkDerivation rec {
@@ -16,10 +27,16 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ pkgconfig gperf ];
 
   buildInputs =
-    [ zlib bzip2 lzo
+    [
+      zlib
+      bzip2
+      lzo
       libgcrypt
-      gdbm db tdb
-      gnutls libuuid
+      gdbm
+      db
+      tdb
+      gnutls
+      libuuid
       guile
     ];
 
@@ -49,7 +66,7 @@ stdenv.mkDerivation rec {
 
     homepage = https://www.nongnu.org/libchop/;
     license = licenses.gpl3Plus;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
     platforms = platforms.gnu ++ platforms.linux;
   };
 }

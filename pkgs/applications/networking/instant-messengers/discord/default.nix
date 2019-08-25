@@ -2,7 +2,8 @@
 
 let
   inherit (pkgs) callPackage fetchurl;
-in {
+in
+{
   stable = callPackage ./base.nix {
     pname = "discord";
     binaryName = "Discord";

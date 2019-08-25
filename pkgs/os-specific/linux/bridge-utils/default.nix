@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
   patches = [ ./add-ip6-header.patch ];
 
   nativeBuildInputs = [ autoreconfHook ];
-  buildInputs = [ ];
+  buildInputs = [];
 
   postInstall = ''
     # The bridge utils build does not fail even if the brctl binary

@@ -1,7 +1,36 @@
-{ stdenv, fetchFromGitHub, fetchpatch, boost, cmake, chromaprint, gettext, gst_all_1, liblastfm
-, taglib, fftw, glew, qjson, sqlite, libgpod, libplist, usbmuxd, libmtp
-, libpulseaudio, gvfs, libcdio, libechonest, libspotify, pcre, projectm, protobuf
-, qca2, pkgconfig, sparsehash, config, makeWrapper, gst_plugins }:
+{ stdenv
+, fetchFromGitHub
+, fetchpatch
+, boost
+, cmake
+, chromaprint
+, gettext
+, gst_all_1
+, liblastfm
+, taglib
+, fftw
+, glew
+, qjson
+, sqlite
+, libgpod
+, libplist
+, usbmuxd
+, libmtp
+, libpulseaudio
+, gvfs
+, libcdio
+, libechonest
+, libspotify
+, pcre
+, projectm
+, protobuf
+, qca2
+, pkgconfig
+, sparsehash
+, config
+, makeWrapper
+, gst_plugins
+}:
 
 let
   withIpod = config.clementine.ipod or false;
@@ -23,11 +52,13 @@ let
     # Required so as to avoid adding libspotify as a build dependency (as it is
     # unfree and thus would prevent us from having a free package).
     ./clementine-spotify-blob-remove-from-build.patch
-    (fetchpatch {
-      # Fix w/gcc7
-      url = "https://github.com/clementine-player/Clementine/pull/5630.patch";
-      sha256 = "0px7xp1m4nvrncx8sga1qlxppk562wrk2qqk19iiry84nxg20mk4";
-    })
+    (
+      fetchpatch {
+        # Fix w/gcc7
+        url = "https://github.com/clementine-player/Clementine/pull/5630.patch";
+        sha256 = "0px7xp1m4nvrncx8sga1qlxppk562wrk2qqk19iiry84nxg20mk4";
+      }
+    )
   ];
 
   nativeBuildInputs = [ cmake pkgconfig ];
@@ -52,10 +83,11 @@ let
     sqlite
     taglib
   ]
-  ++ stdenv.lib.optionals (withIpod) [libgpod libplist usbmuxd]
-  ++ stdenv.lib.optionals (withMTP) [libmtp]
-  ++ stdenv.lib.optionals (withCD) [libcdio]
-  ++ stdenv.lib.optionals (withCloud) [sparsehash];
+  ++ stdenv.lib.optionals (withIpod) [ libgpod libplist usbmuxd ]
+  ++ stdenv.lib.optionals (withMTP) [ libmtp ]
+  ++ stdenv.lib.optionals (withCD) [ libcdio ]
+  ++ stdenv.lib.optionals (withCloud) [ sparsehash ]
+  ;
 
   postPatch = ''
     sed -i src/CMakeLists.txt \
@@ -132,4 +164,5 @@ let
     };
   };
 
-in free
+in
+free

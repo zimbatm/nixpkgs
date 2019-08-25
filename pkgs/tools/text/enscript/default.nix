@@ -37,7 +37,7 @@ stdenv.mkDerivation rec {
 
     homepage = https://www.gnu.org/software/enscript/;
 
-    maintainers = [ ];
+    maintainers = [];
     platforms = stdenv.lib.platforms.all;
   };
 }

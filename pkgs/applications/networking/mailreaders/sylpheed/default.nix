@@ -1,5 +1,12 @@
-{ stdenv, fetchurl, pkgconfig, gtk2, openssl ? null, gpgme ? null
-, gpgSupport ? true, sslSupport ? true }:
+{ stdenv
+, fetchurl
+, pkgconfig
+, gtk2
+, openssl ? null
+, gpgme ? null
+, gpgSupport ? true
+, sslSupport ? true
+}:
 
 assert gpgSupport -> gpgme != null;
 assert sslSupport -> openssl != null;
@@ -19,7 +26,8 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ gtk2 ]
     ++ optionals gpgSupport [ gpgme ]
-    ++ optionals sslSupport [ openssl ];
+    ++ optionals sslSupport [ openssl ]
+    ;
 
   configureFlags = [
     (optional gpgSupport "--enable-gpgme")

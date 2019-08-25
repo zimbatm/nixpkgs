@@ -1,6 +1,7 @@
 { system ? builtins.currentSystem
-, config ? { }
-, pkgs ? import ../.. { inherit system config; } }:
+, config ? {}
+, pkgs ? import ../.. { inherit system config; }
+}:
 
 with import ../lib/testing.nix { inherit system pkgs; };
 with pkgs.lib;
@@ -83,4 +84,5 @@ let
     '';
   };
 
-in mapAttrs makePostgresqlWalReceiverTest (import ../../pkgs/servers/sql/postgresql pkgs)
+in
+mapAttrs makePostgresqlWalReceiverTest (import ../../pkgs/servers/sql/postgresql pkgs)

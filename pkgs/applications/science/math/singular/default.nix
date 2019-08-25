@@ -1,4 +1,12 @@
-{ stdenv, fetchurl, gmp, bison, perl, ncurses, readline, coreutils, pkgconfig
+{ stdenv
+, fetchurl
+, gmp
+, bison
+, perl
+, ncurses
+, readline
+, coreutils
+, pkgconfig
 , lib
 , fetchpatch
 , autoreconfHook
@@ -20,18 +28,21 @@ stdenv.mkDerivation rec {
     baseVersion = builtins.head (lib.splitString "p" version);
     urlVersion = builtins.replaceStrings [ "." ] [ "-" ] baseVersion;
   in
-  fetchurl {
-    url = "http://www.mathematik.uni-kl.de/ftp/pub/Math/Singular/SOURCES/${urlVersion}/singular-${version}.tar.gz";
-    sha256 = "07x9kri8vl4galik7lr6pscq3c51n8570pyw64i7gbj0m706f7wf";
-  };
+    fetchurl {
+      url = "http://www.mathematik.uni-kl.de/ftp/pub/Math/Singular/SOURCES/${urlVersion}/singular-${version}.tar.gz";
+      sha256 = "07x9kri8vl4galik7lr6pscq3c51n8570pyw64i7gbj0m706f7wf";
+    };
 
   configureFlags = [
     "--with-ntl=${ntl}"
-  ] ++ lib.optionals enableFactory [
-    "--enable-factory"
-  ] ++ lib.optionals enableGfanlib [
-    "--enable-gfanlib"
-  ];
+  ]
+  ++ lib.optionals enableFactory [
+       "--enable-factory"
+     ]
+  ++ lib.optionals enableGfanlib [
+       "--enable-gfanlib"
+     ]
+  ;
 
   postUnpack = ''
     patchShebangs .
@@ -41,12 +52,14 @@ stdenv.mkDerivation rec {
     # NTL error handler was introduced in the library part, preventing users of
     # the library from implementing their own error handling
     # https://www.singular.uni-kl.de/forum/viewtopic.php?t=2769
-    (fetchpatch {
-      name = "move_error_handler_out_of_libsingular.patch";
-      # rebased version of https://github.com/Singular/Sources/commit/502cf86d0bb2a96715be6764774b64a69c1ca34c.patch
-      url = "https://git.sagemath.org/sage.git/plain/build/pkgs/singular/patches/singular-ntl-error-handler.patch?h=50b9ae2fd233c30860e1cbb3e63a26f2cc10560a";
-      sha256 = "0vgh4m9zn1kjl0br68n04j4nmn5i1igfn28cph0chnwf7dvr9194";
-    })
+    (
+      fetchpatch {
+        name = "move_error_handler_out_of_libsingular.patch";
+        # rebased version of https://github.com/Singular/Sources/commit/502cf86d0bb2a96715be6764774b64a69c1ca34c.patch
+        url = "https://git.sagemath.org/sage.git/plain/build/pkgs/singular/patches/singular-ntl-error-handler.patch?h=50b9ae2fd233c30860e1cbb3e63a26f2cc10560a";
+        sha256 = "0vgh4m9zn1kjl0br68n04j4nmn5i1igfn28cph0chnwf7dvr9194";
+      }
+    )
   ];
 
   # For reference (last checked on commit 75f460d):
@@ -60,9 +73,11 @@ stdenv.mkDerivation rec {
     readline
     ntl
     flint
-  ] ++ lib.optionals enableGfanlib [
-    cddlib
-  ];
+  ]
+  ++ lib.optionals enableGfanlib [
+       cddlib
+     ]
+  ;
   nativeBuildInputs = [
     bison
     perl

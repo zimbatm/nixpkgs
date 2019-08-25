@@ -18,10 +18,12 @@ buildPythonPackage rec {
   };
 
   patches = [
-    (substituteAll {
-      src = ./hardcode-graphviz-path.patch;
-      inherit graphviz;
-    })
+    (
+      substituteAll {
+        src = ./hardcode-graphviz-path.patch;
+        inherit graphviz;
+      }
+    )
   ];
 
   postPatch = ''

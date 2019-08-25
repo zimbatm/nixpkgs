@@ -1,7 +1,15 @@
-{
-  stdenv, fetchFromGitHub, cmake, pkgconfig, lxqt-build-tools,
-  pcre, libexif, xorg, libfm, menu-cache,
-  qtx11extras, qttools
+{ stdenv
+, fetchFromGitHub
+, cmake
+, pkgconfig
+, lxqt-build-tools
+, pcre
+, libexif
+, xorg
+, libfm
+, menu-cache
+, qtx11extras
+, qttools
 }:
 
 stdenv.mkDerivation rec {

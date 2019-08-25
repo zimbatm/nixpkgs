@@ -6,7 +6,8 @@ let
     url = "https://git.archlinux.org/svntogit/community.git/plain/trunk/75-joypixels.conf?h=packages/ttf-joypixels&id=b2b38f8393ec56ed7338c256f5b85f3439a2dfc3";
     sha256 = "065y2fmf86zzvna1hrvcg46cnr7a76xd2mwa26nss861dsx6pnd6";
   };
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   pname = "emojione";
   version = "5.0.2";
 

@@ -1,7 +1,7 @@
 { stdenv, fetchurl, bison, pkgconfig, glib, gettext, perl, libgdiplus, libX11, callPackage, ncurses, zlib, withLLVM ? false, cacert, Foundation, libobjc, python, version, sha256, autoconf, libtool, automake, cmake, which, enableParallelBuilding ? true }:
 
 let
-  llvm     = callPackage ./llvm.nix { };
+  llvm = callPackage ./llvm.nix {};
 in
 stdenv.mkDerivation rec {
   name = "mono-${version}";
@@ -12,13 +12,29 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs =
-    [ bison pkgconfig glib gettext perl libgdiplus libX11 ncurses zlib python autoconf libtool automake cmake which
+    [
+      bison
+      pkgconfig
+      glib
+      gettext
+      perl
+      libgdiplus
+      libX11
+      ncurses
+      zlib
+      python
+      autoconf
+      libtool
+      automake
+      cmake
+      which
     ]
-    ++ (stdenv.lib.optionals stdenv.isDarwin [ Foundation libobjc ]);
+    ++ (stdenv.lib.optionals stdenv.isDarwin [ Foundation libobjc ])
+  ;
 
-  propagatedBuildInputs = [glib];
+  propagatedBuildInputs = [ glib ];
 
-  NIX_LDFLAGS = if stdenv.isDarwin then "" else "-lgcc_s" ;
+  NIX_LDFLAGS = if stdenv.isDarwin then "" else "-lgcc_s";
 
   # To overcome the bug https://bugzilla.novell.com/show_bug.cgi?id=644723
   dontDisableStatic = true;
@@ -29,9 +45,10 @@ stdenv.mkDerivation rec {
     "--with-libgdiplus=${libgdiplus}/lib/libgdiplus.so"
   ]
   ++ stdenv.lib.optionals withLLVM [
-    "--enable-llvm"
-    "--with-llvm=${llvm}"
-  ];
+       "--enable-llvm"
+       "--with-llvm=${llvm}"
+     ]
+  ;
 
   configurePhase = ''
     patchShebangs ./
@@ -51,9 +68,11 @@ stdenv.mkDerivation rec {
   preBuild = ''
     makeFlagsArray=(INSTALL=`type -tp install`)
     substituteInPlace mcs/class/corlib/System/Environment.cs --replace /usr/share "$out/share"
-  '' + stdenv.lib.optionalString withLLVM ''
-    substituteInPlace mono/mini/aot-compiler.c --replace "llvm_path = g_strdup (\"\")" "llvm_path = g_strdup (\"${llvm}/bin/\")"
-  '';
+  ''
+  + stdenv.lib.optionalString withLLVM ''
+      substituteInPlace mono/mini/aot-compiler.c --replace "llvm_path = g_strdup (\"\")" "llvm_path = g_strdup (\"${llvm}/bin/\")"
+    ''
+  ;
 
   # Fix mono DLLMap so it can find libX11 to run winforms apps
   # libgdiplus is correctly handled by the --with-libgdiplus configure flag
@@ -75,7 +94,8 @@ stdenv.mkDerivation rec {
   # [1] https://github.com/mono/mono/blob/master/scripts/gmcs.in
   + ''
     ln -s $out/bin/mcs $out/bin/gmcs
-  '';
+  ''
+  ;
 
   inherit enableParallelBuilding;
 

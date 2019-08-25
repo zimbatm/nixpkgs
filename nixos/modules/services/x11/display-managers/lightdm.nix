@@ -42,9 +42,9 @@ let
     ''
       [LightDM]
       ${optionalString cfg.greeter.enable ''
-        greeter-user = ${config.users.users.lightdm.name}
-        greeters-directory = ${cfg.greeter.package}
-      ''}
+      greeter-user = ${config.users.users.lightdm.name}
+      greeters-directory = ${cfg.greeter.package}
+    ''}
       sessions-directory = ${dmcfg.session.desktops}/share/xsessions
       ${cfg.extraConfig}
 
@@ -52,22 +52,22 @@ let
       xserver-command = ${xserverWrapper}
       session-wrapper = ${dmcfg.session.wrapper}
       ${optionalString cfg.greeter.enable ''
-        greeter-session = ${cfg.greeter.name}
-      ''}
+      greeter-session = ${cfg.greeter.name}
+    ''}
       ${optionalString cfg.autoLogin.enable ''
-        autologin-user = ${cfg.autoLogin.user}
-        autologin-user-timeout = ${toString cfg.autoLogin.timeout}
-        autologin-session = ${defaultSessionName}
-      ''}
+      autologin-user = ${cfg.autoLogin.user}
+      autologin-user-timeout = ${toString cfg.autoLogin.timeout}
+      autologin-session = ${defaultSessionName}
+    ''}
       ${optionalString hasDefaultUserSession ''
-        user-session=${defaultSessionName}
-      ''}
+      user-session=${defaultSessionName}
+    ''}
       ${optionalString (dmcfg.setupCommands != "") ''
-        display-setup-script=${pkgs.writeScript "lightdm-display-setup" ''
-          #!${pkgs.bash}/bin/bash
-          ${dmcfg.setupCommands}
-        ''}
-      ''}
+      display-setup-script=${pkgs.writeScript "lightdm-display-setup" ''
+      #!${pkgs.bash}/bin/bash
+      ${dmcfg.setupCommands}
+    ''}
+    ''}
       ${cfg.extraSeatDefaults}
     '';
 
@@ -96,7 +96,7 @@ in
         '';
       };
 
-      greeter =  {
+      greeter = {
         enable = mkOption {
           type = types.bool;
           default = true;
@@ -189,24 +189,28 @@ in
   config = mkIf cfg.enable {
 
     assertions = [
-      { assertion = xcfg.enable;
+      {
+        assertion = xcfg.enable;
         message = ''
           LightDM requires services.xserver.enable to be true
         '';
       }
-      { assertion = cfg.autoLogin.enable -> cfg.autoLogin.user != null;
+      {
+        assertion = cfg.autoLogin.enable -> cfg.autoLogin.user != null;
         message = ''
           LightDM auto-login requires services.xserver.displayManager.lightdm.autoLogin.user to be set
         '';
       }
-      { assertion = cfg.autoLogin.enable -> dmDefault != "none" || wmDefault != "none";
+      {
+        assertion = cfg.autoLogin.enable -> dmDefault != "none" || wmDefault != "none";
         message = ''
           LightDM auto-login requires that services.xserver.desktopManager.default and
           services.xserver.windowManager.default are set to valid values. The current
           default session: ${defaultSessionName} is not valid.
         '';
       }
-      { assertion = !cfg.greeter.enable -> (cfg.autoLogin.enable && cfg.autoLogin.timeout == 0);
+      {
+        assertion = !cfg.greeter.enable -> (cfg.autoLogin.enable && cfg.autoLogin.timeout == 0);
         message = ''
           LightDM can only run without greeter if automatic login is enabled and the timeout for it
           is set to zero.
@@ -253,15 +257,15 @@ in
       '';
     };
     security.pam.services.lightdm-autologin.text = ''
-        auth     requisite pam_nologin.so
-        auth     required  pam_succeed_if.so uid >= 1000 quiet
-        auth     required  pam_permit.so
+      auth     requisite pam_nologin.so
+      auth     required  pam_succeed_if.so uid >= 1000 quiet
+      auth     required  pam_permit.so
 
-        account  include   lightdm
+      account  include   lightdm
 
-        password include   lightdm
+      password include   lightdm
 
-        session  include   lightdm
+      session  include   lightdm
     '';
 
     users.users.lightdm = {
@@ -279,7 +283,7 @@ in
     ];
 
     users.groups.lightdm.gid = config.ids.gids.lightdm;
-    services.xserver.tty     = null; # We might start multiple X servers so let the tty increment themselves..
+    services.xserver.tty = null; # We might start multiple X servers so let the tty increment themselves..
     services.xserver.display = null; # We specify our own display (and logfile) in xserver-wrapper up there
   };
 }

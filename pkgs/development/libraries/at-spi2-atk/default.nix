@@ -26,8 +26,9 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ meson ninja pkgconfig ]
-    # Fixup rpaths because of meson, remove with meson-0.47
-    ++ stdenv.lib.optional stdenv.isDarwin fixDarwinDylibNames;
+  # Fixup rpaths because of meson, remove with meson-0.47
+    ++ stdenv.lib.optional stdenv.isDarwin fixDarwinDylibNames
+    ;
   buildInputs = [ at-spi2-core atk dbus glib libxml2 ];
 
   doCheck = false; # fails with "No test data file provided"

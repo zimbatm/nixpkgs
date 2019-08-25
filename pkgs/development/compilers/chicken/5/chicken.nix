@@ -27,9 +27,13 @@ stdenv.mkDerivation {
 
   buildInputs = [
     makeWrapper
-  ] ++ (lib.ifEnable (bootstrap-chicken != null) [
-    bootstrap-chicken
-  ]);
+  ]
+  ++ (
+       lib.ifEnable (bootstrap-chicken != null) [
+         bootstrap-chicken
+       ]
+     )
+  ;
 
   postInstall = ''
     for f in $out/bin/*

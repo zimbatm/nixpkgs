@@ -102,36 +102,47 @@ with lib;
   };
 
   config = mkMerge [
-    (mkIf (!config.security.allowUserNamespaces) {
-      # Setting the number of allowed user namespaces to 0 effectively disables
-      # the feature at runtime.  Note that root may raise the limit again
-      # at any time.
-      boot.kernel.sysctl."user.max_user_namespaces" = 0;
+    (
+      mkIf (!config.security.allowUserNamespaces) {
+        # Setting the number of allowed user namespaces to 0 effectively disables
+        # the feature at runtime.  Note that root may raise the limit again
+        # at any time.
+        boot.kernel.sysctl."user.max_user_namespaces" = 0;
 
-      assertions = [
-        { assertion = config.nix.useSandbox -> config.security.allowUserNamespaces;
-          message = "`nix.useSandbox = true` conflicts with `!security.allowUserNamespaces`.";
-        }
-      ];
-    })
+        assertions = [
+          {
+            assertion = config.nix.useSandbox -> config.security.allowUserNamespaces;
+            message = "`nix.useSandbox = true` conflicts with `!security.allowUserNamespaces`.";
+          }
+        ];
+      }
+    )
 
-    (mkIf config.security.protectKernelImage {
-      # Disable hibernation (allows replacing the running kernel)
-      boot.kernelParams = [ "nohibernate" ];
-      # Prevent replacing the running kernel image w/o reboot
-      boot.kernel.sysctl."kernel.kexec_load_disabled" = mkDefault true;
-    })
+    (
+      mkIf config.security.protectKernelImage {
+        # Disable hibernation (allows replacing the running kernel)
+        boot.kernelParams = [ "nohibernate" ];
+        # Prevent replacing the running kernel image w/o reboot
+        boot.kernel.sysctl."kernel.kexec_load_disabled" = mkDefault true;
+      }
+    )
 
-    (mkIf (!config.security.allowSimultaneousMultithreading) {
-      boot.kernelParams = [ "nosmt" ];
-    })
+    (
+      mkIf (!config.security.allowSimultaneousMultithreading) {
+        boot.kernelParams = [ "nosmt" ];
+      }
+    )
 
-    (mkIf config.security.forcePageTableIsolation {
-      boot.kernelParams = [ "pti=on" ];
-    })
+    (
+      mkIf config.security.forcePageTableIsolation {
+        boot.kernelParams = [ "pti=on" ];
+      }
+    )
 
-    (mkIf (config.security.virtualisation.flushL1DataCache != null) {
-      boot.kernelParams = [ "kvm-intel.vmentry_l1d_flush=${config.security.virtualisation.flushL1DataCache}" ];
-    })
+    (
+      mkIf (config.security.virtualisation.flushL1DataCache != null) {
+        boot.kernelParams = [ "kvm-intel.vmentry_l1d_flush=${config.security.virtualisation.flushL1DataCache}" ];
+      }
+    )
   ];
 }

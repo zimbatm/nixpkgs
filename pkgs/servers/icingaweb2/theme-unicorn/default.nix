@@ -3,16 +3,20 @@
   version = "1.0.2";
 
   srcs = [
-    (fetchFromGitHub {
-      owner = "Mikesch-mp";
-      repo = name;
-      rev = "v${version}";
-      sha256 = "1qmcajdf0g70vp2avqa50lfrfigq22k91kggbgn5ablwyg9dki05";
-    })
-    (fetchurl {
-      url = "http://i.imgur.com/SCfMd.png";
-      sha256 = "1y6wqm1z6mn0a6jankd7pzqgi7zm5320kk6knvbv3qhzx2b74ypp";
-    })
+    (
+      fetchFromGitHub {
+        owner = "Mikesch-mp";
+        repo = name;
+        rev = "v${version}";
+        sha256 = "1qmcajdf0g70vp2avqa50lfrfigq22k91kggbgn5ablwyg9dki05";
+      }
+    )
+    (
+      fetchurl {
+        url = "http://i.imgur.com/SCfMd.png";
+        sha256 = "1y6wqm1z6mn0a6jankd7pzqgi7zm5320kk6knvbv3qhzx2b74ypp";
+      }
+    )
   ];
 
   unpackPhase = ''

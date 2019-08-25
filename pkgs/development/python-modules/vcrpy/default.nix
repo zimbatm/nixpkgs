@@ -33,7 +33,8 @@ buildPythonPackage rec {
     six
   ]
   ++ lib.optionals (pythonOlder "3.3") [ contextlib2 mock ]
-  ++ lib.optionals (pythonAtLeast "3.4") [ yarl ];
+  ++ lib.optionals (pythonAtLeast "3.4") [ yarl ]
+  ;
 
   checkPhase = ''
     py.test --ignore=tests/integration -k "not TestVCRConnection"
@@ -45,4 +46,3 @@ buildPythonPackage rec {
     license = licenses.mit;
   };
 }
-

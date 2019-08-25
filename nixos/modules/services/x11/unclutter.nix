@@ -2,9 +2,11 @@
 
 with lib;
 
-let cfg = config.services.unclutter;
+let
+  cfg = config.services.unclutter;
 
-in {
+in
+{
   options.services.unclutter = {
 
     enable = mkOption {
@@ -63,7 +65,7 @@ in {
           -idle ${toString cfg.timeout} \
           -jitter ${toString (cfg.threeshold - 1)} \
           ${optionalString cfg.keystroke "-keystroke"} \
-          ${concatMapStrings (x: " -"+x) cfg.extraOptions} \
+          ${concatMapStrings (x: " -" + x) cfg.extraOptions} \
           -not ${concatStringsSep " " cfg.excluded} \
       '';
       serviceConfig.PassEnvironment = "DISPLAY";

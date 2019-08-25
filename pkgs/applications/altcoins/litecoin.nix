@@ -1,9 +1,20 @@
-{ stdenv, fetchFromGitHub
-, pkgconfig, autoreconfHook
-, openssl, db48, boost, zlib, miniupnpc
-, glib, protobuf, utillinux, qt4, qrencode
+{ stdenv
+, fetchFromGitHub
+, pkgconfig
+, autoreconfHook
+, openssl
+, db48
+, boost
+, zlib
+, miniupnpc
+, glib
+, protobuf
+, utillinux
+, qt4
+, qrencode
 , AppKit
-, withGui ? true, libevent
+, withGui ? true
+, libevent
 }:
 
 with stdenv.lib;
@@ -21,19 +32,30 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ pkgconfig autoreconfHook ];
-  buildInputs = [ openssl db48 boost zlib
-                  miniupnpc glib protobuf utillinux libevent ]
-                  ++ optionals stdenv.isDarwin [ AppKit ]
-                  ++ optionals withGui [ qt4 qrencode ];
+  buildInputs = [
+    openssl
+    db48
+    boost
+    zlib
+    miniupnpc
+    glib
+    protobuf
+    utillinux
+    libevent
+  ]
+  ++ optionals stdenv.isDarwin [ AppKit ]
+  ++ optionals withGui [ qt4 qrencode ]
+  ;
 
   configureFlags = [ "--with-boost-libdir=${boost.out}/lib" ]
-                     ++ optionals withGui [ "--with-gui=qt4" ];
+    ++ optionals withGui [ "--with-gui=qt4" ]
+    ;
 
   enableParallelBuilding = true;
 
   meta = {
     description = "A lite version of Bitcoin using scrypt as a proof-of-work algorithm";
-    longDescription= ''
+    longDescription = ''
       Litecoin is a peer-to-peer Internet currency that enables instant payments
       to anyone in the world. It is based on the Bitcoin protocol but differs
       from Bitcoin in that it can be efficiently mined with consumer-grade hardware.

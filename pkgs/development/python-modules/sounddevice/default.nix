@@ -22,10 +22,12 @@ buildPythonPackage rec {
   doCheck = false;
 
   patches = [
-    (substituteAll {
-      src = ./fix-portaudio-library-path.patch;
-      portaudio = "${portaudio}/lib/libportaudio.so.2";
-    })
+    (
+      substituteAll {
+        src = ./fix-portaudio-library-path.patch;
+        portaudio = "${portaudio}/lib/libportaudio.so.2";
+      }
+    )
   ];
 
   meta = {

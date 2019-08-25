@@ -1,6 +1,15 @@
-{ stdenv, fetchFromGitHub, asciidoc-full, gettext
-, gobject-introspection, gtk3, hicolor-icon-theme, libappindicator-gtk3, libnotify, librsvg
-, udisks2, wrapGAppsHook
+{ stdenv
+, fetchFromGitHub
+, asciidoc-full
+, gettext
+, gobject-introspection
+, gtk3
+, hicolor-icon-theme
+, libappindicator-gtk3
+, libnotify
+, librsvg
+, udisks2
+, wrapGAppsHook
 , python3Packages
 }:
 
@@ -17,14 +26,14 @@ python3Packages.buildPythonApplication rec {
 
   nativeBuildInputs = [
     gettext
-    asciidoc-full        # For building man page.
+    asciidoc-full # For building man page.
     gobject-introspection
     wrapGAppsHook
   ];
 
   buildInputs = [
     hicolor-icon-theme
-    librsvg              # required for loading svg icons (udiskie uses svg icons)
+    librsvg # required for loading svg icons (udiskie uses svg icons)
     gobject-introspection
     libnotify
     gtk3

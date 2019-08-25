@@ -42,8 +42,8 @@ let
       Description=Hyper-V ${title} daemon
       ConditionVirtualization=microsoft
       ${lib.optionalString (check != "") ''
-        ConditionPathExists=/dev/vmbus/${check}
-      ''}
+      ConditionPathExists=/dev/vmbus/${check}
+    ''}
       [Service]
       ExecStart=@out@/hv_${bin}_daemon -n
       Restart=on-failure
@@ -54,8 +54,9 @@ let
       WantedBy=hyperv-daemons.target
     '';
 
-in stdenv.mkDerivation rec {
-  name    = "hyperv-daemons-${version}";
+in
+stdenv.mkDerivation rec {
+  name = "hyperv-daemons-${version}";
 
   inherit (kernel) version;
 
@@ -72,8 +73,8 @@ in stdenv.mkDerivation rec {
     mkdir -p $system
 
     cp ${service "fcopy" "file copy (FCOPY)" "hv_fcopy" } $system/hv-fcopy.service
-    cp ${service "kvp"   "key-value pair (KVP)"     ""  } $system/hv-kvp.service
-    cp ${service "vss"   "volume shadow copy (VSS)" ""  } $system/hv-vss.service
+    cp ${service "kvp" "key-value pair (KVP)" ""  } $system/hv-kvp.service
+    cp ${service "vss" "volume shadow copy (VSS)" ""  } $system/hv-vss.service
 
     cat > $system/hyperv-daemons.target <<EOF
     [Unit]

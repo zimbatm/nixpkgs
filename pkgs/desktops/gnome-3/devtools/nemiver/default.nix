@@ -1,6 +1,24 @@
-{ stdenv, fetchurl, fetchpatch, pkgconfig, gnome3, gtk3, libxml2, intltool, itstool, gdb,
-  boost, sqlite, libgtop, glibmm, gtkmm3, vte, gtksourceview, gsettings-desktop-schemas,
-  gtksourceviewmm, wrapGAppsHook }:
+{ stdenv
+, fetchurl
+, fetchpatch
+, pkgconfig
+, gnome3
+, gtk3
+, libxml2
+, intltool
+, itstool
+, gdb
+, boost
+, sqlite
+, libgtop
+, glibmm
+, gtkmm3
+, vte
+, gtksourceview
+, gsettings-desktop-schemas
+, gtksourceviewmm
+, wrapGAppsHook
+}:
 
 stdenv.mkDerivation rec {
   name = "nemiver-${version}";
@@ -14,18 +32,28 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ libxml2 intltool itstool pkgconfig wrapGAppsHook ];
 
   buildInputs = [
-    gtk3 gdb boost sqlite libgtop
-    glibmm gtkmm3 vte gtksourceview gtksourceviewmm
+    gtk3
+    gdb
+    boost
+    sqlite
+    libgtop
+    glibmm
+    gtkmm3
+    vte
+    gtksourceview
+    gtksourceviewmm
     gsettings-desktop-schemas
   ];
 
   patches = [
     ./bool_slot.patch
     ./safe_ptr.patch
-    (fetchpatch {
-      url = https://gitlab.gnome.org/GNOME/nemiver/commit/262cf9657f9c2727a816972b348692adcc666008.patch;
-      sha256 = "03jv6z54b8nzvplplapk4aj206zl1gvnv6iz0mad19g6yvfbw7a7";
-    })
+    (
+      fetchpatch {
+        url = https://gitlab.gnome.org/GNOME/nemiver/commit/262cf9657f9c2727a816972b348692adcc666008.patch;
+        sha256 = "03jv6z54b8nzvplplapk4aj206zl1gvnv6iz0mad19g6yvfbw7a7";
+      }
+    )
   ];
 
   configureFlags = [

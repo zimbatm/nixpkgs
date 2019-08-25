@@ -31,7 +31,8 @@ stdenv.mkDerivation {
 
   nativeBuildInputs = [ cmake python which swig ];
   buildInputs = [ ncurses zlib libedit libxml2 llvm ]
-    ++ stdenv.lib.optionals stdenv.isDarwin [ darwin.libobjc darwin.apple_sdk.libs.xpc darwin.apple_sdk.frameworks.Foundation darwin.bootstrap_cmds darwin.apple_sdk.frameworks.Carbon darwin.apple_sdk.frameworks.Cocoa ];
+    ++ stdenv.lib.optionals stdenv.isDarwin [ darwin.libobjc darwin.apple_sdk.libs.xpc darwin.apple_sdk.frameworks.Foundation darwin.bootstrap_cmds darwin.apple_sdk.frameworks.Carbon darwin.apple_sdk.frameworks.Cocoa ]
+    ;
 
   CXXFLAGS = "-fno-rtti";
   hardeningDisable = [ "format" ];
@@ -53,8 +54,8 @@ stdenv.mkDerivation {
 
   meta = with stdenv.lib; {
     description = "A next-generation high-performance debugger";
-    homepage    = http://llvm.org/;
-    license     = licenses.ncsa;
-    platforms   = platforms.all;
+    homepage = http://llvm.org/;
+    license = licenses.ncsa;
+    platforms = platforms.all;
   };
 }

@@ -1,4 +1,4 @@
-{  buildGoPackage, fetchFromGitHub, lib  }:
+{ buildGoPackage, fetchFromGitHub, lib }:
 
 with lib;
 

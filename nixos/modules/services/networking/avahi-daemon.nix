@@ -5,22 +5,22 @@ with lib;
 let
   cfg = config.services.avahi;
 
-  yesNo = yes : if yes then "yes" else "no";
+  yesNo = yes: if yes then "yes" else "no";
 
   avahiDaemonConf = with cfg; pkgs.writeText "avahi-daemon.conf" ''
     [server]
     ${# Users can set `networking.hostName' to the empty string, when getting
-      # a host name from DHCP.  In that case, let Avahi take whatever the
-      # current host name is; setting `host-name' to the empty string in
-      # `avahi-daemon.conf' would be invalid.
-      optionalString (hostName != "") "host-name=${hostName}"}
+  # a host name from DHCP.  In that case, let Avahi take whatever the
+  # current host name is; setting `host-name' to the empty string in
+  # `avahi-daemon.conf' would be invalid.
+  optionalString (hostName != "") "host-name=${hostName}"}
     browse-domains=${concatStringsSep ", " browseDomains}
     use-ipv4=${yesNo ipv4}
     use-ipv6=${yesNo ipv6}
-    ${optionalString (interfaces!=null) "allow-interfaces=${concatStringsSep "," interfaces}"}
-    ${optionalString (domainName!=null) "domain-name=${domainName}"}
+    ${optionalString (interfaces != null) "allow-interfaces=${concatStringsSep "," interfaces}"}
+    ${optionalString (domainName != null) "domain-name=${domainName}"}
     allow-point-to-point=${yesNo allowPointToPoint}
-    ${optionalString (cacheEntriesMax!=null) "cache-entries-max=${toString cacheEntriesMax}"}
+    ${optionalString (cacheEntriesMax != null) "cache-entries-max=${toString cacheEntriesMax}"}
 
     [wide-area]
     enable-wide-area=${yesNo wideArea}
@@ -71,7 +71,7 @@ in
 
     browseDomains = mkOption {
       type = types.listOf types.str;
-      default = [ ];
+      default = [];
       example = [ "0pointer.de" "zeroconf.org" ];
       description = ''
         List of non-local DNS domains to be browsed.
@@ -111,7 +111,7 @@ in
     allowPointToPoint = mkOption {
       type = types.bool;
       default = false;
-      description= ''
+      description = ''
         Whether to use POINTTOPOINT interfaces. Might make mDNS unreliable due to usually large
         latencies with such links and opens a potential security hole by allowing mDNS access from Internet
         connections.
@@ -241,10 +241,13 @@ in
 
     environment.systemPackages = [ pkgs.avahi ];
 
-    environment.etc = (mapAttrs' (n: v: nameValuePair
-      "avahi/services/${n}.service"
-      { ${if types.path.check v then "source" else "text"} = v; }
-    ) cfg.extraServiceFiles);
+    environment.etc = (
+      mapAttrs' (
+        n: v: nameValuePair
+          "avahi/services/${n}.service"
+          { ${if types.path.check v then "source" else "text"} = v; }
+      ) cfg.extraServiceFiles
+    );
 
     systemd.sockets.avahi-daemon = {
       description = "Avahi mDNS/DNS-SD Stack Activation Socket";

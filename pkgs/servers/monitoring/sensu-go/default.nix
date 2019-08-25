@@ -20,11 +20,12 @@ let
 
       buildFlagsArray = let
         versionPkg = "github.com/sensu/sensu-go/version";
-      in ''
-        -ldflags=
-          -X ${versionPkg}.Version=${version}
-          -X ${versionPkg}.BuildSHA=${shortRev}
-      '';
+      in
+        ''
+          -ldflags=
+            -X ${versionPkg}.Version=${version}
+            -X ${versionPkg}.BuildSHA=${shortRev}
+        '';
 
       meta = {
         homepage = https://sensu.io;

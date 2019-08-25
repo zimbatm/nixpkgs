@@ -2,7 +2,7 @@
 with lib;
 
 let
-  cfg     = config.services.dnscrypt-wrapper;
+  cfg = config.services.dnscrypt-wrapper;
   dataDir = "/var/lib/dnscrypt-wrapper";
 
   daemonArgs = with cfg; [
@@ -64,7 +64,8 @@ let
     fi
   '';
 
-in {
+in
+{
 
 
   ###### interface
@@ -143,7 +144,7 @@ in {
       home = "${dataDir}";
       createHome = true;
     };
-    users.groups.dnscrypt-wrapper = { };
+    users.groups.dnscrypt-wrapper = {};
 
     security.polkit.extraConfig = ''
       // Allow dnscrypt-wrapper user to restart dnscrypt-wrapper.service
@@ -158,14 +159,14 @@ in {
 
     systemd.services.dnscrypt-wrapper = {
       description = "dnscrypt-wrapper daemon";
-      after    = [ "network.target" ];
+      after = [ "network.target" ];
       wantedBy = [ "multi-user.target" ];
-      path     = [ pkgs.dnscrypt-wrapper ];
+      path = [ pkgs.dnscrypt-wrapper ];
 
       serviceConfig = {
         User = "dnscrypt-wrapper";
         WorkingDirectory = dataDir;
-        Restart   = "on-failure";
+        Restart = "on-failure";
         ExecStart = "${pkgs.dnscrypt-wrapper}/bin/dnscrypt-wrapper ${toString daemonArgs}";
       };
 
@@ -174,11 +175,11 @@ in {
 
 
     systemd.services.dnscrypt-wrapper-rotate = {
-      after    = [ "network.target" ];
+      after = [ "network.target" ];
       requires = [ "dnscrypt-wrapper.service" ];
       description = "Rotates DNSCrypt wrapper keys if soon to expire";
 
-      path   = with pkgs; [ dnscrypt-wrapper dnscrypt-proxy gawk ];
+      path = with pkgs; [ dnscrypt-wrapper dnscrypt-proxy gawk ];
       script = rotateKeys;
       serviceConfig.User = "dnscrypt-wrapper";
     };

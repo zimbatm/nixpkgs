@@ -1,10 +1,17 @@
-{ stdenv, fetchurl, unzip, lib, makeWrapper, autoPatchelfHook
-, openjdk11, pam
+{ stdenv
+, fetchurl
+, unzip
+, lib
+, makeWrapper
+, autoPatchelfHook
+, openjdk11
+, pam
 }: let
 
   pkg_path = "$out/lib/ghidra";
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
 
   name = "ghidra-9.0.4";
 

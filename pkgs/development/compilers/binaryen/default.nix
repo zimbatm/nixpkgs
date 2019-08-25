@@ -12,11 +12,11 @@ in
 
 stdenv.mkDerivation rec {
   version = if emscriptenRev == null
-            then defaultVersion
-            else "emscripten-${emscriptenRev}";
+  then defaultVersion
+  else "emscripten-${emscriptenRev}";
   rev = if emscriptenRev == null
-        then "version_${version}"
-        else emscriptenRev;
+  then "version_${version}"
+  else emscriptenRev;
   name = "binaryen-${version}";
 
   src = fetchFromGitHub {

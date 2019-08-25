@@ -52,12 +52,16 @@ stdenv.mkDerivation rec {
     libjpeg
     libtiff
     zlib
-  ] ++ stdenv.lib.optional withGimpPlugin gimp;
+  ]
+  ++ stdenv.lib.optional withGimpPlugin gimp
+  ;
 
   configureFlags = [
     "--enable-contrast"
     "--enable-dst-correction"
-  ] ++ stdenv.lib.optional withGimpPlugin "--with-gimp";
+  ]
+  ++ stdenv.lib.optional withGimpPlugin "--with-gimp"
+  ;
 
   postInstall = stdenv.lib.optionalString withGimpPlugin ''
     moveToOutput "lib/gimp" "$gimpPlugin"
@@ -81,6 +85,6 @@ stdenv.mkDerivation rec {
     license = licenses.gpl2Plus;
 
     maintainers = with maintainers; [ gloaming ];
-    platforms   = with platforms; all;
+    platforms = with platforms; all;
   };
 }

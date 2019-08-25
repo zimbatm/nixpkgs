@@ -4,7 +4,8 @@ let
   major = "1";
   minor = "102";
   version = "${major}.${minor}";
-in fetchzip rec {
+in
+fetchzip rec {
   name = "gentium-book-basic-${version}";
 
   url = "http://software.sil.org/downloads/r/gentium/GentiumBasic_${major}${minor}.zip";
@@ -20,7 +21,7 @@ in fetchzip rec {
   meta = with lib; {
     homepage = https://software.sil.org/gentium/;
     description = "A high-quality typeface family for Latin, Cyrillic, and Greek";
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
     license = licenses.ofl;
     platforms = platforms.all;
   };

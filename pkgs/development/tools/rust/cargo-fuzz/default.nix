@@ -17,11 +17,11 @@ rustPlatform.buildRustPackage rec {
         sha256 = "0d7b6kxfbfvwksybzrihylamg2zv5fmsk9m6xshryhwipskzzvmd";
       };
     in
-    runCommand "cargo-fuzz-src" {} ''
-      cp -R ${source} $out
-      chmod +w $out
-      cp ${cargo-lock} $out/Cargo.lock
-    '';
+      runCommand "cargo-fuzz-src" {} ''
+        cp -R ${source} $out
+        chmod +w $out
+        cp ${cargo-lock} $out/Cargo.lock
+      '';
 
   cargoSha256 = "19kldw2sx0jd89q5q9cwmdcaan148s45fxlb2m0vdxwb69crb7yp";
 

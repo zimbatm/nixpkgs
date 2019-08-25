@@ -1,6 +1,6 @@
 { newScope, stdenv, binutils, wrapCCWith, symlinkJoin }:
 let
-  callPackage = newScope (self // {inherit stdenv;});
+  callPackage = newScope (self // { inherit stdenv; });
 
   self = {
     emscriptenfastcomp-unwrapped = callPackage ./emscripten-fastcomp.nix {};
@@ -25,4 +25,5 @@ let
       '';
     };
   };
-in self
+in
+self

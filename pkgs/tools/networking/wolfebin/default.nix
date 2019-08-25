@@ -3,7 +3,7 @@
 stdenv.mkDerivation rec {
   version = "5.4";
   name = "wolfebin-${version}";
-  
+
   src = fetchFromGitHub {
     owner = "thejoshwolfe";
     repo = "wolfebin";

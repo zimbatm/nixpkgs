@@ -4,7 +4,8 @@ with lib;
 
 let
   cfg = config.services.ecs-agent;
-in {
+in
+{
   options.services.ecs-agent = {
     enable = mkEnableOption "Amazon ECS agent";
 
@@ -29,7 +30,7 @@ in {
 
     systemd.services.ecs-agent = {
       inherit (cfg.package.meta) description;
-      after    = [ "network.target" ];
+      after = [ "network.target" ];
       wantedBy = [ "multi-user.target" ];
 
       environment = cfg.extra-environment;
@@ -43,4 +44,3 @@ in {
     };
   };
 }
-

@@ -1,13 +1,34 @@
-{ stdenv, lib, fetchFromGitHub, fetchpatch, ccache, cmake, ctags, swig
-# data, compression
-, bzip2, curl, hdf5, json_c, lzma, lzo, protobuf, snappy
-# maths
-, openblasCompat, eigen, nlopt, lp_solve, colpack
-# libraries
-, libarchive, libxml2
-# extra support
-, pythonSupport ? true, pythonPackages ? null
-, opencvSupport ? false, opencv ? null
+{ stdenv
+, lib
+, fetchFromGitHub
+, fetchpatch
+, ccache
+, cmake
+, ctags
+, swig
+  # data, compression
+, bzip2
+, curl
+, hdf5
+, json_c
+, lzma
+, lzo
+, protobuf
+, snappy
+  # maths
+, openblasCompat
+, eigen
+, nlopt
+, lp_solve
+, colpack
+  # libraries
+, libarchive
+, libxml2
+  # extra support
+, pythonSupport ? true
+, pythonPackages ? null
+, opencvSupport ? false
+, opencv ? null
 }:
 
 assert pythonSupport -> pythonPackages != null;
@@ -27,25 +48,46 @@ stdenv.mkDerivation rec {
   };
 
   patches = [
-    (fetchpatch {
-      name = "Fix-meta-example-parser-bug-in-parallel-builds.patch";
-      url = "https://github.com/shogun-toolbox/shogun/commit/ecd6a8f11ac52748e89d27c7fab7f43c1de39f05.patch";
-      sha256 = "1hrwwrj78sxhwcvgaz7n4kvh5y9snfcc4jf5xpgji5hjymnl311n";
-    })
-    (fetchpatch {
-      url = "https://github.com/awild82/shogun/commit/365ce4c4c700736d2eec8ba6c975327a5ac2cd9b.patch";
-      sha256 = "158hqv4xzw648pmjbwrhxjp7qcppqa7kvriif87gn3zdn711c49s";
-    })
+    (
+      fetchpatch {
+        name = "Fix-meta-example-parser-bug-in-parallel-builds.patch";
+        url = "https://github.com/shogun-toolbox/shogun/commit/ecd6a8f11ac52748e89d27c7fab7f43c1de39f05.patch";
+        sha256 = "1hrwwrj78sxhwcvgaz7n4kvh5y9snfcc4jf5xpgji5hjymnl311n";
+      }
+    )
+    (
+      fetchpatch {
+        url = "https://github.com/awild82/shogun/commit/365ce4c4c700736d2eec8ba6c975327a5ac2cd9b.patch";
+        sha256 = "158hqv4xzw648pmjbwrhxjp7qcppqa7kvriif87gn3zdn711c49s";
+      }
+    )
   ];
 
-  CCACHE_DIR=".ccache";
+  CCACHE_DIR = ".ccache";
 
   buildInputs = with lib; [
-      openblasCompat bzip2 ccache cmake colpack curl ctags eigen hdf5 json_c lp_solve lzma lzo
-      protobuf nlopt snappy swig (libarchive.dev) libxml2
-    ]
+    openblasCompat
+    bzip2
+    ccache
+    cmake
+    colpack
+    curl
+    ctags
+    eigen
+    hdf5
+    json_c
+    lp_solve
+    lzma
+    lzo
+    protobuf
+    nlopt
+    snappy
+    swig
+    (libarchive.dev)
+    libxml2
+  ]
     ++ optionals (pythonSupport) (with pythonPackages; [ python ply numpy ])
-    ++ optional  (opencvSupport) opencv;
+    ++ optional (opencvSupport) opencv;
 
   cmakeFlags = with lib; []
     ++ (optional (pythonSupport) "-DPythonModular=ON")

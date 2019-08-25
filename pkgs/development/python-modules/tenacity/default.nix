@@ -1,6 +1,14 @@
-{ lib, buildPythonPackage, fetchPypi, isPy27
-, pbr, six, futures, monotonic
-, pytest, sphinx, tornado
+{ lib
+, buildPythonPackage
+, fetchPypi
+, isPy27
+, pbr
+, six
+, futures
+, monotonic
+, pytest
+, sphinx
+, tornado
 }:
 
 buildPythonPackage rec {
@@ -14,16 +22,21 @@ buildPythonPackage rec {
 
   nativeBuildInputs = [ pbr ];
   propagatedBuildInputs = [ six ]
-    ++ lib.optionals isPy27 [ futures monotonic ];
+    ++ lib.optionals isPy27 [ futures monotonic ]
+    ;
 
   checkInputs = [ pytest sphinx tornado ];
-  checkPhase = (if isPy27 then ''
-    pytest --ignore='tenacity/tests/test_asyncio.py'
-  '' else ''
-    pytest
-  '') + ''
+  checkPhase = (
+    if isPy27 then ''
+      pytest --ignore='tenacity/tests/test_asyncio.py'
+    '' else ''
+      pytest
+    ''
+  )
+  + ''
     sphinx-build -a -E -W -b doctest doc/source doc/build
-  '';
+  ''
+  ;
 
   meta = with lib; {
     homepage = https://github.com/jd/tenacity;

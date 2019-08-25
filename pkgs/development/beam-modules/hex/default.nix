@@ -11,14 +11,14 @@ let
     version = "0.20.1";
 
     src = fetchFromGitHub {
-        owner = "hexpm";
-        repo = "hex";
-        rev = "v${version}";
-        sha256 = "0yxw7r31kk45b1nk48pajwwv9zl746kc9pwqfb73za8b1g8bgxd3";
+      owner = "hexpm";
+      repo = "hex";
+      rev = "v${version}";
+      sha256 = "0yxw7r31kk45b1nk48pajwwv9zl746kc9pwqfb73za8b1g8bgxd3";
     };
 
     setupHook = writeText "setupHook.sh" ''
-       addToSearchPath ERL_LIBS "$1/lib/erlang/lib/"
+      addToSearchPath ERL_LIBS "$1/lib/erlang/lib/"
     '';
 
     dontStrip = true;
@@ -53,5 +53,6 @@ let
     passthru = {
       env = shell self;
     };
-};
-in stdenv.lib.fix pkg
+  };
+in
+stdenv.lib.fix pkg

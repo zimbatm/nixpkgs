@@ -5,7 +5,7 @@ rec {
 
   description = ''Ensures consistent *FEATURES* across multiple CLs.'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/trivial-features/2016-12-04/trivial-features-20161204-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "trivial-features";
 
-  asdFilesToKeep = ["trivial-features.asd"];
+  asdFilesToKeep = [ "trivial-features.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM trivial-features DESCRIPTION

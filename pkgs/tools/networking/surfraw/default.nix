@@ -1,4 +1,4 @@
-{stdenv, fetchurl, perl}:
+{ stdenv, fetchurl, perl }:
 
 stdenv.mkDerivation rec {
   name = "surfraw-2.3.0";

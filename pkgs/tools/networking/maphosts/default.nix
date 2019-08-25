@@ -9,7 +9,7 @@ stdenv.mkDerivation rec {
     gemdir = ./.;
   };
 
-  phases = ["installPhase"];
+  phases = [ "installPhase" ];
 
   installPhase = ''
     mkdir -p "$out/bin"
@@ -20,9 +20,9 @@ stdenv.mkDerivation rec {
 
   meta = with lib; {
     description = "Small command line application for keeping your project hostnames in sync with /etc/hosts";
-    homepage    = https://github.com/mpscholten/maphosts;
-    license     = licenses.mit;
+    homepage = https://github.com/mpscholten/maphosts;
+    license = licenses.mit;
     maintainers = with maintainers; [ mpscholten nicknovitski ];
-    platforms   = platforms.all;
+    platforms = platforms.all;
   };
 }

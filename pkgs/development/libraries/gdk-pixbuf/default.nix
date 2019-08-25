@@ -1,11 +1,33 @@
-{ stdenv, fetchurl, fixDarwinDylibNames, meson, ninja, pkgconfig, gettext, python3, libxml2, libxslt, docbook_xsl
-, docbook_xml_dtd_43, gtk-doc, glib, libtiff, libjpeg, libpng, libX11, gnome3
-, jasper, gobject-introspection, doCheck ? false, makeWrapper }:
+{ stdenv
+, fetchurl
+, fixDarwinDylibNames
+, meson
+, ninja
+, pkgconfig
+, gettext
+, python3
+, libxml2
+, libxslt
+, docbook_xsl
+, docbook_xml_dtd_43
+, gtk-doc
+, glib
+, libtiff
+, libjpeg
+, libpng
+, libX11
+, gnome3
+, jasper
+, gobject-introspection
+, doCheck ? false
+, makeWrapper
+}:
 
 let
   pname = "gdk-pixbuf";
   version = "2.38.1";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "${pname}-${version}";
 
   src = fetchurl {
@@ -26,10 +48,21 @@ in stdenv.mkDerivation rec {
   buildInputs = [ libX11 ];
 
   nativeBuildInputs = [
-    meson ninja pkgconfig gettext python3 libxml2 libxslt docbook_xsl docbook_xml_dtd_43
-    gtk-doc gobject-introspection makeWrapper
+    meson
+    ninja
+    pkgconfig
+    gettext
+    python3
+    libxml2
+    libxslt
+    docbook_xsl
+    docbook_xml_dtd_43
+    gtk-doc
+    gobject-introspection
+    makeWrapper
   ]
-    ++ stdenv.lib.optional stdenv.isDarwin fixDarwinDylibNames;
+  ++ stdenv.lib.optional stdenv.isDarwin fixDarwinDylibNames
+  ;
 
   propagatedBuildInputs = [ glib libtiff libjpeg libpng jasper ];
 
@@ -64,7 +97,8 @@ in stdenv.mkDerivation rec {
 
       # We need to install 'loaders.cache' in lib/gdk-pixbuf-2.0/2.10.0/
       $dev/bin/gdk-pixbuf-query-loaders --update-cache
-    '';
+    ''
+  ;
 
   # The fixDarwinDylibNames hook doesn't patch binaries.
   preFixup = stdenv.lib.optionalString stdenv.isDarwin ''

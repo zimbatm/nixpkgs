@@ -1,5 +1,12 @@
-{ stdenv, fetchFromGitHub, fetchNodeModules, nodejs-10_x, ruby, sencha
-, auth0ClientID, auth0Domain }:
+{ stdenv
+, fetchFromGitHub
+, fetchNodeModules
+, nodejs-10_x
+, ruby
+, sencha
+, auth0ClientID
+, auth0Domain
+}:
 
 stdenv.mkDerivation rec {
   name = "rambox-bare-${version}";

@@ -1,4 +1,4 @@
-{stdenv, fetchurl, gnome3, automake, autoconf, which, libtool, pkgconfig, graphviz, glib, gobject-introspection, expat}:
+{ stdenv, fetchurl, gnome3, automake, autoconf, which, libtool, pkgconfig, graphviz, glib, gobject-introspection, expat }:
 stdenv.mkDerivation rec {
   version = "0.36.2";
   name = "valadoc-${version}";
@@ -19,9 +19,9 @@ stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "A documentation generator for generating API documentation from Vala source code";
-    homepage    = https://valadoc.org;
-    license     = licenses.gpl2;
+    homepage = https://valadoc.org;
+    license = licenses.gpl2;
     maintainers = with maintainers; [ sternenseemann ];
-    platforms   = platforms.linux;
+    platforms = platforms.linux;
   };
 }

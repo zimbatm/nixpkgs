@@ -4,7 +4,7 @@ with lib;
 
 let
 
-  cfg  = config.programs.mosh;
+  cfg = config.programs.mosh;
 
 in
 {

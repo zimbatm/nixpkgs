@@ -6,17 +6,18 @@
 
 { ... } @ attrs:
 
-attrs // {
-  nativeBuildInputs = [ flit ];
-  buildPhase = attrs.buildPhase or ''
-    runHook preBuild
-    flit build --format wheel
-    runHook postBuild
-  '';
+attrs
+// {
+     nativeBuildInputs = [ flit ];
+     buildPhase = attrs.buildPhase or ''
+       runHook preBuild
+       flit build --format wheel
+       runHook postBuild
+     '';
 
-  # Flit packages, like setuptools packages, might have tests.
-  installCheckPhase = attrs.checkPhase or ''
-    ${python.interpreter} -m unittest discover
-  '';
-  doCheck = attrs.doCheck or true;
-}
+     # Flit packages, like setuptools packages, might have tests.
+     installCheckPhase = attrs.checkPhase or ''
+       ${python.interpreter} -m unittest discover
+     '';
+     doCheck = attrs.doCheck or true;
+   }

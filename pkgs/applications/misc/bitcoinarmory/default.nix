@@ -1,14 +1,23 @@
-{ stdenv, fetchFromGitHub, pythonPackages
-, pkgconfig, autoreconfHook, rsync
-, swig, qt48Full, fcgi
-, bitcoin, procps, utillinux
+{ stdenv
+, fetchFromGitHub
+, pythonPackages
+, pkgconfig
+, autoreconfHook
+, rsync
+, swig
+, qt48Full
+, fcgi
+, bitcoin
+, procps
+, utillinux
 }:
 let
 
   version = "0.96.1";
   inherit (pythonPackages) buildPythonApplication pyqt4 psutil twisted;
 
-in buildPythonApplication {
+in
+buildPythonApplication {
 
   name = "bitcoinarmory-${version}";
 
@@ -16,7 +25,8 @@ in buildPythonApplication {
     owner = "goatpig";
     repo = "BitcoinArmory";
     rev = "v${version}";
-    sha256 = "0pjk5qx16n3kvs9py62666qkwp2awkgd87by4karbj7vk6p1l14h"; fetchSubmodules = true;
+    sha256 = "0pjk5qx16n3kvs9py62666qkwp2awkgd87by4karbj7vk6p1l14h";
+    fetchSubmodules = true;
   };
 
   format = "other";
@@ -46,11 +56,11 @@ in buildPythonApplication {
   makeFlags = [ "PREFIX=$(out)" ];
 
   makeWrapperArgs = [
-    "--prefix            PATH : ${bitcoin}/bin"   # for `bitcoind`
-    "--prefix            PATH : ${procps}/bin"    # for `free`
+    "--prefix            PATH : ${bitcoin}/bin" # for `bitcoind`
+    "--prefix            PATH : ${procps}/bin" # for `free`
     "--prefix            PATH : ${utillinux}/bin" # for `whereis`
-    "--suffix LD_LIBRARY_PATH : $out/lib"         # for python bindings built as .so files
-    "--run    cd\\ $out/lib/armory"               # so that GUI resources can be loaded
+    "--suffix LD_LIBRARY_PATH : $out/lib" # for python bindings built as .so files
+    "--run    cd\\ $out/lib/armory" # so that GUI resources can be loaded
   ];
 
   # auditTmpdir runs during fixupPhase, so patchelf before that

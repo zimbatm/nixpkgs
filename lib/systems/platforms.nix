@@ -12,13 +12,17 @@ rec {
 
   pc32 = pcBase // { kernelArch = "i386"; };
 
-  pc32_simplekernel = pc32 // {
-    kernelAutoModules = false;
-  };
+  pc32_simplekernel = pc32
+    // {
+         kernelAutoModules = false;
+       }
+    ;
 
-  pc64_simplekernel = pc64 // {
-    kernelAutoModules = false;
-  };
+  pc64_simplekernel = pc64
+    // {
+         kernelAutoModules = false;
+       }
+    ;
 
   powernv = {
     name = "PowerNV";
@@ -203,12 +207,14 @@ rec {
   # Legacy attribute, for compatibility with existing configs only.
   raspberrypi2 = armv7l-hf-multiplatform;
 
-  scaleway-c1 = armv7l-hf-multiplatform // {
-    gcc = {
-      cpu = "cortex-a9";
-      fpu = "vfpv3";
-    };
-  };
+  scaleway-c1 = armv7l-hf-multiplatform
+    // {
+         gcc = {
+           cpu = "cortex-a9";
+           fpu = "vfpv3";
+         };
+       }
+    ;
 
   utilite = {
     name = "utilite";
@@ -236,25 +242,29 @@ rec {
     };
   };
 
-  guruplug = sheevaplug // {
-    # Define `CONFIG_MACH_GURUPLUG' (see
-    # <http://kerneltrap.org/mailarchive/git-commits-head/2010/5/19/33618>)
-    # and other GuruPlug-specific things.  Requires the `guruplug-defconfig'
-    # patch.
+  guruplug = sheevaplug
+    // {
+         # Define `CONFIG_MACH_GURUPLUG' (see
+         # <http://kerneltrap.org/mailarchive/git-commits-head/2010/5/19/33618>)
+         # and other GuruPlug-specific things.  Requires the `guruplug-defconfig'
+         # patch.
 
-    kernelBaseConfig = "guruplug_defconfig";
-  };
+         kernelBaseConfig = "guruplug_defconfig";
+       }
+    ;
 
-  beaglebone = armv7l-hf-multiplatform // {
-    name = "beaglebone";
-    kernelBaseConfig = "bb.org_defconfig";
-    kernelAutoModules = false;
-    kernelExtraConfig = ""; # TBD kernel config
-    kernelTarget = "zImage";
-  };
+  beaglebone = armv7l-hf-multiplatform
+    // {
+         name = "beaglebone";
+         kernelBaseConfig = "bb.org_defconfig";
+         kernelAutoModules = false;
+         kernelExtraConfig = ""; # TBD kernel config
+         kernelTarget = "zImage";
+       }
+    ;
 
   # https://developer.android.com/ndk/guides/abis#v7a
-  armv7a-android =  {
+  armv7a-android = {
     name = "armeabi-v7a";
     gcc = {
       arch = "armv7-a";
@@ -456,16 +466,16 @@ rec {
   };
 
   selectBySystem = system: {
-      "i486-linux" = pc32;
-      "i586-linux" = pc32;
-      "i686-linux" = pc32;
-      "x86_64-linux" = pc64;
-      "armv5tel-linux" = sheevaplug;
-      "armv6l-linux" = raspberrypi;
-      "armv7a-linux" = armv7l-hf-multiplatform;
-      "armv7l-linux" = armv7l-hf-multiplatform;
-      "aarch64-linux" = aarch64-multiplatform;
-      "mipsel-linux" = fuloong2f_n32;
-      "powerpc64le-linux" = powernv;
-    }.${system} or pcBase;
+    "i486-linux" = pc32;
+    "i586-linux" = pc32;
+    "i686-linux" = pc32;
+    "x86_64-linux" = pc64;
+    "armv5tel-linux" = sheevaplug;
+    "armv6l-linux" = raspberrypi;
+    "armv7a-linux" = armv7l-hf-multiplatform;
+    "armv7l-linux" = armv7l-hf-multiplatform;
+    "aarch64-linux" = aarch64-multiplatform;
+    "mipsel-linux" = fuloong2f_n32;
+    "powerpc64le-linux" = powernv;
+  }.${system} or pcBase;
 }

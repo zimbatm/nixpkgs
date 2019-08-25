@@ -7,7 +7,8 @@ let
 
   configFile = pkgs.writeText "unit.json" cfg.config;
 
-in {
+in
+{
   options = {
     services.unit = {
       enable = mkEnableOption "Unit App Server";
@@ -85,7 +86,7 @@ in {
     systemd.tmpfiles.rules = [
       "d '${cfg.stateDir}' 0750 ${cfg.user} ${cfg.group} - -"
       "d '${cfg.logDir}' 0750 ${cfg.user} ${cfg.group} - -"
-     ];
+    ];
 
     systemd.services.unit = {
       description = "Unit App Server";
@@ -113,13 +114,17 @@ in {
       };
     };
 
-    users.users = optionalAttrs (cfg.user == "unit") (singleton {
-      name = "unit";
-      group = cfg.group;
-    });
+    users.users = optionalAttrs (cfg.user == "unit") (
+      singleton {
+        name = "unit";
+        group = cfg.group;
+      }
+    );
 
-    users.groups = optionalAttrs (cfg.group == "unit") (singleton {
-      name = "unit";
-    });
+    users.groups = optionalAttrs (cfg.group == "unit") (
+      singleton {
+        name = "unit";
+      }
+    );
   };
 }

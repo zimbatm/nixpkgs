@@ -1,5 +1,12 @@
-{ stdenv, fetchurl
-, libGLU_combined, libXi, libXt, libXext, libX11, libXmu, freeglut
+{ stdenv
+, fetchurl
+, libGLU_combined
+, libXi
+, libXt
+, libXext
+, libX11
+, libXmu
+, freeglut
 }:
 
 stdenv.mkDerivation rec {
@@ -15,10 +22,12 @@ stdenv.mkDerivation rec {
   };
 
   patches = [
-    (fetchurl {
-       url = "mirror://debian/pool/main/s/space-orbit/space-orbit_${version}-${patchversion}.diff.gz";
-       sha256 = "1v3s97day6fhv08l2rn81waiprhi1lfyjjsj55axfh6n6zqfn1w2";
-     })
+    (
+      fetchurl {
+        url = "mirror://debian/pool/main/s/space-orbit/space-orbit_${version}-${patchversion}.diff.gz";
+        sha256 = "1v3s97day6fhv08l2rn81waiprhi1lfyjjsj55axfh6n6zqfn1w2";
+      }
+    )
   ];
 
   preBuild = ''
@@ -28,13 +37,13 @@ stdenv.mkDerivation rec {
   '';
 
   installPhase = ''
-    mkdir -p $out/bin
-    cp -r .. $out/dump
-    cat >$out/bin/space-orbit <<EOF
-#! ${stdenv.shell}
-exec $out/dump/orbit "\$@"
-EOF
-    chmod a+x $out/bin/space-orbit
+        mkdir -p $out/bin
+        cp -r .. $out/dump
+        cat >$out/bin/space-orbit <<EOF
+    #! ${stdenv.shell}
+    exec $out/dump/orbit "\$@"
+    EOF
+        chmod a+x $out/bin/space-orbit
   '';
 
   meta = with stdenv.lib; {

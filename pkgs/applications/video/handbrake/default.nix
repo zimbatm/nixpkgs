@@ -3,29 +3,61 @@
 # Derivation patches HandBrake to use Nix closure dependencies.
 #
 
-{ stdenv, lib, fetchurl,
-  # Main build tools
-  python2, pkgconfig, autoconf, automake, cmake, nasm, libtool, m4,
-  # Processing, video codecs, containers
-  ffmpeg-full, nv-codec-headers, libogg, x264, x265, libvpx, libtheora,
-  # Codecs, audio
-  libopus, lame, libvorbis, a52dec, speex, libsamplerate,
-  # Text processing
-  libiconv, fribidi, fontconfig, freetype, libass, jansson, libxml2, harfbuzz,
-  # Optical media
-  libdvdread, libdvdnav, libdvdcss, libbluray,
-  useGtk ? true, wrapGAppsHook ? null,
-                 intltool ? null,
-                 glib ? null,
-                 gtk3 ? null,
-                 libappindicator-gtk3 ? null,
-                 libnotify ? null,
-                 gst_all_1 ? null,
-                 dbus-glib ? null,
-                 udev ? null,
-                 libgudev ? null,
-                 hicolor-icon-theme ? null,
-  useFdk ? false, fdk_aac ? null
+{ stdenv
+, lib
+, fetchurl
+, # Main build tools
+  python2
+, pkgconfig
+, autoconf
+, automake
+, cmake
+, nasm
+, libtool
+, m4
+, # Processing, video codecs, containers
+  ffmpeg-full
+, nv-codec-headers
+, libogg
+, x264
+, x265
+, libvpx
+, libtheora
+, # Codecs, audio
+  libopus
+, lame
+, libvorbis
+, a52dec
+, speex
+, libsamplerate
+, # Text processing
+  libiconv
+, fribidi
+, fontconfig
+, freetype
+, libass
+, jansson
+, libxml2
+, harfbuzz
+, # Optical media
+  libdvdread
+, libdvdnav
+, libdvdcss
+, libbluray
+, useGtk ? true
+, wrapGAppsHook ? null
+, intltool ? null
+, glib ? null
+, gtk3 ? null
+, libappindicator-gtk3 ? null
+, libnotify ? null
+, gst_all_1 ? null
+, dbus-glib ? null
+, udev ? null
+, libgudev ? null
+, hicolor-icon-theme ? null
+, useFdk ? false
+, fdk_aac ? null
 }:
 
 stdenv.mkDerivation rec {
@@ -38,22 +70,61 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    python2 pkgconfig autoconf automake cmake nasm libtool m4
-  ] ++ lib.optionals useGtk [ intltool wrapGAppsHook ];
+    python2
+    pkgconfig
+    autoconf
+    automake
+    cmake
+    nasm
+    libtool
+    m4
+  ]
+  ++ lib.optionals useGtk [ intltool wrapGAppsHook ]
+  ;
 
   buildInputs = [
-    ffmpeg-full libogg libtheora x264 x265 libvpx
-    libopus lame libvorbis a52dec speex libsamplerate
-    libiconv fribidi fontconfig freetype libass jansson libxml2 harfbuzz
-    libdvdread libdvdnav libdvdcss libbluray
-  ] ++ lib.optionals useGtk [
-    glib gtk3 libappindicator-gtk3 libnotify
-    gst_all_1.gstreamer gst_all_1.gst-plugins-base dbus-glib udev
-    libgudev hicolor-icon-theme
-  ] ++ lib.optional useFdk fdk_aac
+    ffmpeg-full
+    libogg
+    libtheora
+    x264
+    x265
+    libvpx
+    libopus
+    lame
+    libvorbis
+    a52dec
+    speex
+    libsamplerate
+    libiconv
+    fribidi
+    fontconfig
+    freetype
+    libass
+    jansson
+    libxml2
+    harfbuzz
+    libdvdread
+    libdvdnav
+    libdvdcss
+    libbluray
+  ]
+  ++ lib.optionals useGtk [
+       glib
+       gtk3
+       libappindicator-gtk3
+       libnotify
+       gst_all_1.gstreamer
+       gst_all_1.gst-plugins-base
+       dbus-glib
+       udev
+       libgudev
+       hicolor-icon-theme
+     ]
+  ++ lib.optional useFdk fdk_aac
   # NOTE: 2018-12-27: Handbrake supports nv-codec-headers for Linux only,
   # look at ./make/configure.py search "enable_nvenc"
-    ++ lib.optional stdenv.isLinux nv-codec-headers;
+  ++ lib.optional stdenv.isLinux nv-codec-headers
+  ;
 
   # NOTE: 2018-12-25: v1.2.0 now requires cmake dep
   # (default distribution bundles&builds 3rd party libs),
@@ -76,7 +147,7 @@ stdenv.mkDerivation rec {
     "--disable-df-fetch"
     "--disable-df-verify"
     (if useGtk then "--disable-gtk-update-checks" else "--disable-gtk")
-    (if useFdk then "--enable-fdk-aac"            else "")
+    (if useFdk then "--enable-fdk-aac" else "")
   ];
 
   # NOTE: 2018-12-27: Check NixOS HandBrake test if changing

@@ -4,7 +4,8 @@ with lib;
 
 let
   cfg = config.services.offlineimap;
-in {
+in
+{
 
   options.services.offlineimap = {
     enable = mkEnableOption "OfflineIMAP, a software to dispose your mailbox(es) as a local Maildir(s)";
@@ -52,7 +53,7 @@ in {
     systemd.user.services.offlineimap = {
       description = "Offlineimap: a software to dispose your mailbox(es) as a local Maildir(s)";
       serviceConfig = {
-        Type      = "oneshot";
+        Type = "oneshot";
         ExecStart = "${cfg.package}/bin/offlineimap -u syslog -o -1";
         TimeoutStartSec = cfg.timeoutStartSec;
       };
@@ -61,12 +62,14 @@ in {
     environment.systemPackages = [ cfg.package ];
     systemd.user.timers.offlineimap = {
       description = "offlineimap timer";
-      timerConfig               = {
+      timerConfig = {
         Unit = "offlineimap.service";
         OnCalendar = cfg.onCalendar;
         # start immediately after computer is started:
         Persistent = "true";
       };
-    } // optionalAttrs cfg.enable { wantedBy = [ "default.target" ]; };
+    }
+    // optionalAttrs cfg.enable { wantedBy = [ "default.target" ]; }
+    ;
   };
 }

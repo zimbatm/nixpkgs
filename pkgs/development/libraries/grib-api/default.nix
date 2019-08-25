@@ -1,6 +1,13 @@
-{ fetchurl, stdenv,
-  cmake, netcdf, gfortran, jasper, libpng,
-  enablePython ? false, pythonPackages }:
+{ fetchurl
+, stdenv
+, cmake
+, netcdf
+, gfortran
+, jasper
+, libpng
+, enablePython ? false
+, pythonPackages
+}:
 
 stdenv.mkDerivation rec{
   name = "grib-api-${version}";
@@ -16,23 +23,27 @@ stdenv.mkDerivation rec{
     substituteInPlace "src/grib_jasper_encoding.c" --replace "image.inmem_    = 1;" ""
   '';
 
-  buildInputs = [ cmake
-                  netcdf
-                  gfortran
-                  jasper
-                  libpng
-                ] ++ stdenv.lib.optionals enablePython [
-                  pythonPackages.python
-                ];
+  buildInputs = [
+    cmake
+    netcdf
+    gfortran
+    jasper
+    libpng
+  ]
+  ++ stdenv.lib.optionals enablePython [
+       pythonPackages.python
+     ]
+  ;
 
   propagatedBuildInputs = stdenv.lib.optionals enablePython [
-                  pythonPackages.numpy
-                ];
+    pythonPackages.numpy
+  ];
 
-  cmakeFlags = [ "-DENABLE_PYTHON=${if enablePython then "ON" else "OFF"}"
-                 "-DENABLE_PNG=ON"
-                 "-DENABLE_FORTRAN=ON"
-               ];
+  cmakeFlags = [
+    "-DENABLE_PYTHON=${if enablePython then "ON" else "OFF"}"
+    "-DENABLE_PNG=ON"
+    "-DENABLE_FORTRAN=ON"
+  ];
 
   enableParallelBuilding = true;
 
@@ -43,9 +54,11 @@ stdenv.mkDerivation rec{
   # in /nix/store by setting DYLD_LIBRARY_PATH
   checkPhase = stdenv.lib.optionalString (stdenv.isDarwin) ''
     substituteInPlace "tests/include.sh" --replace "set -ea" "set -ea; export DYLD_LIBRARY_PATH=$(pwd)/lib"
-  '' + ''
+  ''
+  + ''
     ctest -R "t_definitions|t_calendar|t_unit_tests" -VV
-  '';
+  ''
+  ;
 
 
   meta = with stdenv.lib; {
@@ -61,4 +74,3 @@ stdenv.mkDerivation rec{
     maintainers = with maintainers; [ knedlsepp ];
   };
 }
-

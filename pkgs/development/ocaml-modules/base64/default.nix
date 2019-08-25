@@ -1,6 +1,8 @@
 { lib, fetchzip, buildDunePackage, alcotest, bos }:
 
-let version = "3.2.0"; in
+let
+  version = "3.2.0";
+in
 
 buildDunePackage {
   pname = "base64";

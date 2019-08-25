@@ -1,9 +1,11 @@
-{stdenv, fetchurl, emacs}:
+{ stdenv, fetchurl, emacs }:
 
 # Note: Don't have a version, using date as fallback.
-let version = "20150111";
+let
+  version = "20150111";
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "emacs-d-${version}";
 
   src = fetchurl {

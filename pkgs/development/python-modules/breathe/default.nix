@@ -20,4 +20,3 @@ buildPythonPackage rec {
     inherit (sphinx.meta) platforms;
   };
 }
-

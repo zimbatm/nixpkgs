@@ -1,9 +1,20 @@
-{ stdenv, fetchurl, cmake, qtbase, pkgconfig, python2Packages, dbus-glib, dbus
-, telepathy-farstream, telepathy-glib, fetchpatch }:
+{ stdenv
+, fetchurl
+, cmake
+, qtbase
+, pkgconfig
+, python2Packages
+, dbus-glib
+, dbus
+, telepathy-farstream
+, telepathy-glib
+, fetchpatch
+}:
 
 let
   inherit (python2Packages) python dbus-python;
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "telepathy-qt-0.9.7";
 
   src = fetchurl {
@@ -18,10 +29,12 @@ in stdenv.mkDerivation rec {
 
   patches = [
     # https://github.com/TelepathyIM/telepathy-qt/issues/25
-    (fetchpatch {
-      url = https://github.com/TelepathyIM/telepathy-qt/commit/d654dc70dbec7097e96e6d96ca74ab1b5b00ef8c.patch;
-      sha256 = "1jzd9b9rqh3c8xlq8dr7c0r8aabzf5ywv2gpkk6phh3xwngzrfbh";
-    })
+    (
+      fetchpatch {
+        url = https://github.com/TelepathyIM/telepathy-qt/commit/d654dc70dbec7097e96e6d96ca74ab1b5b00ef8c.patch;
+        sha256 = "1jzd9b9rqh3c8xlq8dr7c0r8aabzf5ywv2gpkk6phh3xwngzrfbh";
+      }
+    )
   ];
 
   # No point in building tests if they are not run

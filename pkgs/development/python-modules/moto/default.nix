@@ -1,4 +1,7 @@
-{ lib, buildPythonPackage, fetchPypi, isPy27
+{ lib
+, buildPythonPackage
+, fetchPypi
+, isPy27
 , aws-xray-sdk
 , backports_tempfile
 , boto
@@ -59,7 +62,9 @@ buildPythonPackage rec {
     sshpubkeys
     werkzeug
     xmltodict
-  ] ++ lib.optionals isPy27 [ backports_tempfile ];
+  ]
+  ++ lib.optionals isPy27 [ backports_tempfile ]
+  ;
 
   checkInputs = [ boto3 freezegun nose sure ];
 
@@ -73,6 +78,6 @@ buildPythonPackage rec {
     description = "Allows your tests to easily mock out AWS Services";
     homepage = https://github.com/spulec/moto;
     license = licenses.asl20;
-    maintainers = [ ];
+    maintainers = [];
   };
 }

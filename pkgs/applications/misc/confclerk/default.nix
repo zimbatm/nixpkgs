@@ -1,6 +1,8 @@
 { stdenv, fetchurl, qt4, qmake4Hook }:
 
-let version = "0.6.4"; in
+let
+  version = "0.6.4";
+in
 stdenv.mkDerivation {
   name = "confclerk-${version}";
 

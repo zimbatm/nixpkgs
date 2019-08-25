@@ -6,7 +6,7 @@ let
   cfg = config.services.prometheus.pushgateway;
 
   cmdlineArgs =
-       opt "web.listen-address" cfg.web.listen-address
+    opt "web.listen-address" cfg.web.listen-address
     ++ opt "web.telemetry-path" cfg.web.telemetry-path
     ++ opt "web.external-url" cfg.web.external-url
     ++ opt "web.route-prefix" cfg.web.route-prefix
@@ -14,11 +14,13 @@ let
     ++ opt "persistence.interval" cfg.persistence.interval
     ++ opt "log.level" cfg.log.level
     ++ opt "log.format" cfg.log.format
-    ++ cfg.extraFlags;
+    ++ cfg.extraFlags
+    ;
 
-  opt = k : v : optional (v != null) ''--${k}="${v}"'';
+  opt = k: v: optional (v != null) ''--${k}="${v}"'';
 
-in {
+in
+{
   options = {
     services.prometheus.pushgateway = {
       enable = mkEnableOption "Prometheus Pushgateway";
@@ -83,7 +85,7 @@ in {
       };
 
       log.level = mkOption {
-        type = types.nullOr (types.enum ["debug" "info" "warn" "error" "fatal"]);
+        type = types.nullOr (types.enum [ "debug" "info" "warn" "error" "fatal" ]);
         default = null;
         description = ''
           Only log messages with the given severity or above.
@@ -145,20 +147,24 @@ in {
       {
         assertion = !hasPrefix "/" cfg.stateDir;
         message =
-          "The option services.prometheus.pushgateway.stateDir" +
-          " shouldn't be an absolute directory." +
-          " It should be a directory relative to /var/lib.";
+          "The option services.prometheus.pushgateway.stateDir"
+          + " shouldn't be an absolute directory."
+          + " It should be a directory relative to /var/lib."
+          ;
       }
     ];
     systemd.services.pushgateway = {
       wantedBy = [ "multi-user.target" ];
-      after    = [ "network.target" ];
+      after = [ "network.target" ];
       serviceConfig = {
-        Restart  = "always";
+        Restart = "always";
         DynamicUser = true;
-        ExecStart = "${cfg.package}/bin/pushgateway" +
-          optionalString (length cmdlineArgs != 0) (" \\\n  " +
-            concatStringsSep " \\\n  " cmdlineArgs);
+        ExecStart = "${cfg.package}/bin/pushgateway"
+          + optionalString (length cmdlineArgs != 0) (
+              " \\\n  "
+              + concatStringsSep " \\\n  " cmdlineArgs
+            )
+          ;
         StateDirectory = if cfg.persistMetrics then cfg.stateDir else null;
       };
     };

@@ -1,8 +1,9 @@
 let
   nginxRoot = "/run/nginx";
 in
-  import ./make-test.nix ({...}: {
-    name  = "nghttpx";
+import ./make-test.nix (
+  { ... }: {
+    name = "nghttpx";
     nodes = {
       webserver = {
         networking.firewall.allowedTCPPorts = [ 80 ];
@@ -26,7 +27,8 @@ in
         services.nghttpx = {
           enable = true;
           frontends = [
-            { server = {
+            {
+              server = {
                 host = "*";
                 port = 80;
               };
@@ -37,7 +39,8 @@ in
             }
           ];
           backends = [
-            { server = {
+            {
+              server = {
                 host = "webserver";
                 port = 80;
               };
@@ -58,4 +61,5 @@ in
       $proxy->waitForOpenPort("80");
       $client->waitUntilSucceeds("curl -s --fail http://proxy/hello-world.txt");
     '';
-  })
+  }
+)

@@ -1,12 +1,41 @@
-{ stdenv, fetchPypi, python, buildPythonPackage, isPy3k, pycairo, backports_functools_lru_cache
-, which, cycler, dateutil, nose, numpy, pyparsing, sphinx, tornado, kiwisolver
-, freetype, libpng, pkgconfig, mock, pytz, pygobject3
-, enableGhostscript ? true, ghostscript ? null, gtk3
-, enableGtk2 ? false, pygtk ? null, gobject-introspection
-, enableGtk3 ? false, cairo
-# darwin has its own "MacOSX" backend
-, enableTk ? !stdenv.isDarwin, tcl ? null, tk ? null, tkinter ? null, libX11 ? null
-, enableQt ? false, pyqt4
+{ stdenv
+, fetchPypi
+, python
+, buildPythonPackage
+, isPy3k
+, pycairo
+, backports_functools_lru_cache
+, which
+, cycler
+, dateutil
+, nose
+, numpy
+, pyparsing
+, sphinx
+, tornado
+, kiwisolver
+, freetype
+, libpng
+, pkgconfig
+, mock
+, pytz
+, pygobject3
+, enableGhostscript ? true
+, ghostscript ? null
+, gtk3
+, enableGtk2 ? false
+, pygtk ? null
+, gobject-introspection
+, enableGtk3 ? false
+, cairo
+  # darwin has its own "MacOSX" backend
+, enableTk ? !stdenv.isDarwin
+, tcl ? null
+, tk ? null
+, tkinter ? null
+, libX11 ? null
+, enableQt ? false
+, pyqt4
 , libcxx
 , Cocoa
 , pythonOlder
@@ -14,11 +43,12 @@
 
 assert enableGhostscript -> ghostscript != null;
 assert enableGtk2 -> pygtk != null;
-assert enableTk -> (tcl != null)
-                && (tk != null)
-                && (tkinter != null)
-                && (libX11 != null)
-                ;
+assert enableTk
+-> (tcl != null)
+   && (tk != null)
+   && (tkinter != null)
+   && (libX11 != null)
+;
 assert enableQt -> pyqt4 != null;
 
 buildPythonPackage rec {
@@ -40,16 +70,29 @@ buildPythonPackage rec {
 
   buildInputs = [ python which sphinx stdenv ]
     ++ stdenv.lib.optional enableGhostscript ghostscript
-    ++ stdenv.lib.optional stdenv.isDarwin [ Cocoa ];
+    ++ stdenv.lib.optional stdenv.isDarwin [ Cocoa ]
+    ;
 
   propagatedBuildInputs =
-    [ cycler dateutil nose numpy pyparsing tornado freetype kiwisolver
-      libpng mock pytz ]
+    [
+      cycler
+      dateutil
+      nose
+      numpy
+      pyparsing
+      tornado
+      freetype
+      kiwisolver
+      libpng
+      mock
+      pytz
+    ]
     ++ stdenv.lib.optional (pythonOlder "3.3") backports_functools_lru_cache
     ++ stdenv.lib.optional enableGtk2 pygtk
     ++ stdenv.lib.optionals enableGtk3 [ cairo pycairo gtk3 gobject-introspection pygobject3 ]
     ++ stdenv.lib.optionals enableTk [ tcl tk tkinter libX11 ]
-    ++ stdenv.lib.optionals enableQt [ pyqt4 ];
+    ++ stdenv.lib.optionals enableQt [ pyqt4 ]
+  ;
 
   patches =
     [ ./basedirlist.patch ];
@@ -65,8 +108,8 @@ buildPythonPackage rec {
       inherit (stdenv.lib.strings) substring;
       tcl_tk_cache = ''"${tk}/lib", "${tcl}/lib", "${substring 0 3 tk.version}"'';
     in
-    stdenv.lib.optionalString enableTk
-      "sed -i '/self.tcl_tk_cache = None/s|None|${tcl_tk_cache}|' setupext.py";
+      stdenv.lib.optionalString enableTk
+        "sed -i '/self.tcl_tk_cache = None/s|None|${tcl_tk_cache}|' setupext.py";
 
   checkPhase = ''
     ${python.interpreter} tests.py
@@ -87,7 +130,7 @@ buildPythonPackage rec {
 
   meta = with stdenv.lib; {
     description = "Python plotting library, making publication quality plots";
-    homepage    = "https://matplotlib.org/";
+    homepage = "https://matplotlib.org/";
     maintainers = with maintainers; [ lovek323 ];
   };
 

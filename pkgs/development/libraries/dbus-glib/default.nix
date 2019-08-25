@@ -1,5 +1,12 @@
-{ stdenv, fetchurl, buildPackages
-, pkgconfig, expat, gettext, libiconv, dbus, glib
+{ stdenv
+, fetchurl
+, buildPackages
+, pkgconfig
+, expat
+, gettext
+, libiconv
+, dbus
+, glib
 }:
 
 stdenv.mkDerivation rec {
@@ -19,9 +26,10 @@ stdenv.mkDerivation rec {
 
   propagatedBuildInputs = [ dbus glib ];
 
-  configureFlags = [ "--exec-prefix=${placeholder "dev"}" ] ++
-    stdenv.lib.optional (stdenv.buildPlatform != stdenv.hostPlatform)
-      "--with-dbus-binding-tool=${buildPackages.dbus-glib.dev}/bin/dbus-binding-tool";
+  configureFlags = [ "--exec-prefix=${placeholder "dev"}" ]
+    ++ stdenv.lib.optional (stdenv.buildPlatform != stdenv.hostPlatform)
+         "--with-dbus-binding-tool=${buildPackages.dbus-glib.dev}/bin/dbus-binding-tool"
+    ;
 
   doCheck = false;
 
@@ -31,7 +39,7 @@ stdenv.mkDerivation rec {
     homepage = https://dbus.freedesktop.org;
     license = with stdenv.lib.licenses; [ afl21 gpl2 ];
     description = "Obsolete glib bindings for D-Bus lightweight IPC mechanism";
-    maintainers = [ ];
+    maintainers = [];
     platforms = stdenv.lib.platforms.unix;
   };
 }

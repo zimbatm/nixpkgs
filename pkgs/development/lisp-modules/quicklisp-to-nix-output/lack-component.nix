@@ -5,7 +5,7 @@ rec {
 
   description = '''';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/lack/2018-12-10/lack-20181210-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "lack-component";
 
-  asdFilesToKeep = ["lack-component.asd"];
+  asdFilesToKeep = [ "lack-component.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM lack-component DESCRIPTION NIL SHA256

@@ -1,10 +1,17 @@
-{ stdenv, fetchFromGitHub, mkDerivation
-, cmake, extra-cmake-modules
-, qtbase, kcoreaddons, kdecoration }:
+{ stdenv
+, fetchFromGitHub
+, mkDerivation
+, cmake
+, extra-cmake-modules
+, qtbase
+, kcoreaddons
+, kdecoration
+}:
 
 let
   version = "2017-03-15";
-in mkDerivation rec {
+in
+mkDerivation rec {
   name = "kde2-decoration-${version}";
 
   src = fetchFromGitHub {

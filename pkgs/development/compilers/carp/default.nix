@@ -15,7 +15,11 @@ haskellPackages.mkDerivation rec {
   buildDepends = [ makeWrapper ];
 
   executableHaskellDepends = with haskellPackages; [
-    HUnit blaze-markup blaze-html split cmdargs
+    HUnit
+    blaze-markup
+    blaze-html
+    split
+    cmdargs
   ];
 
   isExecutable = true;
@@ -37,11 +41,11 @@ haskellPackages.mkDerivation rec {
   '';
 
   description = "A statically typed lisp, without a GC, for real-time applications";
-  homepage    = https://github.com/carp-lang/Carp;
-  license     = stdenv.lib.licenses.asl20;
+  homepage = https://github.com/carp-lang/Carp;
+  license = stdenv.lib.licenses.asl20;
   maintainers = with stdenv.lib.maintainers; [ jluttine ];
 
   # Windows not (yet) supported.
-  platforms   = with stdenv.lib.platforms; unix ++ darwin;
+  platforms = with stdenv.lib.platforms; unix ++ darwin;
 
 }

@@ -1,4 +1,6 @@
-{ stdenv, lib, fetchurl
+{ stdenv
+, lib
+, fetchurl
 , linuxHeaders ? null
 , useBSDCompatHeaders ? true
 }:
@@ -32,7 +34,7 @@ stdenv.mkDerivation rec {
   version = "1.1.22";
 
   src = fetchurl {
-    url    = "https://www.musl-libc.org/releases/${pname}-${version}.tar.gz";
+    url = "https://www.musl-libc.org/releases/${pname}-${version}.tar.gz";
     sha256 = "1qr9xqdzziy5bsyyqlh6k8yz056ll55d5yvc0gbhz61ginj422cb";
   };
 
@@ -52,13 +54,16 @@ stdenv.mkDerivation rec {
 
   patches = [
     # Minor touchup to build system making dynamic linker symlink relative
-    (fetchurl {
-      url = https://raw.githubusercontent.com/openwrt/openwrt/87606e25afac6776d1bbc67ed284434ec5a832b4/toolchain/musl/patches/300-relative.patch;
-      sha256 = "0hfadrycb60sm6hb6by4ycgaqc9sgrhh42k39v8xpmcvdzxrsq2n";
-    })
+    (
+      fetchurl {
+        url = https://raw.githubusercontent.com/openwrt/openwrt/87606e25afac6776d1bbc67ed284434ec5a832b4/toolchain/musl/patches/300-relative.patch;
+        sha256 = "0hfadrycb60sm6hb6by4ycgaqc9sgrhh42k39v8xpmcvdzxrsq2n";
+      }
+    )
   ];
   CFLAGS = [ "-fstack-protector-strong" ]
-    ++ lib.optional stdenv.hostPlatform.isPower "-mlong-double-64";
+    ++ lib.optional stdenv.hostPlatform.isPower "-mlong-double-64"
+    ;
 
   configureFlags = [
     "--enable-shared"
@@ -102,19 +107,21 @@ stdenv.mkDerivation rec {
       -lc \
       -B $out/lib \
       -Wl,-dynamic-linker=$(ls $out/lib/ld-*)
-  '' + lib.optionalString useBSDCompatHeaders ''
-    install -D ${queue_h} $dev/include/sys/queue.h
-    install -D ${cdefs_h} $dev/include/sys/cdefs.h
-    install -D ${tree_h} $dev/include/sys/tree.h
-  '';
+  ''
+  + lib.optionalString useBSDCompatHeaders ''
+      install -D ${queue_h} $dev/include/sys/queue.h
+      install -D ${cdefs_h} $dev/include/sys/cdefs.h
+      install -D ${tree_h} $dev/include/sys/tree.h
+    ''
+  ;
 
   passthru.linuxHeaders = linuxHeaders;
 
   meta = {
     description = "An efficient, small, quality libc implementation";
-    homepage    = "http://www.musl-libc.org";
-    license     = lib.licenses.mit;
-    platforms   = lib.platforms.linux;
+    homepage = "http://www.musl-libc.org";
+    license = lib.licenses.mit;
+    platforms = lib.platforms.linux;
     maintainers = [ lib.maintainers.thoughtpolice ];
   };
 }

@@ -1,6 +1,26 @@
-{ stdenv, fetchurl, xorg, freetype, fontconfig, openssl, glib, nss, nspr, expat
-, alsaLib, dbus, zlib, libxml2, libxslt, makeWrapper, xkeyboard_config, systemd
-, libGL, xcbutilkeysyms, xdg_utils, libtool }:
+{ stdenv
+, fetchurl
+, xorg
+, freetype
+, fontconfig
+, openssl
+, glib
+, nss
+, nspr
+, expat
+, alsaLib
+, dbus
+, zlib
+, libxml2
+, libxslt
+, makeWrapper
+, xkeyboard_config
+, systemd
+, libGL
+, xcbutilkeysyms
+, xdg_utils
+, libtool
+}:
 
 let
   version = "4.30.5.1682";
@@ -37,8 +57,11 @@ let
     xcbutilkeysyms
     systemd
     libGL
-  ] + ":${stdenv.cc.cc.lib}/lib64";
-in stdenv.mkDerivation {
+  ]
+  + ":${stdenv.cc.cc.lib}/lib64"
+  ;
+in
+stdenv.mkDerivation {
   name = "hipchat-${version}";
 
   src = fetchurl {

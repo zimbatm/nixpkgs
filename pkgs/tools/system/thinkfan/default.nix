@@ -1,5 +1,9 @@
-{ stdenv, fetchurl, cmake
-, smartSupport ? false, libatasmart }:
+{ stdenv
+, fetchurl
+, cmake
+, smartSupport ? false
+, libatasmart
+}:
 
 stdenv.mkDerivation rec {
   name = "thinkfan-${version}";

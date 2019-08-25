@@ -1,6 +1,17 @@
-{ stdenv, fetchFromGitHub, fetchpatch
-, pkgconfig, dbus, gdk-pixbuf, glib, libX11, gtk2, librsvg
-, dbus-glib, autoreconfHook, wrapGAppsHook }:
+{ stdenv
+, fetchFromGitHub
+, fetchpatch
+, pkgconfig
+, dbus
+, gdk-pixbuf
+, glib
+, libX11
+, gtk2
+, librsvg
+, dbus-glib
+, autoreconfHook
+, wrapGAppsHook
+}:
 
 stdenv.mkDerivation rec {
   name = "volnoti-unstable-${version}";
@@ -16,16 +27,24 @@ stdenv.mkDerivation rec {
   patches = [
     # Fix dbus interface headers. See
     # https://github.com/davidbrazdil/volnoti/pull/10
-    (fetchpatch {
-      url = "https://github.com/davidbrazdil/volnoti/pull/10.patch";
-      sha256 = "046zfdjmvhb7jrsgh04vfgi35sgy1zkrhd3bzdby3nvds1wslfam";
-    })
+    (
+      fetchpatch {
+        url = "https://github.com/davidbrazdil/volnoti/pull/10.patch";
+        sha256 = "046zfdjmvhb7jrsgh04vfgi35sgy1zkrhd3bzdby3nvds1wslfam";
+      }
+    )
   ];
 
   nativeBuildInputs = [ pkgconfig autoreconfHook wrapGAppsHook ];
 
   buildInputs = [
-    dbus gdk-pixbuf glib libX11 gtk2 dbus-glib librsvg
+    dbus
+    gdk-pixbuf
+    glib
+    libX11
+    gtk2
+    dbus-glib
+    librsvg
   ];
 
   meta = with stdenv.lib; {

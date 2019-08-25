@@ -1,5 +1,8 @@
-{ lib, buildPythonPackage, fetchPypi,
-  dateutil, simplejson
+{ lib
+, buildPythonPackage
+, fetchPypi
+, dateutil
+, simplejson
 }:
 
 buildPythonPackage rec {

@@ -5,21 +5,22 @@ let
   pname = "lvmsync";
   version = (import ./gemset.nix)."${pname}".version;
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
 
   name = "${pname}-${version}";
 
   env = bundlerEnv {
     name = "${pname}-${version}-gems";
     ruby = ruby;
-    gemfile  = ./Gemfile;
+    gemfile = ./Gemfile;
     lockfile = ./Gemfile.lock;
-    gemset   = ./gemset.nix;
+    gemset = ./gemset.nix;
   };
 
   buildInputs = [ makeWrapper ];
 
-  phases = ["installPhase"];
+  phases = [ "installPhase" ];
 
   installPhase = ''
     mkdir -p $out/bin

@@ -3,7 +3,7 @@
 with pkgs;
 
 {
-  cc-wrapper = callPackage ./cc-wrapper { };
+  cc-wrapper = callPackage ./cc-wrapper {};
   cc-wrapper-gcc = callPackage ./cc-wrapper { stdenv = gccStdenv; };
   cc-wrapper-gcc7 = callPackage ./cc-wrapper { stdenv = gcc7Stdenv; };
   cc-wrapper-gcc8 = callPackage ./cc-wrapper { stdenv = gcc8Stdenv; };
@@ -20,7 +20,7 @@ with pkgs;
   cc-wrapper-libcxx-6 = callPackage ./cc-wrapper { stdenv = llvmPackages_6.libcxxStdenv; };
   cc-wrapper-clang-7 = callPackage ./cc-wrapper { stdenv = llvmPackages_7.stdenv; };
   cc-wrapper-libcxx-7 = callPackage ./cc-wrapper { stdenv = llvmPackages_7.libcxxStdenv; };
-  stdenv-inputs = callPackage ./stdenv-inputs { };
+  stdenv-inputs = callPackage ./stdenv-inputs {};
 
   cc-multilib-gcc = callPackage ./cc-wrapper/multilib.nix { stdenv = gccMultiStdenv; };
   cc-multilib-clang = callPackage ./cc-wrapper/multilib.nix { stdenv = clangMultiStdenv; };

@@ -6,7 +6,8 @@ let
   cfg = config.hardware.bluetooth;
   bluez-bluetooth = cfg.package;
 
-in {
+in
+{
 
   ###### interface
 
@@ -16,7 +17,7 @@ in {
       enable = mkEnableOption "support for Bluetooth";
 
       powerOnBoot = mkOption {
-        type    = types.bool;
+        type = types.bool;
         default = true;
         description = "Whether to power up the default Bluetooth controller on boot.";
       };
@@ -71,12 +72,12 @@ in {
 
     services.udev.packages = [ bluez-bluetooth ];
     services.dbus.packages = [ bluez-bluetooth ];
-    systemd.packages       = [ bluez-bluetooth ];
+    systemd.packages = [ bluez-bluetooth ];
 
     systemd.services = {
       bluetooth = {
         wantedBy = [ "bluetooth.target" ];
-        aliases  = [ "dbus-org.bluez.service" ];
+        aliases = [ "dbus-org.bluez.service" ];
       };
     };
 

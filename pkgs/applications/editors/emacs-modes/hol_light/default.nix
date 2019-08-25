@@ -1,7 +1,7 @@
 { stdenv, fetchsvn }:
 
 stdenv.mkDerivation rec {
-  name    = "hol_light-mode-${version}";
+  name = "hol_light-mode-${version}";
   version = "73";
 
   src = fetchsvn {
@@ -18,9 +18,9 @@ stdenv.mkDerivation rec {
 
   meta = {
     description = "A HOL Light mode for Emacs";
-    homepage    = http://www.cl.cam.ac.uk/~jrh13/hol-light/;
-    license     = stdenv.lib.licenses.gpl2Plus;
-    platforms   = stdenv.lib.platforms.all;
+    homepage = http://www.cl.cam.ac.uk/~jrh13/hol-light/;
+    license = stdenv.lib.licenses.gpl2Plus;
+    platforms = stdenv.lib.platforms.all;
     maintainers = [ stdenv.lib.maintainers.thoughtpolice ];
   };
 }

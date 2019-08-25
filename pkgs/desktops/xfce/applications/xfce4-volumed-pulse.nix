@@ -1,10 +1,15 @@
-{ stdenv, fetchurl, pkgconfig, libpulseaudio
-, gtk2, libnotify
-, keybinder, xfconf
+{ stdenv
+, fetchurl
+, pkgconfig
+, libpulseaudio
+, gtk2
+, libnotify
+, keybinder
+, xfconf
 }:
 
 stdenv.mkDerivation rec {
-  p_name  = "xfce4-volumed-pulse";
+  p_name = "xfce4-volumed-pulse";
   ver_maj = "0.2";
   ver_min = "2";
   name = "${p_name}-${ver_maj}.${ver_min}";
@@ -15,8 +20,12 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs =
-    [ libpulseaudio gtk2
-      keybinder xfconf libnotify
+    [
+      libpulseaudio
+      gtk2
+      keybinder
+      xfconf
+      libnotify
     ];
 
   nativeBuildInputs = [ pkgconfig ];

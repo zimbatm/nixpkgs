@@ -77,7 +77,7 @@ stdenv.mkDerivation rec {
     '';
     homepage = http://pharo.org;
     license = stdenv.lib.licenses.mit;
-    maintainers = [ ];
+    maintainers = [];
     platforms = pharo.meta.platforms;
   };
 }

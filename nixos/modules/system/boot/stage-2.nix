@@ -14,10 +14,13 @@ let
     inherit (config.nix) readOnlyStore;
     inherit useHostResolvConf;
     inherit (config.system.build) earlyMountScript;
-    path = lib.makeBinPath ([
-      pkgs.coreutils
-      pkgs.utillinux
-    ] ++ lib.optional useHostResolvConf pkgs.openresolv);
+    path = lib.makeBinPath (
+      [
+        pkgs.coreutils
+        pkgs.utillinux
+      ]
+      ++ lib.optional useHostResolvConf pkgs.openresolv
+    );
     fsPackagesPath = lib.makeBinPath config.system.fsPackages;
     postBootCommands = pkgs.writeText "local-cmds"
       ''

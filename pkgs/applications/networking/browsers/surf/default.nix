@@ -1,6 +1,13 @@
-{ stdenv, fetchurl
-, pkgconfig, wrapGAppsHook
-, glib, glib-networking, gsettings-desktop-schemas, gtk, libsoup, webkitgtk
+{ stdenv
+, fetchurl
+, pkgconfig
+, wrapGAppsHook
+, glib
+, glib-networking
+, gsettings-desktop-schemas
+, gtk
+, libsoup
+, webkitgtk
 , patches ? null
 }:
 

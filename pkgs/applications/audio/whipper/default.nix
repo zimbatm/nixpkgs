@@ -1,5 +1,14 @@
-{ stdenv, fetchFromGitHub, python2, cdparanoia, cdrdao, flac
-, sox, accuraterip-checksum, utillinux, substituteAll }:
+{ stdenv
+, fetchFromGitHub
+, python2
+, cdparanoia
+, cdrdao
+, flac
+, sox
+, accuraterip-checksum
+, utillinux
+, substituteAll
+}:
 
 python2.pkgs.buildPythonApplication rec {
   name = "whipper-${version}";
@@ -13,8 +22,14 @@ python2.pkgs.buildPythonApplication rec {
   };
 
   pythonPath = with python2.pkgs; [
-    pygobject3 musicbrainzngs urllib3 chardet
-    pycdio setuptools mutagen CDDB
+    pygobject3
+    musicbrainzngs
+    urllib3
+    chardet
+    pycdio
+    setuptools
+    mutagen
+    CDDB
     requests
   ];
 
@@ -23,14 +38,19 @@ python2.pkgs.buildPythonApplication rec {
   ];
 
   patches = [
-    (substituteAll {
-      src = ./paths.patch;
-      inherit cdparanoia;
-    })
+    (
+      substituteAll {
+        src = ./paths.patch;
+        inherit cdparanoia;
+      }
+    )
   ];
 
   makeWrapperArgs = [
-    "--prefix" "PATH" ":" "${stdenv.lib.makeBinPath [ accuraterip-checksum cdrdao utillinux flac sox ]}"
+    "--prefix"
+    "PATH"
+    ":"
+    "${stdenv.lib.makeBinPath [ accuraterip-checksum cdrdao utillinux flac sox ]}"
   ];
 
   # some tests require internet access

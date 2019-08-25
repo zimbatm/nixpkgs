@@ -31,11 +31,13 @@ let
     else throw "missing bootstrap url for platform ${stdenv.hostPlatform.system}";
 
   src = fetchurl {
-     url = "https://static.rust-lang.org/dist/rust-${version}-${platform}.tar.gz";
-     sha256 = hashes."${platform}";
+    url = "https://static.rust-lang.org/dist/rust-${version}-${platform}.tar.gz";
+    sha256 = hashes."${platform}";
   };
 
-in callPackage ./binaryBuild.nix
-  { inherit version src platform;
+in
+callPackage ./binaryBuild.nix
+  {
+    inherit version src platform;
     versionType = "bootstrap";
   }

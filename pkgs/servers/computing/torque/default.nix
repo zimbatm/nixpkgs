@@ -1,5 +1,17 @@
-{ stdenv, fetchFromGitHub, openssl, flex, bison, pkgconfig, groff, libxml2, utillinux
-, file, libtool, which, boost, autoreconfHook
+{ stdenv
+, fetchFromGitHub
+, openssl
+, flex
+, bison
+, pkgconfig
+, groff
+, libxml2
+, utillinux
+, file
+, libtool
+, which
+, boost
+, autoreconfHook
 }:
 
 stdenv.mkDerivation rec {
@@ -18,15 +30,21 @@ stdenv.mkDerivation rec {
   strictDeps = true;
   nativeBuildInputs = [ autoreconfHook pkgconfig flex bison libxml2 ];
   buildInputs = [
-    openssl groff libxml2 utillinux libtool
-    which boost
+    openssl
+    groff
+    libxml2
+    utillinux
+    libtool
+    which
+    boost
   ];
 
   enableParallelBuilding = true;
 
   # added to fix build with gcc7
   NIX_CFLAGS_COMPILE = [
-    "-Wno-error" "-fpermissive"
+    "-Wno-error"
+    "-fpermissive"
   ];
 
   postPatch = ''

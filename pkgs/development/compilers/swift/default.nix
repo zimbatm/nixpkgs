@@ -151,9 +151,11 @@ stdenv.mkDerivation rec {
     rsync
     which
   ];
-  buildInputs = devInputs ++ [
-    clang
-  ];
+  buildInputs = devInputs
+    ++ [
+         clang
+       ]
+    ;
 
   # TODO: Revisit what's propagated and how
   propagatedBuildInputs = [

@@ -10,29 +10,34 @@ stdenv.mkDerivation rec {
 
   outputs = [ "out" "dev" "man" "doc" "info" ];
 
-  propagatedBuildInputs = [ncurses];
+  propagatedBuildInputs = [ ncurses ];
 
   patchFlags = "-p0";
 
   configureFlags =
     stdenv.lib.optional (stdenv.hostPlatform != stdenv.buildPlatform)
-    [ # This test requires running host code
-      "bash_cv_wcwidth_broken=no"
-    ];
+      [
+        # This test requires running host code
+        "bash_cv_wcwidth_broken=no"
+      ];
 
   patches =
-    [ ./link-against-ncurses.patch
+    [
+      ./link-against-ncurses.patch
       ./no-arch_only-6.3.patch
-    ] ++ stdenv.lib.optional stdenv.hostPlatform.useAndroidPrebuilt ./android.patch
-    ++
-    (let
-       patch = nr: sha256:
-         fetchurl {
-           url = "mirror://gnu/readline/readline-6.3-patches/readline63-${nr}";
-           inherit sha256;
-         };
-     in
-       import ./readline-6.3-patches.nix patch);
+    ]
+    ++ stdenv.lib.optional stdenv.hostPlatform.useAndroidPrebuilt ./android.patch
+    ++ (
+         let
+           patch = nr: sha256:
+             fetchurl {
+               url = "mirror://gnu/readline/readline-6.3-patches/readline63-${nr}";
+               inherit sha256;
+             };
+         in
+           import ./readline-6.3-patches.nix patch
+       )
+  ;
 
   # Don't run the native `strip' when cross-compiling.
   dontStrip = stdenv.hostPlatform != stdenv.buildPlatform;
@@ -60,7 +65,7 @@ stdenv.mkDerivation rec {
 
     license = licenses.gpl3Plus;
 
-    maintainers = [ ];
+    maintainers = [];
 
     platforms = platforms.unix;
     branch = "6.3";

@@ -1,7 +1,21 @@
-{ stdenv, fetchurl, pkgconfig, intltool, glib, dbus-glib, libxklavier,
-  libcanberra-gtk3, libnotify, nss, polkit, gnome3, gtk3, mate,
-  pulseaudioSupport ? stdenv.config.pulseaudio or true, libpulseaudio,
-  wrapGAppsHook }:
+{ stdenv
+, fetchurl
+, pkgconfig
+, intltool
+, glib
+, dbus-glib
+, libxklavier
+, libcanberra-gtk3
+, libnotify
+, nss
+, polkit
+, gnome3
+, gtk3
+, mate
+, pulseaudioSupport ? stdenv.config.pulseaudio or true
+, libpulseaudio
+, wrapGAppsHook
+}:
 
 stdenv.mkDerivation rec {
   name = "mate-settings-daemon-${version}";
@@ -30,7 +44,9 @@ stdenv.mkDerivation rec {
     mate.mate-desktop
     mate.libmatekbd
     mate.libmatemixer
-  ] ++ stdenv.lib.optional pulseaudioSupport libpulseaudio;
+  ]
+  ++ stdenv.lib.optional pulseaudioSupport libpulseaudio
+  ;
 
   configureFlags = stdenv.lib.optional pulseaudioSupport "--enable-pulse";
 

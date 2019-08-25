@@ -1,5 +1,9 @@
-{ stdenv, fetchFromGitHub, python
-, unzip, makeWrapper }:
+{ stdenv
+, fetchFromGitHub
+, python
+, unzip
+, makeWrapper
+}:
 let
   python' = python.override {
     packageOverrides = self: super: {
@@ -28,24 +32,27 @@ let
         doCheck = false;
       };
 
-      pymongo = super.pymongo.overridePythonAttrs (oldAttrs: rec {
-        version = "2.9.5";
-        src = oldAttrs.src.override {
-          inherit version;
-          sha256 = "912516ac6a355d7624374a38337b8587afe3eb535c0a5456b3bd12df637a6e70";
-        };
-      });
+      pymongo = super.pymongo.overridePythonAttrs (
+        oldAttrs: rec {
+          version = "2.9.5";
+          src = oldAttrs.src.override {
+            inherit version;
+            sha256 = "912516ac6a355d7624374a38337b8587afe3eb535c0a5456b3bd12df637a6e70";
+          };
+        }
+      );
     };
   };
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   version = "5.11.2";
   name = "dd-agent-${version}";
 
   src = fetchFromGitHub {
-    owner  = "datadog";
-    repo   = "dd-agent";
-    rev    = version;
+    owner = "datadog";
+    repo = "dd-agent";
+    rev = version;
     sha256 = "1iqxvgpsqibqw3vk79158l2pnb6y4pjhjp2d6724lm5rpz4825lx";
   };
 
@@ -54,18 +61,22 @@ in stdenv.mkDerivation rec {
   buildInputs = [
     unzip
     makeWrapper
-  ] ++ (with python'.pkgs; [
-    requests
-    psycopg2
-    psutil
-    ntplib
-    simplejson
-    pyyaml
-    pymongo
-    python-etcd
-    consul
-    docker
-  ]);
+  ]
+  ++ (
+       with python'.pkgs; [
+         requests
+         psycopg2
+         psutil
+         ntplib
+         simplejson
+         pyyaml
+         pymongo
+         python-etcd
+         consul
+         docker
+       ]
+     )
+  ;
   propagatedBuildInputs = with python'.pkgs; [ python tornado ];
 
   buildCommand = ''
@@ -104,9 +115,9 @@ in stdenv.mkDerivation rec {
       Event collector for the DataDog analysis service
       -- v5 Python implementation
     '';
-    homepage    = https://www.datadoghq.com;
-    license     = stdenv.lib.licenses.bsd3;
-    platforms   = stdenv.lib.platforms.all;
+    homepage = https://www.datadoghq.com;
+    license = stdenv.lib.licenses.bsd3;
+    platforms = stdenv.lib.platforms.all;
     maintainers = with stdenv.lib.maintainers; [ thoughtpolice domenkozar ];
   };
 }

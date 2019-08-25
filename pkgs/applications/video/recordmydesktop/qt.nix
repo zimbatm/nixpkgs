@@ -1,10 +1,21 @@
-{ stdenv, lib, fetchsvn, recordmydesktop, autoreconfHook, pkgconfig
-, glib, pythonPackages, qt4, jack2, xwininfo }:
+{ stdenv
+, lib
+, fetchsvn
+, recordmydesktop
+, autoreconfHook
+, pkgconfig
+, glib
+, pythonPackages
+, qt4
+, jack2
+, xwininfo
+}:
 
 let
   binPath = lib.makeBinPath [ recordmydesktop jack2 xwininfo ];
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "qt-recordmydesktop-${version}";
   version = "0.3.8-svn${recordmydesktop.rev}";
 
@@ -16,9 +27,15 @@ in stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ autoreconfHook pkgconfig ];
 
-  buildInputs = [ glib qt4 ] ++ (with pythonPackages; [
-    python wrapPython pyqt4
-  ]);
+  buildInputs = [ glib qt4 ]
+    ++ (
+         with pythonPackages; [
+           python
+           wrapPython
+           pyqt4
+         ]
+       )
+    ;
 
   pythonPath = with pythonPackages; [ pyqt4 ];
 
@@ -32,6 +49,6 @@ in stdenv.mkDerivation rec {
     homepage = http://recordmydesktop.sourceforge.net/;
     license = licenses.gpl2;
     platforms = platforms.linux;
-    maintainers = [ ];
+    maintainers = [];
   };
 }

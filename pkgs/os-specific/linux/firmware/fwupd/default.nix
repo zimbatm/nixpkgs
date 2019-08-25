@@ -1,11 +1,52 @@
-{ stdenv, fetchurl, substituteAll, gtk-doc, pkgconfig, gobject-introspection, intltool
-, libgudev, polkit, libxmlb, gusb, sqlite, libarchive, glib-networking
-, libsoup, help2man, gpgme, libxslt, elfutils, libsmbios, efivar, gnu-efi
-, libyaml, valgrind, meson, libuuid, colord, docbook_xml_dtd_43, docbook_xsl
-, ninja, gcab, gnutls, python3, wrapGAppsHook, json-glib, bash-completion
-, shared-mime-info, umockdev, vala, makeFontsConf, freefont_ttf
-, cairo, freetype, fontconfig, pango
-, bubblewrap, efibootmgr, flashrom, tpm2-tools
+{ stdenv
+, fetchurl
+, substituteAll
+, gtk-doc
+, pkgconfig
+, gobject-introspection
+, intltool
+, libgudev
+, polkit
+, libxmlb
+, gusb
+, sqlite
+, libarchive
+, glib-networking
+, libsoup
+, help2man
+, gpgme
+, libxslt
+, elfutils
+, libsmbios
+, efivar
+, gnu-efi
+, libyaml
+, valgrind
+, meson
+, libuuid
+, colord
+, docbook_xml_dtd_43
+, docbook_xsl
+, ninja
+, gcab
+, gnutls
+, python3
+, wrapGAppsHook
+, json-glib
+, bash-completion
+, shared-mime-info
+, umockdev
+, vala
+, makeFontsConf
+, freefont_ttf
+, cairo
+, freetype
+, fontconfig
+, pango
+, bubblewrap
+, efibootmgr
+, flashrom
+, tpm2-tools
 }:
 
 # Updating? Keep $out/etc synchronized with passthru.filesInstalledToEtc
@@ -29,7 +70,8 @@ let
   # Currently broken on Aarch64
   haveFlashrom = isx86;
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   pname = "fwupd";
   version = "1.2.8";
 
@@ -41,15 +83,51 @@ in stdenv.mkDerivation rec {
   outputs = [ "out" "lib" "dev" "devdoc" "man" "installedTests" ];
 
   nativeBuildInputs = [
-    meson ninja gtk-doc pkgconfig gobject-introspection intltool shared-mime-info
-    valgrind gcab docbook_xml_dtd_43 docbook_xsl help2man libxslt python wrapGAppsHook vala
+    meson
+    ninja
+    gtk-doc
+    pkgconfig
+    gobject-introspection
+    intltool
+    shared-mime-info
+    valgrind
+    gcab
+    docbook_xml_dtd_43
+    docbook_xsl
+    help2man
+    libxslt
+    python
+    wrapGAppsHook
+    vala
   ];
 
   buildInputs = [
-    polkit libxmlb gusb sqlite libarchive libsoup elfutils gnu-efi libyaml
-    libgudev colord gpgme libuuid gnutls glib-networking json-glib umockdev
-    bash-completion cairo freetype fontconfig pango efivar
-  ] ++ stdenv.lib.optionals haveDell [ libsmbios ];
+    polkit
+    libxmlb
+    gusb
+    sqlite
+    libarchive
+    libsoup
+    elfutils
+    gnu-efi
+    libyaml
+    libgudev
+    colord
+    gpgme
+    libuuid
+    gnutls
+    glib-networking
+    json-glib
+    umockdev
+    bash-completion
+    cairo
+    freetype
+    fontconfig
+    pango
+    efivar
+  ]
+  ++ stdenv.lib.optionals haveDell [ libsmbios ]
+  ;
 
   patches = [
     ./fix-paths.patch
@@ -57,11 +135,13 @@ in stdenv.mkDerivation rec {
 
     # installed tests are installed to different output
     # we also cannot have fwupd-tests.conf in $out/etc since it would form a cycle
-    (substituteAll {
-      src = ./installed-tests-path.patch;
-      # needs a different set of modules than po/make-images
-      inherit installedTestsPython;
-    })
+    (
+      substituteAll {
+        src = ./installed-tests-path.patch;
+        # needs a different set of modules than po/make-images
+        inherit installedTestsPython;
+      }
+    )
   ];
 
   postPatch = ''
@@ -87,13 +167,13 @@ in stdenv.mkDerivation rec {
   preFixup = let
     binPath = [ efibootmgr bubblewrap tpm2-tools ] ++ stdenv.lib.optional haveFlashrom flashrom;
   in
-  ''
-    gappsWrapperArgs+=(
-      --prefix XDG_DATA_DIRS : "${shared-mime-info}/share"
-      # See programs reached with fu_common_find_program_in_path in source
-      --prefix PATH : "${stdenv.lib.makeBinPath binPath}"
-    )
-  '';
+    ''
+      gappsWrapperArgs+=(
+        --prefix XDG_DATA_DIRS : "${shared-mime-info}/share"
+        # See programs reached with fu_common_find_program_in_path in source
+        --prefix PATH : "${stdenv.lib.makeBinPath binPath}"
+      )
+    '';
 
   mesonFlags = [
     "-Dplugin_dummy=true"
@@ -105,14 +185,18 @@ in stdenv.mkDerivation rec {
     "--localstatedir=/var"
     "--sysconfdir=/etc"
     "-Dsysconfdir_install=${placeholder "out"}/etc"
-  ] ++ stdenv.lib.optionals (!haveDell) [
-    "-Dplugin_dell=false"
-    "-Dplugin_synaptics=false"
-  ] ++ stdenv.lib.optionals (!haveRedfish) [
-    "-Dplugin_redfish=false"
-  ] ++ stdenv.lib.optionals (!haveFlashrom) [
-    "-Dplugin_flashrom=false"
-  ];
+  ]
+  ++ stdenv.lib.optionals (!haveDell) [
+       "-Dplugin_dell=false"
+       "-Dplugin_synaptics=false"
+     ]
+  ++ stdenv.lib.optionals (!haveRedfish) [
+       "-Dplugin_redfish=false"
+     ]
+  ++ stdenv.lib.optionals (!haveFlashrom) [
+       "-Dplugin_flashrom=false"
+     ]
+  ;
 
   # TODO: We need to be able to override the directory flags from meson setup hook
   # better – declaring them multiple times might become an error.

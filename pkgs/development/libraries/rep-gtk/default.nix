@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ autoreconfHook pkgconfig ];
-  buildInputs = [ ];
+  buildInputs = [];
   propagatedBuildInputs = [ librep gtk2 ];
 
   patchPhase = ''

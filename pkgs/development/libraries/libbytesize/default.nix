@@ -1,11 +1,22 @@
-{ stdenv, fetchFromGitHub, autoreconfHook, pkgconfig, gettext
-, gtk-doc, libxslt, docbook_xml_dtd_43, docbook_xsl
-, python3, pcre2, gmp, mpfr
+{ stdenv
+, fetchFromGitHub
+, autoreconfHook
+, pkgconfig
+, gettext
+, gtk-doc
+, libxslt
+, docbook_xml_dtd_43
+, docbook_xsl
+, python3
+, pcre2
+, gmp
+, mpfr
 }:
 
 let
   version = "2.1";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "libbytesize-${version}";
 
   src = fetchFromGitHub {

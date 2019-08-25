@@ -1,4 +1,4 @@
-{ stdenv, buildGoPackage, fetchFromGitHub}:
+{ stdenv, buildGoPackage, fetchFromGitHub }:
 
 buildGoPackage rec {
   name = "terraform-inventory-${version}";

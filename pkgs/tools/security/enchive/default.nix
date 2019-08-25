@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
     sha256 = "0ssxbnsjx4mvaqimp5nzfixpxinhmi12z8lxdd8cj2361wbb54yk";
   };
 
-  makeFlags = ["PREFIX=$(out)"];
+  makeFlags = [ "PREFIX=$(out)" ];
 
   postInstall = ''
     mkdir -p $out/share/emacs/site-lisp/

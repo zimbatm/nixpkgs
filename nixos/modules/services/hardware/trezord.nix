@@ -3,14 +3,15 @@
 with lib;
 let
   cfg = config.services.trezord;
-in {
+in
+{
 
   ### docs
 
   meta = {
     doc = ./trezord.xml;
   };
-  
+
   ### interface
 
   options = {
@@ -28,36 +29,38 @@ in {
         default = false;
         description = ''
           Enable Trezor emulator support.
-          '';
-       };
+        '';
+      };
 
       emulator.port = mkOption {
         type = types.port;
         default = 21324;
         description = ''
           Listening port for the Trezor emulator.
-          '';
+        '';
       };
     };
   };
-  
+
   ### implementation
 
   config = mkIf cfg.enable {
-    services.udev.packages = lib.singleton (pkgs.writeTextFile {
-      name = "trezord-udev-rules";
-      destination = "/etc/udev/rules.d/51-trezor.rules";
-      text = ''
-        # TREZOR v1 (One)
-        SUBSYSTEM=="usb", ATTR{idVendor}=="534c", ATTR{idProduct}=="0001", MODE="0660", GROUP="trezord", TAG+="uaccess", SYMLINK+="trezor%n"
-        KERNEL=="hidraw*", ATTRS{idVendor}=="534c", ATTRS{idProduct}=="0001", MODE="0660", GROUP="trezord", TAG+="uaccess"
+    services.udev.packages = lib.singleton (
+      pkgs.writeTextFile {
+        name = "trezord-udev-rules";
+        destination = "/etc/udev/rules.d/51-trezor.rules";
+        text = ''
+          # TREZOR v1 (One)
+          SUBSYSTEM=="usb", ATTR{idVendor}=="534c", ATTR{idProduct}=="0001", MODE="0660", GROUP="trezord", TAG+="uaccess", SYMLINK+="trezor%n"
+          KERNEL=="hidraw*", ATTRS{idVendor}=="534c", ATTRS{idProduct}=="0001", MODE="0660", GROUP="trezord", TAG+="uaccess"
 
-        # TREZOR v2 (T)
-        SUBSYSTEM=="usb", ATTR{idVendor}=="1209", ATTR{idProduct}=="53c0", MODE="0660", GROUP="trezord", TAG+="uaccess", SYMLINK+="trezor%n"
-        SUBSYSTEM=="usb", ATTR{idVendor}=="1209", ATTR{idProduct}=="53c1", MODE="0660", GROUP="trezord", TAG+="uaccess", SYMLINK+="trezor%n"
-        KERNEL=="hidraw*", ATTRS{idVendor}=="1209", ATTRS{idProduct}=="53c1", MODE="0660", GROUP="trezord", TAG+="uaccess"
-      '';
-    });
+          # TREZOR v2 (T)
+          SUBSYSTEM=="usb", ATTR{idVendor}=="1209", ATTR{idProduct}=="53c0", MODE="0660", GROUP="trezord", TAG+="uaccess", SYMLINK+="trezor%n"
+          SUBSYSTEM=="usb", ATTR{idVendor}=="1209", ATTR{idProduct}=="53c1", MODE="0660", GROUP="trezord", TAG+="uaccess", SYMLINK+="trezor%n"
+          KERNEL=="hidraw*", ATTRS{idVendor}=="1209", ATTRS{idProduct}=="53c1", MODE="0660", GROUP="trezord", TAG+="uaccess"
+        '';
+      }
+    );
 
     systemd.services.trezord = {
       description = "TREZOR Bridge";
@@ -79,4 +82,3 @@ in {
     users.groups.trezord = {};
   };
 }
-

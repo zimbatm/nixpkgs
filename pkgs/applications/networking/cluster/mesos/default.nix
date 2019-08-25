@@ -1,10 +1,38 @@
-{ stdenv, lib, makeWrapper, fetchurl, curl, sasl, openssh
-, unzip, gnutar, jdk, python, wrapPython
-, setuptools, boto, pythonProtobuf, apr, subversion, gzip
-, leveldb, glog, perf, utillinux, libnl, iproute, openssl, libevent
-, ethtool, coreutils, which, iptables, maven
-, bash, autoreconfHook
-, utf8proc, lz4
+{ stdenv
+, lib
+, makeWrapper
+, fetchurl
+, curl
+, sasl
+, openssh
+, unzip
+, gnutar
+, jdk
+, python
+, wrapPython
+, setuptools
+, boto
+, pythonProtobuf
+, apr
+, subversion
+, gzip
+, leveldb
+, glog
+, perf
+, utillinux
+, libnl
+, iproute
+, openssl
+, libevent
+, ethtool
+, coreutils
+, which
+, iptables
+, maven
+, bash
+, autoreconfHook
+, utf8proc
+, lz4
 , withJava ? !stdenv.isDarwin
 }:
 
@@ -15,16 +43,21 @@ let
   # tar is invoked. I think that only needs to be done here:
   #   src/common/command_utils.cpp
   # https://github.com/NixOS/nixpkgs/issues/13783
-  tarWithGzip = lib.overrideDerivation gnutar (oldAttrs: {
-    # Original builder is bash 4.3.42 from bootstrap tools, too old for makeWrapper.
-    builder = "${bash}/bin/bash";
-    buildInputs = (oldAttrs.buildInputs or []) ++ [ makeWrapper ];
-    postInstall = (oldAttrs.postInstall or "") + ''
-      wrapProgram $out/bin/tar --prefix PATH ":" "${gzip}/bin"
-    '';
-  });
+  tarWithGzip = lib.overrideDerivation gnutar (
+    oldAttrs: {
+      # Original builder is bash 4.3.42 from bootstrap tools, too old for makeWrapper.
+      builder = "${bash}/bin/bash";
+      buildInputs = (oldAttrs.buildInputs or []) ++ [ makeWrapper ];
+      postInstall = (oldAttrs.postInstall or "")
+        + ''
+        wrapProgram $out/bin/tar --prefix PATH ":" "${gzip}/bin"
+      ''
+        ;
+    }
+  );
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   version = "1.4.1";
   name = "mesos-${version}";
 
@@ -48,15 +81,30 @@ in stdenv.mkDerivation rec {
     autoreconfHook
   ];
   buildInputs = [
-    makeWrapper curl sasl
-    python wrapPython boto setuptools leveldb
-    subversion apr glog openssl libevent
-    utf8proc lz4
-  ] ++ lib.optionals stdenv.isLinux [
-    libnl
-  ] ++ lib.optionals withJava [
-    jdk maven
-  ];
+    makeWrapper
+    curl
+    sasl
+    python
+    wrapPython
+    boto
+    setuptools
+    leveldb
+    subversion
+    apr
+    glog
+    openssl
+    libevent
+    utf8proc
+    lz4
+  ]
+  ++ lib.optionals stdenv.isLinux [
+       libnl
+     ]
+  ++ lib.optionals withJava [
+       jdk
+       maven
+     ]
+  ;
 
   propagatedBuildInputs = [
     pythonProtobuf
@@ -133,7 +181,8 @@ in stdenv.mkDerivation rec {
       --replace "-lprotobuf" \
                 "${pythonProtobuf.protobuf}/lib/libprotobuf.a"
 
-  '' + lib.optionalString stdenv.isLinux ''
+  ''
+  + lib.optionalString stdenv.isLinux ''
 
     substituteInPlace src/linux/perf.cpp \
       --subst-var-by perf ${perf}/bin/perf
@@ -170,7 +219,8 @@ in stdenv.mkDerivation rec {
 
     substituteInPlace src/slave/containerizer/mesos/isolators/volume/sandbox_path.cpp \
       --subst-var-by mount   ${utillinux}/bin/mount
-  '';
+  ''
+  ;
 
   configureFlags = [
     "--sbindir=\${out}/bin"
@@ -187,10 +237,12 @@ in stdenv.mkDerivation rec {
     "--with-protobuf=${pythonProtobuf.protobuf}"
     "PROTOBUF_JAR=${mavenRepo}/com/google/protobuf/protobuf-java/3.3.0/protobuf-java-3.3.0.jar"
     (if withJava then "--enable-java" else "--disable-java")
-  ] ++ lib.optionals stdenv.isLinux [
-    "--with-network-isolator"
-    "--with-nl=${libnl.dev}"
-  ];
+  ]
+  ++ lib.optionals stdenv.isLinux [
+       "--with-network-isolator"
+       "--with-nl=${libnl.dev}"
+     ]
+  ;
 
   postInstall = ''
     rm -rf $out/var
@@ -214,17 +266,19 @@ in stdenv.mkDerivation rec {
       --old-and-unmanageable \
       --prefix="$out"
     popd
-  '' + stdenv.lib.optionalString withJava ''
-    mkdir -p $out/share/java
-    cp src/java/target/mesos-*.jar $out/share/java
+  ''
+  + stdenv.lib.optionalString withJava ''
+      mkdir -p $out/share/java
+      cp src/java/target/mesos-*.jar $out/share/java
 
-    MESOS_NATIVE_JAVA_LIBRARY=$out/lib/libmesos${stdenv.hostPlatform.extensions.sharedLibrary}
+      MESOS_NATIVE_JAVA_LIBRARY=$out/lib/libmesos${stdenv.hostPlatform.extensions.sharedLibrary}
 
-    mkdir -p $out/nix-support
-    touch $out/nix-support/setup-hook
-    echo "export MESOS_NATIVE_JAVA_LIBRARY=$MESOS_NATIVE_JAVA_LIBRARY" >> $out/nix-support/setup-hook
-    echo "export MESOS_NATIVE_LIBRARY=$MESOS_NATIVE_JAVA_LIBRARY" >> $out/nix-support/setup-hook
-  '';
+      mkdir -p $out/nix-support
+      touch $out/nix-support/setup-hook
+      echo "export MESOS_NATIVE_JAVA_LIBRARY=$MESOS_NATIVE_JAVA_LIBRARY" >> $out/nix-support/setup-hook
+      echo "export MESOS_NATIVE_LIBRARY=$MESOS_NATIVE_JAVA_LIBRARY" >> $out/nix-support/setup-hook
+    ''
+  ;
 
   postFixup = ''
     if test -e $out/nix-support/propagated-build-inputs; then
@@ -250,10 +304,10 @@ in stdenv.mkDerivation rec {
   '';
 
   meta = with lib; {
-    homepage    = "http://mesos.apache.org";
-    license     = licenses.asl20;
+    homepage = "http://mesos.apache.org";
+    license = licenses.asl20;
     description = "A cluster manager that provides efficient resource isolation and sharing across distributed applications, or frameworks";
     maintainers = with maintainers; [ cstrahan kevincox offline ];
-    platforms   = platforms.unix;
+    platforms = platforms.unix;
   };
 }

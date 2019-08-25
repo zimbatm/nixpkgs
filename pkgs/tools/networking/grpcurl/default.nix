@@ -17,8 +17,8 @@ buildGoPackage rec {
   };
 
   goDeps = if stdenv.isDarwin
-           then ./deps-darwin.nix
-           else ./deps-linux.nix;
+  then ./deps-darwin.nix
+  else ./deps-linux.nix;
 
   meta = {
     description = "Like cURL, but for gRPC: Command-line tool for interacting with gRPC servers";

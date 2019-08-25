@@ -25,9 +25,11 @@ buildPythonPackage rec {
   checkPhase = ''
     rm -r snappy # prevent local snappy from being picked up
     nosetests test_snappy.py
-  '' + lib.optionalString isPyPy ''
-    nosetests test_snappy_cffi.py
-  '';
+  ''
+  + lib.optionalString isPyPy ''
+      nosetests test_snappy_cffi.py
+    ''
+  ;
 
   meta = with lib; {
     description = "Python library for the snappy compression library from Google";

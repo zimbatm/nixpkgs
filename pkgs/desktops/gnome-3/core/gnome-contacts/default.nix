@@ -1,12 +1,37 @@
-{ stdenv, gettext, fetchurl, evolution-data-server, fetchpatch
-, pkgconfig, libxslt, docbook_xsl, docbook_xml_dtd_42, python3, gtk3, glib, cheese
-, libchamplain, clutter-gtk, geocode-glib, gnome-desktop, gnome-online-accounts
-, wrapGAppsHook, folks, libxml2, gnome3, telepathy-glib
-, vala, meson, ninja, libhandy, gsettings-desktop-schemas }:
+{ stdenv
+, gettext
+, fetchurl
+, evolution-data-server
+, fetchpatch
+, pkgconfig
+, libxslt
+, docbook_xsl
+, docbook_xml_dtd_42
+, python3
+, gtk3
+, glib
+, cheese
+, libchamplain
+, clutter-gtk
+, geocode-glib
+, gnome-desktop
+, gnome-online-accounts
+, wrapGAppsHook
+, folks
+, libxml2
+, gnome3
+, telepathy-glib
+, vala
+, meson
+, ninja
+, libhandy
+, gsettings-desktop-schemas
+}:
 
 let
   version = "3.32.1";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "gnome-contacts-${version}";
 
   src = fetchurl {
@@ -17,14 +42,34 @@ in stdenv.mkDerivation rec {
   propagatedUserEnvPkgs = [ evolution-data-server ];
 
   nativeBuildInputs = [
-    meson ninja pkgconfig vala gettext libxslt docbook_xsl docbook_xml_dtd_42 python3 wrapGAppsHook
+    meson
+    ninja
+    pkgconfig
+    vala
+    gettext
+    libxslt
+    docbook_xsl
+    docbook_xml_dtd_42
+    python3
+    wrapGAppsHook
   ];
 
   buildInputs = [
-    gtk3 glib evolution-data-server gsettings-desktop-schemas
-    folks gnome-desktop telepathy-glib libhandy
-    libxml2 gnome-online-accounts cheese
-    gnome3.adwaita-icon-theme libchamplain clutter-gtk geocode-glib
+    gtk3
+    glib
+    evolution-data-server
+    gsettings-desktop-schemas
+    folks
+    gnome-desktop
+    telepathy-glib
+    libhandy
+    libxml2
+    gnome-online-accounts
+    cheese
+    gnome3.adwaita-icon-theme
+    libchamplain
+    clutter-gtk
+    geocode-glib
   ];
 
   mesonFlags = [
@@ -33,14 +78,18 @@ in stdenv.mkDerivation rec {
 
   patches = [
     # Fixes build with libhandy >= 0.0.10
-    (fetchpatch {
-      url = "https://gitlab.gnome.org/GNOME/gnome-contacts/commit/c5eee38cd2556403a640a0a4c11d36cbf9a5a798.patch";
-      sha256 = "0s2cl7z6b0x3ky4y28yyxc9x5zp4r3vqmvbhz5m2fm6830fyjg13";
-    })
-    (fetchpatch {
-      url = "https://gitlab.gnome.org/GNOME/gnome-contacts/commit/1f1500ca01098ffda6392f5ec9ce3a29a48a84b1.patch";
-      sha256 = "082zaaj2l5cgr2qy145x8yknja87r0vpigrhidal40041kd5nldg";
-    })
+    (
+      fetchpatch {
+        url = "https://gitlab.gnome.org/GNOME/gnome-contacts/commit/c5eee38cd2556403a640a0a4c11d36cbf9a5a798.patch";
+        sha256 = "0s2cl7z6b0x3ky4y28yyxc9x5zp4r3vqmvbhz5m2fm6830fyjg13";
+      }
+    )
+    (
+      fetchpatch {
+        url = "https://gitlab.gnome.org/GNOME/gnome-contacts/commit/1f1500ca01098ffda6392f5ec9ce3a29a48a84b1.patch";
+        sha256 = "082zaaj2l5cgr2qy145x8yknja87r0vpigrhidal40041kd5nldg";
+      }
+    )
   ];
 
   postPatch = ''

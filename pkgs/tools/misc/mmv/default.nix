@@ -14,10 +14,12 @@ stdenv.mkDerivation rec {
   patches = [
     # Use Debian patched version, as upstream is no longer maintained and it
     # contains a _lot_ of fixes.
-    (fetchurl {
-      url = "mirror://debian/pool/main/m/mmv/mmv_${version}-15.diff.gz";
-      sha256 = "9ad3e3d47510f816b4a18bae04ea75913588eec92248182f85dd09bc5ad2df13";
-    })
+    (
+      fetchurl {
+        url = "mirror://debian/pool/main/m/mmv/mmv_${version}-15.diff.gz";
+        sha256 = "9ad3e3d47510f816b4a18bae04ea75913588eec92248182f85dd09bc5ad2df13";
+      }
+    )
   ];
 
   postPatch = ''

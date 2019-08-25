@@ -1,12 +1,21 @@
-{ stdenv, fetchFromGitHub, pkgconfig, autoreconfHook
-, alsaLib, bluez, glib, sbc
+{ stdenv
+, fetchFromGitHub
+, pkgconfig
+, autoreconfHook
+, alsaLib
+, bluez
+, glib
+, sbc
 
-# optional, but useful utils
-, readline, libbsd, ncurses
+  # optional, but useful utils
+, readline
+, libbsd
+, ncurses
 
-# optional codecs
-, aacSupport ? true, fdk_aac
-# TODO: aptxSupport
+  # optional codecs
+, aacSupport ? true
+, fdk_aac
+  # TODO: aptxSupport
 }:
 
 with stdenv.lib;
@@ -25,17 +34,24 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ pkgconfig autoreconfHook ];
 
   buildInputs = [
-    alsaLib bluez glib sbc
-    readline libbsd ncurses
+    alsaLib
+    bluez
+    glib
+    sbc
+    readline
+    libbsd
+    ncurses
   ]
-  ++ optional aacSupport fdk_aac;
+  ++ optional aacSupport fdk_aac
+  ;
 
   configureFlags = [
     "--with-alsaplugindir=\$out/lib/alsa-lib"
     "--enable-rfcomm"
     "--enable-hcitop"
   ]
-  ++ optional aacSupport "--enable-aac";
+  ++ optional aacSupport "--enable-aac"
+  ;
 
   doCheck = false; # fails 1 of 3 tests, needs access to ALSA
 

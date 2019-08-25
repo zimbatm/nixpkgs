@@ -2,7 +2,8 @@
 , lib
 , fetchurl
 , buildPythonPackage
-, isPy3k, pythonOlder
+, isPy3k
+, pythonOlder
 , astor
 , gast
 , google-pasta
@@ -32,9 +33,10 @@
 # - the source build doesn't work on Darwin.
 # - the source build is currently brittle and not easy to maintain
 
-assert cudaSupport -> cudatoolkit != null
-                   && cudnn != null
-                   && nvidia_x11 != null;
+assert cudaSupport
+-> cudatoolkit != null
+   && cudnn != null
+   && nvidia_x11 != null;
 
 # unsupported combination
 assert ! (stdenv.isDarwin && cudaSupport);
@@ -45,7 +47,8 @@ let
   variant = if cudaSupport then "-gpu" else "";
   pname = "tensorflow${variant}";
 
-in buildPythonPackage rec {
+in
+buildPythonPackage rec {
   inherit pname;
   inherit (packages) version;
   format = "wheel";
@@ -56,7 +59,8 @@ in buildPythonPackage rec {
     platform = if stdenv.isDarwin then "mac" else "linux";
     unit = if cudaSupport then "gpu" else "cpu";
     key = "${platform}_py_${pyver}_${unit}";
-  in fetchurl packages.${key};
+  in
+    fetchurl packages.${key};
 
   propagatedBuildInputs = [
     protobuf
@@ -73,8 +77,10 @@ in buildPythonPackage rec {
     tensorflow-tensorboard
     keras-applications
     keras-preprocessing
-  ] ++ lib.optional (!isPy3k) mock
-    ++ lib.optionals (pythonOlder "3.4") [ backports_weakref ];
+  ]
+  ++ lib.optional (!isPy3k) mock
+  ++ lib.optionals (pythonOlder "3.4") [ backports_weakref ]
+  ;
 
   # Upstream has a pip hack that results in bin/tensorboard being in both tensorflow
   # and the propageted input tensorflow-tensorboard which causes environment collisions.
@@ -91,11 +97,11 @@ in buildPythonPackage rec {
     rpath = stdenv.lib.makeLibraryPath
       ([ stdenv.cc.cc.lib zlib ] ++ lib.optionals cudaSupport [ cudatoolkit.out cudatoolkit.lib cudnn nvidia_x11 ]);
   in
-  lib.optionalString stdenv.isLinux ''
-    rrPath="$out/${python.sitePackages}/tensorflow/:$out/${python.sitePackages}/tensorflow/contrib/tensor_forest/:${rpath}"
-    internalLibPath="$out/${python.sitePackages}/tensorflow/python/_pywrap_tensorflow_internal.so"
-    find $out \( -name '*.so' -or -name '*.so.*' \) -exec patchelf --set-rpath "$rrPath" {} \;
-  '';
+    lib.optionalString stdenv.isLinux ''
+      rrPath="$out/${python.sitePackages}/tensorflow/:$out/${python.sitePackages}/tensorflow/contrib/tensor_forest/:${rpath}"
+      internalLibPath="$out/${python.sitePackages}/tensorflow/python/_pywrap_tensorflow_internal.so"
+      find $out \( -name '*.so' -or -name '*.so.*' \) -exec patchelf --set-rpath "$rrPath" {} \;
+    '';
 
 
   meta = with stdenv.lib; {

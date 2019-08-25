@@ -1,6 +1,8 @@
 { stdenv, fetchurl, cmake }:
 
-let version = "2.1.0.1"; in
+let
+  version = "2.1.0.1";
+in
 
 stdenv.mkDerivation {
   name = "p8-platform-${version}";

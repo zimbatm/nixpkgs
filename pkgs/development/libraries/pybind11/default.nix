@@ -18,17 +18,20 @@ stdenv.mkDerivation rec {
   # https://github.com/pybind/pybind11/issues/1355
   patches = [
     ./no_test_cmake_build.patch
-    (fetchurl { # Remove on bump to v2.2.5
-      name = "pytest_namespace_to_configure.patch";
-      url = "https://github.com/pybind/pybind11/commit/e7ef34f23f194cfa40bdbf967c6d34712261a4ee.patch";
-      sha256 = "1dhv6p0b5fxzxc8j3sfy8kvfmdshczk22xfxh6bk0cfnfdy9iqrq";
-    })
+    (
+      fetchurl {
+        # Remove on bump to v2.2.5
+        name = "pytest_namespace_to_configure.patch";
+        url = "https://github.com/pybind/pybind11/commit/e7ef34f23f194cfa40bdbf967c6d34712261a4ee.patch";
+        sha256 = "1dhv6p0b5fxzxc8j3sfy8kvfmdshczk22xfxh6bk0cfnfdy9iqrq";
+      }
+    )
   ];
 
   doCheck = true;
 
-  cmakeFlags = [ 
-    "-DPYTHON_EXECUTABLE=${python.interpreter}" 
+  cmakeFlags = [
+    "-DPYTHON_EXECUTABLE=${python.interpreter}"
     "-DPYBIND11_TEST=${if doCheck then "ON" else "OFF"}"
   ];
 

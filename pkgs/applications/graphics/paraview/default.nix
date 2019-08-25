@@ -1,7 +1,14 @@
-{
-stdenv, fetchFromGitHub, cmake, makeWrapper
-,qtbase, qttools, python, libGLU_combined
-,libXt, qtx11extras, qtxmlpatterns
+{ stdenv
+, fetchFromGitHub
+, cmake
+, makeWrapper
+, qtbase
+, qttools
+, python
+, libGLU_combined
+, libXt
+, qtx11extras
+, qtxmlpatterns
 }:
 
 stdenv.mkDerivation rec {
@@ -65,7 +72,7 @@ stdenv.mkDerivation rec {
     homepage = http://www.paraview.org/;
     description = "3D Data analysis and visualization application";
     license = stdenv.lib.licenses.free;
-    maintainers = with stdenv.lib.maintainers; [guibert];
+    maintainers = with stdenv.lib.maintainers; [ guibert ];
     platforms = with stdenv.lib.platforms; linux;
   };
 }

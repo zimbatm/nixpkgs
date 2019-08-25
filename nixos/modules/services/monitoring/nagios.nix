@@ -12,9 +12,9 @@ let
   nagiosObjectDefs = cfg.objectDefs;
 
   nagiosObjectDefsDir = pkgs.runCommand "nagios-objects" {
-      inherit nagiosObjectDefs;
-      preferLocalBuild = true;
-    } "mkdir -p $out; ln -s $nagiosObjectDefs $out/";
+    inherit nagiosObjectDefs;
+    preferLocalBuild = true;
+  } "mkdir -p $out; ln -s $nagiosObjectDefs $out/";
 
   nagiosCfgFile = pkgs.writeText "nagios.cfg"
     ''
@@ -93,7 +93,7 @@ in
 
       plugins = mkOption {
         type = types.listOf types.package;
-        default = [pkgs.nagiosPluginsOfficial pkgs.ssmtp];
+        default = [ pkgs.nagiosPluginsOfficial pkgs.ssmtp ];
         defaultText = "[pkgs.nagiosPluginsOfficial pkgs.ssmtp]";
         description = "
           Packages to be added to the Nagios <envar>PATH</envar>.
@@ -143,17 +143,18 @@ in
   config = mkIf cfg.enable {
     users.users.nagios = {
       description = "Nagios user ";
-      uid         = config.ids.uids.nagios;
-      home        = nagiosState;
-      group       = "nagios";
+      uid = config.ids.uids.nagios;
+      home = nagiosState;
+      group = "nagios";
     };
 
-    users.groups.nagios = { };
+    users.groups.nagios = {};
 
     # This isn't needed, it's just so that the user can type "nagiostats
     # -c /etc/nagios.cfg".
     environment.etc = [
-      { source = cfg.mainConfigFile;
+      {
+        source = cfg.mainConfigFile;
         target = "nagios.cfg";
       }
     ];
@@ -161,9 +162,9 @@ in
     environment.systemPackages = [ pkgs.nagios ];
     systemd.services.nagios = {
       description = "Nagios monitoring daemon";
-      path     = [ pkgs.nagios ];
+      path = [ pkgs.nagios ];
       wantedBy = [ "multi-user.target" ];
-      after    = [ "network.target" ];
+      after = [ "network.target" ];
 
       serviceConfig = {
         User = "nagios";

@@ -17,25 +17,30 @@ let
     versionSuffix = "test";
     label = "test";
   };
-in lib.optionalAttrs stdenv.hostPlatform.isLinux (
+in
+lib.optionalAttrs stdenv.hostPlatform.isLinux (
   pkgs.recurseIntoAttrs {
 
-    nixos-test = (pkgs.nixos {
-      system.nixos = dummyVersioning;
-      boot.loader.grub.enable = false;
-      fileSystems."/".device = "/dev/null";
-    }).toplevel;
-
-    nixosTest-test = pkgs.nixosTest ({ lib, pkgs, ... }: {
-      name = "nixosTest-test";
-      machine = { pkgs, ... }: {
+    nixos-test = (
+      pkgs.nixos {
         system.nixos = dummyVersioning;
-        environment.systemPackages = [ pkgs.hello ];
-      };
-      testScript = ''
-        $machine->succeed("hello");
-      '';
-    });
+        boot.loader.grub.enable = false;
+        fileSystems."/".device = "/dev/null";
+      }
+    ).toplevel;
+
+    nixosTest-test = pkgs.nixosTest (
+      { lib, pkgs, ... }: {
+        name = "nixosTest-test";
+        machine = { pkgs, ... }: {
+          system.nixos = dummyVersioning;
+          environment.systemPackages = [ pkgs.hello ];
+        };
+        testScript = ''
+          $machine->succeed("hello");
+        '';
+      }
+    );
 
   }
 )

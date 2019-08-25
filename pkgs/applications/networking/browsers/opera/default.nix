@@ -90,7 +90,8 @@ let
     at-spi2-core
   ];
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
 
   pname = "opera";
   version = "62.0.3331.43";

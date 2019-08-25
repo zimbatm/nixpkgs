@@ -1,13 +1,28 @@
 { spellChecking ? true
-, stdenv, fetchurl, pkgconfig, gtk3, gtkspell3 ? null
-, gmime2, gettext, intltool, itstool, libxml2, libnotify, gnutls
-, makeWrapper, gnupg
-, gnomeSupport ? true, libsecret, gcr
+, stdenv
+, fetchurl
+, pkgconfig
+, gtk3
+, gtkspell3 ? null
+, gmime2
+, gettext
+, intltool
+, itstool
+, libxml2
+, libnotify
+, gnutls
+, makeWrapper
+, gnupg
+, gnomeSupport ? true
+, libsecret
+, gcr
 }:
 
 assert spellChecking -> gtkspell3 != null;
 
-let version = "0.145"; in
+let
+  version = "0.145";
+in
 
 stdenv.mkDerivation {
   name = "pan-${version}";
@@ -20,15 +35,18 @@ stdenv.mkDerivation {
   nativeBuildInputs = [ pkgconfig gettext intltool itstool libxml2 makeWrapper ];
   buildInputs = [ gtk3 gmime2 libnotify gnutls ]
     ++ stdenv.lib.optional spellChecking gtkspell3
-    ++ stdenv.lib.optionals gnomeSupport [ libsecret gcr ];
+    ++ stdenv.lib.optionals gnomeSupport [ libsecret gcr ]
+    ;
 
   configureFlags = [
     "--with-dbus"
     "--with-gtk3"
     "--with-gnutls"
     "--enable-libnotify"
-  ] ++ stdenv.lib.optional spellChecking "--with-gtkspell"
-    ++ stdenv.lib.optional gnomeSupport "--enable-gkr";
+  ]
+  ++ stdenv.lib.optional spellChecking "--with-gtkspell"
+  ++ stdenv.lib.optional gnomeSupport "--enable-gkr"
+  ;
 
   postInstall = ''
     wrapProgram $out/bin/pan --suffix PATH : ${gnupg}/bin

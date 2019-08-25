@@ -1,6 +1,20 @@
-{
-  enableXft ? true, libXft ? null, patches ? [], stdenv, lua, gettext, pkgconfig, xlibsWrapper, libXinerama, libXrandr, libX11,
-  xterm, xmessage, makeWrapper, fetchFromGitHub, mandoc, which
+{ enableXft ? true
+, libXft ? null
+, patches ? []
+, stdenv
+, lua
+, gettext
+, pkgconfig
+, xlibsWrapper
+, libXinerama
+, libXrandr
+, libX11
+, xterm
+, xmessage
+, makeWrapper
+, fetchFromGitHub
+, mandoc
+, which
 }:
 
 assert enableXft -> libXft != null;
@@ -16,8 +30,8 @@ stdenv.mkDerivation {
     description = "Tiling tabbed window manager, follow-on to the ion window manager";
     homepage = http://notion.sourceforge.net;
     platforms = platforms.linux;
-    license   = licenses.notion_lgpl;
-    maintainers = with maintainers; [jfb];
+    license = licenses.notion_lgpl;
+    maintainers = with maintainers; [ jfb ];
   };
   src = fetchFromGitHub {
     owner = "raboof";
@@ -33,7 +47,7 @@ stdenv.mkDerivation {
   '';
 
   nativeBuildInputs = [ pkgconfig ];
-  buildInputs = [makeWrapper xlibsWrapper lua gettext mandoc which libXinerama libXrandr libX11 ] ++ stdenv.lib.optional enableXft libXft;
+  buildInputs = [ makeWrapper xlibsWrapper lua gettext mandoc which libXinerama libXrandr libX11 ] ++ stdenv.lib.optional enableXft libXft;
 
   buildFlags = "LUA_DIR=${lua} X11_PREFIX=/no-such-path PREFIX=\${out}";
   installFlags = "PREFIX=\${out}";

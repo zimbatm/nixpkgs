@@ -17,17 +17,17 @@ let
   mod_perl = pkgs.apacheHttpdPackages.mod_perl.override { apacheHttpd = httpd; };
 
   defaultListen = cfg: if cfg.enableSSL
-    then [{ip = "*"; port = 443;}]
-    else [{ip = "*"; port = 80;}];
+  then [ { ip = "*"; port = 443; } ]
+  else [ { ip = "*"; port = 80; } ];
 
   getListen = cfg:
     if cfg.listen == []
-      then defaultListen cfg
-      else cfg.listen;
+    then defaultListen cfg
+    else cfg.listen;
 
   listenToString = l: "${l.ip}:${toString l.port}";
 
-  extraModules = attrByPath ["extraModules"] [] mainCfg;
+  extraModules = attrByPath [ "extraModules" ] [] mainCfg;
   extraForeignModules = filter isAttrs extraModules;
   extraApacheModules = filter isString extraModules;
 
@@ -35,11 +35,14 @@ let
   makeServerInfo = cfg: {
     # Canonical name must not include a trailing slash.
     canonicalNames =
-      let defaultPort = (head (defaultListen cfg)).port; in
-      map (port:
-        (if cfg.enableSSL then "https" else "http") + "://" +
-        cfg.hostName +
-        (if port != defaultPort then ":${toString port}" else "")
+      let
+        defaultPort = (head (defaultListen cfg)).port;
+      in
+        map (
+          port:
+            (if cfg.enableSSL then "https" else "http") + "://"
+            + cfg.hostName
+            + (if port != defaultPort then ":${toString port}" else "")
         ) (map (x: x.port) (getListen cfg));
 
     # Admin address: inherit from the main server if not specified for
@@ -52,39 +55,45 @@ let
   };
 
 
-  allHosts = [mainCfg] ++ mainCfg.virtualHosts;
+  allHosts = [ mainCfg ] ++ mainCfg.virtualHosts;
 
 
   callSubservices = serverInfo: defs:
-    let f = svc:
-      let
-        svcFunction =
-          if svc ? function then svc.function
-          # instead of using serviceType="mediawiki"; you can copy mediawiki.nix to any location outside nixpkgs, modify it at will, and use serviceExpression=./mediawiki.nix;
-          else if svc ? serviceExpression then import (toString svc.serviceExpression)
-          else import (toString "${toString ./.}/${if svc ? serviceType then svc.serviceType else svc.serviceName}.nix");
-        config = (evalModules
-          { modules = [ { options = res.options; config = svc.config or svc; } ];
-            check = false;
-          }).config;
-        defaults = {
-          extraConfig = "";
-          extraModules = [];
-          extraModulesPre = [];
-          extraPath = [];
-          extraServerPath = [];
-          globalEnvVars = [];
-          robotsEntries = "";
-          startupScript = "";
-          enablePHP = false;
-          enablePerl = false;
-          phpOptions = "";
-          options = {};
-          documentRoot = null;
-        };
-        res = defaults // svcFunction { inherit config lib pkgs serverInfo php; };
-      in res;
-    in map f defs;
+    let
+      f = svc:
+        let
+          svcFunction =
+            if svc ? function then svc.function
+              # instead of using serviceType="mediawiki"; you can copy mediawiki.nix to any location outside nixpkgs, modify it at will, and use serviceExpression=./mediawiki.nix;
+            else if svc ? serviceExpression then import (toString svc.serviceExpression)
+            else import (toString "${toString ./.}/${if svc ? serviceType then svc.serviceType else svc.serviceName}.nix");
+          config = (
+            evalModules
+              {
+                modules = [ { options = res.options; config = svc.config or svc; } ];
+                check = false;
+              }
+          ).config;
+          defaults = {
+            extraConfig = "";
+            extraModules = [];
+            extraModulesPre = [];
+            extraPath = [];
+            extraServerPath = [];
+            globalEnvVars = [];
+            robotsEntries = "";
+            startupScript = "";
+            enablePHP = false;
+            enablePerl = false;
+            phpOptions = "";
+            options = {};
+            documentRoot = null;
+          };
+          res = defaults // svcFunction { inherit config lib pkgs serverInfo php; };
+        in
+          res;
+    in
+      map f defs;
 
 
   # !!! callSubservices is expensive
@@ -100,22 +109,56 @@ let
 
   # Names of modules from ${httpd}/modules that we want to load.
   apacheModules =
-    [ # HTTP authentication mechanisms: basic and digest.
-      "auth_basic" "auth_digest"
+    [
+      # HTTP authentication mechanisms: basic and digest.
+      "auth_basic"
+      "auth_digest"
 
       # Authentication: is the user who he claims to be?
-      "authn_file" "authn_dbm" "authn_anon" "authn_core"
+      "authn_file"
+      "authn_dbm"
+      "authn_anon"
+      "authn_core"
 
       # Authorization: is the user allowed access?
-      "authz_user" "authz_groupfile" "authz_host" "authz_core"
+      "authz_user"
+      "authz_groupfile"
+      "authz_host"
+      "authz_core"
 
       # Other modules.
-      "ext_filter" "include" "log_config" "env" "mime_magic"
-      "cern_meta" "expires" "headers" "usertrack" /* "unique_id" */ "setenvif"
-      "mime" "dav" "status" "autoindex" "asis" "info" "dav_fs"
-      "vhost_alias" "negotiation" "dir" "imagemap" "actions" "speling"
-      "userdir" "alias" "rewrite" "proxy" "proxy_http"
-      "unixd" "cache" "cache_disk" "slotmem_shm" "socache_shmcb"
+      "ext_filter"
+      "include"
+      "log_config"
+      "env"
+      "mime_magic"
+      "cern_meta"
+      "expires"
+      "headers"
+      "usertrack" /* "unique_id" */ "setenvif"
+      "mime"
+      "dav"
+      "status"
+      "autoindex"
+      "asis"
+      "info"
+      "dav_fs"
+      "vhost_alias"
+      "negotiation"
+      "dir"
+      "imagemap"
+      "actions"
+      "speling"
+      "userdir"
+      "alias"
+      "rewrite"
+      "proxy"
+      "proxy_http"
+      "unixd"
+      "cache"
+      "cache_disk"
+      "slotmem_shm"
+      "socache_shmcb"
       "mpm_${mainCfg.multiProcessingModule}"
 
       # For compatibility with old configurations, the new module mod_access_compat is provided.
@@ -123,27 +166,30 @@ let
     ]
     ++ (if mainCfg.multiProcessingModule == "prefork" then [ "cgi" ] else [ "cgid" ])
     ++ optional enableSSL "ssl"
-    ++ extraApacheModules;
+    ++ extraApacheModules
+  ;
 
 
   allDenied = "Require all denied";
   allGranted = "Require all granted";
 
 
-  loggingConf = (if mainCfg.logFormat != "none" then ''
-    ErrorLog ${mainCfg.logDir}/error.log
+  loggingConf = (
+    if mainCfg.logFormat != "none" then ''
+      ErrorLog ${mainCfg.logDir}/error.log
 
-    LogLevel notice
+      LogLevel notice
 
-    LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
-    LogFormat "%h %l %u %t \"%r\" %>s %b" common
-    LogFormat "%{Referer}i -> %U" referer
-    LogFormat "%{User-agent}i" agent
+      LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
+      LogFormat "%h %l %u %t \"%r\" %>s %b" common
+      LogFormat "%{Referer}i -> %U" referer
+      LogFormat "%{User-agent}i" agent
 
-    CustomLog ${mainCfg.logDir}/access.log ${mainCfg.logFormat}
-  '' else ''
-    ErrorLog /dev/null
-  '');
+      CustomLog ${mainCfg.logDir}/access.log ${mainCfg.logFormat}
+    '' else ''
+      ErrorLog /dev/null
+    ''
+  );
 
 
   browserHacks = ''
@@ -192,8 +238,9 @@ let
 
     subservices = callSubservices serverInfo cfg.extraSubservices;
 
-    maybeDocumentRoot = fold (svc: acc:
-      if acc == null then svc.documentRoot else assert svc.documentRoot == null; acc
+    maybeDocumentRoot = fold (
+      svc: acc:
+        if acc == null then svc.documentRoot else assert svc.documentRoot == null; acc
     ) null ([ cfg ] ++ subservices);
 
     documentRoot = if maybeDocumentRoot != null then maybeDocumentRoot else
@@ -210,48 +257,52 @@ let
     '';
 
     robotsTxt =
-      concatStringsSep "\n" (filter (x: x != "") (
-        # If this is a vhost, the include the entries for the main server as well.
-        (if isMainServer then [] else [mainCfg.robotsEntries] ++ map (svc: svc.robotsEntries) mainSubservices)
-        ++ [cfg.robotsEntries]
-        ++ (map (svc: svc.robotsEntries) subservices)));
+      concatStringsSep "\n" (
+        filter (x: x != "") (
+          # If this is a vhost, the include the entries for the main server as well.
+          (if isMainServer then [] else [ mainCfg.robotsEntries ] ++ map (svc: svc.robotsEntries) mainSubservices)
+          ++ [ cfg.robotsEntries ]
+          ++ (map (svc: svc.robotsEntries) subservices)
+        )
+      );
 
-  in ''
-    ${concatStringsSep "\n" (map (n: "ServerName ${n}") serverInfo.canonicalNames)}
+  in
+    ''
+      ${concatStringsSep "\n" (map (n: "ServerName ${n}") serverInfo.canonicalNames)}
 
-    ${concatMapStrings (alias: "ServerAlias ${alias}\n") cfg.serverAliases}
+      ${concatMapStrings (alias: "ServerAlias ${alias}\n") cfg.serverAliases}
 
-    ${if cfg.sslServerCert != null then ''
+      ${if cfg.sslServerCert != null then ''
       SSLCertificateFile ${cfg.sslServerCert}
       SSLCertificateKeyFile ${cfg.sslServerKey}
       ${if cfg.sslServerChain != null then ''
-        SSLCertificateChainFile ${cfg.sslServerChain}
-      '' else ""}
+      SSLCertificateChainFile ${cfg.sslServerChain}
+    '' else ""}
     '' else ""}
 
-    ${if cfg.enableSSL then ''
+      ${if cfg.enableSSL then ''
       SSLEngine on
     '' else if enableSSL then /* i.e., SSL is enabled for some host, but not this one */
-    ''
-      SSLEngine off
-    '' else ""}
+      ''
+        SSLEngine off
+      '' else ""}
 
-    ${if isMainServer || cfg.adminAddr != null then ''
+      ${if isMainServer || cfg.adminAddr != null then ''
       ServerAdmin ${cfg.adminAddr}
     '' else ""}
 
-    ${if !isMainServer && mainCfg.logPerVirtualHost then ''
+      ${if !isMainServer && mainCfg.logPerVirtualHost then ''
       ErrorLog ${mainCfg.logDir}/error-${cfg.hostName}.log
       CustomLog ${mainCfg.logDir}/access-${cfg.hostName}.log ${cfg.logFormat}
     '' else ""}
 
-    ${optionalString (robotsTxt != "") ''
+      ${optionalString (robotsTxt != "") ''
       Alias /robots.txt ${pkgs.writeText "robots.txt" robotsTxt}
     ''}
 
-    ${if isMainServer || maybeDocumentRoot != null then documentRootConf else ""}
+      ${if isMainServer || maybeDocumentRoot != null then documentRootConf else ""}
 
-    ${if cfg.enableUserDir then ''
+      ${if cfg.enableUserDir then ''
 
       UserDir public_html
       UserDir disabled root
@@ -269,33 +320,37 @@ let
 
     '' else ""}
 
-    ${if cfg.globalRedirect != null && cfg.globalRedirect != "" then ''
+      ${if cfg.globalRedirect != null && cfg.globalRedirect != "" then ''
       RedirectPermanent / ${cfg.globalRedirect}
     '' else ""}
 
-    ${
-      let makeFileConf = elem: ''
-            Alias ${elem.urlPath} ${elem.file}
-          '';
-      in concatMapStrings makeFileConf cfg.servedFiles
+      ${
+    let
+      makeFileConf = elem: ''
+        Alias ${elem.urlPath} ${elem.file}
+      '';
+    in
+      concatMapStrings makeFileConf cfg.servedFiles
     }
 
-    ${
-      let makeDirConf = elem: ''
-            Alias ${elem.urlPath} ${elem.dir}/
-            <Directory ${elem.dir}>
-                Options +Indexes
-                ${allGranted}
-                AllowOverride All
-            </Directory>
-          '';
-      in concatMapStrings makeDirConf cfg.servedDirs
+      ${
+    let
+      makeDirConf = elem: ''
+        Alias ${elem.urlPath} ${elem.dir}/
+        <Directory ${elem.dir}>
+            Options +Indexes
+            ${allGranted}
+            AllowOverride All
+        </Directory>
+      '';
+    in
+      concatMapStrings makeDirConf cfg.servedDirs
     }
 
-    ${concatMapStrings (svc: svc.extraConfig) subservices}
+      ${concatMapStrings (svc: svc.extraConfig) subservices}
 
-    ${cfg.extraConfig}
-  '';
+      ${cfg.extraConfig}
+    '';
 
 
   confFile = pkgs.writeText "httpd.conf" ''
@@ -307,9 +362,9 @@ let
     PidFile ${mainCfg.stateDir}/httpd.pid
 
     ${optionalString (mainCfg.multiProcessingModule != "prefork") ''
-      # mod_cgid requires this.
-      ScriptSock ${mainCfg.stateDir}/cgisock
-    ''}
+    # mod_cgid requires this.
+    ScriptSock ${mainCfg.stateDir}/cgisock
+  ''}
 
     <IfModule prefork.c>
         MaxClients           ${toString mainCfg.maxClients}
@@ -317,27 +372,30 @@ let
     </IfModule>
 
     ${let
-        listen = concatMap getListen allHosts;
-        toStr = listen: "Listen ${listenToString listen}\n";
-        uniqueListen = uniqList {inputList = map toStr listen;};
-      in concatStrings uniqueListen
-    }
+    listen = concatMap getListen allHosts;
+    toStr = listen: "Listen ${listenToString listen}\n";
+    uniqueListen = uniqList { inputList = map toStr listen; };
+  in
+    concatStrings uniqueListen
+  }
 
     User ${mainCfg.user}
     Group ${mainCfg.group}
 
     ${let
-        load = {name, path}: "LoadModule ${name}_module ${path}\n";
-        allModules =
-          concatMap (svc: svc.extraModulesPre) allSubservices
-          ++ map (name: {inherit name; path = "${httpd}/modules/mod_${name}.so";}) apacheModules
-          ++ optional mainCfg.enableMellon { name = "auth_mellon"; path = "${pkgs.apacheHttpdPackages.mod_auth_mellon}/modules/mod_auth_mellon.so"; }
-          ++ optional enablePHP { name = "php${phpMajorVersion}"; path = "${php}/modules/libphp${phpMajorVersion}.so"; }
-          ++ optional enablePerl { name = "perl"; path = "${mod_perl}/modules/mod_perl.so"; }
-          ++ concatMap (svc: svc.extraModules) allSubservices
-          ++ extraForeignModules;
-      in concatMapStrings load (unique allModules)
-    }
+    load = { name, path }: "LoadModule ${name}_module ${path}\n";
+    allModules =
+      concatMap (svc: svc.extraModulesPre) allSubservices
+      ++ map (name: { inherit name; path = "${httpd}/modules/mod_${name}.so"; }) apacheModules
+      ++ optional mainCfg.enableMellon { name = "auth_mellon"; path = "${pkgs.apacheHttpdPackages.mod_auth_mellon}/modules/mod_auth_mellon.so"; }
+      ++ optional enablePHP { name = "php${phpMajorVersion}"; path = "${php}/modules/libphp${phpMajorVersion}.so"; }
+      ++ optional enablePerl { name = "perl"; path = "${mod_perl}/modules/mod_perl.so"; }
+      ++ concatMap (svc: svc.extraModules) allSubservices
+      ++ extraForeignModules
+      ;
+  in
+    concatMapStrings load (unique allModules)
+  }
 
     AddHandler type-map var
 
@@ -376,13 +434,14 @@ let
     ${perServerConf true mainCfg}
 
     ${let
-        makeVirtualHost = vhost: ''
-          <VirtualHost ${concatStringsSep " " (map listenToString (getListen vhost))}>
-              ${perServerConf false vhost}
-          </VirtualHost>
-        '';
-      in concatMapStrings makeVirtualHost mainCfg.virtualHosts
-    }
+    makeVirtualHost = vhost: ''
+      <VirtualHost ${concatStringsSep " " (map listenToString (getListen vhost))}>
+          ${perServerConf false vhost}
+      </VirtualHost>
+    '';
+  in
+    concatMapStrings makeVirtualHost mainCfg.virtualHosts
+  }
   '';
 
 
@@ -394,7 +453,8 @@ let
   # Generate the PHP configuration file.  Should probably be factored
   # out into a separate module.
   phpIni = pkgs.runCommand "php.ini"
-    { options = concatStringsSep "\n"
+    {
+      options = concatStringsSep "\n"
         ([ mainCfg.phpOptions ] ++ (map (svc: svc.phpOptions) allSubservices));
       preferLocalBuild = true;
     }
@@ -511,18 +571,24 @@ in
       };
 
       virtualHosts = mkOption {
-        type = types.listOf (types.submodule (
-          { options = import ./per-server-options.nix {
-              inherit lib;
-              forMainServer = false;
-            };
-          }));
+        type = types.listOf (
+          types.submodule (
+            {
+              options = import ./per-server-options.nix {
+                inherit lib;
+                forMainServer = false;
+              };
+            }
+          )
+        );
         default = [];
         example = [
-          { hostName = "foo";
+          {
+            hostName = "foo";
             documentRoot = "/data/webroot-foo";
           }
-          { hostName = "bar";
+          {
+            hostName = "bar";
             documentRoot = "/data/webroot-bar";
           }
         ];
@@ -619,10 +685,13 @@ in
     }
 
     # Include the options shared between the main server and virtual hosts.
-    // (import ./per-server-options.nix {
-      inherit lib;
-      forMainServer = true;
-    });
+    // (
+         import ./per-server-options.nix {
+           inherit lib;
+           forMainServer = true;
+         }
+       )
+    ;
 
   };
 
@@ -631,27 +700,37 @@ in
 
   config = mkIf config.services.httpd.enable {
 
-    assertions = [ { assertion = mainCfg.enableSSL == true
-                               -> mainCfg.sslServerCert != null
-                                    && mainCfg.sslServerKey != null;
-                     message = "SSL is enabled for httpd, but sslServerCert and/or sslServerKey haven't been specified."; }
-                 ];
+    assertions = [
+      {
+        assertion = mainCfg.enableSSL == true
+          -> mainCfg.sslServerCert != null
+             && mainCfg.sslServerKey != null
+          ;
+        message = "SSL is enabled for httpd, but sslServerCert and/or sslServerKey haven't been specified.";
+      }
+    ];
 
     warnings = map (cfg: "apache-httpd's extraSubservices option is deprecated. Most existing subservices have been ported to the NixOS module system. Please update your configuration accordingly.") (lib.filter (cfg: cfg.extraSubservices != []) allHosts);
 
-    users.users = optionalAttrs (mainCfg.user == "wwwrun") (singleton
-      { name = "wwwrun";
-        group = mainCfg.group;
-        description = "Apache httpd user";
-        uid = config.ids.uids.wwwrun;
-      });
+    users.users = optionalAttrs (mainCfg.user == "wwwrun") (
+      singleton
+        {
+          name = "wwwrun";
+          group = mainCfg.group;
+          description = "Apache httpd user";
+          uid = config.ids.uids.wwwrun;
+        }
+    );
 
-    users.groups = optionalAttrs (mainCfg.group == "wwwrun") (singleton
-      { name = "wwwrun";
-        gid = config.ids.gids.wwwrun;
-      });
+    users.groups = optionalAttrs (mainCfg.group == "wwwrun") (
+      singleton
+        {
+          name = "wwwrun";
+          gid = config.ids.gids.wwwrun;
+        }
+    );
 
-    environment.systemPackages = [httpd] ++ concatMap (svc: svc.extraPath) allSubservices;
+    environment.systemPackages = [ httpd ] ++ concatMap (svc: svc.extraPath) allSubservices;
 
     services.httpd.phpOptions =
       ''
@@ -660,14 +739,17 @@ in
 
         ; Don't advertise PHP
         expose_php = off
-      '' + optionalString (config.time.timeZone != null) ''
+      ''
+      + optionalString (config.time.timeZone != null) ''
 
         ; Apparently PHP doesn't use $TZ.
         date.timezone = "${config.time.timeZone}"
-      '';
+      ''
+    ;
 
     systemd.services.httpd =
-      { description = "Apache HTTPD";
+      {
+        description = "Apache HTTPD";
 
         wantedBy = [ "multi-user.target" ];
         wants = [ "keys.target" ];
@@ -676,12 +758,14 @@ in
         path =
           [ httpd pkgs.coreutils pkgs.gnugrep ]
           ++ optional enablePHP pkgs.system-sendmail # Needed for PHP's mail() function.
-          ++ concatMap (svc: svc.extraServerPath) allSubservices;
+          ++ concatMap (svc: svc.extraServerPath) allSubservices
+          ;
 
         environment =
           optionalAttrs enablePHP { PHPRC = phpIni; }
-          // optionalAttrs mainCfg.enableMellon { LD_LIBRARY_PATH  = "${pkgs.xmlsec}/lib"; }
-          // (listToAttrs (concatMap (svc: svc.globalEnvVars) allSubservices));
+          // optionalAttrs mainCfg.enableMellon { LD_LIBRARY_PATH = "${pkgs.xmlsec}/lib"; }
+          // (listToAttrs (concatMap (svc: svc.globalEnvVars) allSubservices))
+          ;
 
         preStart =
           ''

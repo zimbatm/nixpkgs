@@ -1,14 +1,24 @@
-{ stdenv, lib, fetchurl, makeWrapper, yacc, gcc
-, withISpin ? true, tk, swarm, graphviz }:
+{ stdenv
+, lib
+, fetchurl
+, makeWrapper
+, yacc
+, gcc
+, withISpin ? true
+, tk
+, swarm
+, graphviz
+}:
 
 let
   binPath = stdenv.lib.makeBinPath [ gcc ];
   ibinPath = stdenv.lib.makeBinPath [ gcc tk swarm graphviz tk ];
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "spin-${version}";
   version = "6.4.9";
-  url-version = stdenv.lib.replaceChars ["."] [""] version;
+  url-version = stdenv.lib.replaceChars [ "." ] [ "" ] version;
 
   src = fetchurl {
     # The homepage is behind CloudFlare anti-DDoS protection, which blocks cURL.
@@ -30,11 +40,13 @@ in stdenv.mkDerivation rec {
     install -Dm755 spin $out/bin/spin
     wrapProgram $out/bin/spin \
       --prefix PATH : ${binPath}
-  '' + lib.optionalString withISpin ''
-    install -Dm755 ../iSpin/ispin.tcl $out/bin/ispin
-    wrapProgram $out/bin/ispin \
-      --prefix PATH ':' "$out/bin:${ibinPath}"
-  '';
+  ''
+  + lib.optionalString withISpin ''
+      install -Dm755 ../iSpin/ispin.tcl $out/bin/ispin
+      wrapProgram $out/bin/ispin \
+        --prefix PATH ':' "$out/bin:${ibinPath}"
+    ''
+  ;
 
   meta = with stdenv.lib; {
     description = "Formal verification tool for distributed software systems";

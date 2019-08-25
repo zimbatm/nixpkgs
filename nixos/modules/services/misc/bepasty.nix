@@ -20,101 +20,107 @@ in
       description = ''
         configure a number of bepasty servers which will be started with
         gunicorn.
-        '';
-      type = with types ; attrsOf (submodule ({ config, ... } : {
+      '';
+      type = with types ; attrsOf (
+        submodule (
+          { config, ... }: {
 
-        options = {
+            options = {
 
-          bind = mkOption {
-            type = types.str;
-            description = ''
-              Bind address to be used for this server.
-              '';
-            example = "0.0.0.0:8000";
-            default = "127.0.0.1:8000";
-          };
+              bind = mkOption {
+                type = types.str;
+                description = ''
+                  Bind address to be used for this server.
+                '';
+                example = "0.0.0.0:8000";
+                default = "127.0.0.1:8000";
+              };
 
-          dataDir = mkOption {
-            type = types.str;
-            description = ''
-              Path to the directory where the pastes will be saved to
-              '';
-            default = default_home+"/data";
-          };
+              dataDir = mkOption {
+                type = types.str;
+                description = ''
+                  Path to the directory where the pastes will be saved to
+                '';
+                default = default_home + "/data";
+              };
 
-          defaultPermissions = mkOption {
-            type = types.str;
-            description = ''
-              default permissions for all unauthenticated accesses.
-              '';
-            example = "read,create,delete";
-            default = "read";
-          };
+              defaultPermissions = mkOption {
+                type = types.str;
+                description = ''
+                  default permissions for all unauthenticated accesses.
+                '';
+                example = "read,create,delete";
+                default = "read";
+              };
 
-          extraConfig = mkOption {
-            type = types.lines;
-            description = ''
-              Extra configuration for bepasty server to be appended on the
-              configuration.
-              see https://bepasty-server.readthedocs.org/en/latest/quickstart.html#configuring-bepasty
-              for all options.
-              '';
-            default = "";
-            example = ''
-              PERMISSIONS = {
-                'myadminsecret': 'admin,list,create,read,delete',
-              }
-              MAX_ALLOWED_FILE_SIZE = 5 * 1000 * 1000
-              '';
-          };
+              extraConfig = mkOption {
+                type = types.lines;
+                description = ''
+                  Extra configuration for bepasty server to be appended on the
+                  configuration.
+                  see https://bepasty-server.readthedocs.org/en/latest/quickstart.html#configuring-bepasty
+                  for all options.
+                '';
+                default = "";
+                example = ''
+                  PERMISSIONS = {
+                    'myadminsecret': 'admin,list,create,read,delete',
+                  }
+                  MAX_ALLOWED_FILE_SIZE = 5 * 1000 * 1000
+                '';
+              };
 
-          secretKey = mkOption {
-            type = types.str;
-            description = ''
-              server secret for safe session cookies, must be set.
+              secretKey = mkOption {
+                type = types.str;
+                description = ''
+                  server secret for safe session cookies, must be set.
 
-              Warning: this secret is stored in the WORLD-READABLE Nix store!
+                  Warning: this secret is stored in the WORLD-READABLE Nix store!
 
-              It's recommended to use <option>secretKeyFile</option>
-              which takes precedence over <option>secretKey</option>.
-              '';
-            default = "";
-          };
+                  It's recommended to use <option>secretKeyFile</option>
+                  which takes precedence over <option>secretKey</option>.
+                '';
+                default = "";
+              };
 
-          secretKeyFile = mkOption {
-            type = types.nullOr types.str;
-            default = null;
-            description = ''
-              A file that contains the server secret for safe session cookies, must be set.
+              secretKeyFile = mkOption {
+                type = types.nullOr types.str;
+                default = null;
+                description = ''
+                  A file that contains the server secret for safe session cookies, must be set.
 
-              <option>secretKeyFile</option> takes precedence over <option>secretKey</option>.
+                  <option>secretKeyFile</option> takes precedence over <option>secretKey</option>.
 
-              Warning: when <option>secretKey</option> is non-empty <option>secretKeyFile</option>
-              defaults to a file in the WORLD-READABLE Nix store containing that secret.
-              '';
-          };
+                  Warning: when <option>secretKey</option> is non-empty <option>secretKeyFile</option>
+                  defaults to a file in the WORLD-READABLE Nix store containing that secret.
+                '';
+              };
 
-          workDir = mkOption {
-            type = types.str;
-            description = ''
-              Path to the working directory (used for config and pidfile).
-              Defaults to the users home directory.
-              '';
-            default = default_home;
-          };
+              workDir = mkOption {
+                type = types.str;
+                description = ''
+                  Path to the working directory (used for config and pidfile).
+                  Defaults to the users home directory.
+                '';
+                default = default_home;
+              };
 
-        };
-        config = {
-          secretKeyFile = mkDefault (
-            if config.secretKey != ""
-            then toString (pkgs.writeTextFile {
-              name = "bepasty-secret-key";
-              text = config.secretKey;
-            })
-            else null
-          );
-        };
-      }));
+            };
+            config = {
+              secretKeyFile = mkDefault (
+                if config.secretKey != ""
+                then toString (
+                  pkgs.writeTextFile {
+                    name = "bepasty-secret-key";
+                    text = config.secretKey;
+                  }
+                )
+                else null
+              );
+            };
+          }
+        )
+      );
     };
   };
 
@@ -123,40 +129,43 @@ in
     environment.systemPackages = [ bepasty ];
 
     # creates gunicorn systemd service for each configured server
-    systemd.services = mapAttrs' (name: server:
-      nameValuePair ("bepasty-server-${name}-gunicorn")
-        ({
-          description = "Bepasty Server ${name}";
-          wantedBy = [ "multi-user.target" ];
-          after = [ "network.target" ];
-          restartIfChanged = true;
+    systemd.services = mapAttrs' (
+      name: server:
+        nameValuePair ("bepasty-server-${name}-gunicorn")
+          (
+            {
+              description = "Bepasty Server ${name}";
+              wantedBy = [ "multi-user.target" ];
+              after = [ "network.target" ];
+              restartIfChanged = true;
 
-          environment = let
-            penv = python.buildEnv.override {
-              extraLibs = [ bepasty gevent ];
-            };
-          in {
-            BEPASTY_CONFIG = "${server.workDir}/bepasty-${name}.conf";
-            PYTHONPATH= "${penv}/${python.sitePackages}/";
-          };
+              environment = let
+                penv = python.buildEnv.override {
+                  extraLibs = [ bepasty gevent ];
+                };
+              in
+                {
+                  BEPASTY_CONFIG = "${server.workDir}/bepasty-${name}.conf";
+                  PYTHONPATH = "${penv}/${python.sitePackages}/";
+                };
 
-          serviceConfig = {
-            Type = "simple";
-            PrivateTmp = true;
-            ExecStartPre = assert server.secretKeyFile != null; pkgs.writeScript "bepasty-server.${name}-init" ''
-              #!/bin/sh
-              mkdir -p "${server.workDir}"
-              mkdir -p "${server.dataDir}"
-              chown ${user}:${group} "${server.workDir}" "${server.dataDir}"
-              cat > ${server.workDir}/bepasty-${name}.conf <<EOF
-              SITENAME="${name}"
-              STORAGE_FILESYSTEM_DIRECTORY="${server.dataDir}"
-              SECRET_KEY="$(cat "${server.secretKeyFile}")"
-              DEFAULT_PERMISSIONS="${server.defaultPermissions}"
-              ${server.extraConfig}
-              EOF
-            '';
-            ExecStart = ''${gunicorn}/bin/gunicorn bepasty.wsgi --name ${name} \
+              serviceConfig = {
+                Type = "simple";
+                PrivateTmp = true;
+                ExecStartPre = assert server.secretKeyFile != null; pkgs.writeScript "bepasty-server.${name}-init" ''
+                  #!/bin/sh
+                  mkdir -p "${server.workDir}"
+                  mkdir -p "${server.dataDir}"
+                  chown ${user}:${group} "${server.workDir}" "${server.dataDir}"
+                  cat > ${server.workDir}/bepasty-${name}.conf <<EOF
+                  SITENAME="${name}"
+                  STORAGE_FILESYSTEM_DIRECTORY="${server.dataDir}"
+                  SECRET_KEY="$(cat "${server.secretKeyFile}")"
+                  DEFAULT_PERMISSIONS="${server.defaultPermissions}"
+                  ${server.extraConfig}
+                  EOF
+                '';
+                ExecStart = ''${gunicorn}/bin/gunicorn bepasty.wsgi --name ${name} \
               -u ${user} \
               -g ${group} \
               --workers 3 --log-level=info \
@@ -164,20 +173,25 @@ in
               --pid ${server.workDir}/gunicorn-${name}.pid \
               -k gevent
             '';
-          };
-        })
+              };
+            }
+          )
     ) cfg.servers;
 
-    users.users = [{
-      uid = config.ids.uids.bepasty;
-      name = user;
-      group = group;
-      home = default_home;
-    }];
+    users.users = [
+      {
+        uid = config.ids.uids.bepasty;
+        name = user;
+        group = group;
+        home = default_home;
+      }
+    ];
 
-    users.groups = [{
-      name = group;
-      gid = config.ids.gids.bepasty;
-    }];
+    users.groups = [
+      {
+        name = group;
+        gid = config.ids.gids.bepasty;
+      }
+    ];
   };
 }

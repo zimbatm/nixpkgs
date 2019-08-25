@@ -1,14 +1,26 @@
-{ config, stdenv, lib, fetchurl, fetchpatch
+{ config
+, stdenv
+, lib
+, fetchurl
+, fetchpatch
 , perl
-, libcap, libtool, libxml2, openssl
-, enablePython ? config.bind.enablePython or false, python3 ? null
-, enableSeccomp ? false, libseccomp ? null, buildPackages
+, libcap
+, libtool
+, libxml2
+, openssl
+, enablePython ? config.bind.enablePython or false
+, python3 ? null
+, enableSeccomp ? false
+, libseccomp ? null
+, buildPackages
 }:
 
 assert enableSeccomp -> libseccomp != null;
 assert enablePython -> python3 != null;
 
-let version = "9.14.4"; in
+let
+  version = "9.14.4";
+in
 
 stdenv.mkDerivation rec {
   name = "bind-${version}";
@@ -29,7 +41,8 @@ stdenv.mkDerivation rec {
   buildInputs = [ libtool libxml2 openssl ]
     ++ lib.optional stdenv.isLinux libcap
     ++ lib.optional enableSeccomp libseccomp
-    ++ lib.optional enablePython (python3.withPackages (ps: with ps; [ ply ]));
+    ++ lib.optional enablePython (python3.withPackages (ps: with ps; [ ply ]))
+    ;
 
   STD_CDEFINES = [ "-DDIG_SIGCHASE=1" ]; # support +sigchase
 
@@ -56,8 +69,10 @@ stdenv.mkDerivation rec {
     "--with-gost"
     "--without-eddsa"
     "--with-aes"
-  ] ++ lib.optional stdenv.isLinux "--with-libcap=${libcap.dev}"
-    ++ lib.optional enableSeccomp "--enable-seccomp";
+  ]
+  ++ lib.optional stdenv.isLinux "--with-libcap=${libcap.dev}"
+  ++ lib.optional enableSeccomp "--enable-seccomp"
+  ;
 
   postInstall = ''
     moveToOutput bin/bind9-config $dev

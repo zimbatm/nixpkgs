@@ -1,6 +1,16 @@
-{ stdenv, fetchFromGitHub, cmake
-, qt5, libidn, qca2-qt5, libXScrnSaver, hunspell
-, libgcrypt, libotr, html-tidy, libgpgerror, libsignal-protocol-c
+{ stdenv
+, fetchFromGitHub
+, cmake
+, qt5
+, libidn
+, qca2-qt5
+, libXScrnSaver
+, hunspell
+, libgcrypt
+, libotr
+, html-tidy
+, libgpgerror
+, libsignal-protocol-c
 }:
 
 stdenv.mkDerivation rec {
@@ -32,9 +42,20 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ cmake ];
 
   buildInputs = [
-    qt5.qtbase qt5.qtmultimedia qt5.qtx11extras qt5.qttools qt5.qtwebkit
-    libidn qca2-qt5 libXScrnSaver hunspell
-    libgcrypt libotr html-tidy libgpgerror libsignal-protocol-c
+    qt5.qtbase
+    qt5.qtmultimedia
+    qt5.qtx11extras
+    qt5.qttools
+    qt5.qtwebkit
+    libidn
+    qca2-qt5
+    libXScrnSaver
+    hunspell
+    libgcrypt
+    libotr
+    html-tidy
+    libgpgerror
+    libsignal-protocol-c
   ];
 
   enableParallelBuilding = true;

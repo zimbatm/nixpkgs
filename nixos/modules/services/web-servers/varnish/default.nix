@@ -1,12 +1,13 @@
-{ config, lib, pkgs, ...}:
+{ config, lib, pkgs, ... }:
 
 with lib;
 
 let
   cfg = config.services.varnish;
 
-  commandLine = "-f ${pkgs.writeText "default.vcl" cfg.config}" +
-      optionalString (cfg.extraModules != []) " -p vmod_path='${makeSearchPathOutput "lib" "lib/varnish/vmods" ([cfg.package] ++ cfg.extraModules)}' -r vmod_path";
+  commandLine = "-f ${pkgs.writeText "default.vcl" cfg.config}"
+    + optionalString (cfg.extraModules != []) " -p vmod_path='${makeSearchPathOutput "lib" "lib/varnish/vmods" ([ cfg.package ] ++ cfg.extraModules)}' -r vmod_path"
+    ;
 in
 {
   options = {
@@ -97,10 +98,12 @@ in
 
     # check .vcl syntax at compile time (e.g. before nixops deployment)
     system.extraDependencies = [
-      (pkgs.stdenv.mkDerivation {
-        name = "check-varnish-syntax";
-        buildCommand = "${cfg.package}/sbin/varnishd -C ${commandLine} 2> $out || (cat $out; exit 1)";
-      })
+      (
+        pkgs.stdenv.mkDerivation {
+          name = "check-varnish-syntax";
+          buildCommand = "${cfg.package}/sbin/varnishd -C ${commandLine} 2> $out || (cat $out; exit 1)";
+        }
+      )
     ];
 
     users.users.varnish = {

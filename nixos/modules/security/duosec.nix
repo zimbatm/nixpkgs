@@ -12,7 +12,7 @@ let
     ikey=${cfg.ikey}
     skey=${cfg.skey}
     host=${cfg.host}
-    ${optionalString (cfg.group != "") ("group="+cfg.group)}
+    ${optionalString (cfg.group != "") ("group=" + cfg.group)}
     failmode=${cfg.failmode}
     pushinfo=${boolToStr cfg.pushinfo}
     autopush=${boolToStr cfg.autopush}
@@ -20,22 +20,26 @@ let
     fallback_local_ip=${boolToStr cfg.fallbackLocalIP}
   '';
 
-  configFileLogin = configFilePam + ''
+  configFileLogin = configFilePam
+    + ''
     motd=${boolToStr cfg.motd}
     accept_env_factor=${boolToStr cfg.acceptEnvFactor}
-  '';
+  ''
+    ;
 
   loginCfgFile = optional cfg.ssh.enable
-    { source = pkgs.writeText "login_duo.conf" configFileLogin;
-      mode   = "0600";
-      user   = "sshd";
+    {
+      source = pkgs.writeText "login_duo.conf" configFileLogin;
+      mode = "0600";
+      user = "sshd";
       target = "duo/login_duo.conf";
     };
 
   pamCfgFile = optional cfg.pam.enable
-    { source = pkgs.writeText "pam_duo.conf" configFilePam;
-      mode   = "0600";
-      user   = "sshd";
+    {
+      source = pkgs.writeText "pam_duo.conf" configFilePam;
+      mode = "0600";
+      user = "sshd";
       target = "duo/pam_duo.conf";
     };
 in
@@ -183,21 +187,22 @@ in
   };
 
   config = mkIf (cfg.ssh.enable || cfg.pam.enable) {
-     environment.systemPackages = [ pkgs.duo-unix ];
+    environment.systemPackages = [ pkgs.duo-unix ];
 
-     security.wrappers.login_duo.source = "${pkgs.duo-unix.out}/bin/login_duo";
-     environment.etc = loginCfgFile ++ pamCfgFile;
+    security.wrappers.login_duo.source = "${pkgs.duo-unix.out}/bin/login_duo";
+    environment.etc = loginCfgFile ++ pamCfgFile;
 
-     /* If PAM *and* SSH are enabled, then don't do anything special.
-     If PAM isn't used, set the default SSH-only options. */
-     services.openssh.extraConfig = mkIf (cfg.ssh.enable || cfg.pam.enable) (
-     if cfg.pam.enable then "UseDNS no" else ''
-       # Duo Security configuration
-       ForceCommand ${config.security.wrapperDir}/login_duo
-       PermitTunnel no
-       ${optionalString (!cfg.allowTcpForwarding) ''
-         AllowTcpForwarding no
-       ''}
-     '');
+    /* If PAM *and* SSH are enabled, then don't do anything special.
+    If PAM isn't used, set the default SSH-only options. */
+    services.openssh.extraConfig = mkIf (cfg.ssh.enable || cfg.pam.enable) (
+      if cfg.pam.enable then "UseDNS no" else ''
+        # Duo Security configuration
+        ForceCommand ${config.security.wrapperDir}/login_duo
+        PermitTunnel no
+        ${optionalString (!cfg.allowTcpForwarding) ''
+        AllowTcpForwarding no
+      ''}
+      ''
+    );
   };
 }

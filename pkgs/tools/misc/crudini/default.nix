@@ -5,9 +5,9 @@ python2Packages.buildPythonApplication rec {
   version = "0.9";
 
   src = fetchFromGitHub {
-    owner  = "pixelb";
-    repo   = "crudini";
-    rev    = version;
+    owner = "pixelb";
+    repo = "crudini";
+    rev = version;
     sha256 = "0x9z9lsygripj88gadag398pc9zky23m16wmh8vbgw7ld1nhkiav";
   };
 

@@ -1,5 +1,11 @@
-{ stdenv, fetchFromGitHub, cmake, pkgconfig, qt4 ? null
-, withQt5 ? false, qtbase ? null, qttools ? null
+{ stdenv
+, fetchFromGitHub
+, cmake
+, pkgconfig
+, qt4 ? null
+, withQt5 ? false
+, qtbase ? null
+, qttools ? null
 , darwin ? null
 , libsecret
 }:
@@ -10,7 +16,7 @@ assert stdenv.isDarwin -> darwin != null;
 
 stdenv.mkDerivation rec {
   name = "qtkeychain-${if withQt5 then "qt5" else "qt4"}-${version}";
-  version = "0.9.1";            # verify after nix-build with `grep -R "set(PACKAGE_VERSION " result/`
+  version = "0.9.1"; # verify after nix-build with `grep -R "set(PACKAGE_VERSION " result/`
 
   src = fetchFromGitHub {
     owner = "frankosterfeld";
@@ -25,14 +31,17 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ cmake ]
     ++ stdenv.lib.optional (!stdenv.isDarwin) [ pkgconfig ] # for finding libsecret
-  ;
+    ;
 
   buildInputs = stdenv.lib.optional (!stdenv.isDarwin) [ libsecret ]
     ++ (if withQt5 then [ qtbase qttools ] else [ qt4 ])
-    ++ stdenv.lib.optional stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
-      CoreFoundation Security
-    ])
-  ;
+    ++ stdenv.lib.optional stdenv.isDarwin (
+         with darwin.apple_sdk.frameworks; [
+           CoreFoundation
+           Security
+         ]
+       )
+    ;
 
   meta = {
     description = "Platform-independent Qt API for storing passwords securely";

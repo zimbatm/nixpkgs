@@ -4,29 +4,30 @@
 
 let
   buildTheme =
-    {fullName, src, version ? "testing"}:
+    { fullName, src, version ? "testing" }:
 
-    stdenv. mkDerivation rec {
-      name = "${fullName}-${version}";
+      stdenv.mkDerivation rec {
+        name = "${fullName}-${version}";
 
-      inherit src;
+        inherit src;
 
-      buildInputs = [ slim ];
+        buildInputs = [ slim ];
 
-      dontBuild = true;
+        dontBuild = true;
 
-      installPhase = ''
-        install -dm755 $out/share/slim/themes/${name}
-        install -m644 * $out/share/slim/themes/${name}
-      '';
+        installPhase = ''
+          install -dm755 $out/share/slim/themes/${name}
+          install -m644 * $out/share/slim/themes/${name}
+        '';
 
-      meta = {
-        description = "Slim theme for ${fullName}";
-        platforms = stdenv.lib.platforms.linux;
+        meta = {
+          description = "Slim theme for ${fullName}";
+          platforms = stdenv.lib.platforms.linux;
+        };
       };
-    };
 
-in {
+in
+{
 
   archlinuxSimple = buildTheme {
     fullName = "archlinux-simple";

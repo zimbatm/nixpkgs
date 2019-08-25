@@ -47,5 +47,3 @@ buildPythonPackage rec {
     maintainers = with lib.maintainers; [ kentjames ];
   };
 }
-
-

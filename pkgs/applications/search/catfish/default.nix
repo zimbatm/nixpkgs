@@ -1,6 +1,16 @@
-{ stdenv, fetchurl, file, which, intltool, gobject-introspection,
-  findutils, xdg_utils, gnome3, gtk3, pythonPackages, hicolor-icon-theme,
-  wrapGAppsHook
+{ stdenv
+, fetchurl
+, file
+, which
+, intltool
+, gobject-introspection
+, findutils
+, xdg_utils
+, gnome3
+, gtk3
+, pythonPackages
+, hicolor-icon-theme
+, wrapGAppsHook
 }:
 
 pythonPackages.buildPythonApplication rec {

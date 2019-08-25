@@ -1,6 +1,19 @@
-{ stdenv, mkDerivation, fetchFromGitHub, fetchpatch, cmake, pkgconfig, xdg_utils, qttools, qtx11extras,
-  dtkcore, dtkwidget, dtkwm, deepin-turbo, deepin-shortcut-viewer,
-  deepin }:
+{ stdenv
+, mkDerivation
+, fetchFromGitHub
+, fetchpatch
+, cmake
+, pkgconfig
+, xdg_utils
+, qttools
+, qtx11extras
+, dtkcore
+, dtkwidget
+, dtkwm
+, deepin-turbo
+, deepin-shortcut-viewer
+, deepin
+}:
 
 mkDerivation rec {
   name = "${pname}-${version}";
@@ -31,10 +44,12 @@ mkDerivation rec {
   ];
 
   patches = [
-    (fetchpatch {
-      url = https://github.com/linuxdeepin/deepin-screenshot/pull/52/commits/e14508b223fd9965854ed41c944cea2ea19e6e0c.patch;
-      sha256 = "18zvz98z3hr8pcdyb706za6h2nwx23zsjb1hgyp21ycinhzr9j9h";
-    })
+    (
+      fetchpatch {
+        url = https://github.com/linuxdeepin/deepin-screenshot/pull/52/commits/e14508b223fd9965854ed41c944cea2ea19e6e0c.patch;
+        sha256 = "18zvz98z3hr8pcdyb706za6h2nwx23zsjb1hgyp21ycinhzr9j9h";
+      }
+    )
   ];
 
   postPatch = ''

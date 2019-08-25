@@ -58,11 +58,15 @@ stdenv.mkDerivation rec {
     meson
     ninja
     pkgconfig
-    (python3.withPackages (pkgs: with pkgs; [
-      dogtail
-      pygobject3
-      pyatspi
-    ]))
+    (
+      python3.withPackages (
+        pkgs: with pkgs; [
+          dogtail
+          pygobject3
+          pyatspi
+        ]
+      )
+    )
     wrapGAppsHook
   ];
 

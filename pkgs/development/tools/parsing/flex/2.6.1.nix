@@ -10,9 +10,11 @@ stdenv.mkDerivation rec {
 
   postPatch = ''
     patchShebangs tests
-  '' + stdenv.lib.optionalString (stdenv.hostPlatform != stdenv.buildPlatform) ''
-    substituteInPlace Makefile.in --replace "tests" " ";
-  '';
+  ''
+  + stdenv.lib.optionalString (stdenv.hostPlatform != stdenv.buildPlatform) ''
+      substituteInPlace Makefile.in --replace "tests" " ";
+    ''
+  ;
 
   buildInputs = [ bison ];
 

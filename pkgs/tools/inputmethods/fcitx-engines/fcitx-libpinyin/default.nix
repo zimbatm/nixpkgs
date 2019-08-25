@@ -9,7 +9,7 @@ stdenv.mkDerivation rec {
     sha256 = "196c229ckib3xvafkk4n3n3jk9rpksfcjsbbwka6a9k2f34qrjj6";
   };
 
-  nativeBuildInputs = [ pkgconfig  ];
+  nativeBuildInputs = [ pkgconfig ];
   buildInputs = [ fcitx-qt5 qtbase qtwebengine.dev cmake fcitx gettext libpinyin glib pcre dbus ];
 
   # With a typical installation via NixOS option i18n.inputMethod.fcitx.engines,
@@ -44,10 +44,10 @@ stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     isFcitxEngine = true;
-    description  = "Fcitx Wrapper for libpinyin, Library to deal with pinyin";
-    homepage     = https://github.com/fcitx/fcitx-libpinyin;
-    license      = licenses.gpl3Plus;
+    description = "Fcitx Wrapper for libpinyin, Library to deal with pinyin";
+    homepage = https://github.com/fcitx/fcitx-libpinyin;
+    license = licenses.gpl3Plus;
     maintainers = with maintainers; [ ericsagnes ];
-    platforms    = platforms.linux;
+    platforms = platforms.linux;
   };
 }

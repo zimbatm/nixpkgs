@@ -1,7 +1,20 @@
-{ lib, isPy3k, fetchFromGitHub, buildPythonPackage
-, six, enum34, pyasn1, cryptography, singledispatch
+{ lib
+, isPy3k
+, fetchFromGitHub
+, buildPythonPackage
+, six
+, enum34
+, pyasn1
+, cryptography
+, singledispatch
 , fetchPypi
-, gpgme, flake8, pytest, pytestcov, pep8-naming, pytest-ordering }:
+, gpgme
+, flake8
+, pytest
+, pytestcov
+, pep8-naming
+, pytest-ordering
+}:
 
 buildPythonPackage rec {
   pname = "pgpy";
@@ -19,7 +32,9 @@ buildPythonPackage rec {
     pyasn1
     cryptography
     singledispatch
-  ] ++ lib.optional (!isPy3k) enum34;
+  ]
+  ++ lib.optional (!isPy3k) enum34
+  ;
 
   checkInputs = [
     gpgme

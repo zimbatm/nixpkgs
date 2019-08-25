@@ -1,5 +1,14 @@
-{ fetchurl, stdenv, pkgconfig, python, file, bc, fetchpatch
-, qtbase, qtsvg, hunspell, makeWrapper #, mythes, boost
+{ fetchurl
+, stdenv
+, pkgconfig
+, python
+, file
+, bc
+, fetchpatch
+, qtbase
+, qtsvg
+, hunspell
+, makeWrapper #, mythes, boost
 }:
 
 stdenv.mkDerivation rec {
@@ -14,8 +23,12 @@ stdenv.mkDerivation rec {
   # LaTeX is used from $PATH, as people often want to have it with extra pkgs
   nativeBuildInputs = [ pkgconfig ];
   buildInputs = [
-    qtbase qtsvg python file/*for libmagic*/ bc
-    hunspell makeWrapper # enchant
+    qtbase
+    qtsvg
+    python
+    file /*for libmagic*/ bc
+    hunspell
+    makeWrapper # enchant
   ];
 
   configureFlags = [
@@ -36,10 +49,12 @@ stdenv.mkDerivation rec {
   '';
 
   patches = [
-    (fetchpatch {
-      url = "https://gitweb.gentoo.org/repo/gentoo.git/plain/app-office/lyx/files/lyx-2.3.0-qt-5.11.patch?id=07e82fd1fc07bf055c78b81eaa128f8f837da80d";
-      sha256 = "1bnx0il2iv36lnrnyb370wyvww0rd8bphcy6z8d7zmvd3pwhyfql";
-    })
+    (
+      fetchpatch {
+        url = "https://gitweb.gentoo.org/repo/gentoo.git/plain/app-office/lyx/files/lyx-2.3.0-qt-5.11.patch?id=07e82fd1fc07bf055c78b81eaa128f8f837da80d";
+        sha256 = "1bnx0il2iv36lnrnyb370wyvww0rd8bphcy6z8d7zmvd3pwhyfql";
+      }
+    )
   ];
 
   meta = with stdenv.lib; {
@@ -50,4 +65,3 @@ stdenv.mkDerivation rec {
     platforms = platforms.linux;
   };
 }
-

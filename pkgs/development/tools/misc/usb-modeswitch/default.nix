@@ -5,7 +5,7 @@ stdenv.mkDerivation rec {
   version = "2.5.2";
 
   src = fetchurl {
-    url    = "http://www.draisberghof.de/usb_modeswitch/${name}.tar.bz2";
+    url = "http://www.draisberghof.de/usb_modeswitch/${name}.tar.bz2";
     sha256 = "19ifi80g9ns5dmspchjvfj4ykxssq9yrci8m227dgb3yr04srzxb";
   };
 

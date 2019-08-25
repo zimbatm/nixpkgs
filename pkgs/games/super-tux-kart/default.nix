@@ -1,42 +1,79 @@
-{ stdenv, fetchFromGitHub, fetchsvn, cmake, pkgconfig
-, openal, freealut, libGLU_combined, libvorbis, libogg, gettext, curl, freetype
-, fribidi, libtool, bluez, libjpeg, libpng, zlib, libX11, libXrandr, enet }:
+{ stdenv
+, fetchFromGitHub
+, fetchsvn
+, cmake
+, pkgconfig
+, openal
+, freealut
+, libGLU_combined
+, libvorbis
+, libogg
+, gettext
+, curl
+, freetype
+, fribidi
+, libtool
+, bluez
+, libjpeg
+, libpng
+, zlib
+, libX11
+, libXrandr
+, enet
+}:
 
 let
   dir = "stk-code";
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   pname = "supertuxkart";
   version = "1.0";
 
   srcs = [
-    (fetchFromGitHub {
-      owner  = "supertuxkart";
-      repo   = "stk-code";
-      rev    = version;
-      sha256 = "03mrnzrvfdgjc687n718f5zsray6vbdlv4irzy2mfi78bz3bkjll";
-      name   = dir;
-    })
-    (fetchsvn {
-      url    = "https://svn.code.sf.net/p/supertuxkart/code/stk-assets";
-      rev    = "18212";
-      sha256 = "1dyj8r5rfifhnhayga8w8irkpa99vw57xjmy74cp8xz8g7zvdzqf";
-      name   = "stk-assets";
-    })
+    (
+      fetchFromGitHub {
+        owner = "supertuxkart";
+        repo = "stk-code";
+        rev = version;
+        sha256 = "03mrnzrvfdgjc687n718f5zsray6vbdlv4irzy2mfi78bz3bkjll";
+        name = dir;
+      }
+    )
+    (
+      fetchsvn {
+        url = "https://svn.code.sf.net/p/supertuxkart/code/stk-assets";
+        rev = "18212";
+        sha256 = "1dyj8r5rfifhnhayga8w8irkpa99vw57xjmy74cp8xz8g7zvdzqf";
+        name = "stk-assets";
+      }
+    )
   ];
 
   nativeBuildInputs = [ cmake gettext libtool pkgconfig ];
 
   buildInputs = [
-    libX11 libXrandr
-    openal freealut libGLU_combined libvorbis libogg zlib freetype
-    curl fribidi bluez libjpeg libpng enet
+    libX11
+    libXrandr
+    openal
+    freealut
+    libGLU_combined
+    libvorbis
+    libogg
+    zlib
+    freetype
+    curl
+    fribidi
+    bluez
+    libjpeg
+    libpng
+    enet
   ];
 
   enableParallelBuilding = true;
 
   cmakeFlags = [
-    "-DBUILD_RECORDER=OFF"         # libopenglrecorder is not in nixpkgs
+    "-DBUILD_RECORDER=OFF" # libopenglrecorder is not in nixpkgs
     "-DUSE_SYSTEM_ANGELSCRIPT=OFF" # doesn't work with 2.31.2 or 2.32.0
   ];
 

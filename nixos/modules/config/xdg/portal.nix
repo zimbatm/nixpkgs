@@ -1,13 +1,15 @@
-{ config, pkgs ,lib ,... }:
+{ config, pkgs, lib, ... }:
 
 with lib;
 
 {
   options.xdg.portal = {
     enable =
-      mkEnableOption "<link xlink:href='https://github.com/flatpak/xdg-desktop-portal'>xdg desktop integration</link>"//{
-        default = false;
-      };
+      mkEnableOption "<link xlink:href='https://github.com/flatpak/xdg-desktop-portal'>xdg desktop integration</link>"
+      // {
+           default = false;
+         }
+      ;
 
     extraPortals = mkOption {
       type = types.listOf types.package;
@@ -39,20 +41,22 @@ with lib;
       cfg = config.xdg.portal;
       packages = [ pkgs.xdg-desktop-portal ] ++ cfg.extraPortals;
 
-    in mkIf cfg.enable {
+    in
+      mkIf cfg.enable {
 
-      assertions = [
-        { assertion = (cfg.gtkUsePortal -> cfg.extraPortals != []);
-          message = "Setting xdg.portal.gtkUsePortal to true requires a portal implementation in xdg.portal.extraPortals such as xdg-desktop-portal-gtk or xdg-desktop-portal-kde.";
-        }
-      ];
+        assertions = [
+          {
+            assertion = (cfg.gtkUsePortal -> cfg.extraPortals != []);
+            message = "Setting xdg.portal.gtkUsePortal to true requires a portal implementation in xdg.portal.extraPortals such as xdg-desktop-portal-gtk or xdg-desktop-portal-kde.";
+          }
+        ];
 
-      services.dbus.packages  = packages;
-      systemd.packages = packages;
+        services.dbus.packages = packages;
+        systemd.packages = packages;
 
-      environment.variables = {
-        GTK_USE_PORTAL = mkIf cfg.gtkUsePortal "1";
-        XDG_DESKTOP_PORTAL_PATH = map (p: "${p}/share/xdg-desktop-portal/portals") cfg.extraPortals;
+        environment.variables = {
+          GTK_USE_PORTAL = mkIf cfg.gtkUsePortal "1";
+          XDG_DESKTOP_PORTAL_PATH = map (p: "${p}/share/xdg-desktop-portal/portals") cfg.extraPortals;
+        };
       };
-    };
 }

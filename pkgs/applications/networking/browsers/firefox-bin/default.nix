@@ -1,4 +1,8 @@
-{ lib, stdenv, fetchurl, config, wrapGAppsHook
+{ lib
+, stdenv
+, fetchurl
+, config
+, wrapGAppsHook
 , alsaLib
 , atk
 , cairo
@@ -68,7 +72,7 @@ let
     builtins.substring 0 (builtins.stringLength prefix) string == prefix;
 
   sourceMatches = locale: source:
-      (isPrefixOf source.locale locale) && source.arch == arch;
+    (isPrefixOf source.locale locale) && source.arch == arch;
 
   policies = {
     DisableAppUpdate = true;
@@ -92,7 +96,8 @@ stdenv.mkDerivation {
   phases = [ "unpackPhase" "patchPhase" "installPhase" "fixupPhase" ];
 
   libPath = stdenv.lib.makeLibraryPath
-    [ stdenv.cc.cc
+    [
+      stdenv.cc.cc
       alsaLib
       (lib.getDev alsaLib)
       atk
@@ -135,9 +140,12 @@ stdenv.mkDerivation {
       (lib.getDev libpulseaudio)
       systemd
       ffmpeg
-    ] + ":" + stdenv.lib.makeSearchPathOutput "lib" "lib64" [
+    ]
+  + ":"
+  + stdenv.lib.makeSearchPathOutput "lib" "lib64" [
       stdenv.cc.cc
-    ];
+    ]
+  ;
 
   inherit gtk3;
 
@@ -194,8 +202,8 @@ stdenv.mkDerivation {
     inherit name channel writeScript xidel coreutils gnused gnugrep gnupg curl runtimeShell;
     baseUrl =
       if channel == "devedition"
-        then "http://archive.mozilla.org/pub/devedition/releases/"
-        else "http://archive.mozilla.org/pub/firefox/releases/";
+      then "http://archive.mozilla.org/pub/devedition/releases/"
+      else "http://archive.mozilla.org/pub/firefox/releases/";
   };
   meta = with stdenv.lib; {
     description = "Mozilla Firefox, free web browser (binary package)";
@@ -205,6 +213,6 @@ stdenv.mkDerivation {
       url = http://www.mozilla.org/en-US/foundation/trademarks/policy/;
     };
     platforms = builtins.attrNames mozillaPlatforms;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
   };
 }

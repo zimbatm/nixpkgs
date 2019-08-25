@@ -1,8 +1,10 @@
-{stdenv, fetchFromGitHub, python27, htslib, zlib, makeWrapper}:
+{ stdenv, fetchFromGitHub, python27, htslib, zlib, makeWrapper }:
 
-let python = python27.withPackages (ps: with ps; [ cython ]);
+let
+  python = python27.withPackages (ps: with ps; [ cython ]);
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "platypus-unstable-${version}";
   version = "2018-07-22";
 

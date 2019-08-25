@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
   postPatch = ''
     sed -i "s|./samples|$out/share/dirt/samples|" dirt.c
   '';
-  makeFlags = ["PREFIX=$(out)"];
+  makeFlags = [ "PREFIX=$(out)" ];
   postInstall = ''
     mkdir -p $out/share/dirt/
     cp -r samples $out/share/dirt/

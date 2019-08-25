@@ -1,6 +1,12 @@
-{ stdenv, fetchFromGitHub, rustPlatform, asciidoc, docbook_xsl, libxslt
+{ stdenv
+, fetchFromGitHub
+, rustPlatform
+, asciidoc
+, docbook_xsl
+, libxslt
 , Security
-, withPCRE2 ? true, pcre2 ? null
+, withPCRE2 ? true
+, pcre2 ? null
 }:
 
 rustPlatform.buildRustPackage rec {
@@ -20,7 +26,8 @@ rustPlatform.buildRustPackage rec {
 
   nativeBuildInputs = [ asciidoc docbook_xsl libxslt ];
   buildInputs = (stdenv.lib.optional withPCRE2 pcre2)
-    ++ (stdenv.lib.optional stdenv.isDarwin Security);
+    ++ (stdenv.lib.optional stdenv.isDarwin Security)
+    ;
 
   preFixup = ''
     mkdir -p "$out/man/man1"

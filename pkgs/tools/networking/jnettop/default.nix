@@ -13,10 +13,12 @@ stdenv.mkDerivation rec {
 
   patches = [
     ./no-dns-resolution.patch
-    (fetchpatch {
-      url = "https://sources.debian.net/data/main/j/jnettop/0.13.0-1/debian/patches/0001-Use-64-bit-integers-for-byte-totals-support-bigger-u.patch";
-      sha256 = "1b0alc12sj8pzcb66f8xslbqlbsvq28kz34v6jfhbb1q25hyr7jg";
-    })
+    (
+      fetchpatch {
+        url = "https://sources.debian.net/data/main/j/jnettop/0.13.0-1/debian/patches/0001-Use-64-bit-integers-for-byte-totals-support-bigger-u.patch";
+        sha256 = "1b0alc12sj8pzcb66f8xslbqlbsvq28kz34v6jfhbb1q25hyr7jg";
+      }
+    )
   ];
 
   preConfigure = '' autoconf '';

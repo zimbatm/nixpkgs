@@ -1,5 +1,11 @@
-{ stdenv, fetchurl, intltool, pkgconfig
-, gtk3, ibus, libhangul, python3
+{ stdenv
+, fetchurl
+, intltool
+, pkgconfig
+, gtk3
+, ibus
+, libhangul
+, python3
 }:
 
 stdenv.mkDerivation rec {
@@ -19,10 +25,10 @@ stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     isIbusEngine = true;
-    description  = "Ibus Hangul engine";
-    homepage     = https://github.com/choehwanjin/ibus-hangul;
-    license      = licenses.gpl2;
-    platforms    = platforms.linux;
-    maintainers  = with maintainers; [ ericsagnes ];
+    description = "Ibus Hangul engine";
+    homepage = https://github.com/choehwanjin/ibus-hangul;
+    license = licenses.gpl2;
+    platforms = platforms.linux;
+    maintainers = with maintainers; [ ericsagnes ];
   };
 }

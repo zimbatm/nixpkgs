@@ -1,5 +1,18 @@
-{ stdenv, fetchurl, libGLU_combined, SDL, sconsPackages, SDL_ttf, SDL_image, zlib, SDL_net
-, speex, libvorbis, libogg, boost, fribidi, bsdiff
+{ stdenv
+, fetchurl
+, libGLU_combined
+, SDL
+, sconsPackages
+, SDL_ttf
+, SDL_image
+, zlib
+, SDL_net
+, speex
+, libvorbis
+, libogg
+, boost
+, fribidi
+, bsdiff
 , fetchpatch
 }:
 let
@@ -19,11 +32,15 @@ stdenv.mkDerivation rec {
     sha256 = "1f0l2cqp2g3llhr9jl6jj15k0wb5q8n29vqj99xy4p5hqs78jk8g";
   };
 
-  patches = [ ./header-order.patch ./public-buildproject.patch
-    (fetchpatch {
-	  url = https://bitbucket.org/giszmo/glob2/commits/c9dc715624318e4fea4abb24e04f0ebdd9cd8d2a/raw;
-	  sha256 = "0017xg5agj3dy0hx71ijdcrxb72bjqv7x6aq7c9zxzyyw0mkxj0k";
-	})
+  patches = [
+    ./header-order.patch
+    ./public-buildproject.patch
+    (
+      fetchpatch {
+        url = https://bitbucket.org/giszmo/glob2/commits/c9dc715624318e4fea4abb24e04f0ebdd9cd8d2a/raw;
+        sha256 = "0017xg5agj3dy0hx71ijdcrxb72bjqv7x6aq7c9zxzyyw0mkxj0k";
+      }
+    )
   ];
 
   postPatch = ''

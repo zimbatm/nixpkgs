@@ -1,6 +1,18 @@
-{ stdenv, fetchFromGitHub, cmake, pkgconfig, lxqt-build-tools, qtbase,
-  qtx11extras, qttools, qtsvg, kwindowsystem, libkscreen, liblxqt,
-  libqtxdg, xorg }:
+{ stdenv
+, fetchFromGitHub
+, cmake
+, pkgconfig
+, lxqt-build-tools
+, qtbase
+, qtx11extras
+, qttools
+, qtsvg
+, kwindowsystem
+, libkscreen
+, liblxqt
+, libqtxdg
+, xorg
+}:
 
 stdenv.mkDerivation rec {
   pname = "lxqt-config";

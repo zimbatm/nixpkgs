@@ -5,7 +5,7 @@ rec {
 
   description = ''Compatibility layer for Gray Streams (see http://www.cliki.net/Gray%20streams).'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/trivial-gray-streams/2018-10-18/trivial-gray-streams-20181018-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "trivial-gray-streams";
 
-  asdFilesToKeep = ["trivial-gray-streams.asd"];
+  asdFilesToKeep = [ "trivial-gray-streams.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM trivial-gray-streams DESCRIPTION

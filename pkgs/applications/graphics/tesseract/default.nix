@@ -11,8 +11,10 @@ in
     languages = languages.v3;
   };
 
-  tesseract4 = lowPrio (callPackage ./wrapper.nix {
-    tesseractBase = base4;
-    languages = languages.v4;
-  });
+  tesseract4 = lowPrio (
+    callPackage ./wrapper.nix {
+      tesseractBase = base4;
+      languages = languages.v4;
+    }
+  );
 }

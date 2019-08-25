@@ -1,7 +1,9 @@
 { stdenv, fetchurl, buildPackages }:
 
-let version = "3.1.0";
-in stdenv.mkDerivation {
+let
+  version = "3.1.0";
+in
+stdenv.mkDerivation {
   name = "newlib-${version}";
   src = fetchurl {
     url = "ftp://sourceware.org/pub/newlib/newlib-${version}.tar.gz";

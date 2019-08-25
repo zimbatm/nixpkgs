@@ -1,7 +1,9 @@
 { stdenv
 
-# Version specific stuff
-, release, version, src
+  # Version specific stuff
+, release
+, version
+, src
 , ...
 }:
 
@@ -26,7 +28,9 @@ stdenv.mkDerivation rec {
     # Don't install tzdata because NixOS already has a more up-to-date copy.
     "--with-tzdata=no"
     "tcl_cv_strtod_unbroken=ok"
-  ] ++ stdenv.lib.optional stdenv.is64bit "--enable-64bit";
+  ]
+  ++ stdenv.lib.optional stdenv.is64bit "--enable-64bit"
+  ;
 
   enableParallelBuilding = true;
 

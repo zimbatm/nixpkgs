@@ -2,7 +2,9 @@
 
 with stdenv.lib;
 
-let version = "2.48"; in
+let
+  version = "2.48";
+in
 stdenv.mkDerivation {
   name = "gwyddion-${version}";
   src = fetchurl {

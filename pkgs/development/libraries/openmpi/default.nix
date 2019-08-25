@@ -1,17 +1,27 @@
-{ stdenv, fetchurl, fetchpatch, gfortran, perl, libnl
-, rdma-core, zlib, numactl, libevent, hwloc
+{ stdenv
+, fetchurl
+, fetchpatch
+, gfortran
+, perl
+, libnl
+, rdma-core
+, zlib
+, numactl
+, libevent
+, hwloc
 
-# Enable the Sun Grid Engine bindings
+  # Enable the Sun Grid Engine bindings
 , enableSGE ? false
 
-# Pass PATH/LD_LIBRARY_PATH to point to current mpirun by default
+  # Pass PATH/LD_LIBRARY_PATH to point to current mpirun by default
 , enablePrefix ? false
 }:
 
 let
   version = "4.0.1";
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "openmpi-${version}";
 
   src = with stdenv.lib.versions; fetchurl {
@@ -20,11 +30,13 @@ in stdenv.mkDerivation rec {
   };
 
   patches = [
-    (fetchpatch {
-      name = "openmpi-mca_btl_vader_component_close-segfault.patch";
-      url = "https://github.com/open-mpi/ompi/pull/6526.patch";
-      sha256 = "0s7ac9rkcj3fi6ampkvy76njlj478yyr4zvypjc7licy6dgr595x";
-    })
+    (
+      fetchpatch {
+        name = "openmpi-mca_btl_vader_component_close-segfault.patch";
+        url = "https://github.com/open-mpi/ompi/pull/6526.patch";
+        sha256 = "0s7ac9rkcj3fi6ampkvy76njlj478yyr4zvypjc7licy6dgr595x";
+      }
+    )
   ];
 
   postPatch = ''
@@ -39,7 +51,7 @@ in stdenv.mkDerivation rec {
   nativeBuildInputs = [ perl ];
 
   configureFlags = with stdenv; [ "--disable-mca-dso" ]
-    ++ lib.optional isLinux  "--with-libnl=${libnl.dev}"
+    ++ lib.optional isLinux "--with-libnl=${libnl.dev}"
     ++ lib.optional enableSGE "--with-sge"
     ++ lib.optional enablePrefix "--enable-mpirun-prefix-by-default"
     ;
@@ -48,7 +60,7 @@ in stdenv.mkDerivation rec {
 
   postInstall = ''
     rm -f $out/lib/*.la
-   '';
+  '';
 
   doCheck = true;
 

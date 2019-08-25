@@ -33,9 +33,13 @@ stdenv.mkDerivation {
 
   buildInputs = [
     makeWrapper
-  ] ++ (lib.ifEnable (bootstrap-chicken != null) [
-    bootstrap-chicken
-  ]);
+  ]
+  ++ (
+       lib.ifEnable (bootstrap-chicken != null) [
+         bootstrap-chicken
+       ]
+     )
+  ;
 
   preBuild = lib.ifEnable (bootstrap-chicken != null) ''
     # Backup the build* files - those are generated from hostname,

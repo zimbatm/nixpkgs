@@ -1,5 +1,18 @@
-{ stdenv, fetchsvn, autoreconfHook, zlib, popt, alsaLib, libvorbis, libtheora
-, libICE, libSM, libX11, libXext, libXfixes, libXdamage }:
+{ stdenv
+, fetchsvn
+, autoreconfHook
+, zlib
+, popt
+, alsaLib
+, libvorbis
+, libtheora
+, libICE
+, libSM
+, libX11
+, libXext
+, libXfixes
+, libXdamage
+}:
 
 stdenv.mkDerivation rec {
   name = "recordmydesktop-${version}";
@@ -15,8 +28,17 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ autoreconfHook ];
 
   buildInputs = [
-    zlib popt alsaLib libICE libSM libX11 libXext
-    libXfixes libXdamage libvorbis libtheora
+    zlib
+    popt
+    alsaLib
+    libICE
+    libSM
+    libX11
+    libXext
+    libXfixes
+    libXdamage
+    libvorbis
+    libtheora
   ];
 
   meta = with stdenv.lib; {
@@ -24,6 +46,6 @@ stdenv.mkDerivation rec {
     homepage = http://recordmydesktop.sourceforge.net/;
     license = licenses.gpl2;
     platforms = platforms.linux;
-    maintainers = [ ];
+    maintainers = [];
   };
 }

@@ -1,4 +1,6 @@
-{ stdenv, buildPythonPackage, fetchFromGitHub
+{ stdenv
+, buildPythonPackage
+, fetchFromGitHub
 , betamax
 , betamax-serializers
 , betamax-matchers
@@ -49,6 +51,6 @@ buildPythonPackage rec {
     homepage = "https://praw.readthedocs.org/";
     license = licenses.bsd2;
     platforms = platforms.all;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
   };
 }

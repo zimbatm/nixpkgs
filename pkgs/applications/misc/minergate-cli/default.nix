@@ -32,5 +32,5 @@ stdenv.mkDerivation rec {
     license = licenses.unfree;
     maintainers = with maintainers; [ bfortz ];
     platforms = [ "x86_64-linux" ];
-};
+  };
 }

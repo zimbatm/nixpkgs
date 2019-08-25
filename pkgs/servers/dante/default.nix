@@ -17,9 +17,9 @@ stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "A circuit-level SOCKS client/server that can be used to provide convenient and secure network connectivity.";
-    homepage    = "https://www.inet.no/dante/";
+    homepage = "https://www.inet.no/dante/";
     maintainers = [ maintainers.arobyn ];
-    license     = licenses.bsdOriginal;
-    platforms   = platforms.linux;
+    license = licenses.bsdOriginal;
+    platforms = platforms.linux;
   };
 }

@@ -6,7 +6,7 @@ stdenv.mkDerivation rec {
 
   src = fetchFromGitHub {
     owner = "RhysU";
-    repo  = "yeshup";
+    repo = "yeshup";
     inherit rev;
     sha256 = "1wwbc158y46jsmdi1lp0m3dlbr9kvzvwxfvzj6646cpy9d6h21v9";
   };

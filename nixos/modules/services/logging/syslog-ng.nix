@@ -17,14 +17,15 @@ let
 
   syslogngOptions = [
     "--foreground"
-    "--module-path=${concatStringsSep ":" (["${cfg.package}/lib/syslog-ng"] ++ cfg.extraModulePaths)}"
+    "--module-path=${concatStringsSep ":" ([ "${cfg.package}/lib/syslog-ng" ] ++ cfg.extraModulePaths)}"
     "--cfgfile=${syslogngConfig}"
     "--control=${ctrlSocket}"
     "--persist-file=${persistFile}"
     "--pidfile=${pidFile}"
   ];
 
-in {
+in
+{
 
   options = {
 

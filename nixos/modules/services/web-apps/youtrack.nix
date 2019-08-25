@@ -9,12 +9,14 @@ let
   mergeAttrList = lib.foldl' lib.mergeAttrs {};
 
   stdParams = mergeAttrList [
-    (optionalAttrs (cfg.baseUrl != null) {
-      "jetbrains.youtrack.baseUrl" = cfg.baseUrl;
-    })
+    (
+      optionalAttrs (cfg.baseUrl != null) {
+        "jetbrains.youtrack.baseUrl" = cfg.baseUrl;
+      }
+    )
     {
-    "java.aws.headless" = "true";
-    "jetbrains.youtrack.disableBrowser" = "true";
+      "java.aws.headless" = "true";
+      "jetbrains.youtrack.disableBrowser" = "true";
     }
   ];
 in

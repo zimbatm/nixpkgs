@@ -83,7 +83,7 @@ in
   };
 
   config = mkIf cfg.enable {
-    users.groups.${cfg.group} = { };
+    users.groups.${cfg.group} = {};
     users.users.${cfg.user} = {
       description = "Oxidized service user";
       group = cfg.group;
@@ -107,7 +107,7 @@ in
         Group = cfg.group;
         UMask = "0077";
         NoNewPrivileges = true;
-        Restart  = "always";
+        Restart = "always";
         WorkingDirectory = cfg.dataDir;
         KillSignal = "SIGKILL";
       };

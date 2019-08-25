@@ -34,35 +34,39 @@ let
       Optional PKCS#11 module name.
     '';
   };
-in {
-  authorities = mkAttrsOfParams ({
+in
+{
+  authorities = mkAttrsOfParams (
+    {
 
-    cacert = mkOptionalStrParam ''
-      The certificates may use a relative path from the swanctl
-      <literal>x509ca</literal> directory or an absolute path.
-      </para><para>
-      Configure one of <option>cacert</option>,
-      <option>file</option>, or
-      <option>handle</option> per section.
-    '';
+      cacert = mkOptionalStrParam ''
+        The certificates may use a relative path from the swanctl
+        <literal>x509ca</literal> directory or an absolute path.
+        </para><para>
+        Configure one of <option>cacert</option>,
+        <option>file</option>, or
+        <option>handle</option> per section.
+      '';
 
-    cert_uri_base = mkOptionalStrParam ''
-      Defines the base URI for the Hash and URL feature supported by
-      IKEv2. Instead of exchanging complete certificates, IKEv2 allows one to
-      send an URI that resolves to the DER encoded certificate. The certificate
-      URIs are built by appending the SHA1 hash of the DER encoded certificates
-      to this base URI.
-    '';
+      cert_uri_base = mkOptionalStrParam ''
+        Defines the base URI for the Hash and URL feature supported by
+        IKEv2. Instead of exchanging complete certificates, IKEv2 allows one to
+        send an URI that resolves to the DER encoded certificate. The certificate
+        URIs are built by appending the SHA1 hash of the DER encoded certificates
+        to this base URI.
+      '';
 
-    crl_uris = mkCommaSepListParam [] ''
-      List of CRL distribution points (ldap, http, or file URI).
-    '';
+      crl_uris = mkCommaSepListParam [] ''
+        List of CRL distribution points (ldap, http, or file URI).
+      '';
 
-    ocsp_uris = mkCommaSepListParam [] ''
-      List of OCSP URIs.
-    '';
+      ocsp_uris = mkCommaSepListParam [] ''
+        List of OCSP URIs.
+      '';
 
-  } // certParams) ''
+    }
+    // certParams
+  ) ''
     Section defining complementary attributes of certification authorities, each
     in its own subsection with an arbitrary yet unique name
   '';
@@ -79,7 +83,7 @@ in {
       </itemizedlist>
     '';
 
-    local_addrs	= mkCommaSepListParam [] ''
+    local_addrs = mkCommaSepListParam [] ''
       Local address(es) to use for IKE communication. Takes
       single IPv4/IPv6 addresses, DNS names, CIDR subnets or IP address ranges.
       </para><para>
@@ -121,7 +125,7 @@ in {
       <literal>4500</literal> is used to work around NAT issues.
     '';
 
-    proposals = mkCommaSepListParam ["default"] ''
+    proposals = mkCommaSepListParam [ "default" ] ''
       A proposal is a set of algorithms. For non-AEAD algorithms, this includes
       for IKE an encryption algorithm, an integrity algorithm, a pseudo random
       function and a Diffie-Hellman group. For AEAD algorithms, instead of
@@ -205,7 +209,7 @@ in {
       specified; this option has no effect on connections using IKEv2.
     '';
 
-    fragmentation = mkEnumParam ["yes" "accept" "force" "no"] "yes" ''
+    fragmentation = mkEnumParam [ "yes" "accept" "force" "no" ] "yes" ''
       Use IKE fragmentation (proprietary IKEv1 extension or RFC 7383 IKEv2
       fragmentation). Acceptable values are <literal>yes</literal> (the default
       since 5.5.1), <literal>accept</literal> (since versions:5.5.3),
@@ -250,9 +254,9 @@ in {
       Disabling certificate requests can be useful if too many trusted root CA
       certificates are installed, as each certificate request increases the size
       of the initial IKE packets.
-   '';
+    '';
 
-    send_cert = mkEnumParam ["always" "never" "ifasked" ] "ifasked" ''
+    send_cert = mkEnumParam [ "always" "never" "ifasked" ] "ifasked" ''
       Send certificate payloads when using certificate authentication.
       <itemizedlist>
       <listitem><para>With the default of <literal>ifasked</literal> the daemon sends
@@ -265,11 +269,11 @@ in {
     '';
 
     ppk_id = mkOptionalStrParam ''
-       String identifying the Postquantum Preshared Key (PPK) to be used.
+      String identifying the Postquantum Preshared Key (PPK) to be used.
     '';
 
     ppk_required = mkYesNoParam no ''
-       Whether a Postquantum Preshared Key (PPK) is required for this connection.
+      Whether a Postquantum Preshared Key (PPK) is required for this connection.
     '';
 
     keyingtries = mkIntParam 1 ''
@@ -281,7 +285,7 @@ in {
       establishes or fails with a permanent error.
     '';
 
-    unique = mkEnumParam ["no" "never" "keep" "replace"] "no" ''
+    unique = mkEnumParam [ "no" "never" "keep" "replace" ] "no" ''
       Connection uniqueness policy to enforce. To avoid multiple connections
       from the same user, a uniqueness policy can be enforced.
       </para><para>
@@ -313,7 +317,7 @@ in {
       round). Unless set to <literal>never</literal> the client will send a notify.
     '';
 
-    reauth_time	= mkDurationParam "0s" ''
+    reauth_time = mkDurationParam "0s" ''
       Time to schedule IKE reauthentication. IKE reauthentication recreates the
       IKE/ISAKMP SA from scratch and re-evaluates the credentials. In asymmetric
       configurations (with EAP or configuration payloads) it might not be
@@ -587,7 +591,7 @@ in {
         <literal>pubkey</literal> directory or an absolute path.
       '';
 
-      revocation = mkEnumParam ["strict" "ifuri" "relaxed"] "relaxed" ''
+      revocation = mkEnumParam [ "strict" "ifuri" "relaxed" ] "relaxed" ''
         Certificate revocation policy for CRL or OCSP revocation.
         <itemizedlist>
         <listitem><para>
@@ -667,9 +671,9 @@ in {
         a default proposal of supported algorithms considered safe, and is
         usually a good choice for interoperability. By default no AH proposals
         are included, instead ESP is proposed.
-     '';
+      '';
 
-      esp_proposals = mkCommaSepListParam ["default"] ''
+      esp_proposals = mkCommaSepListParam [ "default" ] ''
         ESP proposals to offer for the CHILD_SA. A proposal is a set of
         algorithms. For ESP non-AEAD proposals, this includes an integrity
         algorithm, an encryption algorithm, an optional Diffie-Hellman group and
@@ -713,7 +717,7 @@ in {
         use the incorrect truncation length (or have this option enabled).
       '';
 
-      local_ts = mkCommaSepListParam ["dynamic"] ''
+      local_ts = mkCommaSepListParam [ "dynamic" ] ''
         List of local traffic selectors to include in CHILD_SA. Each selector is
         a CIDR subnet definition, followed by an optional proto/port
         selector. The special value <literal>dynamic</literal> may be used
@@ -740,7 +744,7 @@ in {
         identical selectors in such scenarios.
       '';
 
-      remote_ts = mkCommaSepListParam ["dynamic"] ''
+      remote_ts = mkCommaSepListParam [ "dynamic" ] ''
         List of remote selectors to include in CHILD_SA. See
         <option>local_ts</option> for a description of the selector syntax.
       '';
@@ -829,13 +833,14 @@ in {
         Hostaccess variable to pass to <literal>updown</literal> script.
       '';
 
-      mode = mkEnumParam [ "tunnel"
-                           "transport"
-                           "transport_proxy"
-                           "beet"
-                           "pass"
-                           "drop"
-                         ] "tunnel" ''
+      mode = mkEnumParam [
+        "tunnel"
+        "transport"
+        "transport_proxy"
+        "beet"
+        "pass"
+        "drop"
+      ] "tunnel" ''
         IPsec Mode to establish CHILD_SA with.
         <itemizedlist>
         <listitem><para>
@@ -878,7 +883,7 @@ in {
         forwarded traffic for this CHILD_SA. Since 5.5.1.
       '';
 
-      dpd_action = mkEnumParam ["clear" "trap" "restart"] "clear" ''
+      dpd_action = mkEnumParam [ "clear" "trap" "restart" ] "clear" ''
         Action to perform for this CHILD_SA on DPD timeout. The default clear
         closes the CHILD_SA and does not take further action. trap installs a
         trap policy, which will catch matching traffic and tries to re-negotiate
@@ -1004,9 +1009,9 @@ in {
         for each CHILD_SA direction (in/out).
 
         The daemon will not install routes for CHILD_SAs that have this option set.
-     '';
+      '';
 
-      tfc_padding = mkParamOfType (with lib.types; either int (enum ["mtu"])) 0 ''
+      tfc_padding = mkParamOfType (with lib.types; either int (enum [ "mtu" ])) 0 ''
         Pads ESP packets with additional data to have a consistent ESP packet
         size for improved Traffic Flow Confidentiality. The padding defines the
         minimum size of all ESP packets sent.  The default value of
@@ -1022,7 +1027,7 @@ in {
         protection.
       '';
 
-      hw_offload = mkEnumParam ["yes" "no" "auto"] "no" ''
+      hw_offload = mkEnumParam [ "yes" "no" "auto" ] "no" ''
         Enable hardware offload for this CHILD_SA, if supported by the IPsec
         implementation. The value <literal>yes</literal> enforces offloading
         and the installation will fail if it's not supported by either kernel or
@@ -1057,7 +1062,7 @@ in {
         all kernel interfaces.
       '';
 
-      start_action = mkEnumParam ["none" "trap" "start"] "none" ''
+      start_action = mkEnumParam [ "none" "trap" "start" ] "none" ''
         Action to perform after loading the configuration.
         <itemizedlist>
         <listitem><para>
@@ -1079,7 +1084,7 @@ in {
         <literal>trap</literal> get uninstalled.
       '';
 
-      close_action = mkEnumParam ["none" "trap" "start"] "none" ''
+      close_action = mkEnumParam [ "none" "trap" "start" ] "none" ''
         Action to perform after a CHILD_SA gets closed by the peer.
         <itemizedlist>
         <listitem><para>
@@ -1130,152 +1135,153 @@ in {
       used for XAuth authentication as well.
     '';
 
-  in {
+  in
+    {
 
-    eap   = mkEapXauthParams;
-    xauth = mkEapXauthParams;
+      eap = mkEapXauthParams;
+      xauth = mkEapXauthParams;
 
-    ntlm = mkPrefixedAttrsOfParams {
-      secret = mkOptionalStrParam ''
-        Value of the NTLM secret, which is the NT Hash of the actual secret,
-        that is, MD4(UTF-16LE(secret)). The resulting 16-byte value may either
-        be given as a hex encoded string with a 0x prefix or as a Base64 encoded
-        string with a 0s prefix.
-      '';
+      ntlm = mkPrefixedAttrsOfParams {
+        secret = mkOptionalStrParam ''
+          Value of the NTLM secret, which is the NT Hash of the actual secret,
+          that is, MD4(UTF-16LE(secret)). The resulting 16-byte value may either
+          be given as a hex encoded string with a 0x prefix or as a Base64 encoded
+          string with a 0s prefix.
+        '';
 
-      id = mkPrefixedAttrsOfParam (mkOptionalStrParam "") ''
-        Identity the NTLM secret belongs to. Multiple unique identities may be
-        specified, each having an id prefix, if a secret is shared between
-        multiple users.
-      '';
-    } ''
-      NTLM secret section for a specific secret. Each NTLM secret is defined in
-      a unique section having the <literal>ntlm</literal> prefix. NTLM secrets
-      may only be used for EAP-MSCHAPv2 authentication.
-    '';
-
-    ike = mkPrefixedAttrsOfParams {
-      secret = mkOptionalStrParam ''
-        Value of the IKE preshared secret. It may either be an ASCII string, a
-        hex encoded string if it has a 0x prefix or a Base64 encoded string if
-        it has a 0s prefix in its value.
+        id = mkPrefixedAttrsOfParam (mkOptionalStrParam "") ''
+          Identity the NTLM secret belongs to. Multiple unique identities may be
+          specified, each having an id prefix, if a secret is shared between
+          multiple users.
+        '';
+      } ''
+        NTLM secret section for a specific secret. Each NTLM secret is defined in
+        a unique section having the <literal>ntlm</literal> prefix. NTLM secrets
+        may only be used for EAP-MSCHAPv2 authentication.
       '';
 
-      id = mkPrefixedAttrsOfParam (mkOptionalStrParam "") ''
-        IKE identity the IKE preshared secret belongs to. Multiple unique
-        identities may be specified, each having an <literal>id</literal>
-        prefix, if a secret is shared between multiple peers.
-      '';
-    } ''
-      IKE preshared secret section for a specific secret. Each IKE PSK is
-      defined in a unique section having the <literal>ike</literal> prefix.
-    '';
+      ike = mkPrefixedAttrsOfParams {
+        secret = mkOptionalStrParam ''
+          Value of the IKE preshared secret. It may either be an ASCII string, a
+          hex encoded string if it has a 0x prefix or a Base64 encoded string if
+          it has a 0s prefix in its value.
+        '';
 
-    ppk = mkPrefixedAttrsOfParams {
-      secret = mkOptionalStrParam ''
-	      Value of the PPK. It may either be an ASCII string, a hex encoded string
-	      if it has a <literal>0x</literal> prefix or a Base64 encoded string if
-	      it has a <literal>0s</literal> prefix in its value. Should have at least
-	      256 bits of entropy for 128-bit security.
-      '';
-
-      id = mkPrefixedAttrsOfParam (mkOptionalStrParam "") ''
-	      PPK identity the PPK belongs to. Multiple unique identities may be
-	      specified, each having an <literal>id</literal> prefix, if a secret is
-	      shared between multiple peers.
-      '';
-    } ''
-	    Postquantum Preshared Key (PPK) section for a specific secret. Each PPK is
-	    defined in a unique section having the <literal>ppk</literal> prefix.
-    '';
-
-    private = mkPrefixedAttrsOfParams {
-      file = mkOptionalStrParam ''
-        File name in the private folder for which this passphrase should be used.
+        id = mkPrefixedAttrsOfParam (mkOptionalStrParam "") ''
+          IKE identity the IKE preshared secret belongs to. Multiple unique
+          identities may be specified, each having an <literal>id</literal>
+          prefix, if a secret is shared between multiple peers.
+        '';
+      } ''
+        IKE preshared secret section for a specific secret. Each IKE PSK is
+        defined in a unique section having the <literal>ike</literal> prefix.
       '';
 
-      secret = mkOptionalStrParam ''
-        Value of decryption passphrase for private key.
-      '';
-    } ''
-      Private key decryption passphrase for a key in the
-      <literal>private</literal> folder.
-    '';
+      ppk = mkPrefixedAttrsOfParams {
+        secret = mkOptionalStrParam ''
+          	      Value of the PPK. It may either be an ASCII string, a hex encoded string
+          	      if it has a <literal>0x</literal> prefix or a Base64 encoded string if
+          	      it has a <literal>0s</literal> prefix in its value. Should have at least
+          	      256 bits of entropy for 128-bit security.
+        '';
 
-    rsa = mkPrefixedAttrsOfParams {
-      file = mkOptionalStrParam ''
-        File name in the <literal>rsa</literal> folder for which this passphrase
-        should be used.
-      '';
-      secret = mkOptionalStrParam ''
-        Value of decryption passphrase for RSA key.
-      '';
-    } ''
-      Private key decryption passphrase for a key in the <literal>rsa</literal>
-      folder.
-    '';
-
-    ecdsa = mkPrefixedAttrsOfParams {
-      file = mkOptionalStrParam ''
-        File name in the <literal>ecdsa</literal> folder for which this
-        passphrase should be used.
-      '';
-      secret = mkOptionalStrParam ''
-        Value of decryption passphrase for ECDSA key.
-      '';
-    } ''
-      Private key decryption passphrase for a key in the
-      <literal>ecdsa</literal> folder.
-    '';
-
-    pkcs8 = mkPrefixedAttrsOfParams {
-      file = mkOptionalStrParam ''
-        File name in the <literal>pkcs8</literal> folder for which this
-        passphrase should be used.
-      '';
-      secret = mkOptionalStrParam ''
-        Value of decryption passphrase for PKCS#8 key.
-      '';
-    } ''
-      Private key decryption passphrase for a key in the
-      <literal>pkcs8</literal> folder.
-    '';
-
-    pkcs12 = mkPrefixedAttrsOfParams {
-      file = mkOptionalStrParam ''
-        File name in the <literal>pkcs12</literal> folder for which this
-        passphrase should be used.
-      '';
-      secret = mkOptionalStrParam ''
-        Value of decryption passphrase for PKCS#12 container.
-      '';
-    } ''
-      PKCS#12 decryption passphrase for a container in the
-      <literal>pkcs12</literal> folder.
-    '';
-
-    token = mkPrefixedAttrsOfParams {
-      handle = mkOptionalHexParam ''
-        Hex-encoded CKA_ID or handle of the private key on the token or TPM,
-        respectively.
+        id = mkPrefixedAttrsOfParam (mkOptionalStrParam "") ''
+          	      PPK identity the PPK belongs to. Multiple unique identities may be
+          	      specified, each having an <literal>id</literal> prefix, if a secret is
+          	      shared between multiple peers.
+        '';
+      } ''
+        	    Postquantum Preshared Key (PPK) section for a specific secret. Each PPK is
+        	    defined in a unique section having the <literal>ppk</literal> prefix.
       '';
 
-      slot = mkOptionalIntParam ''
-        Optional slot number to access the token.
+      private = mkPrefixedAttrsOfParams {
+        file = mkOptionalStrParam ''
+          File name in the private folder for which this passphrase should be used.
+        '';
+
+        secret = mkOptionalStrParam ''
+          Value of decryption passphrase for private key.
+        '';
+      } ''
+        Private key decryption passphrase for a key in the
+        <literal>private</literal> folder.
       '';
 
-      module = mkOptionalStrParam ''
-        Optional PKCS#11 module name to access the token.
+      rsa = mkPrefixedAttrsOfParams {
+        file = mkOptionalStrParam ''
+          File name in the <literal>rsa</literal> folder for which this passphrase
+          should be used.
+        '';
+        secret = mkOptionalStrParam ''
+          Value of decryption passphrase for RSA key.
+        '';
+      } ''
+        Private key decryption passphrase for a key in the <literal>rsa</literal>
+        folder.
       '';
 
-      pin = mkOptionalStrParam ''
-        Optional PIN required to access the key on the token. If none is
-        provided the user is prompted during an interactive
-        <literal>--load-creds</literal> call.
+      ecdsa = mkPrefixedAttrsOfParams {
+        file = mkOptionalStrParam ''
+          File name in the <literal>ecdsa</literal> folder for which this
+          passphrase should be used.
+        '';
+        secret = mkOptionalStrParam ''
+          Value of decryption passphrase for ECDSA key.
+        '';
+      } ''
+        Private key decryption passphrase for a key in the
+        <literal>ecdsa</literal> folder.
       '';
-    } ''Definition for a private key that's stored on a token/smartcard/TPM.'';
 
-  };
+      pkcs8 = mkPrefixedAttrsOfParams {
+        file = mkOptionalStrParam ''
+          File name in the <literal>pkcs8</literal> folder for which this
+          passphrase should be used.
+        '';
+        secret = mkOptionalStrParam ''
+          Value of decryption passphrase for PKCS#8 key.
+        '';
+      } ''
+        Private key decryption passphrase for a key in the
+        <literal>pkcs8</literal> folder.
+      '';
+
+      pkcs12 = mkPrefixedAttrsOfParams {
+        file = mkOptionalStrParam ''
+          File name in the <literal>pkcs12</literal> folder for which this
+          passphrase should be used.
+        '';
+        secret = mkOptionalStrParam ''
+          Value of decryption passphrase for PKCS#12 container.
+        '';
+      } ''
+        PKCS#12 decryption passphrase for a container in the
+        <literal>pkcs12</literal> folder.
+      '';
+
+      token = mkPrefixedAttrsOfParams {
+        handle = mkOptionalHexParam ''
+          Hex-encoded CKA_ID or handle of the private key on the token or TPM,
+          respectively.
+        '';
+
+        slot = mkOptionalIntParam ''
+          Optional slot number to access the token.
+        '';
+
+        module = mkOptionalStrParam ''
+          Optional PKCS#11 module name to access the token.
+        '';
+
+        pin = mkOptionalStrParam ''
+          Optional PIN required to access the key on the token. If none is
+          provided the user is prompted during an interactive
+          <literal>--load-creds</literal> call.
+        '';
+      } ''Definition for a private key that's stored on a token/smartcard/TPM.'';
+
+    };
 
   pools = mkAttrsOfParams {
     addrs = mkOptionalStrParam ''
@@ -1284,12 +1290,12 @@ in {
       range (&#60;from&#62;-&#60;to&#62;). Pools must be unique and non-overlapping.
     '';
 
-    dns           = mkCommaSepListParam [] "Address or CIDR subnets";
-    nbns          = mkCommaSepListParam [] "Address or CIDR subnets";
-    dhcp          = mkCommaSepListParam [] "Address or CIDR subnets";
-    netmask       = mkCommaSepListParam [] "Address or CIDR subnets";
-    server        = mkCommaSepListParam [] "Address or CIDR subnets";
-    subnet        = mkCommaSepListParam [] "Address or CIDR subnets";
+    dns = mkCommaSepListParam [] "Address or CIDR subnets";
+    nbns = mkCommaSepListParam [] "Address or CIDR subnets";
+    dhcp = mkCommaSepListParam [] "Address or CIDR subnets";
+    netmask = mkCommaSepListParam [] "Address or CIDR subnets";
+    server = mkCommaSepListParam [] "Address or CIDR subnets";
+    subnet = mkCommaSepListParam [] "Address or CIDR subnets";
     split_include = mkCommaSepListParam [] "Address or CIDR subnets";
     split_exclude = mkCommaSepListParam [] "Address or CIDR subnets";
   } ''

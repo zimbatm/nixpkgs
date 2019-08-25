@@ -8,8 +8,8 @@ stdenv.mkDerivation {
   name = "csfml-${version}";
   src = fetchFromGitHub {
     owner = "SFML";
-    repo  = "CSFML";
-    rev   = "b5facb85d13bff451a5fd2d088a97472a685576c";
+    repo = "CSFML";
+    rev = "b5facb85d13bff451a5fd2d088a97472a685576c";
     sha256 = "1q716gd7c7jlxzwpq5z4rjj5lsrn71ql2djphccdf9jannllqizn";
   };
   buildInputs = [ cmake sfml ];

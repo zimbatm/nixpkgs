@@ -44,12 +44,12 @@ stdenv.mkDerivation rec {
     (
       cd projects/compiler-rt
       patch -p1 < ${
-        fetchpatch {
-          name = "sigaltstack.patch"; # for glibc-2.26
-          url = https://github.com/llvm-mirror/compiler-rt/commit/8a5e425a68d.diff;
-          sha256 = "0h4y5vl74qaa7dl54b1fcyqalvlpd8zban2d1jxfkxpzyi7m8ifi";
-        }
-      }
+  fetchpatch {
+    name = "sigaltstack.patch"; # for glibc-2.26
+    url = https://github.com/llvm-mirror/compiler-rt/commit/8a5e425a68d.diff;
+    sha256 = "0h4y5vl74qaa7dl54b1fcyqalvlpd8zban2d1jxfkxpzyi7m8ifi";
+  }
+  }
 
       sed -i "s,#include <pthread.h>,&\n#include <signal.h>,g" \
         lib/asan/asan_linux.cc
@@ -67,17 +67,19 @@ stdenv.mkDerivation rec {
     "-DLLVM_BUILD_TESTS=ON"
     "-DLLVM_ENABLE_FFI=ON"
     "-DLLVM_REQUIRES_RTTI=1"
-  ] ++ stdenv.lib.optional enableSharedLibraries
-    "-DBUILD_SHARED_LIBS=ON"
+  ]
+    ++ stdenv.lib.optional enableSharedLibraries
+         "-DBUILD_SHARED_LIBS=ON"
     ++ stdenv.lib.optional (!isDarwin)
-    "-DLLVM_BINUTILS_INCDIR=${libbfd.dev}/include"
-    ++ stdenv.lib.optionals ( isDarwin) [
-    "-DCMAKE_CXX_FLAGS=-stdlib=libc++"
-    "-DCAN_TARGET_i386=false"
-  ];
+         "-DLLVM_BINUTILS_INCDIR=${libbfd.dev}/include"
+    ++ stdenv.lib.optionals (isDarwin) [
+         "-DCMAKE_CXX_FLAGS=-stdlib=libc++"
+         "-DCAN_TARGET_i386=false"
+       ];
 
-  patches = [ ./fix-15974.patch ] ++
-    stdenv.lib.optionals (!stdenv.isDarwin) [../fix-llvm-config.patch ];
+  patches = [ ./fix-15974.patch ]
+    ++ stdenv.lib.optionals (!stdenv.isDarwin) [ ../fix-llvm-config.patch ]
+    ;
 
   postBuild = ''
     rm -fR $out
@@ -87,10 +89,9 @@ stdenv.mkDerivation rec {
 
   meta = {
     description = "Collection of modular and reusable compiler and toolchain technologies";
-    homepage    = http://llvm.org/;
-    license     = stdenv.lib.licenses.ncsa;
+    homepage = http://llvm.org/;
+    license = stdenv.lib.licenses.ncsa;
     maintainers = with stdenv.lib.maintainers; [ lovek323 raskin ];
-    platforms = [ "i686-linux" "x86_64-linux" "x86_64-darwin" "armv7l-linux"];
+    platforms = [ "i686-linux" "x86_64-linux" "x86_64-darwin" "armv7l-linux" ];
   };
 }
-

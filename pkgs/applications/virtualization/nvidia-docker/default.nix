@@ -1,21 +1,37 @@
-{ stdenv, lib, fetchFromGitHub, fetchpatch, callPackage, makeWrapper
-, buildGoPackage, runc, glibc }:
+{ stdenv
+, lib
+, fetchFromGitHub
+, fetchpatch
+, callPackage
+, makeWrapper
+, buildGoPackage
+, runc
+, glibc
+}:
 
 with lib; let
 
-  glibc-ldconf = glibc.overrideAttrs (oldAttrs: {
-    # ldconfig needs help reading libraries that have been patchelf-ed, as the
-    # .dynstr section is no longer in the first LOAD segment. See also
-    # https://sourceware.org/bugzilla/show_bug.cgi?id=23964 and
-    # https://github.com/NixOS/patchelf/issues/44
-    patches = oldAttrs.patches ++ [ (fetchpatch {
-      name = "ldconfig-patchelf.patch";
-      url = "https://sourceware.org/bugzilla/attachment.cgi?id=11444";
-      sha256 = "0nzzmq7pli37iyjrgcmvcy92piiwjybpw245ds7q43pbgdm7lc3s";
-    })];
-  });
+  glibc-ldconf = glibc.overrideAttrs (
+    oldAttrs: {
+      # ldconfig needs help reading libraries that have been patchelf-ed, as the
+      # .dynstr section is no longer in the first LOAD segment. See also
+      # https://sourceware.org/bugzilla/show_bug.cgi?id=23964 and
+      # https://github.com/NixOS/patchelf/issues/44
+      patches = oldAttrs.patches
+        ++ [
+             (
+               fetchpatch {
+                 name = "ldconfig-patchelf.patch";
+                 url = "https://sourceware.org/bugzilla/attachment.cgi?id=11444";
+                 sha256 = "0nzzmq7pli37iyjrgcmvcy92piiwjybpw245ds7q43pbgdm7lc3s";
+               }
+             )
+           ]
+        ;
+    }
+  );
 
-  libnvidia-container = callPackage ./libnvc.nix { };
+  libnvidia-container = callPackage ./libnvc.nix {};
 
   nvidia-container-runtime = fetchFromGitHub {
     owner = "NVIDIA";
@@ -33,19 +49,22 @@ with lib; let
     src = "${nvidia-container-runtime}/hook/nvidia-container-runtime-hook";
   };
 
-  nvidia-runc = runc.overrideAttrs (oldAttrs: rec {
-    name = "nvidia-runc";
-    version = "1.0.0-rc6";
-    src = fetchFromGitHub {
-      owner = "opencontainers";
-      repo = "runc";
-      rev = "v${version}";
-      sha256 = "1jwacb8xnmx5fr86gximhbl9dlbdwj3rpf27hav9q1si86w5pb1j";
-    };
-    patches = [ "${nvidia-container-runtime}/runtime/runc/3f2f8b84a77f73d38244dd690525642a72156c64/0001-Add-prestart-hook-nvidia-container-runtime-hook-to-t.patch" ];
-  });
+  nvidia-runc = runc.overrideAttrs (
+    oldAttrs: rec {
+      name = "nvidia-runc";
+      version = "1.0.0-rc6";
+      src = fetchFromGitHub {
+        owner = "opencontainers";
+        repo = "runc";
+        rev = "v${version}";
+        sha256 = "1jwacb8xnmx5fr86gximhbl9dlbdwj3rpf27hav9q1si86w5pb1j";
+      };
+      patches = [ "${nvidia-container-runtime}/runtime/runc/3f2f8b84a77f73d38244dd690525642a72156c64/0001-Add-prestart-hook-nvidia-container-runtime-hook-to-t.patch" ];
+    }
+  );
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "nvidia-docker-${version}";
   version = "2.0.3";
 

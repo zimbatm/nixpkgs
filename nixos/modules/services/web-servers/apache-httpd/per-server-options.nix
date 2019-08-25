@@ -18,27 +18,30 @@ with lib;
   serverAliases = mkOption {
     type = types.listOf types.str;
     default = [];
-    example = ["www.example.org" "www.example.org:8080" "example.org"];
+    example = [ "www.example.org" "www.example.org:8080" "example.org" ];
     description = ''
       Additional names of virtual hosts served by this virtual host configuration.
     '';
   };
 
   listen = mkOption {
-     type = types.listOf (types.submodule (
-          {
-            options = {
-              port = mkOption {
-                type = types.int;
-                description = "port to listen on";
-              };
-              ip = mkOption {
-                type = types.string;
-                default = "*";
-                description = "Ip to listen on. 0.0.0.0 for ipv4 only, * for all.";
-              };
+    type = types.listOf (
+      types.submodule (
+        {
+          options = {
+            port = mkOption {
+              type = types.int;
+              description = "port to listen on";
             };
-          } ));
+            ip = mkOption {
+              type = types.string;
+              default = "*";
+              description = "Ip to listen on. 0.0.0.0 for ipv4 only, * for all.";
+            };
+          };
+        }
+      )
+    );
     description = ''
       List of { /* ip: "*"; */ port = 80;} to listen on
     '';
@@ -76,11 +79,14 @@ with lib;
     description = "Path to server SSL chain file.";
   };
 
-  adminAddr = mkOption ({
-    type = types.nullOr types.str;
-    example = "admin@example.org";
-    description = "E-mail address of the server administrator.";
-  } // (if forMainServer then {} else {default = null;}));
+  adminAddr = mkOption (
+    {
+      type = types.nullOr types.str;
+      example = "admin@example.org";
+      description = "E-mail address of the server administrator.";
+    }
+    // (if forMainServer then {} else { default = null; })
+  );
 
   documentRoot = mkOption {
     type = types.nullOr types.path;
@@ -96,7 +102,8 @@ with lib;
     type = types.listOf types.attrs;
     default = [];
     example = [
-      { urlPath = "/nix";
+      {
+        urlPath = "/nix";
         dir = "/home/eelco/Dev/nix-homepage";
       }
     ];
@@ -109,7 +116,8 @@ with lib;
     type = types.listOf types.attrs;
     default = [];
     example = [
-      { urlPath = "/foo/bar.png";
+      {
+        urlPath = "/foo/bar.png";
         file = "/home/eelco/some-file.png";
       }
     ];

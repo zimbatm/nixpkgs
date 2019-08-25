@@ -31,4 +31,3 @@ buildPythonPackage rec {
     maintainers = [ maintainers.dmvianna ];
   };
 }
-

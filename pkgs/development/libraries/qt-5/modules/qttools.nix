@@ -28,9 +28,11 @@ qtModule {
     "bin/qhelpgenerator"
     "bin/qtplugininfo"
     "bin/qthelpconverter"
-  ] ++ optionals stdenv.isDarwin [
-    "bin/macdeployqt"
-  ];
+  ]
+  ++ optionals stdenv.isDarwin [
+       "bin/macdeployqt"
+     ]
+  ;
 
   NIX_CFLAGS_COMPILE =
     lib.optional stdenv.isDarwin ''-DNIXPKGS_QMLIMPORTSCANNER="${qtdeclarative.dev}/bin/qmlimportscanner"'';

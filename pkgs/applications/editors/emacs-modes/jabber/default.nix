@@ -1,6 +1,6 @@
 { stdenv, fetchurl, emacs }:
 stdenv.mkDerivation rec {
-  pname  = "emacs-jabber";
+  pname = "emacs-jabber";
   version = "0.8.0";
   name = "${pname}-${version}";
   src = fetchurl {

@@ -48,15 +48,18 @@ let
       ip46tables() {
         iptables -w "$@"
         ${optionalString config.networking.enableIPv6 ''
-          ip6tables -w "$@"
-        ''}
+      ip6tables -w "$@"
+    ''}
       }
     '';
 
-  writeShScript = name: text: let dir = pkgs.writeScriptBin name ''
-    #! ${pkgs.runtimeShell} -e
-    ${text}
-  ''; in "${dir}/bin/${name}";
+  writeShScript = name: text: let
+    dir = pkgs.writeScriptBin name ''
+      #! ${pkgs.runtimeShell} -e
+      ${text}
+    '';
+  in
+    "${dir}/bin/${name}";
 
   defaultInterface = { default = mapAttrs (name: value: cfg."${name}") commonOptions; };
   allInterfaces = defaultInterface // cfg.interfaces;
@@ -83,14 +86,14 @@ let
     ip46tables -N nixos-fw-refuse
 
     ${if cfg.rejectPackets then ''
-      # Send a reset for existing TCP connections that we've
-      # somehow forgotten about.  Send ICMP "port unreachable"
-      # for everything else.
-      ip46tables -A nixos-fw-refuse -p tcp ! --syn -j REJECT --reject-with tcp-reset
-      ip46tables -A nixos-fw-refuse -j REJECT
-    '' else ''
-      ip46tables -A nixos-fw-refuse -j DROP
-    ''}
+    # Send a reset for existing TCP connections that we've
+    # somehow forgotten about.  Send ICMP "port unreachable"
+    # for everything else.
+    ip46tables -A nixos-fw-refuse -p tcp ! --syn -j REJECT --reject-with tcp-reset
+    ip46tables -A nixos-fw-refuse -j REJECT
+  '' else ''
+    ip46tables -A nixos-fw-refuse -j DROP
+  ''}
 
 
     # The "nixos-fw-log-refuse" chain performs logging, then
@@ -98,19 +101,19 @@ let
     ip46tables -N nixos-fw-log-refuse
 
     ${optionalString cfg.logRefusedConnections ''
-      ip46tables -A nixos-fw-log-refuse -p tcp --syn -j LOG --log-level info --log-prefix "refused connection: "
-    ''}
+    ip46tables -A nixos-fw-log-refuse -p tcp --syn -j LOG --log-level info --log-prefix "refused connection: "
+  ''}
     ${optionalString (cfg.logRefusedPackets && !cfg.logRefusedUnicastsOnly) ''
-      ip46tables -A nixos-fw-log-refuse -m pkttype --pkt-type broadcast \
-        -j LOG --log-level info --log-prefix "refused broadcast: "
-      ip46tables -A nixos-fw-log-refuse -m pkttype --pkt-type multicast \
-        -j LOG --log-level info --log-prefix "refused multicast: "
-    ''}
+    ip46tables -A nixos-fw-log-refuse -m pkttype --pkt-type broadcast \
+      -j LOG --log-level info --log-prefix "refused broadcast: "
+    ip46tables -A nixos-fw-log-refuse -m pkttype --pkt-type multicast \
+      -j LOG --log-level info --log-prefix "refused multicast: "
+  ''}
     ip46tables -A nixos-fw-log-refuse -m pkttype ! --pkt-type unicast -j nixos-fw-refuse
     ${optionalString cfg.logRefusedPackets ''
-      ip46tables -A nixos-fw-log-refuse \
-        -j LOG --log-level info --log-prefix "refused packet: "
-    ''}
+    ip46tables -A nixos-fw-log-refuse \
+      -j LOG --log-level info --log-prefix "refused packet: "
+  ''}
     ip46tables -A nixos-fw-log-refuse -j nixos-fw-refuse
 
 
@@ -123,70 +126,92 @@ let
     ip46tables -t raw -X nixos-fw-rpfilter 2> /dev/null || true
 
     ${optionalString (kernelHasRPFilter && (cfg.checkReversePath != false)) ''
-      # Perform a reverse-path test to refuse spoofers
-      # For now, we just drop, as the raw table doesn't have a log-refuse yet
-      ip46tables -t raw -N nixos-fw-rpfilter 2> /dev/null || true
-      ip46tables -t raw -A nixos-fw-rpfilter -m rpfilter --validmark ${optionalString (cfg.checkReversePath == "loose") "--loose"} -j RETURN
+    # Perform a reverse-path test to refuse spoofers
+    # For now, we just drop, as the raw table doesn't have a log-refuse yet
+    ip46tables -t raw -N nixos-fw-rpfilter 2> /dev/null || true
+    ip46tables -t raw -A nixos-fw-rpfilter -m rpfilter --validmark ${optionalString (cfg.checkReversePath == "loose") "--loose"} -j RETURN
 
-      # Allows this host to act as a DHCP4 client without first having to use APIPA
-      iptables -t raw -A nixos-fw-rpfilter -p udp --sport 67 --dport 68 -j RETURN
+    # Allows this host to act as a DHCP4 client without first having to use APIPA
+    iptables -t raw -A nixos-fw-rpfilter -p udp --sport 67 --dport 68 -j RETURN
 
-      # Allows this host to act as a DHCPv4 server
-      iptables -t raw -A nixos-fw-rpfilter -s 0.0.0.0 -d 255.255.255.255 -p udp --sport 68 --dport 67 -j RETURN
+    # Allows this host to act as a DHCPv4 server
+    iptables -t raw -A nixos-fw-rpfilter -s 0.0.0.0 -d 255.255.255.255 -p udp --sport 68 --dport 67 -j RETURN
 
-      ${optionalString cfg.logReversePathDrops ''
-        ip46tables -t raw -A nixos-fw-rpfilter -j LOG --log-level info --log-prefix "rpfilter drop: "
-      ''}
-      ip46tables -t raw -A nixos-fw-rpfilter -j DROP
+    ${optionalString cfg.logReversePathDrops ''
+    ip46tables -t raw -A nixos-fw-rpfilter -j LOG --log-level info --log-prefix "rpfilter drop: "
+  ''}
+    ip46tables -t raw -A nixos-fw-rpfilter -j DROP
 
-      ip46tables -t raw -A PREROUTING -j nixos-fw-rpfilter
-    ''}
+    ip46tables -t raw -A PREROUTING -j nixos-fw-rpfilter
+  ''}
 
     # Accept all traffic on the trusted interfaces.
-    ${flip concatMapStrings cfg.trustedInterfaces (iface: ''
+    ${flip concatMapStrings cfg.trustedInterfaces (
+    iface: ''
       ip46tables -A nixos-fw -i ${iface} -j nixos-fw-accept
-    '')}
+    ''
+  )}
 
     # Accept packets from established or related connections.
     ip46tables -A nixos-fw -m conntrack --ctstate ESTABLISHED,RELATED -j nixos-fw-accept
 
     # Accept connections to the allowed TCP ports.
-    ${concatStrings (mapAttrsToList (iface: cfg:
-      concatMapStrings (port:
-        ''
-          ip46tables -A nixos-fw -p tcp --dport ${toString port} -j nixos-fw-accept ${optionalString (iface != "default") "-i ${iface}"}
-        ''
-      ) cfg.allowedTCPPorts
-    ) allInterfaces)}
+    ${concatStrings (
+    mapAttrsToList (
+      iface: cfg:
+        concatMapStrings (
+          port:
+            ''
+              ip46tables -A nixos-fw -p tcp --dport ${toString port} -j nixos-fw-accept ${optionalString (iface != "default") "-i ${iface}"}
+            ''
+        ) cfg.allowedTCPPorts
+    ) allInterfaces
+  )}
 
     # Accept connections to the allowed TCP port ranges.
-    ${concatStrings (mapAttrsToList (iface: cfg:
-      concatMapStrings (rangeAttr:
-        let range = toString rangeAttr.from + ":" + toString rangeAttr.to; in
-        ''
-          ip46tables -A nixos-fw -p tcp --dport ${range} -j nixos-fw-accept ${optionalString (iface != "default") "-i ${iface}"}
-        ''
-      ) cfg.allowedTCPPortRanges
-    ) allInterfaces)}
+    ${concatStrings (
+    mapAttrsToList (
+      iface: cfg:
+        concatMapStrings (
+          rangeAttr:
+            let
+              range = toString rangeAttr.from + ":" + toString rangeAttr.to;
+            in
+              ''
+                ip46tables -A nixos-fw -p tcp --dport ${range} -j nixos-fw-accept ${optionalString (iface != "default") "-i ${iface}"}
+              ''
+        ) cfg.allowedTCPPortRanges
+    ) allInterfaces
+  )}
 
     # Accept packets on the allowed UDP ports.
-    ${concatStrings (mapAttrsToList (iface: cfg:
-      concatMapStrings (port:
-        ''
-          ip46tables -A nixos-fw -p udp --dport ${toString port} -j nixos-fw-accept ${optionalString (iface != "default") "-i ${iface}"}
-        ''
-      ) cfg.allowedUDPPorts
-    ) allInterfaces)}
+    ${concatStrings (
+    mapAttrsToList (
+      iface: cfg:
+        concatMapStrings (
+          port:
+            ''
+              ip46tables -A nixos-fw -p udp --dport ${toString port} -j nixos-fw-accept ${optionalString (iface != "default") "-i ${iface}"}
+            ''
+        ) cfg.allowedUDPPorts
+    ) allInterfaces
+  )}
 
     # Accept packets on the allowed UDP port ranges.
-    ${concatStrings (mapAttrsToList (iface: cfg:
-      concatMapStrings (rangeAttr:
-        let range = toString rangeAttr.from + ":" + toString rangeAttr.to; in
-        ''
-          ip46tables -A nixos-fw -p udp --dport ${range} -j nixos-fw-accept ${optionalString (iface != "default") "-i ${iface}"}
-        ''
-      ) cfg.allowedUDPPortRanges
-    ) allInterfaces)}
+    ${concatStrings (
+    mapAttrsToList (
+      iface: cfg:
+        concatMapStrings (
+          rangeAttr:
+            let
+              range = toString rangeAttr.from + ":" + toString rangeAttr.to;
+            in
+              ''
+                ip46tables -A nixos-fw -p udp --dport ${range} -j nixos-fw-accept ${optionalString (iface != "default") "-i ${iface}"}
+              ''
+        ) cfg.allowedUDPPortRanges
+    ) allInterfaces
+  )}
 
     # Accept IPv4 multicast.  Not a big security risk since
     # probably nobody is listening anyway.
@@ -194,22 +219,22 @@ let
 
     # Optionally respond to ICMPv4 pings.
     ${optionalString cfg.allowPing ''
-      iptables -w -A nixos-fw -p icmp --icmp-type echo-request ${optionalString (cfg.pingLimit != null)
-        "-m limit ${cfg.pingLimit} "
-      }-j nixos-fw-accept
-    ''}
+    iptables -w -A nixos-fw -p icmp --icmp-type echo-request ${optionalString (cfg.pingLimit != null)
+    "-m limit ${cfg.pingLimit} "
+  }-j nixos-fw-accept
+  ''}
 
     ${optionalString config.networking.enableIPv6 ''
-      # Accept all ICMPv6 messages except redirects and node
-      # information queries (type 139).  See RFC 4890, section
-      # 4.4.
-      ip6tables -A nixos-fw -p icmpv6 --icmpv6-type redirect -j DROP
-      ip6tables -A nixos-fw -p icmpv6 --icmpv6-type 139 -j DROP
-      ip6tables -A nixos-fw -p icmpv6 -j nixos-fw-accept
+    # Accept all ICMPv6 messages except redirects and node
+    # information queries (type 139).  See RFC 4890, section
+    # 4.4.
+    ip6tables -A nixos-fw -p icmpv6 --icmpv6-type redirect -j DROP
+    ip6tables -A nixos-fw -p icmpv6 --icmpv6-type 139 -j DROP
+    ip6tables -A nixos-fw -p icmpv6 -j nixos-fw-accept
 
-      # Allow this host to act as a DHCPv6 client
-      ip6tables -A nixos-fw -d fe80::/64 -p udp --dport 546 -j nixos-fw-accept
-    ''}
+    # Allow this host to act as a DHCPv6 client
+    ip6tables -A nixos-fw -d fe80::/64 -p udp --dport 546 -j nixos-fw-accept
+  ''}
 
     ${cfg.extraCommands}
 
@@ -231,8 +256,8 @@ let
     ip46tables -D INPUT -j nixos-fw 2>/dev/null || true
 
     ${optionalString (kernelHasRPFilter && (cfg.checkReversePath != false)) ''
-      ip46tables -t raw -D PREROUTING -j nixos-fw-rpfilter 2>/dev/null || true
-    ''}
+    ip46tables -t raw -D PREROUTING -j nixos-fw-rpfilter 2>/dev/null || true
+  ''}
 
     ${cfg.extraStopCommands}
   '';
@@ -267,7 +292,7 @@ let
   commonOptions = {
     allowedTCPPorts = mkOption {
       type = types.listOf types.port;
-      default = [ ];
+      default = [];
       apply = canonicalizePortList;
       example = [ 22 80 ];
       description =
@@ -279,7 +304,7 @@ let
 
     allowedTCPPortRanges = mkOption {
       type = types.listOf (types.attrsOf types.port);
-      default = [ ];
+      default = [];
       example = [ { from = 8999; to = 9003; } ];
       description =
         '' 
@@ -290,7 +315,7 @@ let
 
     allowedUDPPorts = mkOption {
       type = types.listOf types.port;
-      default = [ ];
+      default = [];
       apply = canonicalizePortList;
       example = [ 53 ];
       description =
@@ -301,7 +326,7 @@ let
 
     allowedUDPPortRanges = mkOption {
       type = types.listOf (types.attrsOf types.port);
-      default = [ ];
+      default = [];
       example = [ { from = 60000; to = 61000; } ];
       description =
         ''
@@ -378,7 +403,7 @@ in
 
       trustedInterfaces = mkOption {
         type = types.listOf types.str;
-        default = [ ];
+        default = [];
         example = [ "enp0s2" ];
         description =
           ''
@@ -413,7 +438,7 @@ in
       };
 
       checkReversePath = mkOption {
-        type = types.either types.bool (types.enum ["strict" "loose"]);
+        type = types.either types.bool (types.enum [ "strict" "loose" ]);
         default = kernelHasRPFilter;
         example = "loose";
         description =
@@ -447,7 +472,7 @@ in
 
       connectionTrackingModules = mkOption {
         type = types.listOf types.str;
-        default = [ ];
+        default = [];
         example = [ "ftp" "irc" "sane" "sip" "tftp" "amanda" "h323" "netbios_sn" "pptp" "snmp" ];
         description =
           ''
@@ -493,7 +518,7 @@ in
 
       extraPackages = mkOption {
         type = types.listOf types.package;
-        default = [ ];
+        default = [];
         example = literalExample "[ pkgs.ipset ]";
         description =
           ''
@@ -516,14 +541,16 @@ in
       };
 
       interfaces = mkOption {
-        default = { };
+        default = {};
         type = with types; attrsOf (submodule [ { options = commonOptions; } ]);
         description =
           ''
             Interface-specific open ports.
           '';
       };
-    } // commonOptions;
+    }
+    // commonOptions
+    ;
 
   };
 
@@ -539,14 +566,18 @@ in
     environment.systemPackages = [ pkgs.iptables ] ++ cfg.extraPackages;
 
     boot.kernelModules = (optional cfg.autoLoadConntrackHelpers "nf_conntrack")
-      ++ map (x: "nf_conntrack_${x}") cfg.connectionTrackingModules;
+      ++ map (x: "nf_conntrack_${x}") cfg.connectionTrackingModules
+      ;
     boot.extraModprobeConfig = optionalString cfg.autoLoadConntrackHelpers ''
       options nf_conntrack nf_conntrack_helper=1
     '';
 
-    assertions = [ { assertion = (cfg.checkReversePath != false) || kernelHasRPFilter;
-                     message = "This kernel does not support rpfilter"; }
-                 ];
+    assertions = [
+      {
+        assertion = (cfg.checkReversePath != false) || kernelHasRPFilter;
+        message = "This kernel does not support rpfilter";
+      }
+    ];
 
     systemd.services.firewall = {
       description = "Firewall";

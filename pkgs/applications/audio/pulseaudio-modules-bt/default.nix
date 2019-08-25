@@ -22,7 +22,8 @@ let
     mv pulseaudio*/* $out/
   '';
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "pulseaudio-modules-bt-${version}";
   version = "1.3";
 

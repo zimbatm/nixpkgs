@@ -1,7 +1,28 @@
-{ stdenv, fetchFromGitHub, cmake, irrlicht, libpng, bzip2, curl, libogg, jsoncpp
-, libjpeg, libXxf86vm, libGLU_combined, openal, libvorbis, sqlite, luajit
-, freetype, gettext, doxygen, ncurses, graphviz, xorg
-, leveldb, postgresql, hiredis
+{ stdenv
+, fetchFromGitHub
+, cmake
+, irrlicht
+, libpng
+, bzip2
+, curl
+, libogg
+, jsoncpp
+, libjpeg
+, libXxf86vm
+, libGLU_combined
+, openal
+, libvorbis
+, sqlite
+, luajit
+, freetype
+, gettext
+, doxygen
+, ncurses
+, graphviz
+, xorg
+, leveldb
+, postgresql
+, hiredis
 }:
 
 with stdenv.lib;
@@ -23,47 +44,70 @@ let
         sha256 = dataSha256;
       };
     };
-  in stdenv.mkDerivation {
-    name = "minetest-${version}";
+  in
+    stdenv.mkDerivation {
+      name = "minetest-${version}";
 
-    src = sources.src;
+      src = sources.src;
 
-    cmakeFlags = [
-      "-DBUILD_CLIENT=${boolToCMake buildClient}"
-      "-DBUILD_SERVER=${boolToCMake buildServer}"
-      "-DENABLE_FREETYPE=1"
-      "-DENABLE_GETTEXT=1"
-      "-DENABLE_SYSTEM_JSONCPP=1"
-      "-DIRRLICHT_INCLUDE_DIR=${irrlicht}/include/irrlicht"
-    ] ++ optionals buildClient [
-      "-DOpenGL_GL_PREFERENCE=GLVND"
-    ];
+      cmakeFlags = [
+        "-DBUILD_CLIENT=${boolToCMake buildClient}"
+        "-DBUILD_SERVER=${boolToCMake buildServer}"
+        "-DENABLE_FREETYPE=1"
+        "-DENABLE_GETTEXT=1"
+        "-DENABLE_SYSTEM_JSONCPP=1"
+        "-DIRRLICHT_INCLUDE_DIR=${irrlicht}/include/irrlicht"
+      ]
+      ++ optionals buildClient [
+           "-DOpenGL_GL_PREFERENCE=GLVND"
+         ]
+      ;
 
-    NIX_CFLAGS_COMPILE = [ "-DluaL_reg=luaL_Reg" ]; # needed since luajit-2.1.0-beta3
+      NIX_CFLAGS_COMPILE = [ "-DluaL_reg=luaL_Reg" ]; # needed since luajit-2.1.0-beta3
 
-    nativeBuildInputs = [ cmake doxygen graphviz ];
+      nativeBuildInputs = [ cmake doxygen graphviz ];
 
-    buildInputs = [
-      irrlicht luajit jsoncpp gettext freetype sqlite curl bzip2 ncurses
-    ] ++ optionals buildClient [
-      libpng libjpeg libGLU_combined openal libogg libvorbis xorg.libX11 libXxf86vm
-    ] ++ optional buildServer [
-      leveldb postgresql hiredis
-    ];
+      buildInputs = [
+        irrlicht
+        luajit
+        jsoncpp
+        gettext
+        freetype
+        sqlite
+        curl
+        bzip2
+        ncurses
+      ]
+      ++ optionals buildClient [
+           libpng
+           libjpeg
+           libGLU_combined
+           openal
+           libogg
+           libvorbis
+           xorg.libX11
+           libXxf86vm
+         ]
+      ++ optional buildServer [
+           leveldb
+           postgresql
+           hiredis
+         ]
+      ;
 
-    postInstall = ''
-      mkdir -pv $out/share/minetest/games/minetest_game/
-      cp -rv ${sources.data}/* $out/share/minetest/games/minetest_game/
-    '';
+      postInstall = ''
+        mkdir -pv $out/share/minetest/games/minetest_game/
+        cp -rv ${sources.data}/* $out/share/minetest/games/minetest_game/
+      '';
 
-    meta = with stdenv.lib; {
-      homepage = http://minetest.net/;
-      description = "Infinite-world block sandbox game";
-      license = licenses.lgpl21Plus;
-      platforms = platforms.linux;
-      maintainers = with maintainers; [ pyrolagus fpletz ];
+      meta = with stdenv.lib; {
+        homepage = http://minetest.net/;
+        description = "Infinite-world block sandbox game";
+        license = licenses.lgpl21Plus;
+        platforms = platforms.linux;
+        maintainers = with maintainers; [ pyrolagus fpletz ];
+      };
     };
-  };
 
   v4 = {
     version = "0.4.17.1";
@@ -77,7 +121,8 @@ let
     dataSha256 = "1hw3n7qqpasq6bivxhq01kr0d58w0gp46s0baxixp1fakd79p8a7";
   };
 
-in {
+in
+{
   minetestclient_4 = generic (v4 // { buildClient = true; buildServer = false; });
   minetestserver_4 = generic (v4 // { buildClient = false; buildServer = true; });
 

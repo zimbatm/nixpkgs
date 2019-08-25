@@ -42,6 +42,6 @@ stdenv.mkDerivation rec {
     repositories.git = git://git.savannah.gnu.org/libidn.git;
     license = stdenv.lib.licenses.lgpl2Plus;
     platforms = stdenv.lib.platforms.all;
-    maintainers = [ ];
+    maintainers = [];
   };
 }

@@ -1,7 +1,21 @@
-{ stdenv, removeReferencesTo, pkgsBuildBuild, pkgsBuildHost, pkgsBuildTarget
-, fetchurl, file, python2, tzdata, ps
-, llvm_7, darwin, git, cmake, rustPlatform
-, which, libffi, gdb
+{ stdenv
+, removeReferencesTo
+, pkgsBuildBuild
+, pkgsBuildHost
+, pkgsBuildTarget
+, fetchurl
+, file
+, python2
+, tzdata
+, ps
+, llvm_7
+, darwin
+, git
+, cmake
+, rustPlatform
+, which
+, libffi
+, gdb
 , withBundledLLVM ? false
 }:
 
@@ -15,7 +29,8 @@ let
 
   # For use at runtime
   llvmShared = llvm_7.override { enableSharedLibraries = true; };
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   pname = "rustc";
   version = "1.36.0";
 
@@ -40,10 +55,11 @@ in stdenv.mkDerivation rec {
 
 
   NIX_LDFLAGS =
-       # when linking stage1 libstd: cc: undefined reference to `__cxa_begin_catch'
-       optional (stdenv.isLinux && !withBundledLLVM) "--push-state --as-needed -lstdc++ --pop-state"
+    # when linking stage1 libstd: cc: undefined reference to `__cxa_begin_catch'
+    optional (stdenv.isLinux && !withBundledLLVM) "--push-state --as-needed -lstdc++ --pop-state"
     ++ optional (stdenv.isDarwin && !withBundledLLVM) "-lc++"
-    ++ optional stdenv.isDarwin "-rpath ${llvmSharedForHost}/lib";
+    ++ optional stdenv.isDarwin "-rpath ${llvmSharedForHost}/lib"
+    ;
 
   # Increase codegen units to introduce parallelism within the compiler.
   RUSTFLAGS = "-Ccodegen-units=10";
@@ -51,44 +67,47 @@ in stdenv.mkDerivation rec {
   # We need rust to build rust. If we don't provide it, configure will try to download it.
   # Reference: https://github.com/rust-lang/rust/blob/master/src/bootstrap/configure.py
   configureFlags = let
-    setBuild  = "--set=target.${stdenv.buildPlatform.config}";
-    setHost   = "--set=target.${stdenv.hostPlatform.config}";
+    setBuild = "--set=target.${stdenv.buildPlatform.config}";
+    setHost = "--set=target.${stdenv.hostPlatform.config}";
     setTarget = "--set=target.${stdenv.targetPlatform.config}";
-    ccForBuild  = "${pkgsBuildBuild.targetPackages.stdenv.cc}/bin/${pkgsBuildBuild.targetPackages.stdenv.cc.targetPrefix}cc";
+    ccForBuild = "${pkgsBuildBuild.targetPackages.stdenv.cc}/bin/${pkgsBuildBuild.targetPackages.stdenv.cc.targetPrefix}cc";
     cxxForBuild = "${pkgsBuildBuild.targetPackages.stdenv.cc}/bin/${pkgsBuildBuild.targetPackages.stdenv.cc.targetPrefix}c++";
-    ccForHost  = "${pkgsBuildHost.targetPackages.stdenv.cc}/bin/${pkgsBuildHost.targetPackages.stdenv.cc.targetPrefix}cc";
+    ccForHost = "${pkgsBuildHost.targetPackages.stdenv.cc}/bin/${pkgsBuildHost.targetPackages.stdenv.cc.targetPrefix}cc";
     cxxForHost = "${pkgsBuildHost.targetPackages.stdenv.cc}/bin/${pkgsBuildHost.targetPackages.stdenv.cc.targetPrefix}c++";
-    ccForTarget  = "${pkgsBuildTarget.targetPackages.stdenv.cc}/bin/${pkgsBuildTarget.targetPackages.stdenv.cc.targetPrefix}cc";
+    ccForTarget = "${pkgsBuildTarget.targetPackages.stdenv.cc}/bin/${pkgsBuildTarget.targetPackages.stdenv.cc.targetPrefix}cc";
     cxxForTarget = "${pkgsBuildTarget.targetPackages.stdenv.cc}/bin/${pkgsBuildTarget.targetPackages.stdenv.cc.targetPrefix}c++";
-  in [
-    "--release-channel=stable"
-    "--set=build.rustc=${rustPlatform.rust.rustc}/bin/rustc"
-    "--set=build.cargo=${rustPlatform.rust.cargo}/bin/cargo"
-    "--enable-rpath"
-    "--enable-vendor"
-    "--build=${stdenv.buildPlatform.config}"
-    "--host=${stdenv.hostPlatform.config}"
-    "--target=${stdenv.targetPlatform.config}"
+  in
+    [
+      "--release-channel=stable"
+      "--set=build.rustc=${rustPlatform.rust.rustc}/bin/rustc"
+      "--set=build.cargo=${rustPlatform.rust.cargo}/bin/cargo"
+      "--enable-rpath"
+      "--enable-vendor"
+      "--build=${stdenv.buildPlatform.config}"
+      "--host=${stdenv.hostPlatform.config}"
+      "--target=${stdenv.targetPlatform.config}"
 
-    "${setBuild}.cc=${ccForBuild}"
-    "${setHost}.cc=${ccForHost}"
-    "${setTarget}.cc=${ccForTarget}"
+      "${setBuild}.cc=${ccForBuild}"
+      "${setHost}.cc=${ccForHost}"
+      "${setTarget}.cc=${ccForTarget}"
 
-    "${setBuild}.linker=${ccForBuild}"
-    "${setHost}.linker=${ccForHost}"
-    "${setTarget}.linker=${ccForTarget}"
+      "${setBuild}.linker=${ccForBuild}"
+      "${setHost}.linker=${ccForHost}"
+      "${setTarget}.linker=${ccForTarget}"
 
-    "${setBuild}.cxx=${cxxForBuild}"
-    "${setHost}.cxx=${cxxForHost}"
-    "${setTarget}.cxx=${cxxForTarget}"
-  ] ++ optional (!withBundledLLVM) [
-    "--enable-llvm-link-shared"
-    "${setBuild}.llvm-config=${llvmSharedForBuild}/bin/llvm-config"
-    "${setHost}.llvm-config=${llvmSharedForHost}/bin/llvm-config"
-    "${setTarget}.llvm-config=${llvmSharedForTarget}/bin/llvm-config"
-  ] ++ optional stdenv.isLinux [
-    "--enable-profiler" # build libprofiler_builtins
-  ];
+      "${setBuild}.cxx=${cxxForBuild}"
+      "${setHost}.cxx=${cxxForHost}"
+      "${setTarget}.cxx=${cxxForTarget}"
+    ]
+    ++ optional (!withBundledLLVM) [
+         "--enable-llvm-link-shared"
+         "${setBuild}.llvm-config=${llvmSharedForBuild}/bin/llvm-config"
+         "${setHost}.llvm-config=${llvmSharedForHost}/bin/llvm-config"
+         "${setTarget}.llvm-config=${llvmSharedForTarget}/bin/llvm-config"
+       ]
+    ++ optional stdenv.isLinux [
+         "--enable-profiler" # build libprofiler_builtins
+       ];
 
   # The bootstrap.py will generated a Makefile that then executes the build.
   # The BOOTSTRAP_ARGS used by this Makefile must include all flags to pass
@@ -132,23 +151,25 @@ in stdenv.mkDerivation rec {
 
     # Useful debugging parameter
     # export VERBOSE=1
-  '' + optionalString stdenv.isDarwin ''
-    # Disable all lldb tests.
-    # error: Can't run LLDB test because LLDB's python path is not set
-    rm -vr src/test/debuginfo/*
-    rm -v src/test/run-pass/backtrace-debuginfo.rs || true
+  ''
+  + optionalString stdenv.isDarwin ''
+      # Disable all lldb tests.
+      # error: Can't run LLDB test because LLDB's python path is not set
+      rm -vr src/test/debuginfo/*
+      rm -v src/test/run-pass/backtrace-debuginfo.rs || true
 
-    # error: No such file or directory
-    rm -v src/test/ui/run-pass/issues/issue-45731.rs || true
+      # error: No such file or directory
+      rm -v src/test/ui/run-pass/issues/issue-45731.rs || true
 
-    # Disable tests that fail when sandboxing is enabled.
-    substituteInPlace src/libstd/sys/unix/ext/net.rs \
-        --replace '#[test]' '#[test] #[ignore]'
-    substituteInPlace src/test/run-pass/env-home-dir.rs \
-        --replace 'home_dir().is_some()' true
-    rm -v src/test/run-pass/fds-are-cloexec.rs || true  # FIXME: pipes?
-    rm -v src/test/ui/run-pass/threads-sendsync/sync-send-in-std.rs || true  # FIXME: ???
-  '';
+      # Disable tests that fail when sandboxing is enabled.
+      substituteInPlace src/libstd/sys/unix/ext/net.rs \
+          --replace '#[test]' '#[test] #[ignore]'
+      substituteInPlace src/test/run-pass/env-home-dir.rs \
+          --replace 'home_dir().is_some()' true
+      rm -v src/test/run-pass/fds-are-cloexec.rs || true  # FIXME: pipes?
+      rm -v src/test/ui/run-pass/threads-sendsync/sync-send-in-std.rs || true  # FIXME: ???
+    ''
+  ;
 
   # rustc unfortunately needs cmake to compile llvm-rt but doesn't
   # use it for the normal build. This disables cmake in Nix.
@@ -156,13 +177,22 @@ in stdenv.mkDerivation rec {
 
   # ps is needed for one of the test cases
   nativeBuildInputs = [
-    file python2 ps rustPlatform.rust.rustc git cmake
-    which libffi removeReferencesTo
+    file
+    python2
+    ps
+    rustPlatform.rust.rustc
+    git
+    cmake
+    which
+    libffi
+    removeReferencesTo
   ] # Only needed for the debuginfo tests
-    ++ optional (!stdenv.isDarwin) gdb;
+  ++ optional (!stdenv.isDarwin) gdb
+  ;
 
   buildInputs = optional stdenv.isDarwin Security
-    ++ optional (!withBundledLLVM) llvmShared;
+    ++ optional (!withBundledLLVM) llvmShared
+    ;
 
   outputs = [ "out" "man" "doc" ];
   setOutputFlags = false;
@@ -172,14 +202,15 @@ in stdenv.mkDerivation rec {
     export RUSTFLAGS=
     export TZDIR=${tzdata}/share/zoneinfo
     export hardeningDisable=all
-  '' +
-  # Ensure TMPDIR is set, and disable a test that removing the HOME
+  ''
+  + # Ensure TMPDIR is set, and disable a test that removing the HOME
   # variable from the environment falls back to another home
   # directory.
   optionalString stdenv.isDarwin ''
     export TMPDIR=/tmp
     sed -i '28s/home_dir().is_some()/true/' ./src/test/run-pass/env-home-dir.rs
-  '';
+  ''
+  ;
 
   # 1. Upstream is not running tests on aarch64:
   # see https://github.com/rust-lang/rust/issues/49807#issuecomment-380860567

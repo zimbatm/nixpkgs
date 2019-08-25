@@ -1,8 +1,10 @@
 { stdenv, fetchFromGitHub, fontsConf, phantomjs2, python, nodePackages }:
 
-let version = "1.1.1";
+let
+  version = "1.1.1";
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
 
   name = "casperjs-${version}";
 

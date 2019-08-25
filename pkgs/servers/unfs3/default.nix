@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
 
   configureFlags = [ "--disable-shared" ];
 
-  doCheck = false;                                # no test suite
+  doCheck = false; # no test suite
 
   meta = {
     description = "User-space NFSv3 file system server";
@@ -28,6 +28,6 @@ stdenv.mkDerivation rec {
 
     license = stdenv.lib.licenses.bsd3;
     platforms = stdenv.lib.platforms.unix;
-    maintainers = [ ];
+    maintainers = [];
   };
 }

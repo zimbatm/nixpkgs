@@ -97,10 +97,12 @@ in
   ###### implementation
 
   config = mkIf cfg.enable {
-    assertions = [{
-      assertion = config.networking.firewall.enable == false;
-      message = "You can not use nftables with services.networking.firewall.";
-    }];
+    assertions = [
+      {
+        assertion = config.networking.firewall.enable == false;
+        message = "You can not use nftables with services.networking.firewall.";
+      }
+    ];
     boot.blacklistedKernelModules = [ "ip_tables" ];
     environment.systemPackages = [ pkgs.nftables ];
     systemd.services.nftables = {
@@ -124,13 +126,14 @@ in
             ${rulesScript}
           fi
         '';
-      in {
-        Type = "oneshot";
-        RemainAfterExit = true;
-        ExecStart = checkScript;
-        ExecReload = checkScript;
-        ExecStop = "${pkgs.nftables}/bin/nft flush ruleset";
-      };
+      in
+        {
+          Type = "oneshot";
+          RemainAfterExit = true;
+          ExecStart = checkScript;
+          ExecReload = checkScript;
+          ExecStop = "${pkgs.nftables}/bin/nft flush ruleset";
+        };
     };
   };
 }

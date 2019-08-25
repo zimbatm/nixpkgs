@@ -11,7 +11,8 @@ let
       url = "https://www.rescuetime.com/installers/rescuetime_current_amd64.deb";
       sha256 = "03bky9vja7fijz45n44b6gawd6q8yd30nx6nya9lqdlxd1bkqmji";
     };
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   # https://www.rescuetime.com/updates/linux_release_notes.html
   name = "rescuetime-2.14.3.1";
   inherit src;
@@ -34,9 +35,9 @@ in stdenv.mkDerivation {
   '';
   meta = with lib; {
     description = "Helps you understand your daily habits so you can focus and be more productive";
-    homepage    = "https://www.rescuetime.com";
+    homepage = "https://www.rescuetime.com";
     maintainers = with maintainers; [ cstrahan ];
-    license     = licenses.unfree;
-    platforms   = [ "i686-linux" "x86_64-linux" ];
+    license = licenses.unfree;
+    platforms = [ "i686-linux" "x86_64-linux" ];
   };
 }

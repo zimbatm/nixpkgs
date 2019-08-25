@@ -1,4 +1,8 @@
-{ stdenv, fetchurl, SDL, SDL_mixer, SDL_net
+{ stdenv
+, fetchurl
+, SDL
+, SDL_mixer
+, SDL_net
 , libGLU_combined ? assert false; null
 , useOpenGL ? stdenv.hostPlatform == stdenv.buildPlatform
 }:
@@ -11,19 +15,22 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [ SDL SDL_mixer SDL_net ]
-    ++ stdenv.lib.optional useOpenGL libGLU_combined;
+    ++ stdenv.lib.optional useOpenGL libGLU_combined
+    ;
 
   doCheck = stdenv.hostPlatform == stdenv.buildPlatform;
 
   configureFlags = [
     (stdenv.lib.enableFeature useOpenGL "gl")
     (stdenv.lib.enableFeature doCheck "sdltest")
-  ] ++ stdenv.lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
-    "--disable-cpu-opt"
-    "--without-x"
-    "ac_cv_type_uid_t=yes"
-    "ac_cv_type_gid_t=yes"
-  ];
+  ]
+  ++ stdenv.lib.optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
+       "--disable-cpu-opt"
+       "--without-x"
+       "ac_cv_type_uid_t=yes"
+       "ac_cv_type_gid_t=yes"
+     ]
+  ;
 
   postInstall = stdenv.lib.optionalString (stdenv.hostPlatform != stdenv.buildPlatform) ''
     mv $out/games/ $out/bin

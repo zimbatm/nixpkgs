@@ -1,11 +1,19 @@
-{ stdenv, fetchFromGitHub
-, doxygen, fontconfig, graphviz-nox, libxml2, pkgconfig, which
-, systemd }:
+{ stdenv
+, fetchFromGitHub
+, doxygen
+, fontconfig
+, graphviz-nox
+, libxml2
+, pkgconfig
+, which
+, systemd
+}:
 
 let
   version = "2018-11-13";
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "openzwave-${version}";
 
   # Use fork by Home Assistant because this package is mainly used for python.pkgs.homeassistant-pyozw.
@@ -33,8 +41,8 @@ in stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  FONTCONFIG_FILE="${fontconfig.out}/etc/fonts/fonts.conf";
-  FONTCONFIG_PATH="${fontconfig.out}/etc/fonts/";
+  FONTCONFIG_FILE = "${fontconfig.out}/etc/fonts/fonts.conf";
+  FONTCONFIG_PATH = "${fontconfig.out}/etc/fonts/";
 
   postPatch = ''
     substituteInPlace cpp/src/Options.cpp \

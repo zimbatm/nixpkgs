@@ -1,6 +1,8 @@
-{ stdenv, fetchurl, cmake, boost, python2}:
+{ stdenv, fetchurl, cmake, boost, python2 }:
 
-let version = "1.8.2"; in
+let
+  version = "1.8.2";
+in
 
 stdenv.mkDerivation {
   name = "avro-c++-${version}";

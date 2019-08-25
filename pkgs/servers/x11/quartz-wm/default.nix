@@ -1,7 +1,9 @@
 { stdenv, fetchurl, xorg, pixman, pkgconfig, AppKit, Foundation, Xplugin }:
 
-let version = "1.3.1";
-in stdenv.mkDerivation {
+let
+  version = "1.3.1";
+in
+stdenv.mkDerivation {
   name = "quartz-wm-${version}";
   src = fetchurl {
     url = "http://xquartz-dl.macosforge.org/src/quartz-wm-${version}.tar.xz";
@@ -19,7 +21,9 @@ in stdenv.mkDerivation {
     xorg.libXext
     pixman
     pkgconfig
-    AppKit Xplugin Foundation
+    AppKit
+    Xplugin
+    Foundation
   ];
   meta = with stdenv.lib; {
     license = licenses.apsl20;

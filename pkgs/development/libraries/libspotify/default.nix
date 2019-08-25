@@ -13,17 +13,17 @@ else stdenv.mkDerivation {
   src =
     if stdenv.hostPlatform.system == "x86_64-linux" then
       fetchurl {
-        url    = "https://developer.spotify.com/download/libspotify/libspotify-${version}-Linux-x86_64-release.tar.gz";
+        url = "https://developer.spotify.com/download/libspotify/libspotify-${version}-Linux-x86_64-release.tar.gz";
         sha256 = "0n0h94i4xg46hfba95n3ypah93crwb80bhgsg00f6sms683lx8a3";
       }
     else if stdenv.hostPlatform.system == "x86_64-darwin" then
       fetchurl {
-        url    = "https://developer.spotify.com/download/libspotify/libspotify-${version}-Darwin-universal.zip";
+        url = "https://developer.spotify.com/download/libspotify/libspotify-${version}-Darwin-universal.zip";
         sha256 = "1gcgrc8arim3hnszcc886lmcdb4iigc08abkaa02l6gng43ky1c0";
       }
     else if stdenv.hostPlatform.system == "i686-linux" then
       fetchurl {
-        url    = "https://developer.spotify.com/download/libspotify/libspotify-${version}-Linux-i686-release.tar.gz";
+        url = "https://developer.spotify.com/download/libspotify/libspotify-${version}-Linux-i686-release.tar.gz";
         sha256 = "1bjmn64gbr4p9irq426yap4ipq9rb84zsyhjjr7frmmw22xb86ll";
       }
     else
@@ -32,17 +32,17 @@ else stdenv.mkDerivation {
   dontBuild = true;
 
   installPhase = if (isLinux)
-    then "installPhase"
-    else ''
-      mkdir -p "$out"/include/libspotify
-      mv -v libspotify.framework/Versions/Current/Headers/api.h \
-        "$out"/include/libspotify
-      mkdir -p "$out"/lib
-      mv -v libspotify.framework/Versions/Current/libspotify \
-        "$out"/lib/libspotify.dylib
-      mkdir -p "$out"/share/man
-      mv -v man3 "$out"/share/man
-    '';
+  then "installPhase"
+  else ''
+    mkdir -p "$out"/include/libspotify
+    mv -v libspotify.framework/Versions/Current/Headers/api.h \
+      "$out"/include/libspotify
+    mkdir -p "$out"/lib
+    mv -v libspotify.framework/Versions/Current/libspotify \
+      "$out"/lib/libspotify.dylib
+    mkdir -p "$out"/share/man
+    mv -v man3 "$out"/share/man
+  '';
 
 
   # darwin-specific
@@ -58,32 +58,33 @@ else stdenv.mkDerivation {
 
   passthru = {
     samples = if apiKey == null
-      then throw ''
-        Please visit ${libspotify.meta.homepage} to get an api key then set config.libspotify.apiKey accordingly
-      '' else stdenv.mkDerivation {
-        name = "libspotify-samples-${version}";
-        src = libspotify.src;
-  nativeBuildInputs = [ pkgconfig ];
-        buildInputs = [ libspotify readline ]
-          ++ stdenv.lib.optional (!stdenv.isDarwin) alsaLib;
-        postUnpack = "sourceRoot=$sourceRoot/share/doc/libspotify/examples";
-        patchPhase = "cp ${apiKey} appkey.c";
-        installPhase = ''
-          mkdir -p $out/bin
-          install -m 755 jukebox/jukebox $out/bin
-          install -m 755 spshell/spshell $out/bin
-          install -m 755 localfiles/posix_stu $out/bin
-        '';
-        meta = libspotify.meta // { description = "Spotify API library samples"; };
-      };
+    then throw ''
+      Please visit ${libspotify.meta.homepage} to get an api key then set config.libspotify.apiKey accordingly
+    '' else stdenv.mkDerivation {
+      name = "libspotify-samples-${version}";
+      src = libspotify.src;
+      nativeBuildInputs = [ pkgconfig ];
+      buildInputs = [ libspotify readline ]
+        ++ stdenv.lib.optional (!stdenv.isDarwin) alsaLib
+        ;
+      postUnpack = "sourceRoot=$sourceRoot/share/doc/libspotify/examples";
+      patchPhase = "cp ${apiKey} appkey.c";
+      installPhase = ''
+        mkdir -p $out/bin
+        install -m 755 jukebox/jukebox $out/bin
+        install -m 755 spshell/spshell $out/bin
+        install -m 755 localfiles/posix_stu $out/bin
+      '';
+      meta = libspotify.meta // { description = "Spotify API library samples"; };
+    };
 
     inherit apiKey;
   };
 
   meta = with stdenv.lib; {
     description = "Spotify API library";
-    homepage    = https://developer.spotify.com/technologies/libspotify;
+    homepage = https://developer.spotify.com/technologies/libspotify;
     maintainers = with maintainers; [ lovek323 ];
-    license     = licenses.unfree;
+    license = licenses.unfree;
   };
 }

@@ -4,7 +4,7 @@
 # Versions of `riot-web` and `riot-desktop` should be kept in sync.
 
 stdenv.mkDerivation rec {
-  name= "riot-web-${version}";
+  name = "riot-web-${version}";
   version = "1.3.3";
 
   src = fetchurl {
@@ -14,13 +14,14 @@ stdenv.mkDerivation rec {
 
   installPhase = let
     configFile = if (conf != null)
-      then writeText "riot-config.json" conf
-      else "$out/config.sample.json";
-  in ''
-    mkdir -p $out/
-    cp -R . $out/
-    ln -s ${configFile} $out/config.json
-  '';
+    then writeText "riot-config.json" conf
+    else "$out/config.sample.json";
+  in
+    ''
+      mkdir -p $out/
+      cp -R . $out/
+      ln -s ${configFile} $out/config.json
+    '';
 
   meta = {
     description = "A glossy Matrix collaboration client for the web";

@@ -1,10 +1,23 @@
-{ stdenv, fetchFromGitHub, fetchpatch
-, ncurses, boehmgc, gettext, zlib
-, sslSupport ? true, openssl ? null
-, graphicsSupport ? !stdenv.isDarwin, imlib2 ? null
-, x11Support ? graphicsSupport, libX11 ? null
-, mouseSupport ? !stdenv.isDarwin, gpm-ncurses ? null
-, perl, man, pkgconfig, buildPackages, w3m
+{ stdenv
+, fetchFromGitHub
+, fetchpatch
+, ncurses
+, boehmgc
+, gettext
+, zlib
+, sslSupport ? true
+, openssl ? null
+, graphicsSupport ? !stdenv.isDarwin
+, imlib2 ? null
+, x11Support ? graphicsSupport
+, libX11 ? null
+, mouseSupport ? !stdenv.isDarwin
+, gpm-ncurses ? null
+, perl
+, man
+, pkgconfig
+, buildPackages
+, w3m
 }:
 
 assert sslSupport -> openssl != null;
@@ -24,7 +37,8 @@ let
       install -D mktable $out/bin/mktable
     '';
   };
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   pname = "w3m";
   version = "0.5.3+git20190105";
 
@@ -46,12 +60,16 @@ in stdenv.mkDerivation rec {
 
   patches = [
     ./RAND_egd.libressl.patch
-    (fetchpatch {
-      name = "https.patch";
-      url = "https://aur.archlinux.org/cgit/aur.git/plain/https.patch?h=w3m-mouse&id=5b5f0fbb59f674575e87dd368fed834641c35f03";
-      sha256 = "08skvaha1hjyapsh8zw5dgfy433mw2hk7qy9yy9avn8rjqj7kjxk";
-    })
-  ] ++ optional (graphicsSupport && !x11Support) [ ./no-x11.patch ];
+    (
+      fetchpatch {
+        name = "https.patch";
+        url = "https://aur.archlinux.org/cgit/aur.git/plain/https.patch?h=w3m-mouse&id=5b5f0fbb59f674575e87dd368fed834641c35f03";
+        sha256 = "08skvaha1hjyapsh8zw5dgfy433mw2hk7qy9yy9avn8rjqj7kjxk";
+      }
+    )
+  ]
+  ++ optional (graphicsSupport && !x11Support) [ ./no-x11.patch ]
+  ;
 
   postPatch = optionalString (stdenv.hostPlatform != stdenv.buildPlatform) ''
     ln -s ${mktable}/bin/mktable mktable
@@ -64,7 +82,8 @@ in stdenv.mkDerivation rec {
     ++ optional sslSupport openssl
     ++ optional mouseSupport gpm-ncurses
     ++ optional graphicsSupport imlib2
-    ++ optional x11Support libX11;
+    ++ optional x11Support libX11
+    ;
 
   postInstall = optionalString graphicsSupport ''
     ln -s $out/libexec/w3m/w3mimgdisplay $out/bin
@@ -75,9 +94,10 @@ in stdenv.mkDerivation rec {
   configureFlags =
     [ "--with-ssl=${openssl.dev}" "--with-gc=${boehmgc.dev}" ]
     ++ optionals (stdenv.buildPlatform != stdenv.hostPlatform) [
-      "ac_cv_func_setpgrp_void=yes"
-    ]
-    ++ optional graphicsSupport "--enable-image=${optionalString x11Support "x11,"}fb";
+         "ac_cv_func_setpgrp_void=yes"
+       ]
+    ++ optional graphicsSupport "--enable-image=${optionalString x11Support "x11,"}fb"
+    ;
 
   preConfigure = ''
     substituteInPlace ./configure --replace "/lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib /lib64 /usr/lib64" /no-such-path

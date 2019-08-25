@@ -9,7 +9,8 @@ let
     let
       name = baseNameOf path;
       bin = "${drv}${path}";
-    in assert name != "";
+    in
+      assert name != "";
       writeScript "setUID-${name}" ''
         #!${runtimeShell}
         inode=$(stat -Lc %i ${bin})
@@ -43,7 +44,11 @@ stdenv.mkDerivation rec {
   buildInputs = [
     makeWrapper
     # pam_usb dependencies
-    dbus libxml2 pam pmount pkgconfig
+    dbus
+    libxml2
+    pam
+    pmount
+    pkgconfig
     # pam_usb's tools dependencies
     python
     # cElementTree is included with python 2.5 and later.

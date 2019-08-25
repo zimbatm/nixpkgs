@@ -54,19 +54,23 @@ stdenv.mkDerivation rec {
 
   patches = [
     # Fixes for darwin. Drop in next release.
-    (fetchpatch {
-      url = "https://gitlab.gnome.org/GNOME/ghex/commit/b0af26666cd990d99076c242b2abb3efc6e98671.patch";
-      sha256 = "1zwdkgr2nqrn9q3ydyvrrpn5x55cdi747fhbq6mh6blp9cbrk9b5";
-    })
-    (fetchpatch {
-      url = "https://gitlab.gnome.org/GNOME/ghex/commit/cc8ef9e67b23604c402460010dc0b5dccb85391b.patch";
-      sha256 = "0j2165rfhlbrlzhmcnirqd5m89ljpz0n3nz20sxbwlc8h42zv36s";
-    })
+    (
+      fetchpatch {
+        url = "https://gitlab.gnome.org/GNOME/ghex/commit/b0af26666cd990d99076c242b2abb3efc6e98671.patch";
+        sha256 = "1zwdkgr2nqrn9q3ydyvrrpn5x55cdi747fhbq6mh6blp9cbrk9b5";
+      }
+    )
+    (
+      fetchpatch {
+        url = "https://gitlab.gnome.org/GNOME/ghex/commit/cc8ef9e67b23604c402460010dc0b5dccb85391b.patch";
+        sha256 = "0j2165rfhlbrlzhmcnirqd5m89ljpz0n3nz20sxbwlc8h42zv36s";
+      }
+    )
   ];
 
   postPatch = ''
-     chmod +x meson_post_install.py
-     patchShebangs meson_post_install.py
+    chmod +x meson_post_install.py
+    patchShebangs meson_post_install.py
   '';
 
   passthru = {

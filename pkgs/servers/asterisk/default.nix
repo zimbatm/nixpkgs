@@ -1,19 +1,50 @@
-{ stdenv, lib, fetchurl, fetchsvn,
-  jansson, libedit, libxml2, libxslt, ncurses, openssl, sqlite,
-  utillinux, dmidecode, libuuid, newt,
-  lua, speex,
-  srtp, wget, curl, iksemel, pkgconfig
+{ stdenv
+, lib
+, fetchurl
+, fetchsvn
+, jansson
+, libedit
+, libxml2
+, libxslt
+, ncurses
+, openssl
+, sqlite
+, utillinux
+, dmidecode
+, libuuid
+, newt
+, lua
+, speex
+, srtp
+, wget
+, curl
+, iksemel
+, pkgconfig
 }:
 
 let
-  common = {version, sha256, externals}: stdenv.mkDerivation rec {
+  common = { version, sha256, externals }: stdenv.mkDerivation rec {
     inherit version;
     name = "asterisk-${version}";
 
-    buildInputs = [ jansson libedit libxml2 libxslt ncurses openssl sqlite
-                    dmidecode libuuid newt
-                    lua speex
-                    srtp wget curl iksemel ];
+    buildInputs = [
+      jansson
+      libedit
+      libxml2
+      libxslt
+      ncurses
+      openssl
+      sqlite
+      dmidecode
+      libuuid
+      newt
+      lua
+      speex
+      srtp
+      wget
+      curl
+      iksemel
+    ];
     nativeBuildInputs = [ utillinux pkgconfig ];
 
     patches = [
@@ -45,7 +76,7 @@ let
       mkdir externals_cache
 
       ${lib.concatStringsSep "\n"
-        (lib.mapAttrsToList (dst: src: "cp -r --no-preserve=mode ${src} ${dst}") externals)}
+      (lib.mapAttrsToList (dst: src: "cp -r --no-preserve=mode ${src} ${dst}") externals)}
 
       ${lib.optionalString (externals ? "addons/mp3") "bash contrib/scripts/get_mp3_source.sh || true"}
 
@@ -61,8 +92,8 @@ let
     preBuild = ''
       make menuselect.makeopts
       ${lib.optionalString (externals ? "addons/mp3") ''
-        substituteInPlace menuselect.makeopts --replace 'format_mp3 ' ""
-      ''}
+      substituteInPlace menuselect.makeopts --replace 'format_mp3 ' ""
+    ''}
     '';
 
     postInstall = ''
@@ -94,7 +125,8 @@ let
     sha256 = "1s9idx2miwk178sa731ig9r4fzx4gy1q8xazfqyd7q4lfd70s1cy";
   };
 
-in rec {
+in
+rec {
   # Supported releases (as of 2018-11-20).
   #
   # Series  Type       Rel. Date   Sec. Fixes  EOL

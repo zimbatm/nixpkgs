@@ -1,4 +1,4 @@
-{deployAndroidPackage, lib, package, os, autoPatchelfHook, makeWrapper, pkgs, platform-tools}:
+{ deployAndroidPackage, lib, package, os, autoPatchelfHook, makeWrapper, pkgs, platform-tools }:
 
 let
   runtime_paths = lib.makeBinPath [ pkgs.coreutils pkgs.file pkgs.findutils pkgs.gawk pkgs.gnugrep pkgs.gnused pkgs.jdk pkgs.python3 pkgs.which ] + ":${platform-tools}/platform-tools";
@@ -6,7 +6,8 @@ in
 deployAndroidPackage {
   inherit package os;
   buildInputs = [ autoPatchelfHook makeWrapper pkgs.python2 ]
-    ++ lib.optional (os == "linux") [ pkgs.glibc pkgs.stdenv.cc.cc pkgs.ncurses5 pkgs.zlib pkgs.libcxx.out ];
+    ++ lib.optional (os == "linux") [ pkgs.glibc pkgs.stdenv.cc.cc pkgs.ncurses5 pkgs.zlib pkgs.libcxx.out ]
+    ;
   patchInstructions = lib.optionalString (os == "linux") ''
     patchShebangs .
 

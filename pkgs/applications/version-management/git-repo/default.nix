@@ -1,5 +1,11 @@
-{ stdenv, fetchFromGitHub, makeWrapper
-, python, git, gnupg, less, cacert
+{ stdenv
+, fetchFromGitHub
+, makeWrapper
+, python
+, git
+, gnupg
+, less
+, cacert
 }:
 
 stdenv.mkDerivation rec {

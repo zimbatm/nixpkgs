@@ -1,12 +1,45 @@
-{ stdenv, fetchurl, makeDesktopItem
+{ stdenv
+, fetchurl
+, makeDesktopItem
 
-, alsaLib, at-spi2-atk, atk, cairo, cups, dbus, dpkg, expat, fontconfig
-, freetype, gdk-pixbuf, glib, gtk3, hunspell, libX11, libXScrnSaver
-, libXcomposite, libXcursor, libXdamage, libXext, libXfixes, libXi, libXrandr
-, libXrender, libXtst, libnotify, libuuid, nspr, nss, pango, pciutils
-, pulseaudio, udev, xdg_utils, xorg
+, alsaLib
+, at-spi2-atk
+, atk
+, cairo
+, cups
+, dbus
+, dpkg
+, expat
+, fontconfig
+, freetype
+, gdk-pixbuf
+, glib
+, gtk3
+, hunspell
+, libX11
+, libXScrnSaver
+, libXcomposite
+, libXcursor
+, libXdamage
+, libXext
+, libXfixes
+, libXi
+, libXrandr
+, libXrender
+, libXtst
+, libnotify
+, libuuid
+, nspr
+, nss
+, pango
+, pciutils
+, pulseaudio
+, udev
+, xdg_utils
+, xorg
 
-, cpio, xar
+, cpio
+, xar
 }:
 
 let
@@ -52,7 +85,8 @@ let
 
     src = fetchurl {
       url = "https://wire-app.wire.com/linux/debian/pool/main/"
-        + "Wire-${version}_amd64.deb";
+        + "Wire-${version}_amd64.deb"
+        ;
       inherit sha256;
     };
 
@@ -72,11 +106,41 @@ let
 
     nativeBuildInputs = [ dpkg ];
     rpath = stdenv.lib.makeLibraryPath [
-      alsaLib at-spi2-atk atk cairo cups dbus expat fontconfig freetype
-      gdk-pixbuf glib gtk3 hunspell libX11 libXScrnSaver libXcomposite
-      libXcursor libXdamage libXext libXfixes libXi libXrandr libXrender
-      libXtst libnotify libuuid nspr nss pango pciutils pulseaudio
-      stdenv.cc.cc udev xdg_utils xorg.libxcb
+      alsaLib
+      at-spi2-atk
+      atk
+      cairo
+      cups
+      dbus
+      expat
+      fontconfig
+      freetype
+      gdk-pixbuf
+      glib
+      gtk3
+      hunspell
+      libX11
+      libXScrnSaver
+      libXcomposite
+      libXcursor
+      libXdamage
+      libXext
+      libXfixes
+      libXi
+      libXrandr
+      libXrender
+      libXtst
+      libnotify
+      libuuid
+      nspr
+      nss
+      pango
+      pciutils
+      pulseaudio
+      stdenv.cc.cc
+      udev
+      xdg_utils
+      xorg.libxcb
     ];
 
     unpackPhase = "dpkg-deb -x $src .";
@@ -107,7 +171,8 @@ let
 
     src = fetchurl {
       url = "https://github.com/wireapp/wire-desktop/releases/download/"
-        + "macos%2F${version}/Wire.pkg";
+        + "macos%2F${version}/Wire.pkg"
+        ;
       inherit sha256;
     };
 
@@ -129,6 +194,7 @@ let
     '';
   };
 
-in if stdenv.isDarwin
-  then darwin
-  else linux
+in
+if stdenv.isDarwin
+then darwin
+else linux

@@ -21,7 +21,9 @@ buildPythonPackage rec {
   propagatedBuildInputs = [
     numpy
     six
-  ] ++ lib.optional (!isPy3k) bz2file;
+  ]
+  ++ lib.optional (!isPy3k) bz2file
+  ;
 
   checkInputs = [ nose mock ];
 
@@ -32,10 +34,11 @@ buildPythonPackage rec {
       "nibabel.gifti.tests.test_parse_gifti_fast.test_parse_dataarrays"
       "nibabel.tests.test_minc1.test_old_namespace"
     ];
-  # TODO: Add --with-doctest once all doctests pass
-  in ''
-    nosetests ${lib.concatMapStrings (test: "-e '${test}' ") excludeTests}
-  '';
+    # TODO: Add --with-doctest once all doctests pass
+  in
+    ''
+      nosetests ${lib.concatMapStrings (test: "-e '${test}' ") excludeTests}
+    '';
 
   meta = with lib; {
     homepage = https://nipy.org/nibabel/;

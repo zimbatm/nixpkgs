@@ -14,11 +14,13 @@ stdenv.mkDerivation rec {
   buildInputs = [ postgresql wxGTK openssl zlib ];
 
   patches = [
-    (fetchpatch {
-      sha256 = "09hp7s3zjz80rpx2j3xyznwswwfxzi70z7c05dzrdk74mqjjpkfk";
-      name = "843344.patch";
-      url = "https://sources.debian.net/data/main/p/pgadmin3/1.22.2-1/debian/patches/843344";
-    })
+    (
+      fetchpatch {
+        sha256 = "09hp7s3zjz80rpx2j3xyznwswwfxzi70z7c05dzrdk74mqjjpkfk";
+        name = "843344.patch";
+        url = "https://sources.debian.net/data/main/p/pgadmin3/1.22.2-1/debian/patches/843344";
+      }
+    )
   ];
 
   preConfigure = ''
@@ -50,9 +52,10 @@ stdenv.mkDerivation rec {
       categories = "Application;Development;";
       mimeType = "text/html";
     };
-  in ''
-    mkdir -p $out/share/pixmaps;
-    cp pgadmin/include/images/pgAdmin3.png $out/share/pixmaps/;
-    cp -rv ${desktopItem}/share/applications $out/share/
-  '';
+  in
+    ''
+      mkdir -p $out/share/pixmaps;
+      cp pgadmin/include/images/pgAdmin3.png $out/share/pixmaps/;
+      cp -rv ${desktopItem}/share/applications $out/share/
+    '';
 }

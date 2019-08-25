@@ -14,11 +14,13 @@ buildPythonPackage rec {
     # Some of the failures are due to Nix using GNU coreutils
     ./disable-broken-tests-darwin.patch
     # Fix tests for Python 3.7. See: https://github.com/amoffat/sh/pull/468
-    (fetchpatch {
-      url = "https://github.com/amoffat/sh/commit/b6202f75706473f02084d819e0765056afa43664.patch";
-      sha256 = "1kzxyxcc88zhgn2kmfg9yrbs4n405b2jq7qykb453l52hy10vi94";
-      excludes = [ ".travis.yml" ];
-    })
+    (
+      fetchpatch {
+        url = "https://github.com/amoffat/sh/commit/b6202f75706473f02084d819e0765056afa43664.patch";
+        sha256 = "1kzxyxcc88zhgn2kmfg9yrbs4n405b2jq7qykb453l52hy10vi94";
+        excludes = [ ".travis.yml" ];
+      }
+    )
   ];
 
   postPatch = ''

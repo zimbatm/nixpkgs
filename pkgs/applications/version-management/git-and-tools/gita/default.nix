@@ -17,7 +17,7 @@ buildPythonApplication rec {
     pyyaml
   ];
 
-  doCheck = false;  # Releases don't include tests
+  doCheck = false; # Releases don't include tests
 
   meta = with lib; {
     description = "A command-line tool to manage multiple git repos";

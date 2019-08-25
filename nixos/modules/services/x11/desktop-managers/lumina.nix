@@ -31,8 +31,9 @@ in
     };
 
     environment.systemPackages =
-      pkgs.lumina.preRequisitePackages ++
-      pkgs.lumina.corePackages;
+      pkgs.lumina.preRequisitePackages
+      ++ pkgs.lumina.corePackages
+      ;
 
     # Link some extra directories in /run/current-system/software/share
     environment.pathsToLink = [

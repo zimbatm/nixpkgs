@@ -4,7 +4,7 @@ with lib;
 
 let
 
-  cfg  = config.services.supybot;
+  cfg = config.services.supybot;
 
 in
 

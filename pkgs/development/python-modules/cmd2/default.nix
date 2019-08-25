@@ -1,8 +1,23 @@
-{ stdenv, fetchPypi, buildPythonPackage, pythonOlder, isPy3k
-, pyperclip, six, pyparsing, vim, wcwidth, colorama, attrs
-, contextlib2 ? null, typing ? null, setuptools_scm
-, pytest, mock ? null, pytest-mock
-, which, glibcLocales
+{ stdenv
+, fetchPypi
+, buildPythonPackage
+, pythonOlder
+, isPy3k
+, pyperclip
+, six
+, pyparsing
+, vim
+, wcwidth
+, colorama
+, attrs
+, contextlib2 ? null
+, typing ? null
+, setuptools_scm
+, pytest
+, mock ? null
+, pytest-mock
+, which
+, glibcLocales
 }:
 buildPythonPackage rec {
   pname = "cmd2";
@@ -13,7 +28,7 @@ buildPythonPackage rec {
     sha256 = "0ggvh38mc1kkrlqdicjz5a16j5v6f6z0nwmcvv8i3y5gaffkfy2b";
   };
 
-  LC_ALL="en_US.UTF-8";
+  LC_ALL = "en_US.UTF-8";
 
   postPatch = stdenv.lib.optional stdenv.isDarwin ''
     # Fake the impure dependencies pbpaste and pbcopy
@@ -38,15 +53,16 @@ buildPythonPackage rec {
     wcwidth
     attrs
   ]
-  ++ stdenv.lib.optionals (pythonOlder "3.5") [contextlib2 typing]
+  ++ stdenv.lib.optionals (pythonOlder "3.5") [ contextlib2 typing ]
   ;
 
 
   doCheck = !stdenv.isDarwin;
   # pytest-cov
   # argcomplete  will generate errors
-  checkInputs= [ pytest mock which vim glibcLocales pytest-mock ]
-        ++ stdenv.lib.optional (pythonOlder "3.6") [ mock ];
+  checkInputs = [ pytest mock which vim glibcLocales pytest-mock ]
+    ++ stdenv.lib.optional (pythonOlder "3.6") [ mock ]
+    ;
   checkPhase = ''
     # test_path_completion_user_expansion might be fixed in the next release
     py.test -k 'not test_path_completion_user_expansion'

@@ -1,4 +1,4 @@
-{stdenv, fetchgit, bdftopcf, mkfontdir, mkfontscale}:
+{ stdenv, fetchgit, bdftopcf, mkfontdir, mkfontscale }:
 
 stdenv.mkDerivation rec {
   date = "2015-06-07";

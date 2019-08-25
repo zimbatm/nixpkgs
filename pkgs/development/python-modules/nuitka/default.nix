@@ -10,8 +10,9 @@
 let
   # scons is needed but using it requires Python 2.7
   # Therefore we create a separate env for it.
-  scons = pkgs.python27.withPackages(ps: [ pkgs.scons ]);
-in buildPythonPackage rec {
+  scons = pkgs.python27.withPackages (ps: [ pkgs.scons ]);
+in
+buildPythonPackage rec {
   version = "0.6.5";
   pname = "Nuitka";
 
@@ -26,9 +27,11 @@ in buildPythonPackage rec {
 
   postPatch = ''
     patchShebangs tests/run-tests
-  '' + stdenv.lib.optionalString stdenv.isLinux ''
-    substituteInPlace nuitka/plugins/standard/ImplicitImports.py --replace 'locateDLL("uuid")' '"${pkgs.utillinux.out}/lib/libuuid.so"'
-  '';
+  ''
+  + stdenv.lib.optionalString stdenv.isLinux ''
+      substituteInPlace nuitka/plugins/standard/ImplicitImports.py --replace 'locateDLL("uuid")' '"${pkgs.utillinux.out}/lib/libuuid.so"'
+    ''
+  ;
 
   # We do not want any wrappers here.
   postFixup = '''';

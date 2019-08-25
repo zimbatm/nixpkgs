@@ -1,4 +1,4 @@
-{ stdenv, fetchurl}:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   name = "amazon-ecs-cli-${version}";
@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
       mkdir -p $out/bin
       cp $src $out/bin/ecs-cli
       chmod +x $out/bin/ecs-cli
-    '';  # */
+    ''; # */
 
   meta = with stdenv.lib; {
     homepage = https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_CLI.html;
@@ -27,4 +27,3 @@ stdenv.mkDerivation rec {
     platforms = [ "x86_64-linux" ];
   };
 }
-

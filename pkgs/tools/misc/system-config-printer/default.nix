@@ -1,7 +1,23 @@
-{ stdenv, fetchurl, udev, intltool, pkgconfig, glib, xmlto, wrapGAppsHook
-, docbook_xml_dtd_412, docbook_xsl
-, libxml2, desktop-file-utils, libusb1, cups, gdk-pixbuf, pango, atk, libnotify
-, gobject-introspection, libsecret
+{ stdenv
+, fetchurl
+, udev
+, intltool
+, pkgconfig
+, glib
+, xmlto
+, wrapGAppsHook
+, docbook_xml_dtd_412
+, docbook_xsl
+, libxml2
+, desktop-file-utils
+, libusb1
+, cups
+, gdk-pixbuf
+, pango
+, atk
+, libnotify
+, gobject-introspection
+, libsecret
 , cups-filters
 , pythonPackages
 }:
@@ -18,15 +34,27 @@ stdenv.mkDerivation rec {
   patches = [ ./detect_serverbindir.patch ];
 
   buildInputs = [
-    glib udev libusb1 cups
+    glib
+    udev
+    libusb1
+    cups
     pythonPackages.python
-    libnotify gobject-introspection gdk-pixbuf pango atk
+    libnotify
+    gobject-introspection
+    gdk-pixbuf
+    pango
+    atk
     libsecret
   ];
 
   nativeBuildInputs = [
-    intltool pkgconfig
-    xmlto libxml2 docbook_xml_dtd_412 docbook_xsl desktop-file-utils
+    intltool
+    pkgconfig
+    xmlto
+    libxml2
+    docbook_xml_dtd_412
+    docbook_xsl
+    desktop-file-utils
     pythonPackages.wrapPython
     wrapGAppsHook
   ];

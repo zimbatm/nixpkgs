@@ -106,25 +106,27 @@ let
       done
     '';
 
-    meta = meta // {
-      description = "A functional programming language for realtime audio signal processing";
-      longDescription = ''
-        FAUST (Functional Audio Stream) is a functional programming
-        language specifically designed for real-time signal processing
-        and synthesis. FAUST targets high-performance signal processing
-        applications and audio plug-ins for a variety of platforms and
-        standards.
-        The Faust compiler translates DSP specifications into very
-        efficient C++ code. Thanks to the notion of architecture,
-        FAUST programs can be easily deployed on a large variety of
-        audio platforms and plugin formats (jack, alsa, ladspa, maxmsp,
-        puredata, csound, supercollider, pure, vst, coreaudio) without
-        any change to the FAUST code.
+    meta = meta
+      // {
+           description = "A functional programming language for realtime audio signal processing";
+           longDescription = ''
+             FAUST (Functional Audio Stream) is a functional programming
+             language specifically designed for real-time signal processing
+             and synthesis. FAUST targets high-performance signal processing
+             applications and audio plug-ins for a variety of platforms and
+             standards.
+             The Faust compiler translates DSP specifications into very
+             efficient C++ code. Thanks to the notion of architecture,
+             FAUST programs can be easily deployed on a large variety of
+             audio platforms and plugin formats (jack, alsa, ladspa, maxmsp,
+             puredata, csound, supercollider, pure, vst, coreaudio) without
+             any change to the FAUST code.
 
-        This package has just the compiler, libraries, and headers.
-        Install faust2* for specific faust2appl scripts.
-      '';
-    };
+             This package has just the compiler, libraries, and headers.
+             Install faust2* for specific faust2appl scripts.
+           '';
+         }
+      ;
 
   };
 
@@ -136,39 +138,42 @@ let
     , ...
     }@args:
 
-    args // {
-      name = "${baseName}-${version}";
+      args
+      // {
+           name = "${baseName}-${version}";
 
-      inherit src;
+           inherit src;
 
-      dontBuild = true;
+           dontBuild = true;
 
-      installPhase = ''
-        runHook preInstall
+           installPhase = ''
+             runHook preInstall
 
-        mkdir -p "$out/bin"
-        for script in ${concatStringsSep " " scripts}; do
-          cp "${dir}/$script" "$out/bin/"
-        done
+             mkdir -p "$out/bin"
+             for script in ${concatStringsSep " " scripts}; do
+               cp "${dir}/$script" "$out/bin/"
+             done
 
-        runHook postInstall
-      '';
+             runHook postInstall
+           '';
 
-      postInstall = ''
-        # For the faust2appl script, change 'faustpath' and
-        # 'faustoptflags' to absolute paths.
-        for script in "$out"/bin/*; do
-          substituteInPlace "$script" \
-            --replace ". faustpath" ". '${faust}/bin/faustpath'" \
-            --replace ". faustoptflags" ". '${faust}/bin/faustoptflags'" \
-            --replace " error " "echo"
-        done
-      '';
+           postInstall = ''
+             # For the faust2appl script, change 'faustpath' and
+             # 'faustoptflags' to absolute paths.
+             for script in "$out"/bin/*; do
+               substituteInPlace "$script" \
+                 --replace ". faustpath" ". '${faust}/bin/faustpath'" \
+                 --replace ". faustoptflags" ". '${faust}/bin/faustoptflags'" \
+                 --replace " error " "echo"
+             done
+           '';
 
-      meta = meta // {
-        description = "The ${baseName} script, part of faust functional programming language for realtime audio signal processing";
-      };
-    };
+           meta = meta
+             // {
+                  description = "The ${baseName} script, part of faust functional programming language for realtime audio signal processing";
+                }
+             ;
+         };
 
   # Some 'faust2appl' scripts, such as faust2alsa, run faust to
   # generate cpp code, then invoke the c++ compiler to build the code.
@@ -188,19 +193,21 @@ let
   # propagatedBuildInputs.
   wrapWithBuildEnv =
     { baseName
-    , propagatedBuildInputs ? [ ]
+    , propagatedBuildInputs ? []
     , ...
     }@args:
 
-    stdenv.mkDerivation ((faust2ApplBase args) // {
+      stdenv.mkDerivation (
+        (faust2ApplBase args)
+        // {
 
-      nativeBuildInputs = [ pkgconfig ];
-      buildInputs = [ makeWrapper ];
+             nativeBuildInputs = [ pkgconfig ];
+             buildInputs = [ makeWrapper ];
 
-      propagatedBuildInputs = [ faust ] ++ propagatedBuildInputs;
+             propagatedBuildInputs = [ faust ] ++ propagatedBuildInputs;
 
 
-      postFixup = ''
+             postFixup = ''
 
         # export parts of the build environment
         for script in "$out"/bin/*; do
@@ -214,7 +221,8 @@ let
             --set NIX_LDFLAGS "$NIX_LDFLAGS"
         done
       '';
-    });
+           }
+      );
 
   # Builder for 'faust2appl' scripts, such as faust2firefox that
   # simply need to be wrapped with some dependencies on PATH.
@@ -222,24 +230,29 @@ let
   # The build input 'faust' is automatically added to the PATH.
   wrap =
     { baseName
-    , runtimeInputs ? [ ]
+    , runtimeInputs ? []
     , ...
     }@args:
 
-    let
+      let
 
-      runtimePath = concatStringsSep ":" (map (p: "${p}/bin") ([ faust ] ++ runtimeInputs));
+        runtimePath = concatStringsSep ":" (map (p: "${p}/bin") ([ faust ] ++ runtimeInputs));
 
-    in stdenv.mkDerivation ((faust2ApplBase args) // {
+      in
+        stdenv.mkDerivation (
+          (faust2ApplBase args)
+          // {
 
-      buildInputs = [ makeWrapper ];
+               buildInputs = [ makeWrapper ];
 
-      postFixup = ''
-        for script in "$out"/bin/*; do
-          wrapProgram "$script" --prefix PATH : "${runtimePath}"
-        done
-      '';
+               postFixup = ''
+                 for script in "$out"/bin/*; do
+                   wrapProgram "$script" --prefix PATH : "${runtimePath}"
+                 done
+               '';
 
-    });
+             }
+        );
 
-in faust
+in
+faust

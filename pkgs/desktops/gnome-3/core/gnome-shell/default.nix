@@ -1,18 +1,76 @@
-{ fetchurl, fetchpatch, substituteAll, stdenv, meson, ninja, pkgconfig, gnome3, json-glib, libcroco, gettext, libsecret
-, python3, libsoup, polkit, clutter, networkmanager, docbook_xsl , docbook_xsl_ns, at-spi2-core
-, libstartup_notification, telepathy-glib, telepathy-logger, libXtst, unzip, glibcLocales, shared-mime-info
-, libgweather, libcanberra-gtk3, librsvg, geoclue2, perl, docbook_xml_dtd_42, desktop-file-utils
-, libpulseaudio, libical, gobject-introspection, gstreamer, wrapGAppsHook, libxslt, gcr, caribou
-, accountsservice, gdk-pixbuf, gdm, upower, ibus, networkmanagerapplet, libgnomekbd, gnome-desktop
-, gsettings-desktop-schemas, gnome-keyring, glib, gjs, mutter, evolution-data-server, gtk3
-, sassc, systemd, gst_all_1, adwaita-icon-theme, gnome-bluetooth, gnome-clocks, gnome-settings-daemon }:
+{ fetchurl
+, fetchpatch
+, substituteAll
+, stdenv
+, meson
+, ninja
+, pkgconfig
+, gnome3
+, json-glib
+, libcroco
+, gettext
+, libsecret
+, python3
+, libsoup
+, polkit
+, clutter
+, networkmanager
+, docbook_xsl
+, docbook_xsl_ns
+, at-spi2-core
+, libstartup_notification
+, telepathy-glib
+, telepathy-logger
+, libXtst
+, unzip
+, glibcLocales
+, shared-mime-info
+, libgweather
+, libcanberra-gtk3
+, librsvg
+, geoclue2
+, perl
+, docbook_xml_dtd_42
+, desktop-file-utils
+, libpulseaudio
+, libical
+, gobject-introspection
+, gstreamer
+, wrapGAppsHook
+, libxslt
+, gcr
+, caribou
+, accountsservice
+, gdk-pixbuf
+, gdm
+, upower
+, ibus
+, networkmanagerapplet
+, libgnomekbd
+, gnome-desktop
+, gsettings-desktop-schemas
+, gnome-keyring
+, glib
+, gjs
+, mutter
+, evolution-data-server
+, gtk3
+, sassc
+, systemd
+, gst_all_1
+, adwaita-icon-theme
+, gnome-bluetooth
+, gnome-clocks
+, gnome-settings-daemon
+}:
 
 # http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/gnome-base/gnome-shell/gnome-shell-3.10.2.1.ebuild?revision=1.3&view=markup
 
 let
-  pythonEnv = python3.withPackages ( ps: with ps; [ pygobject3 ] );
+  pythonEnv = python3.withPackages (ps: with ps; [ pygobject3 ]);
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "gnome-shell-${version}";
   version = "3.32.2";
 
@@ -24,24 +82,66 @@ in stdenv.mkDerivation rec {
   LANG = "en_US.UTF-8";
 
   nativeBuildInputs = [
-    meson ninja pkgconfig gettext docbook_xsl docbook_xsl_ns docbook_xml_dtd_42 perl wrapGAppsHook glibcLocales
-    sassc desktop-file-utils libxslt.bin python3
+    meson
+    ninja
+    pkgconfig
+    gettext
+    docbook_xsl
+    docbook_xsl_ns
+    docbook_xml_dtd_42
+    perl
+    wrapGAppsHook
+    glibcLocales
+    sassc
+    desktop-file-utils
+    libxslt.bin
+    python3
   ];
   buildInputs = [
-    systemd caribou
-    gsettings-desktop-schemas gnome-keyring glib gcr json-glib accountsservice
-    libcroco libsecret libsoup polkit gdk-pixbuf librsvg
-    clutter networkmanager libstartup_notification telepathy-glib
-    libXtst gjs mutter libpulseaudio evolution-data-server
-    libical gtk3 gstreamer gdm libcanberra-gtk3 geoclue2
-    adwaita-icon-theme gnome-bluetooth
+    systemd
+    caribou
+    gsettings-desktop-schemas
+    gnome-keyring
+    glib
+    gcr
+    json-glib
+    accountsservice
+    libcroco
+    libsecret
+    libsoup
+    polkit
+    gdk-pixbuf
+    librsvg
+    clutter
+    networkmanager
+    libstartup_notification
+    telepathy-glib
+    libXtst
+    gjs
+    mutter
+    libpulseaudio
+    evolution-data-server
+    libical
+    gtk3
+    gstreamer
+    gdm
+    libcanberra-gtk3
+    geoclue2
+    adwaita-icon-theme
+    gnome-bluetooth
     gnome-clocks # schemas needed
-    at-spi2-core upower ibus gnome-desktop telepathy-logger gnome-settings-daemon
+    at-spi2-core
+    upower
+    ibus
+    gnome-desktop
+    telepathy-logger
+    gnome-settings-daemon
     gst_all_1.gst-plugins-good # recording
     gobject-introspection
 
     # not declared at build time, but typelib is needed at runtime
-    libgweather networkmanagerapplet
+    libgweather
+    networkmanagerapplet
   ];
   propagatedUserEnvPkgs = [
     # Needed to support on-screen keyboard used with touch screen devices
@@ -50,15 +150,19 @@ in stdenv.mkDerivation rec {
   ];
 
   patches = [
-    (fetchpatch {
-      name = "0001-build-Add-missing-dependency-to-run-js-test.patch";
-      url = https://bug787864.bugzilla-attachments.gnome.org/attachment.cgi?id=360016;
-      sha256 = "1dmahd8ysbzh33rxglba0fbq127aw9h14cl2a2bw9913vjxhxijm";
-    })
-    (substituteAll {
-      src = ./fix-paths.patch;
-      inherit libgnomekbd unzip;
-    })
+    (
+      fetchpatch {
+        name = "0001-build-Add-missing-dependency-to-run-js-test.patch";
+        url = https://bug787864.bugzilla-attachments.gnome.org/attachment.cgi?id=360016;
+        sha256 = "1dmahd8ysbzh33rxglba0fbq127aw9h14cl2a2bw9913vjxhxijm";
+      }
+    )
+    (
+      substituteAll {
+        src = ./fix-paths.patch;
+        inherit libgnomekbd unzip;
+      }
+    )
   ];
 
   postPatch = ''

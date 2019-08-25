@@ -1,4 +1,6 @@
-{ lib, buildPythonPackage, fetchFromGitHub
+{ lib
+, buildPythonPackage
+, fetchFromGitHub
 , cryptography
 , ecdsa
 }:
@@ -20,6 +22,6 @@ buildPythonPackage rec {
     description = "OpenSSH Public Key Parser for Python";
     homepage = https://github.com/ojarva/python-sshpubkeys;
     license = licenses.bsd3;
-    maintainers = [ ];
+    maintainers = [];
   };
 }

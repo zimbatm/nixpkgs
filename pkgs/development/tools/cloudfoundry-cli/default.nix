@@ -15,7 +15,9 @@ buildGoPackage rec {
     sha256 = "0dqrkimwhw016icgyf4cyipzy6vdz5jgickm33xxd9018dh3ibwq";
   };
 
-  makeTarget = let hps = stdenv.hostPlatform.system; in
+  makeTarget = let
+    hps = stdenv.hostPlatform.system;
+  in
     if hps == "x86_64-darwin" then
       "out/cf-cli_osx"
     else if hps == "x86_64-linux" then

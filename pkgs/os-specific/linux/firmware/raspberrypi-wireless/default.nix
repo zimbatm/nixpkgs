@@ -5,20 +5,24 @@ stdenv.mkDerivation rec {
   version = "2018-08-20";
 
   srcs = [
-    (fetchFromGitHub {
-      name = "bluez-firmware";
-      owner = "RPi-Distro";
-      repo = "bluez-firmware";
-      rev = "ade2bae1aaaebede09abb8fb546f767a0e4c7804";
-      sha256 = "07gm76gxp5anv6paryvxcp34a86fkny8kdlzqhzcpfczzglkp6ag";
-    })
-    (fetchFromGitHub {
-      name = "firmware-nonfree";
-      owner = "RPi-Distro";
-      repo = "firmware-nonfree";
-      rev = "b518de45ced519e8f7a499f4778100173402ae43";
-      sha256 = "1d5026ic9awji6c67irpwsxpxgsc0dhn11d3abkxi2vvra1pir4g";
-    })
+    (
+      fetchFromGitHub {
+        name = "bluez-firmware";
+        owner = "RPi-Distro";
+        repo = "bluez-firmware";
+        rev = "ade2bae1aaaebede09abb8fb546f767a0e4c7804";
+        sha256 = "07gm76gxp5anv6paryvxcp34a86fkny8kdlzqhzcpfczzglkp6ag";
+      }
+    )
+    (
+      fetchFromGitHub {
+        name = "firmware-nonfree";
+        owner = "RPi-Distro";
+        repo = "firmware-nonfree";
+        rev = "b518de45ced519e8f7a499f4778100173402ae43";
+        sha256 = "1d5026ic9awji6c67irpwsxpxgsc0dhn11d3abkxi2vvra1pir4g";
+      }
+    )
   ];
 
   sourceRoot = ".";

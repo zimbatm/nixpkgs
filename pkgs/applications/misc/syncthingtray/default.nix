@@ -15,7 +15,7 @@
 , webviewSupport ? true
 , jsSupport ? true
 , kioPluginSupport ? true
-, plasmoidSupport  ? true
+, plasmoidSupport ? true
 , systemdSupport ? true
 }:
 
@@ -35,16 +35,17 @@ mkDerivation rec {
     ++ lib.optionals jsSupport [ qtdeclarative ]
     ++ lib.optionals kioPluginSupport [ kio ]
     ++ lib.optionals plasmoidSupport [ extra-cmake-modules plasma-framework ]
-  ;
+    ;
 
   nativeBuildInputs = [ cmake qttools ];
 
   cmakeFlags = [
     # See https://github.com/Martchus/syncthingtray/issues/42
     "-DQT_PLUGIN_DIR:STRING=${placeholder "out"}/lib/qt-5"
-  ] ++ lib.optionals (!plasmoidSupport) ["-DNO_PLASMOID=ON"]
-    ++ lib.optionals (!kioPluginSupport) ["-DNO_FILE_ITEM_ACTION_PLUGIN=ON"]
-    ++ lib.optionals systemdSupport ["-DSYSTEMD_SUPPORT=ON"]
+  ]
+  ++ lib.optionals (!plasmoidSupport) [ "-DNO_PLASMOID=ON" ]
+  ++ lib.optionals (!kioPluginSupport) [ "-DNO_FILE_ITEM_ACTION_PLUGIN=ON" ]
+  ++ lib.optionals systemdSupport [ "-DSYSTEMD_SUPPORT=ON" ]
   ;
 
   meta = with lib; {

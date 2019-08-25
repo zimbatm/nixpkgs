@@ -1,7 +1,13 @@
-{ stdenv, buildPythonPackage, fetchPypi, substituteAll,
-  isPy3k,
-  geos, gdal, pytz, sqlparse,
-  withGdal ? false
+{ stdenv
+, buildPythonPackage
+, fetchPypi
+, substituteAll
+, isPy3k
+, geos
+, gdal
+, pytz
+, sqlparse
+, withGdal ? false
 }:
 
 buildPythonPackage rec {
@@ -16,13 +22,15 @@ buildPythonPackage rec {
   };
 
   patches = stdenv.lib.optional withGdal
-    (substituteAll {
-      src = ./1.10-gis-libs.template.patch;
-      geos = geos;
-      gdal = gdal;
-      extension = stdenv.hostPlatform.extensions.sharedLibrary;
-    })
-  ;
+    (
+      substituteAll {
+        src = ./1.10-gis-libs.template.patch;
+        geos = geos;
+        gdal = gdal;
+        extension = stdenv.hostPlatform.extensions.sharedLibrary;
+      }
+    )
+    ;
 
   propagatedBuildInputs = [ pytz sqlparse ];
 

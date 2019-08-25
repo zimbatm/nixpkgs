@@ -25,32 +25,39 @@ with lib;
 
     # !!! Hack - attributes expected by other modules.
     environment.systemPackages = [ pkgs.grub2_efi ]
-      ++ (if pkgs.stdenv.hostPlatform.system == "aarch64-linux"
-          then []
-          else [ pkgs.grub2 pkgs.syslinux ]);
+      ++ (
+           if pkgs.stdenv.hostPlatform.system == "aarch64-linux"
+           then []
+           else [ pkgs.grub2 pkgs.syslinux ]
+         )
+      ;
 
     fileSystems."/" =
-      { fsType = "tmpfs";
+      {
+        fsType = "tmpfs";
         options = [ "mode=0755" ];
       };
 
     # In stage 1, mount a tmpfs on top of /nix/store (the squashfs
     # image) to make this a live CD.
     fileSystems."/nix/.ro-store" =
-      { fsType = "squashfs";
+      {
+        fsType = "squashfs";
         device = "../nix-store.squashfs";
         options = [ "loop" ];
         neededForBoot = true;
       };
 
     fileSystems."/nix/.rw-store" =
-      { fsType = "tmpfs";
+      {
+        fsType = "tmpfs";
         options = [ "mode=0755" ];
         neededForBoot = true;
       };
 
     fileSystems."/nix/store" =
-      { fsType = "unionfs-fuse";
+      {
+        fsType = "unionfs-fuse";
         device = "unionfs";
         options = [ "allow_other" "cow" "nonempty" "chroot=/mnt-root" "max_files=32768" "hide_meta_files" "dirs=/nix/.rw-store=rw:/nix/.ro-store=ro" ];
       };
@@ -76,7 +83,9 @@ with lib;
       prepend = [ "${config.system.build.initialRamdisk}/initrd" ];
 
       contents =
-        [ { object = config.system.build.squashfsStore;
+        [
+          {
+            object = config.system.build.squashfsStore;
             symlink = "/nix-store.squashfs";
           }
         ];

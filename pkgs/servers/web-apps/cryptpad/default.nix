@@ -26,16 +26,19 @@ let
     let
       list =
         lib.concatMap
-        (name:
-          let v = set.${name}; in
-          if pred name v then [v] else []
-        )
-        (lib.attrNames set)
+          (
+            name:
+              let
+                v = set.${name};
+              in
+                if pred name v then [ v ] else []
+          )
+          (lib.attrNames set)
         ;
     in
       if list == [] then default
       else lib.head list
-      ;
+    ;
 
   # The cryptpad package attribute key changes for each release. Get it out
   # programatically instead.
@@ -73,4 +76,4 @@ let
     '';
   };
 in
-  combined
+combined

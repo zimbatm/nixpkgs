@@ -5,7 +5,7 @@ rec {
 
   description = ''A very simple library to allow indentation hints for SWANK.'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/trivial-indent/2018-10-18/trivial-indent-20181018-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "trivial-indent";
 
-  asdFilesToKeep = ["trivial-indent.asd"];
+  asdFilesToKeep = [ "trivial-indent.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM trivial-indent DESCRIPTION

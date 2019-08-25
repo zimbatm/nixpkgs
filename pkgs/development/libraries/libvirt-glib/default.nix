@@ -1,12 +1,28 @@
-{ stdenv, fetchurl, pkgconfig, libvirt, glib, libxml2, intltool, libtool, yajl
-, nettle, libgcrypt, pythonPackages, gobject-introspection, libcap_ng, numactl
-, libapparmor, vala
-, xenSupport ? false, xen ? null
+{ stdenv
+, fetchurl
+, pkgconfig
+, libvirt
+, glib
+, libxml2
+, intltool
+, libtool
+, yajl
+, nettle
+, libgcrypt
+, pythonPackages
+, gobject-introspection
+, libcap_ng
+, numactl
+, libapparmor
+, vala
+, xenSupport ? false
+, xen ? null
 }:
 
 let
   inherit (pythonPackages) python pygobject2;
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "libvirt-glib-2.0.0";
 
   outputs = [ "out" "dev" ];
@@ -18,11 +34,25 @@ in stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ pkgconfig vala ];
   buildInputs = [
-    libvirt glib libxml2 intltool libtool yajl nettle libgcrypt
-    python pygobject2 gobject-introspection libcap_ng numactl libapparmor
-  ] ++ stdenv.lib.optionals xenSupport [
-    xen
-  ];
+    libvirt
+    glib
+    libxml2
+    intltool
+    libtool
+    yajl
+    nettle
+    libgcrypt
+    python
+    pygobject2
+    gobject-introspection
+    libcap_ng
+    numactl
+    libapparmor
+  ]
+  ++ stdenv.lib.optionals xenSupport [
+       xen
+     ]
+  ;
 
   enableParallelBuilding = true;
 

@@ -1,5 +1,13 @@
-{ stdenv, fetchurl, emacs, texinfo
-, mpg321, vorbis-tools, taglib, mp3info, alsaUtils }:
+{ stdenv
+, fetchurl
+, emacs
+, texinfo
+, mpg321
+, vorbis-tools
+, taglib
+, mp3info
+, alsaUtils
+}:
 
 # XXX: EMMS also supports Xine, MPlayer, Jack, etc.
 
@@ -66,7 +74,7 @@ stdenv.mkDerivation rec {
 
     license = stdenv.lib.licenses.gpl3Plus;
 
-    maintainers = [ ];
+    maintainers = [];
     platforms = stdenv.lib.platforms.unix;
     broken = true;
   };

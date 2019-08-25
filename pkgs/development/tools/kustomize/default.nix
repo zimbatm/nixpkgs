@@ -9,12 +9,15 @@ buildGoModule rec {
   goPackagePath = "sigs.k8s.io/kustomize";
   subPackages = [ "cmd/kustomize" ];
 
-  buildFlagsArray = let t = "${goPackagePath}/v3/pkg/commands/misc"; in ''
-    -ldflags=
-      -s -X ${t}.kustomizeVersion=${version}
-         -X ${t}.gitCommit=${rev}
-         -X ${t}.buildDate=unknown
-  '';
+  buildFlagsArray = let
+    t = "${goPackagePath}/v3/pkg/commands/misc";
+  in
+    ''
+      -ldflags=
+        -s -X ${t}.kustomizeVersion=${version}
+           -X ${t}.gitCommit=${rev}
+           -X ${t}.buildDate=unknown
+    '';
 
   src = fetchFromGitHub {
     sha256 = "0kigcirkjvnj3xi1p28p9yp3s0lff24q5qcvf8ahjwvpbwka14sh";

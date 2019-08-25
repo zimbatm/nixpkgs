@@ -1,7 +1,32 @@
-{ theme ? null, stdenv, fetchurl, dpkg, makeWrapper , alsaLib, atk, cairo,
-cups, curl, dbus, expat, fontconfig, freetype, glib , gnome2, gtk3, gdk-pixbuf,
-libappindicator-gtk3, libnotify, libxcb, nspr, nss, pango , systemd, xorg,
-at-spi2-atk, libuuid, nodePackages
+{ theme ? null
+, stdenv
+, fetchurl
+, dpkg
+, makeWrapper
+, alsaLib
+, atk
+, cairo
+, cups
+, curl
+, dbus
+, expat
+, fontconfig
+, freetype
+, glib
+, gnome2
+, gtk3
+, gdk-pixbuf
+, libappindicator-gtk3
+, libnotify
+, libxcb
+, nspr
+, nss
+, pango
+, systemd
+, xorg
+, at-spi2-atk
+, libuuid
+, nodePackages
 }:
 
 let
@@ -45,7 +70,9 @@ let
     xorg.libXrender
     xorg.libXtst
     xorg.libXScrnSaver
-  ] + ":${stdenv.cc.cc.lib}/lib64";
+  ]
+  + ":${stdenv.cc.cc.lib}/lib64"
+  ;
 
   src =
     if stdenv.hostPlatform.system == "x86_64-linux" then
@@ -56,14 +83,15 @@ let
     else
       throw "Slack is not supported on ${stdenv.hostPlatform.system}";
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "slack-${version}";
 
   inherit src;
 
   buildInputs = [
     dpkg
-    gtk3  # needed for GSETTINGS_SCHEMAS_PATH
+    gtk3 # needed for GSETTINGS_SCHEMAS_PATH
   ];
 
   nativeBuildInputs = [ makeWrapper nodePackages.asar ];
@@ -92,22 +120,24 @@ in stdenv.mkDerivation {
     substituteInPlace $out/share/applications/slack.desktop \
       --replace /usr/bin/ $out/bin/ \
       --replace /usr/share/ $out/share/
-  '' + stdenv.lib.optionalString (theme != null) ''
-    asar extract $out/lib/slack/resources/app.asar $out/lib/slack/resources/app.asar.unpacked
-    cat <<EOF >> $out/lib/slack/resources/app.asar.unpacked/dist/ssb-interop.bundle.js
+  ''
+  + stdenv.lib.optionalString (theme != null) ''
+      asar extract $out/lib/slack/resources/app.asar $out/lib/slack/resources/app.asar.unpacked
+      cat <<EOF >> $out/lib/slack/resources/app.asar.unpacked/dist/ssb-interop.bundle.js
 
-    var fs = require('fs');
-    document.addEventListener('DOMContentLoaded', function() {
-      fs.readFile('${theme}/theme.css', 'utf8', function(err, css) {
-        let s = document.createElement('style');
-        s.type = 'text/css';
-        s.innerHTML = css;
-        document.head.appendChild(s);
+      var fs = require('fs');
+      document.addEventListener('DOMContentLoaded', function() {
+        fs.readFile('${theme}/theme.css', 'utf8', function(err, css) {
+          let s = document.createElement('style');
+          s.type = 'text/css';
+          s.innerHTML = css;
+          document.head.appendChild(s);
+        });
       });
-    });
-    EOF
-    asar pack $out/lib/slack/resources/app.asar.unpacked $out/lib/slack/resources/app.asar
-  '';
+      EOF
+      asar pack $out/lib/slack/resources/app.asar.unpacked $out/lib/slack/resources/app.asar
+    ''
+  ;
 
   meta = with stdenv.lib; {
     description = "Desktop client for Slack";

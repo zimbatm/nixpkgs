@@ -24,8 +24,8 @@ in
     enable = mkEnableOption "way-cooler";
 
     extraSessionCommands = mkOption {
-      default     = "";
-      type        = types.lines;
+      default = "";
+      type = types.lines;
       example = ''
         export XKB_DEFAULT_LAYOUT=us,de
         export XKB_DEFAULT_VARIANT=,nodeadkeys
@@ -39,7 +39,9 @@ in
     extraPackages = mkOption {
       type = with types; listOf package;
       default = with pkgs; [
-        westonLite xwayland dmenu
+        westonLite
+        xwayland
+        dmenu
       ];
       example = literalExample ''
         with pkgs; [

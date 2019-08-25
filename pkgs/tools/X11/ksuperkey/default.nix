@@ -5,7 +5,10 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ pkgconfig ];
   buildInputs = [
-    libX11 libXtst xorgproto libXi
+    libX11
+    libXtst
+    xorgproto
+    libXi
   ];
 
   src = fetchgit {

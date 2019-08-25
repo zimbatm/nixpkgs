@@ -1,4 +1,7 @@
-{ stdenv, fetchurl, ncurses, zlib
+{ stdenv
+, fetchurl
+, ncurses
+, zlib
 , openssl ? null
 , sslSupport ? true
 }:
@@ -21,7 +24,8 @@ stdenv.mkDerivation rec {
 
   buildInputs =
     [ ncurses zlib ]
-    ++ optional sslSupport openssl;
+    ++ optional sslSupport openssl
+    ;
 
   meta = {
     homepage = http://tinyfugue.sourceforge.net/;

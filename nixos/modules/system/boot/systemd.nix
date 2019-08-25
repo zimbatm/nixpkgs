@@ -12,7 +12,8 @@ let
   systemd = cfg.package;
 
   upstreamSystemUnits =
-    [ # Targets.
+    [
+      # Targets.
       "basic.target"
       "sysinit.target"
       "sockets.target"
@@ -163,13 +164,17 @@ let
       "systemd-binfmt.service"
       "systemd-exit.service"
       "systemd-update-done.service"
-    ] ++ optionals config.services.journald.enableHttpGateway [
-      "systemd-journal-gatewayd.socket"
-      "systemd-journal-gatewayd.service"
-    ] ++ cfg.additionalUpstreamSystemUnits;
+    ]
+    ++ optionals config.services.journald.enableHttpGateway [
+         "systemd-journal-gatewayd.socket"
+         "systemd-journal-gatewayd.service"
+       ]
+    ++ cfg.additionalUpstreamSystemUnits
+  ;
 
   upstreamSystemWants =
-    [ "sysinit.target.wants"
+    [
+      "sysinit.target.wants"
       "sockets.target.wants"
       "local-fs.target.wants"
       "multi-user.target.wants"
@@ -177,7 +182,8 @@ let
     ];
 
   upstreamUserUnits =
-    [ "basic.target"
+    [
+      "basic.target"
       "bluetooth.target"
       "default.target"
       "exit.target"
@@ -197,8 +203,10 @@ let
     ];
 
   makeJobScript = name: text:
-    let mkScriptName =  s: "unit-script-" + (replaceChars [ "\\" "@" ] [ "-" "_" ] (shellEscape s) );
-    in  pkgs.writeTextFile { name = mkScriptName name; executable = true; inherit text; };
+    let
+      mkScriptName = s: "unit-script-" + (replaceChars [ "\\" "@" ] [ "-" "_" ] (shellEscape s));
+    in
+      pkgs.writeTextFile { name = mkScriptName name; executable = true; inherit text; };
 
   unitConfig = { config, options, ... }: {
     config = {
@@ -206,38 +214,45 @@ let
         optionalAttrs (config.requires != [])
           { Requires = toString config.requires; }
         // optionalAttrs (config.wants != [])
-          { Wants = toString config.wants; }
+             { Wants = toString config.wants; }
         // optionalAttrs (config.after != [])
-          { After = toString config.after; }
+             { After = toString config.after; }
         // optionalAttrs (config.before != [])
-          { Before = toString config.before; }
+             { Before = toString config.before; }
         // optionalAttrs (config.bindsTo != [])
-          { BindsTo = toString config.bindsTo; }
+             { BindsTo = toString config.bindsTo; }
         // optionalAttrs (config.partOf != [])
-          { PartOf = toString config.partOf; }
+             { PartOf = toString config.partOf; }
         // optionalAttrs (config.conflicts != [])
-          { Conflicts = toString config.conflicts; }
+             { Conflicts = toString config.conflicts; }
         // optionalAttrs (config.requisite != [])
-          { Requisite = toString config.requisite; }
+             { Requisite = toString config.requisite; }
         // optionalAttrs (config.restartTriggers != [])
-          { X-Restart-Triggers = toString config.restartTriggers; }
+             { X-Restart-Triggers = toString config.restartTriggers; }
         // optionalAttrs (config.description != "") {
-          Description = config.description; }
+             Description = config.description;
+           }
         // optionalAttrs (config.documentation != []) {
-          Documentation = toString config.documentation; }
+             Documentation = toString config.documentation;
+           }
         // optionalAttrs (config.onFailure != []) {
-          OnFailure = toString config.onFailure; }
+             OnFailure = toString config.onFailure;
+           }
         // optionalAttrs (options.startLimitIntervalSec.isDefined) {
-          StartLimitIntervalSec = toString config.startLimitIntervalSec;
-        };
+             StartLimitIntervalSec = toString config.startLimitIntervalSec;
+           }
+      ;
     };
   };
 
   serviceConfig = { name, config, ... }: {
     config = mkMerge
-      [ { # Default path for systemd services.  Should be quite minimal.
+      [
+        {
+          # Default path for systemd services.  Should be quite minimal.
           path =
-            [ pkgs.coreutils
+            [
+              pkgs.coreutils
               pkgs.findutils
               pkgs.gnugrep
               pkgs.gnused
@@ -245,73 +260,100 @@ let
             ];
           environment.PATH = config.path;
         }
-        (mkIf (config.preStart != "")
-          { serviceConfig.ExecStartPre = makeJobScript "${name}-pre-start" ''
-              #! ${pkgs.runtimeShell} -e
-              ${config.preStart}
-            '';
-          })
-        (mkIf (config.script != "")
-          { serviceConfig.ExecStart = makeJobScript "${name}-start" ''
-              #! ${pkgs.runtimeShell} -e
-              ${config.script}
-            '' + " " + config.scriptArgs;
-          })
-        (mkIf (config.postStart != "")
-          { serviceConfig.ExecStartPost = makeJobScript "${name}-post-start" ''
-              #! ${pkgs.runtimeShell} -e
-              ${config.postStart}
-            '';
-          })
-        (mkIf (config.reload != "")
-          { serviceConfig.ExecReload = makeJobScript "${name}-reload" ''
-              #! ${pkgs.runtimeShell} -e
-              ${config.reload}
-            '';
-          })
-        (mkIf (config.preStop != "")
-          { serviceConfig.ExecStop = makeJobScript "${name}-pre-stop" ''
-              #! ${pkgs.runtimeShell} -e
-              ${config.preStop}
-            '';
-          })
-        (mkIf (config.postStop != "")
-          { serviceConfig.ExecStopPost = makeJobScript "${name}-post-stop" ''
-              #! ${pkgs.runtimeShell} -e
-              ${config.postStop}
-            '';
-          })
+        (
+          mkIf (config.preStart != "")
+            {
+              serviceConfig.ExecStartPre = makeJobScript "${name}-pre-start" ''
+                #! ${pkgs.runtimeShell} -e
+                ${config.preStart}
+              '';
+            }
+        )
+        (
+          mkIf (config.script != "")
+            {
+              serviceConfig.ExecStart = makeJobScript "${name}-start" ''
+                #! ${pkgs.runtimeShell} -e
+                ${config.script}
+              ''
+              + " "
+              + config.scriptArgs
+              ;
+            }
+        )
+        (
+          mkIf (config.postStart != "")
+            {
+              serviceConfig.ExecStartPost = makeJobScript "${name}-post-start" ''
+                #! ${pkgs.runtimeShell} -e
+                ${config.postStart}
+              '';
+            }
+        )
+        (
+          mkIf (config.reload != "")
+            {
+              serviceConfig.ExecReload = makeJobScript "${name}-reload" ''
+                #! ${pkgs.runtimeShell} -e
+                ${config.reload}
+              '';
+            }
+        )
+        (
+          mkIf (config.preStop != "")
+            {
+              serviceConfig.ExecStop = makeJobScript "${name}-pre-stop" ''
+                #! ${pkgs.runtimeShell} -e
+                ${config.preStop}
+              '';
+            }
+        )
+        (
+          mkIf (config.postStop != "")
+            {
+              serviceConfig.ExecStopPost = makeJobScript "${name}-post-stop" ''
+                #! ${pkgs.runtimeShell} -e
+                ${config.postStop}
+              '';
+            }
+        )
       ];
   };
 
   mountConfig = { config, ... }: {
     config = {
       mountConfig =
-        { What = config.what;
+        {
+          What = config.what;
           Where = config.where;
-        } // optionalAttrs (config.type != "") {
-          Type = config.type;
-        } // optionalAttrs (config.options != "") {
-          Options = config.options;
-        };
+        }
+        // optionalAttrs (config.type != "") {
+             Type = config.type;
+           }
+        // optionalAttrs (config.options != "") {
+             Options = config.options;
+           }
+      ;
     };
   };
 
   automountConfig = { config, ... }: {
     config = {
       automountConfig =
-        { Where = config.where;
+        {
+          Where = config.where;
         };
     };
   };
 
   commonUnitText = def: ''
-      [Unit]
-      ${attrsToSection def.unitConfig}
-    '';
+    [Unit]
+    ${attrsToSection def.unitConfig}
+  '';
 
   targetToUnit = name: def:
-    { inherit (def) aliases wantedBy requiredBy enable;
+    {
+      inherit (def) aliases wantedBy requiredBy enable;
       text =
         ''
           [Unit]
@@ -320,85 +362,113 @@ let
     };
 
   serviceToUnit = name: def:
-    { inherit (def) aliases wantedBy requiredBy enable;
-      text = commonUnitText def +
-        ''
-          [Service]
-          ${let env = cfg.globalEnvironment // def.environment;
-            in concatMapStrings (n:
-              let s = optionalString (env."${n}" != null)
-                "Environment=${builtins.toJSON "${n}=${env.${n}}"}\n";
-              # systemd max line length is now 1MiB
-              # https://github.com/systemd/systemd/commit/e6dde451a51dc5aaa7f4d98d39b8fe735f73d2af
-              in if stringLength s >= 1048576 then throw "The value of the environment variable ‘${n}’ in systemd service ‘${name}.service’ is too long." else s) (attrNames env)}
-          ${if def.reloadIfChanged then ''
+    {
+      inherit (def) aliases wantedBy requiredBy enable;
+      text = commonUnitText def
+        + ''
+        [Service]
+        ${let
+            env = cfg.globalEnvironment // def.environment;
+          in
+            concatMapStrings (
+              n:
+                let
+                  s = optionalString (env."${n}" != null)
+                    "Environment=${builtins.toJSON "${n}=${env.${n}}"}\n";
+                  # systemd max line length is now 1MiB
+                  # https://github.com/systemd/systemd/commit/e6dde451a51dc5aaa7f4d98d39b8fe735f73d2af
+                in
+                  if stringLength s >= 1048576 then throw "The value of the environment variable ‘${n}’ in systemd service ‘${name}.service’ is too long." else s
+            ) (attrNames env)}
+        ${if def.reloadIfChanged then ''
             X-ReloadIfChanged=true
           '' else if !def.restartIfChanged then ''
             X-RestartIfChanged=false
           '' else ""}
-          ${optionalString (!def.stopIfChanged) "X-StopIfChanged=false"}
-          ${attrsToSection def.serviceConfig}
-        '';
+        ${optionalString (!def.stopIfChanged) "X-StopIfChanged=false"}
+        ${attrsToSection def.serviceConfig}
+      ''
+        ;
     };
 
   socketToUnit = name: def:
-    { inherit (def) aliases wantedBy requiredBy enable;
-      text = commonUnitText def +
-        ''
-          [Socket]
-          ${attrsToSection def.socketConfig}
-          ${concatStringsSep "\n" (map (s: "ListenStream=${s}") def.listenStreams)}
-        '';
+    {
+      inherit (def) aliases wantedBy requiredBy enable;
+      text = commonUnitText def
+        + ''
+        [Socket]
+        ${attrsToSection def.socketConfig}
+        ${concatStringsSep "\n" (map (s: "ListenStream=${s}") def.listenStreams)}
+      ''
+        ;
     };
 
   timerToUnit = name: def:
-    { inherit (def) aliases wantedBy requiredBy enable;
-      text = commonUnitText def +
-        ''
-          [Timer]
-          ${attrsToSection def.timerConfig}
-        '';
+    {
+      inherit (def) aliases wantedBy requiredBy enable;
+      text = commonUnitText def
+        + ''
+        [Timer]
+        ${attrsToSection def.timerConfig}
+      ''
+        ;
     };
 
   pathToUnit = name: def:
-    { inherit (def) aliases wantedBy requiredBy enable;
-      text = commonUnitText def +
-        ''
-          [Path]
-          ${attrsToSection def.pathConfig}
-        '';
+    {
+      inherit (def) aliases wantedBy requiredBy enable;
+      text = commonUnitText def
+        + ''
+        [Path]
+        ${attrsToSection def.pathConfig}
+      ''
+        ;
     };
 
   mountToUnit = name: def:
-    { inherit (def) aliases wantedBy requiredBy enable;
-      text = commonUnitText def +
-        ''
-          [Mount]
-          ${attrsToSection def.mountConfig}
-        '';
+    {
+      inherit (def) aliases wantedBy requiredBy enable;
+      text = commonUnitText def
+        + ''
+        [Mount]
+        ${attrsToSection def.mountConfig}
+      ''
+        ;
     };
 
   automountToUnit = name: def:
-    { inherit (def) aliases wantedBy requiredBy enable;
-      text = commonUnitText def +
-        ''
-          [Automount]
-          ${attrsToSection def.automountConfig}
-        '';
+    {
+      inherit (def) aliases wantedBy requiredBy enable;
+      text = commonUnitText def
+        + ''
+        [Automount]
+        ${attrsToSection def.automountConfig}
+      ''
+        ;
     };
 
   sliceToUnit = name: def:
-    { inherit (def) aliases wantedBy requiredBy enable;
-      text = commonUnitText def +
-        ''
-          [Slice]
-          ${attrsToSection def.sliceConfig}
-        '';
+    {
+      inherit (def) aliases wantedBy requiredBy enable;
+      text = commonUnitText def
+        + ''
+        [Slice]
+        ${attrsToSection def.sliceConfig}
+      ''
+        ;
     };
 
   logindHandlerType = types.enum [
-    "ignore" "poweroff" "reboot" "halt" "kexec" "suspend"
-    "hibernate" "hybrid-sleep" "suspend-then-hibernate" "lock"
+    "ignore"
+    "poweroff"
+    "reboot"
+    "halt"
+    "kexec"
+    "suspend"
+    "hibernate"
+    "hybrid-sleep"
+    "suspend-then-hibernate"
+    "lock"
   ];
 
 in
@@ -419,13 +489,17 @@ in
     systemd.units = mkOption {
       description = "Definition of systemd units.";
       default = {};
-      type = with types; attrsOf (submodule (
-        { name, config, ... }:
-        { options = concreteUnitOptions;
-          config = {
-            unit = mkDefault (makeUnit name config);
-          };
-        }));
+      type = with types; attrsOf (
+        submodule (
+          { name, config, ... }:
+            {
+              options = concreteUnitOptions;
+              config = {
+                unit = mkDefault (makeUnit name config);
+              };
+            }
+        )
+      );
     };
 
     systemd.packages = mkOption {
@@ -437,7 +511,7 @@ in
 
     systemd.targets = mkOption {
       default = {};
-      type = with types; attrsOf (submodule [ { options = targetOptions; } unitConfig] );
+      type = with types; attrsOf (submodule [ { options = targetOptions; } unitConfig ]);
       description = "Definition of systemd target units.";
     };
 
@@ -487,7 +561,7 @@ in
 
     systemd.slices = mkOption {
       default = {};
-      type = with types; attrsOf (submodule [ { options = sliceOptions; } unitConfig] );
+      type = with types; attrsOf (submodule [ { options = sliceOptions; } unitConfig ]);
       description = "Definition of slice configurations.";
     };
 
@@ -709,13 +783,17 @@ in
     systemd.user.units = mkOption {
       description = "Definition of systemd per-user units.";
       default = {};
-      type = with types; attrsOf (submodule (
-        { name, config, ... }:
-        { options = concreteUnitOptions;
-          config = {
-            unit = mkDefault (makeUnit name config);
-          };
-        }));
+      type = with types; attrsOf (
+        submodule (
+          { name, config, ... }:
+            {
+              options = concreteUnitOptions;
+              config = {
+                unit = mkDefault (makeUnit name config);
+              };
+            }
+        )
+      );
     };
 
     systemd.user.paths = mkOption {
@@ -726,36 +804,36 @@ in
 
     systemd.user.services = mkOption {
       default = {};
-      type = with types; attrsOf (submodule [ { options = serviceOptions; } unitConfig serviceConfig ] );
+      type = with types; attrsOf (submodule [ { options = serviceOptions; } unitConfig serviceConfig ]);
       description = "Definition of systemd per-user service units.";
     };
 
     systemd.user.slices = mkOption {
       default = {};
-      type = with types; attrsOf (submodule [ { options = sliceOptions; } unitConfig ] );
+      type = with types; attrsOf (submodule [ { options = sliceOptions; } unitConfig ]);
       description = "Definition of systemd per-user slice units.";
     };
 
     systemd.user.sockets = mkOption {
       default = {};
-      type = with types; attrsOf (submodule [ { options = socketOptions; } unitConfig ] );
+      type = with types; attrsOf (submodule [ { options = socketOptions; } unitConfig ]);
       description = "Definition of systemd per-user socket units.";
     };
 
     systemd.user.targets = mkOption {
       default = {};
-      type = with types; attrsOf (submodule [ { options = targetOptions; } unitConfig] );
+      type = with types; attrsOf (submodule [ { options = targetOptions; } unitConfig ]);
       description = "Definition of systemd per-user target units.";
     };
 
     systemd.user.timers = mkOption {
       default = {};
-      type = with types; attrsOf (submodule [ { options = timerOptions; } unitConfig ] );
+      type = with types; attrsOf (submodule [ { options = timerOptions; } unitConfig ]);
       description = "Definition of systemd per-user timer units.";
     };
 
     systemd.additionalUpstreamSystemUnits = mkOption {
-      default = [ ];
+      default = [];
       type = types.listOf types.str;
       example = [ "debug-shell.service" "systemd-quotacheck.service" ];
       description = ''
@@ -770,9 +848,13 @@ in
 
   config = {
 
-    warnings = concatLists (mapAttrsToList (name: service:
-      optional (service.serviceConfig.Type or "" == "oneshot" && service.serviceConfig.Restart or "no" != "no")
-        "Service ‘${name}.service’ with ‘Type=oneshot’ must have ‘Restart=no’") cfg.services);
+    warnings = concatLists (
+      mapAttrsToList (
+        name: service:
+          optional (service.serviceConfig.Type or "" == "oneshot" && service.serviceConfig.Restart or "no" != "no")
+            "Service ‘${name}.service’ with ‘Type=oneshot’ must have ‘Restart=no’"
+      ) cfg.services
+    );
 
     system.build.units = cfg.units;
 
@@ -781,8 +863,8 @@ in
     environment.etc = let
       # generate contents for /etc/systemd/system-${type} from attrset of links and packages
       hooks = type: links: pkgs.runCommand "system-${type}" {
-          preferLocalBuild = true;
-          packages = cfg.packages;
+        preferLocalBuild = true;
+        packages = cfg.packages;
       } ''
         set -e
         mkdir -p $out
@@ -795,80 +877,83 @@ in
         done
         ${concatStrings (mapAttrsToList (exec: target: "ln -s ${target} $out/${exec};\n") links)}
       '';
-    in ({
-      "systemd/system".source = generateUnits "system" cfg.units upstreamSystemUnits upstreamSystemWants;
+    in
+      (
+        {
+          "systemd/system".source = generateUnits "system" cfg.units upstreamSystemUnits upstreamSystemWants;
 
-      "systemd/user".source = generateUnits "user" cfg.user.units upstreamUserUnits [];
+          "systemd/user".source = generateUnits "user" cfg.user.units upstreamUserUnits [];
 
-      "systemd/system.conf".text = ''
-        [Manager]
-        ${optionalString config.systemd.enableCgroupAccounting ''
-          DefaultCPUAccounting=yes
-          DefaultIOAccounting=yes
-          DefaultBlockIOAccounting=yes
-          DefaultMemoryAccounting=yes
-          DefaultTasksAccounting=yes
-        ''}
-        DefaultLimitCORE=infinity
-        ${config.systemd.extraConfig}
-      '';
+          "systemd/system.conf".text = ''
+            [Manager]
+            ${optionalString config.systemd.enableCgroupAccounting ''
+            DefaultCPUAccounting=yes
+            DefaultIOAccounting=yes
+            DefaultBlockIOAccounting=yes
+            DefaultMemoryAccounting=yes
+            DefaultTasksAccounting=yes
+          ''}
+            DefaultLimitCORE=infinity
+            ${config.systemd.extraConfig}
+          '';
 
-      "systemd/user.conf".text = ''
-        [Manager]
-        ${config.systemd.user.extraConfig}
-      '';
+          "systemd/user.conf".text = ''
+            [Manager]
+            ${config.systemd.user.extraConfig}
+          '';
 
-      "systemd/journald.conf".text = ''
-        [Journal]
-        Storage=persistent
-        RateLimitInterval=${config.services.journald.rateLimitInterval}
-        RateLimitBurst=${toString config.services.journald.rateLimitBurst}
-        ${optionalString (config.services.journald.console != "") ''
-          ForwardToConsole=yes
-          TTYPath=${config.services.journald.console}
-        ''}
-        ${optionalString (config.services.journald.forwardToSyslog) ''
-          ForwardToSyslog=yes
-        ''}
-        ${config.services.journald.extraConfig}
-      '';
+          "systemd/journald.conf".text = ''
+            [Journal]
+            Storage=persistent
+            RateLimitInterval=${config.services.journald.rateLimitInterval}
+            RateLimitBurst=${toString config.services.journald.rateLimitBurst}
+            ${optionalString (config.services.journald.console != "") ''
+            ForwardToConsole=yes
+            TTYPath=${config.services.journald.console}
+          ''}
+            ${optionalString (config.services.journald.forwardToSyslog) ''
+            ForwardToSyslog=yes
+          ''}
+            ${config.services.journald.extraConfig}
+          '';
 
-      "systemd/coredump.conf".text =
-        ''
-          [Coredump]
-          ${config.systemd.coredump.extraConfig}
-        '';
+          "systemd/coredump.conf".text =
+            ''
+              [Coredump]
+              ${config.systemd.coredump.extraConfig}
+            '';
 
-      "systemd/logind.conf".text = ''
-        [Login]
-        KillUserProcesses=${if config.services.logind.killUserProcesses then "yes" else "no"}
-        HandleLidSwitch=${config.services.logind.lidSwitch}
-        HandleLidSwitchDocked=${config.services.logind.lidSwitchDocked}
-        HandleLidSwitchExternalPower=${config.services.logind.lidSwitchExternalPower}
-        ${config.services.logind.extraConfig}
-      '';
+          "systemd/logind.conf".text = ''
+            [Login]
+            KillUserProcesses=${if config.services.logind.killUserProcesses then "yes" else "no"}
+            HandleLidSwitch=${config.services.logind.lidSwitch}
+            HandleLidSwitchDocked=${config.services.logind.lidSwitchDocked}
+            HandleLidSwitchExternalPower=${config.services.logind.lidSwitchExternalPower}
+            ${config.services.logind.extraConfig}
+          '';
 
-      "systemd/sleep.conf".text = ''
-        [Sleep]
-      '';
+          "systemd/sleep.conf".text = ''
+            [Sleep]
+          '';
 
-      # install provided sysctl snippets
-      "sysctl.d/50-coredump.conf".source = "${systemd}/example/sysctl.d/50-coredump.conf";
-      "sysctl.d/50-default.conf".source = "${systemd}/example/sysctl.d/50-default.conf";
+          # install provided sysctl snippets
+          "sysctl.d/50-coredump.conf".source = "${systemd}/example/sysctl.d/50-coredump.conf";
+          "sysctl.d/50-default.conf".source = "${systemd}/example/sysctl.d/50-default.conf";
 
-      "tmpfiles.d/systemd.conf".source = "${systemd}/example/tmpfiles.d/systemd.conf";
-      "tmpfiles.d/x11.conf".source = "${systemd}/example/tmpfiles.d/x11.conf";
+          "tmpfiles.d/systemd.conf".source = "${systemd}/example/tmpfiles.d/systemd.conf";
+          "tmpfiles.d/x11.conf".source = "${systemd}/example/tmpfiles.d/x11.conf";
 
-      "tmpfiles.d/nixos.conf".text = ''
-        # This file is created automatically and should not be modified.
-        # Please change the option ‘systemd.tmpfiles.rules’ instead.
+          "tmpfiles.d/nixos.conf".text = ''
+            # This file is created automatically and should not be modified.
+            # Please change the option ‘systemd.tmpfiles.rules’ instead.
 
-        ${concatStringsSep "\n" cfg.tmpfiles.rules}
-      '';
+            ${concatStringsSep "\n" cfg.tmpfiles.rules}
+          '';
 
-      "systemd/system-generators" = { source = hooks "generators" cfg.generators; };
-      "systemd/system-shutdown" = { source = hooks "shutdown" cfg.shutdown; };
-    });
+          "systemd/system-generators" = { source = hooks "generators" cfg.generators; };
+          "systemd/system-shutdown" = { source = hooks "shutdown" cfg.shutdown; };
+        }
+      );
 
     services.dbus.enable = true;
 
@@ -881,37 +966,67 @@ in
     users.groups.keys.gid = config.ids.gids.keys;
 
     systemd.targets.keys =
-      { description = "Security Keys";
+      {
+        description = "Security Keys";
         unitConfig.X-StopOnReconfiguration = true;
       };
 
     systemd.units =
-         mapAttrs' (n: v: nameValuePair "${n}.path"    (pathToUnit    n v)) cfg.paths
+      mapAttrs' (n: v: nameValuePair "${n}.path" (pathToUnit n v)) cfg.paths
       // mapAttrs' (n: v: nameValuePair "${n}.service" (serviceToUnit n v)) cfg.services
-      // mapAttrs' (n: v: nameValuePair "${n}.slice"   (sliceToUnit   n v)) cfg.slices
-      // mapAttrs' (n: v: nameValuePair "${n}.socket"  (socketToUnit  n v)) cfg.sockets
-      // mapAttrs' (n: v: nameValuePair "${n}.target"  (targetToUnit  n v)) cfg.targets
-      // mapAttrs' (n: v: nameValuePair "${n}.timer"   (timerToUnit   n v)) cfg.timers
-      // listToAttrs (map
-                   (v: let n = escapeSystemdPath v.where;
-                       in nameValuePair "${n}.mount" (mountToUnit n v)) cfg.mounts)
-      // listToAttrs (map
-                   (v: let n = escapeSystemdPath v.where;
-                       in nameValuePair "${n}.automount" (automountToUnit n v)) cfg.automounts);
+      // mapAttrs' (n: v: nameValuePair "${n}.slice" (sliceToUnit n v)) cfg.slices
+      // mapAttrs' (n: v: nameValuePair "${n}.socket" (socketToUnit n v)) cfg.sockets
+      // mapAttrs' (n: v: nameValuePair "${n}.target" (targetToUnit n v)) cfg.targets
+      // mapAttrs' (n: v: nameValuePair "${n}.timer" (timerToUnit n v)) cfg.timers
+      // listToAttrs (
+           map
+             (
+               v: let
+                 n = escapeSystemdPath v.where;
+               in
+                 nameValuePair "${n}.mount" (mountToUnit n v)
+             ) cfg.mounts
+         )
+      // listToAttrs (
+           map
+             (
+               v: let
+                 n = escapeSystemdPath v.where;
+               in
+                 nameValuePair "${n}.automount" (automountToUnit n v)
+             ) cfg.automounts
+         )
+      ;
 
     systemd.user.units =
-         mapAttrs' (n: v: nameValuePair "${n}.path"    (pathToUnit    n v)) cfg.user.paths
+      mapAttrs' (n: v: nameValuePair "${n}.path" (pathToUnit n v)) cfg.user.paths
       // mapAttrs' (n: v: nameValuePair "${n}.service" (serviceToUnit n v)) cfg.user.services
-      // mapAttrs' (n: v: nameValuePair "${n}.slice"   (sliceToUnit   n v)) cfg.user.slices
-      // mapAttrs' (n: v: nameValuePair "${n}.socket"  (socketToUnit  n v)) cfg.user.sockets
-      // mapAttrs' (n: v: nameValuePair "${n}.target"  (targetToUnit  n v)) cfg.user.targets
-      // mapAttrs' (n: v: nameValuePair "${n}.timer"   (timerToUnit   n v)) cfg.user.timers;
+      // mapAttrs' (n: v: nameValuePair "${n}.slice" (sliceToUnit n v)) cfg.user.slices
+      // mapAttrs' (n: v: nameValuePair "${n}.socket" (socketToUnit n v)) cfg.user.sockets
+      // mapAttrs' (n: v: nameValuePair "${n}.target" (targetToUnit n v)) cfg.user.targets
+      // mapAttrs' (n: v: nameValuePair "${n}.timer" (timerToUnit n v)) cfg.user.timers
+      ;
 
     system.requiredKernelConfig = map config.lib.kernelConfig.isEnabled
-      [ "DEVTMPFS" "CGROUPS" "INOTIFY_USER" "SIGNALFD" "TIMERFD" "EPOLL" "NET"
-        "SYSFS" "PROC_FS" "FHANDLE" "CRYPTO_USER_API_HASH" "CRYPTO_HMAC"
-        "CRYPTO_SHA256" "DMIID" "AUTOFS4_FS" "TMPFS_POSIX_ACL"
-        "TMPFS_XATTR" "SECCOMP"
+      [
+        "DEVTMPFS"
+        "CGROUPS"
+        "INOTIFY_USER"
+        "SIGNALFD"
+        "TIMERFD"
+        "EPOLL"
+        "NET"
+        "SYSFS"
+        "PROC_FS"
+        "FHANDLE"
+        "CRYPTO_USER_API_HASH"
+        "CRYPTO_HMAC"
+        "CRYPTO_SHA256"
+        "DMIID"
+        "AUTOFS4_FS"
+        "TMPFS_POSIX_ACL"
+        "TMPFS_XATTR"
+        "SECCOMP"
       ];
 
     users.groups.systemd-journal.gid = config.ids.gids.systemd-journal;
@@ -920,18 +1035,24 @@ in
 
     # Generate timer units for all services that have a ‘startAt’ value.
     systemd.timers =
-      mapAttrs (name: service:
-        { wantedBy = [ "timers.target" ];
-          timerConfig.OnCalendar = service.startAt;
-        })
+      mapAttrs (
+        name: service:
+          {
+            wantedBy = [ "timers.target" ];
+            timerConfig.OnCalendar = service.startAt;
+          }
+      )
         (filterAttrs (name: service: service.enable && service.startAt != []) cfg.services);
 
     # Generate timer units for all services that have a ‘startAt’ value.
     systemd.user.timers =
-      mapAttrs (name: service:
-        { wantedBy = [ "timers.target" ];
-          timerConfig.OnCalendar = service.startAt;
-        })
+      mapAttrs (
+        name: service:
+          {
+            wantedBy = [ "timers.target" ];
+            timerConfig.OnCalendar = service.startAt;
+          }
+      )
         (filterAttrs (name: service: service.startAt != []) cfg.user.services);
 
     systemd.sockets.systemd-journal-gatewayd.wantedBy =
@@ -940,7 +1061,8 @@ in
     # Provide the systemd-user PAM service, required to run systemd
     # user instances.
     security.pam.services.systemd-user =
-      { # Ensure that pam_systemd gets included. This is special-cased
+      {
+        # Ensure that pam_systemd gets included. This is special-cased
         # in systemd to provide XDG_RUNTIME_DIR.
         startSession = true;
       };
@@ -980,7 +1102,8 @@ in
 
   # FIXME: Remove these eventually.
   imports =
-    [ (mkRenamedOptionModule [ "boot" "systemd" "sockets" ] [ "systemd" "sockets" ])
+    [
+      (mkRenamedOptionModule [ "boot" "systemd" "sockets" ] [ "systemd" "sockets" ])
       (mkRenamedOptionModule [ "boot" "systemd" "targets" ] [ "systemd" "targets" ])
       (mkRenamedOptionModule [ "boot" "systemd" "services" ] [ "systemd" "services" ])
     ];

@@ -54,7 +54,8 @@ python3.pkgs.buildPythonApplication rec  {
     hicolor-icon-theme
     libsoup
     totem-pl-parser
-  ] ++ lib.optional lastFMSupport libsecret;
+  ]
+    ++ lib.optional lastFMSupport libsecret;
 
   propagatedBuildInputs = with python3.pkgs; [
     beautifulsoup4
@@ -62,9 +63,9 @@ python3.pkgs.buildPythonApplication rec  {
     pycairo
     pygobject3
   ]
-  ++ lib.optional lastFMSupport pylast
-  ++ lib.optional youtubeSupport youtube-dl
-  ;
+    ++ lib.optional lastFMSupport pylast
+    ++ lib.optional youtubeSupport youtube-dl
+    ;
 
   postPatch = ''
     chmod +x meson_post_install.py

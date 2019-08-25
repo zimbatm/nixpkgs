@@ -13,7 +13,11 @@ mkDerivation {
   };
 
   buildInputs = [
-    alsaLib udev qtbase qtsvg qttools
+    alsaLib
+    udev
+    qtbase
+    qtsvg
+    qttools
   ];
   nativeBuildInputs = [ cmake ];
 

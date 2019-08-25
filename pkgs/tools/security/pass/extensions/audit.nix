@@ -3,7 +3,8 @@
 let
   pythonEnv = pythonPackages.python.withPackages (p: [ p.requests ]);
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "pass-audit-${version}";
   version = "0.1";
 

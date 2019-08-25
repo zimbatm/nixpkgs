@@ -1,20 +1,30 @@
-{ stdenv, buildGoPackage, fetchFromGitHub
-, gpgme, libgpgerror, lvm2, btrfs-progs, pkgconfig, ostree, libselinux, libseccomp
+{ stdenv
+, buildGoPackage
+, fetchFromGitHub
+, gpgme
+, libgpgerror
+, lvm2
+, btrfs-progs
+, pkgconfig
+, ostree
+, libselinux
+, libseccomp
 }:
 
 let
   version = "1.10.1";
 
   src = fetchFromGitHub {
-    rev    = "v${version}";
-    owner  = "containers";
-    repo   = "buildah";
+    rev = "v${version}";
+    owner = "containers";
+    repo = "buildah";
     sha256 = "0dki2v8j2jzbw49sdzcyjqbalbh70m0lgzrldgj6cc92mj896pxk";
   };
 
   goPackagePath = "github.com/containers/buildah";
 
-in buildGoPackage rec {
+in
+buildGoPackage rec {
   name = "buildah-${version}";
   inherit src;
 

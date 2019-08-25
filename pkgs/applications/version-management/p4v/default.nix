@@ -13,13 +13,13 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ wrapQtAppsHook ];
 
   ldLibraryPath = lib.makeLibraryPath [
-      stdenv.cc.cc.lib
-      qtbase
-      qtmultimedia
-      qtscript
-      qtsensors
-      qtwebkit
-      openssl
+    stdenv.cc.cc.lib
+    qtbase
+    qtmultimedia
+    qtscript
+    qtsensors
+    qtwebkit
+    openssl
   ];
 
   dontWrapQtApps = true;

@@ -11,7 +11,7 @@
 , fetchurl
 , dbus
 , xvfb_run
-# , fetchPypi
+  # , fetchPypi
 }:
 
 buildPythonPackage rec {

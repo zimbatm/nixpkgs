@@ -1,12 +1,13 @@
 { stdenv, fetchFromGitHub, which, coq }:
 
-let params = {
-  "8.10" = {
-    version = "master";
-    rev = "bc7134deba1aacc7ecd2f5d1032bdf05b125c568";
-    sha256 = "188avk9irwjsbs5ya4ka01mpk3vw4397kv2rmsncqrrrsa1pdddk";
+let
+  params = {
+    "8.10" = {
+      version = "master";
+      rev = "bc7134deba1aacc7ecd2f5d1032bdf05b125c568";
+      sha256 = "188avk9irwjsbs5ya4ka01mpk3vw4397kv2rmsncqrrrsa1pdddk";
+    };
   };
-};
   param = params."${coq.coq-version}";
 in
 

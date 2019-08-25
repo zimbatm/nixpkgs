@@ -1,8 +1,28 @@
-{ stdenv, fetchurl, vala, meson, ninja, libpwquality
-, pkgconfig, gtk3, glib, gobject-introspection
-, wrapGAppsHook, itstool, gnupg, libsoup
-, gnome3, gpgme, python3, openldap, gcr
-, libsecret, avahi, p11-kit, openssh, gsettings-desktop-schemas }:
+{ stdenv
+, fetchurl
+, vala
+, meson
+, ninja
+, libpwquality
+, pkgconfig
+, gtk3
+, glib
+, gobject-introspection
+, wrapGAppsHook
+, itstool
+, gnupg
+, libsoup
+, gnome3
+, gpgme
+, python3
+, openldap
+, gcr
+, libsecret
+, avahi
+, p11-kit
+, openssh
+, gsettings-desktop-schemas
+}:
 
 stdenv.mkDerivation rec {
   pname = "seahorse";
@@ -16,15 +36,30 @@ stdenv.mkDerivation rec {
   doCheck = true;
 
   nativeBuildInputs = [
-    meson ninja pkgconfig vala itstool wrapGAppsHook
-    python3 gobject-introspection
+    meson
+    ninja
+    pkgconfig
+    vala
+    itstool
+    wrapGAppsHook
+    python3
+    gobject-introspection
   ];
   buildInputs = [
-    gtk3 glib gcr
-    gsettings-desktop-schemas gnupg
-    gnome3.adwaita-icon-theme gpgme
-    libsecret avahi libsoup p11-kit
-    openssh openldap libpwquality
+    gtk3
+    glib
+    gcr
+    gsettings-desktop-schemas
+    gnupg
+    gnome3.adwaita-icon-theme
+    gpgme
+    libsecret
+    avahi
+    libsoup
+    p11-kit
+    openssh
+    openldap
+    libpwquality
   ];
 
   postPatch = ''

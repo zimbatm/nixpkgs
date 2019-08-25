@@ -3,7 +3,8 @@
 let
   pythonEnv = pythonPackages.python.withPackages (p: [ p.defusedxml ]);
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "pass-import-${version}";
   version = "2.3";
 

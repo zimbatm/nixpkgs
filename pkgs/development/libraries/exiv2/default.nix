@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
 
   src = fetchFromGitHub rec {
     owner = "exiv2";
-    repo  = "exiv2";
+    repo = "exiv2";
     rev = version;
     sha256 = "0b5m921070fkyif0zlyb49gly3p6xd0hv1jyym4j25hx12gzbx0c";
   };
@@ -70,8 +70,8 @@ stdenv.mkDerivation rec {
 
     # Fix tests on Aarch64
     ${stdenv.lib.optionalString stdenv.isAarch64 ''
-      rm -f ../tests/bugfixes/github/test_CVE_2018_12265.py
-    ''}
+    rm -f ../tests/bugfixes/github/test_CVE_2018_12265.py
+  ''}
   '';
 
   postCheck = ''

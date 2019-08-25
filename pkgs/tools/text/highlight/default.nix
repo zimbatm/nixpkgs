@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  nativeBuildInputs = [ pkgconfig ] ++ optional stdenv.isDarwin  gcc ;
+  nativeBuildInputs = [ pkgconfig ] ++ optional stdenv.isDarwin gcc;
 
   buildInputs = [ getopt lua boost ];
 

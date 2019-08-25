@@ -10,12 +10,14 @@ buildPythonPackage rec {
   };
 
   patches = [
-    (fetchpatch {
-      name = "fix-assertions.patch";
-      url = https://github.com/atztogo/spglib/commit/d57070831585a6f02dec0a31d25b375ba347798c.patch;
-      stripLen = 1;
-      sha256 = "0crmkc498rbrawiy9zbl39qis2nmsbfr4s6kk6k3zhdy8z2ppxw7";
-    })
+    (
+      fetchpatch {
+        name = "fix-assertions.patch";
+        url = https://github.com/atztogo/spglib/commit/d57070831585a6f02dec0a31d25b375ba347798c.patch;
+        stripLen = 1;
+        sha256 = "0crmkc498rbrawiy9zbl39qis2nmsbfr4s6kk6k3zhdy8z2ppxw7";
+      }
+    )
   ];
 
   propagatedBuildInputs = [ numpy ];
@@ -29,4 +31,3 @@ buildPythonPackage rec {
     maintainers = with maintainers; [ psyanticy ];
   };
 }
-

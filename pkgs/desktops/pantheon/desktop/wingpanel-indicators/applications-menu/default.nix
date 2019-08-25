@@ -52,7 +52,7 @@ stdenv.mkDerivation rec {
     pkgconfig
     python3
     vala
-   ];
+  ];
 
   buildInputs = [
     bamf
@@ -67,7 +67,7 @@ stdenv.mkDerivation rec {
     switchboard
     wingpanel
     zeitgeist
-   ];
+  ];
 
   mesonFlags = [
     "--sysconfdir=${placeholder ''out''}/etc"
@@ -77,10 +77,12 @@ stdenv.mkDerivation rec {
   PKG_CONFIG_SWITCHBOARD_2_0_PLUGSDIR = "${placeholder ''out''}/lib/switchboard";
 
   patches = [
-    (substituteAll {
-      src = ./bc.patch;
-      exec = "${bc}/bin/bc";
-    })
+    (
+      substituteAll {
+        src = ./bc.patch;
+        exec = "${bc}/bin/bc";
+      }
+    )
   ];
 
   postPatch = ''

@@ -1,7 +1,21 @@
-{ stdenv, fetchurl, tzdata, iana-etc, runCommand
-, perl, which, pkgconfig, patch, procps, pcre, cacert, Security, Foundation
-, mailcap, runtimeShell
-, buildPackages, pkgsTargetTarget
+{ stdenv
+, fetchurl
+, tzdata
+, iana-etc
+, runCommand
+, perl
+, which
+, pkgconfig
+, patch
+, procps
+, pcre
+, cacert
+, Security
+, Foundation
+, mailcap
+, runtimeShell
+, buildPackages
+, pkgsTargetTarget
 }:
 
 let
@@ -41,7 +55,8 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ perl which pkgconfig patch procps ];
   buildInputs = [ cacert pcre ]
     ++ optionals stdenv.isLinux [ stdenv.cc.libc.out ]
-    ++ optionals (stdenv.hostPlatform.libc == "glibc") [ stdenv.cc.libc.static ];
+    ++ optionals (stdenv.hostPlatform.libc == "glibc") [ stdenv.cc.libc.static ]
+    ;
 
 
   propagatedBuildInputs = optionals stdenv.isDarwin [ Security Foundation ];
@@ -96,31 +111,35 @@ stdenv.mkDerivation rec {
     # Disable cgo lookup tests not works, they depend on resolver
     rm src/net/cgo_unix_test.go
 
-  '' + optionalString stdenv.isLinux ''
-    sed -i 's,/usr/share/zoneinfo/,${tzdata}/share/zoneinfo/,' src/time/zoneinfo_unix.go
-  '' + optionalString stdenv.isAarch32 ''
-    echo '#!${runtimeShell}' > misc/cgo/testplugin/test.bash
-  '' + optionalString stdenv.isDarwin ''
-    substituteInPlace src/race.bash --replace \
-      "sysctl machdep.cpu.extfeatures | grep -qv EM64T" true
-    sed -i 's,strings.Contains(.*sysctl.*,true {,' src/cmd/dist/util.go
-    sed -i 's,"/etc","'"$TMPDIR"'",' src/os/os_test.go
-    sed -i 's,/_go_os_test,'"$TMPDIR"'/_go_os_test,' src/os/path_test.go
+  ''
+  + optionalString stdenv.isLinux ''
+      sed -i 's,/usr/share/zoneinfo/,${tzdata}/share/zoneinfo/,' src/time/zoneinfo_unix.go
+    ''
+  + optionalString stdenv.isAarch32 ''
+      echo '#!${runtimeShell}' > misc/cgo/testplugin/test.bash
+    ''
+  + optionalString stdenv.isDarwin ''
+      substituteInPlace src/race.bash --replace \
+        "sysctl machdep.cpu.extfeatures | grep -qv EM64T" true
+      sed -i 's,strings.Contains(.*sysctl.*,true {,' src/cmd/dist/util.go
+      sed -i 's,"/etc","'"$TMPDIR"'",' src/os/os_test.go
+      sed -i 's,/_go_os_test,'"$TMPDIR"'/_go_os_test,' src/os/path_test.go
 
-    sed -i '/TestChdirAndGetwd/areturn' src/os/os_test.go
-    sed -i '/TestCredentialNoSetGroups/areturn' src/os/exec/exec_posix_test.go
-    sed -i '/TestRead0/areturn' src/os/os_test.go
-    sed -i '/TestSystemRoots/areturn' src/crypto/x509/root_darwin_test.go
+      sed -i '/TestChdirAndGetwd/areturn' src/os/os_test.go
+      sed -i '/TestCredentialNoSetGroups/areturn' src/os/exec/exec_posix_test.go
+      sed -i '/TestRead0/areturn' src/os/os_test.go
+      sed -i '/TestSystemRoots/areturn' src/crypto/x509/root_darwin_test.go
 
-    sed -i '/TestGoInstallRebuildsStalePackagesInOtherGOPATH/areturn' src/cmd/go/go_test.go
-    sed -i '/TestBuildDashIInstallsDependencies/areturn' src/cmd/go/go_test.go
+      sed -i '/TestGoInstallRebuildsStalePackagesInOtherGOPATH/areturn' src/cmd/go/go_test.go
+      sed -i '/TestBuildDashIInstallsDependencies/areturn' src/cmd/go/go_test.go
 
-    sed -i '/TestDisasmExtld/areturn' src/cmd/objdump/objdump_test.go
+      sed -i '/TestDisasmExtld/areturn' src/cmd/objdump/objdump_test.go
 
-    sed -i 's/unrecognized/unknown/' src/cmd/link/internal/ld/lib.go
+      sed -i 's/unrecognized/unknown/' src/cmd/link/internal/ld/lib.go
 
-    touch $TMPDIR/group $TMPDIR/hosts $TMPDIR/passwd
-  '';
+      touch $TMPDIR/group $TMPDIR/hosts $TMPDIR/passwd
+    ''
+  ;
 
   patches = [
     ./remove-tools-1.11.patch
@@ -147,15 +166,15 @@ stdenv.mkDerivation rec {
   # {CC,CXX}_FOR_TARGET must be only set for cross compilation case as go expect those
   # to be different from CC/CXX
   CC_FOR_TARGET = if (stdenv.buildPlatform != stdenv.targetPlatform) then
-      "${pkgsTargetTarget.stdenv.cc}/bin/${pkgsTargetTarget.stdenv.cc.targetPrefix}cc"
-    else
-      null;
+    "${pkgsTargetTarget.stdenv.cc}/bin/${pkgsTargetTarget.stdenv.cc.targetPrefix}cc"
+  else
+    null;
   CXX_FOR_TARGET = if (stdenv.buildPlatform != stdenv.targetPlatform) then
-      "${pkgsTargetTarget.stdenv.cc}/bin/${pkgsTargetTarget.stdenv.cc.targetPrefix}c++"
-    else
-      null;
+    "${pkgsTargetTarget.stdenv.cc}/bin/${pkgsTargetTarget.stdenv.cc.targetPrefix}c++"
+  else
+    null;
 
-  GOARM = toString (stdenv.lib.intersectLists [(stdenv.hostPlatform.parsed.cpu.version or "")] ["5" "6" "7"]);
+  GOARM = toString (stdenv.lib.intersectLists [ (stdenv.hostPlatform.parsed.cpu.version or "") ] [ "5" "6" "7" ]);
   GO386 = 387; # from Arch: don't assume sse2 on i686
   CGO_ENABLED = 1;
   # Hopefully avoids test timeouts on Hydra
@@ -165,7 +184,7 @@ stdenv.mkDerivation rec {
   # Some tests assume things like home directories and users exists
   GO_BUILDER_NAME = "nix";
 
-  GOROOT_BOOTSTRAP="${goBootstrap}/share/go";
+  GOROOT_BOOTSTRAP = "${goBootstrap}/share/go";
 
   postConfigure = ''
     export GOCACHE=$TMPDIR/go-cache
@@ -196,18 +215,22 @@ stdenv.mkDerivation rec {
     # Contains the wrong perl shebang when cross compiling,
     # since it is not used for anything we can deleted as well.
     rm src/regexp/syntax/make_perl_groups.pl
-  '' + (if (stdenv.buildPlatform != stdenv.hostPlatform) then ''
-    mv bin/*_*/* bin
-    rmdir bin/*_*
-    ${optionalString (!(GOHOSTARCH == GOARCH && GOOS == GOHOSTOS)) ''
-      rm -rf pkg/${GOHOSTOS}_${GOHOSTARCH} pkg/tool/${GOHOSTOS}_${GOHOSTARCH}
-    ''}
-  '' else if (stdenv.hostPlatform != stdenv.targetPlatform) then ''
-    rm -rf bin/*_*
-    ${optionalString (!(GOHOSTARCH == GOARCH && GOOS == GOHOSTOS)) ''
-      rm -rf pkg/${GOOS}_${GOARCH} pkg/tool/${GOOS}_${GOARCH}
-    ''}
-  '' else "");
+  ''
+  + (
+      if (stdenv.buildPlatform != stdenv.hostPlatform) then ''
+        mv bin/*_*/* bin
+        rmdir bin/*_*
+        ${optionalString (!(GOHOSTARCH == GOARCH && GOOS == GOHOSTOS)) ''
+        rm -rf pkg/${GOHOSTOS}_${GOHOSTARCH} pkg/tool/${GOHOSTOS}_${GOHOSTARCH}
+      ''}
+      '' else if (stdenv.hostPlatform != stdenv.targetPlatform) then ''
+        rm -rf bin/*_*
+        ${optionalString (!(GOHOSTARCH == GOARCH && GOOS == GOHOSTOS)) ''
+        rm -rf pkg/${GOOS}_${GOARCH} pkg/tool/${GOOS}_${GOARCH}
+      ''}
+      '' else ""
+    )
+  ;
 
   installPhase = ''
     runHook preInstall

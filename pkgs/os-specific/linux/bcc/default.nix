@@ -1,5 +1,17 @@
-{ stdenv, fetchFromGitHub, makeWrapper, cmake, llvmPackages, kernel
-, flex, bison, elfutils, python, luajit, netperf, iperf, libelf
+{ stdenv
+, fetchFromGitHub
+, makeWrapper
+, cmake
+, llvmPackages
+, kernel
+, flex
+, bison
+, elfutils
+, python
+, luajit
+, netperf
+, iperf
+, libelf
 , systemtap
 }:
 
@@ -8,31 +20,41 @@ python.pkgs.buildPythonApplication rec {
   name = "bcc-${version}";
 
   srcs = [
-    (fetchFromGitHub {
-      owner  = "iovisor";
-      repo   = "bcc";
-      rev    = "v${version}";
-      sha256 = "0qbqygj7ia494fbira9ajavvnxlpffx1jlzbb1vsf1wa8h3y4xn1";
-      name   = "bcc";
-    })
+    (
+      fetchFromGitHub {
+        owner = "iovisor";
+        repo = "bcc";
+        rev = "v${version}";
+        sha256 = "0qbqygj7ia494fbira9ajavvnxlpffx1jlzbb1vsf1wa8h3y4xn1";
+        name = "bcc";
+      }
+    )
 
     # note: keep this in sync with the version that was used at the time of the
     # tagged release!
-    (fetchFromGitHub {
-      owner  = "libbpf";
-      repo   = "libbpf";
-      rev    = "0e37e0d03ac99987401e4496d3d76d44237b9963";
-      sha256 = "0wjf9dhvqkwiwnygzikamrgmpxgq77h2pxx6mi4pnbw0lxlppivr";
-      name   = "libbpf";
-    })
+    (
+      fetchFromGitHub {
+        owner = "libbpf";
+        repo = "libbpf";
+        rev = "0e37e0d03ac99987401e4496d3d76d44237b9963";
+        sha256 = "0wjf9dhvqkwiwnygzikamrgmpxgq77h2pxx6mi4pnbw0lxlppivr";
+        name = "libbpf";
+      }
+    )
   ];
   sourceRoot = "bcc";
   format = "other";
 
   buildInputs = with llvmPackages; [
-    llvm clang-unwrapped kernel
-    elfutils luajit netperf iperf
-    systemtap.stapBuild flex
+    llvm
+    clang-unwrapped
+    kernel
+    elfutils
+    luajit
+    netperf
+    iperf
+    systemtap.stapBuild
+    flex
   ];
 
   patches = [
@@ -43,8 +65,9 @@ python.pkgs.buildPythonApplication rec {
 
   propagatedBuildInputs = [ python.pkgs.netaddr ];
   nativeBuildInputs = [ makeWrapper cmake flex bison ]
-    # libelf is incompatible with elfutils-libelf
-    ++ stdenv.lib.filter (x: x != libelf) kernel.moduleBuildDependencies;
+  # libelf is incompatible with elfutils-libelf
+    ++ stdenv.lib.filter (x: x != libelf) kernel.moduleBuildDependencies
+    ;
 
   cmakeFlags = [
     "-DBCC_KERNEL_MODULES_DIR=${kernel.dev}/lib/modules"
@@ -87,8 +110,8 @@ python.pkgs.buildPythonApplication rec {
 
   meta = with stdenv.lib; {
     description = "Dynamic Tracing Tools for Linux";
-    homepage    = https://iovisor.github.io/bcc/;
-    license     = licenses.asl20;
+    homepage = https://iovisor.github.io/bcc/;
+    license = licenses.asl20;
     maintainers = with maintainers; [ ragge mic92 thoughtpolice ];
   };
 }

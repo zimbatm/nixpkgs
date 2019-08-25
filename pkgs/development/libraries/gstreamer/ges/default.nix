@@ -1,6 +1,16 @@
-{ stdenv, fetchurl, fetchpatch, meson, ninja
-, pkgconfig, python, gst-plugins-base, libxml2
-, flex, perl, gettext, gobject-introspection
+{ stdenv
+, fetchurl
+, fetchpatch
+, meson
+, ninja
+, pkgconfig
+, python
+, gst-plugins-base
+, libxml2
+, flex
+, perl
+, gettext
+, gobject-introspection
 }:
 
 stdenv.mkDerivation rec {
@@ -9,9 +19,9 @@ stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "Library for creation of audio/video non-linear editors";
-    homepage    = "https://gstreamer.freedesktop.org";
-    license     = licenses.lgpl2Plus;
-    platforms   = platforms.unix;
+    homepage = "https://gstreamer.freedesktop.org";
+    license = licenses.lgpl2Plus;
+    platforms = platforms.unix;
   };
 
   src = fetchurl {

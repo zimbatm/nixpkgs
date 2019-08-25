@@ -1,6 +1,8 @@
 { stdenv, fetchzip, ocaml, findlib, ocamlbuild, qtest, num }:
 
-let version = "2.9.0"; in
+let
+  version = "2.9.0";
+in
 
 stdenv.mkDerivation {
   name = "ocaml${ocaml.version}-batteries-${version}";

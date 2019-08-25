@@ -6,7 +6,8 @@
 , gtk3
 , itstool
 , libxml2
-, meson, ninja
+, meson
+, ninja
 , pango
 , pkgconfig
 , polkit

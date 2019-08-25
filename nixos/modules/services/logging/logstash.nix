@@ -28,9 +28,9 @@ let
   logstashSettingsYml = pkgs.writeText "logstash.yml" cfg.extraSettings;
 
   logstashSettingsDir = pkgs.runCommand "logstash-settings" {
-      inherit logstashSettingsYml;
-      preferLocalBuild = true;
-    } ''
+    inherit logstashSettingsYml;
+    preferLocalBuild = true;
+  } ''
     mkdir -p $out
     ln -s $logstashSettingsYml $out/logstash.yml
   '';
@@ -59,7 +59,7 @@ in
 
       plugins = mkOption {
         type = types.listOf types.path;
-        default = [ ];
+        default = [];
         example = literalExample "[ pkgs.logstash-contrib ]";
         description = "The paths to find other logstash plugins in.";
       };
@@ -165,15 +165,17 @@ in
       path = [ pkgs.bash ];
       serviceConfig = {
         ExecStartPre = ''${pkgs.coreutils}/bin/mkdir -p "${cfg.dataDir}" ; ${pkgs.coreutils}/bin/chmod 700 "${cfg.dataDir}"'';
-        ExecStart = concatStringsSep " " (filter (s: stringLength s != 0) [
-          "${cfg.package}/bin/logstash"
-          "-w ${toString cfg.filterWorkers}"
-          (ops havePluginPath pluginsPath)
-          "${verbosityFlag}"
-          "-f ${logstashConf}"
-          "--path.settings ${logstashSettingsDir}"
-          "--path.data ${cfg.dataDir}"
-        ]);
+        ExecStart = concatStringsSep " " (
+          filter (s: stringLength s != 0) [
+            "${cfg.package}/bin/logstash"
+            "-w ${toString cfg.filterWorkers}"
+            (ops havePluginPath pluginsPath)
+            "${verbosityFlag}"
+            "-f ${logstashConf}"
+            "--path.settings ${logstashSettingsDir}"
+            "--path.data ${cfg.dataDir}"
+          ]
+        );
       };
     };
   };

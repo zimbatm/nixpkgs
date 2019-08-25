@@ -8,7 +8,7 @@ rec {
   description = ''Library that creates a namespace for named readtable
   akin to the namespace of packages.'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/named-readtables/2018-01-31/named-readtables-20180131-git.tgz'';
@@ -17,7 +17,7 @@ rec {
 
   packageName = "named-readtables";
 
-  asdFilesToKeep = ["named-readtables.asd"];
+  asdFilesToKeep = [ "named-readtables.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM named-readtables DESCRIPTION

@@ -1,6 +1,8 @@
 { stdenv, fetchzip, ocaml, findlib, ocamlbuild }:
 
-let version = "3.0"; in
+let
+  version = "3.0";
+in
 
 stdenv.mkDerivation {
   name = "ocaml-dolog-${version}";

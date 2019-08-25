@@ -1,17 +1,49 @@
-{ stdenv, fetchurl, substituteAll, cmake, ninja, pkgconfig
-, glibc, gtk3, gtkmm3, pcre, swig, antlr4_7, sudo
-, mysql, libxml2, libmysqlconnectorcpp
-, vsqlite, gdal, libiodbc, libpthreadstubs
-, libXdmcp, libuuid, libzip, libsecret, libssh
-, python2, jre
-, boost, libsigcxx, libX11, openssl
-, proj, cairo, libxkbcommon, epoxy, wrapGAppsHook
-, at-spi2-core, dbus, bash, coreutils
+{ stdenv
+, fetchurl
+, substituteAll
+, cmake
+, ninja
+, pkgconfig
+, glibc
+, gtk3
+, gtkmm3
+, pcre
+, swig
+, antlr4_7
+, sudo
+, mysql
+, libxml2
+, libmysqlconnectorcpp
+, vsqlite
+, gdal
+, libiodbc
+, libpthreadstubs
+, libXdmcp
+, libuuid
+, libzip
+, libsecret
+, libssh
+, python2
+, jre
+, boost
+, libsigcxx
+, libX11
+, openssl
+, proj
+, cairo
+, libxkbcommon
+, epoxy
+, wrapGAppsHook
+, at-spi2-core
+, dbus
+, bash
+, coreutils
 }:
 
 let
   inherit (python2.pkgs) paramiko pycairo pyodbc;
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   pname = "mysql-workbench";
   version = "8.0.15";
   name = "${pname}-${version}";
@@ -23,34 +55,65 @@ in stdenv.mkDerivation rec {
 
   patches = [
     ./fix-gdal-includes.patch
-    (substituteAll {
-      src = ./hardcode-paths.patch;
-      catchsegv = "${glibc.bin}/bin/catchsegv";
-      bash = "${bash}/bin/bash";
-      cp = "${coreutils}/bin/cp";
-      dd = "${coreutils}/bin/dd";
-      ls = "${coreutils}/bin/ls";
-      mkdir = "${coreutils}/bin/mkdir";
-      nohup = "${coreutils}/bin/nohup";
-      rm = "${coreutils}/bin/rm";
-      rmdir = "${coreutils}/bin/rmdir";
-      sudo = "${sudo}/bin/sudo";
-    })
+    (
+      substituteAll {
+        src = ./hardcode-paths.patch;
+        catchsegv = "${glibc.bin}/bin/catchsegv";
+        bash = "${bash}/bin/bash";
+        cp = "${coreutils}/bin/cp";
+        dd = "${coreutils}/bin/dd";
+        ls = "${coreutils}/bin/ls";
+        mkdir = "${coreutils}/bin/mkdir";
+        nohup = "${coreutils}/bin/nohup";
+        rm = "${coreutils}/bin/rm";
+        rmdir = "${coreutils}/bin/rmdir";
+        sudo = "${sudo}/bin/sudo";
+      }
+    )
   ];
 
   nativeBuildInputs = [
-    cmake ninja pkgconfig jre swig wrapGAppsHook
+    cmake
+    ninja
+    pkgconfig
+    jre
+    swig
+    wrapGAppsHook
   ];
 
   buildInputs = [
-    gtk3 gtkmm3 libX11 antlr4_7.runtime.cpp python2 mysql libxml2
-    libmysqlconnectorcpp vsqlite gdal boost libssh openssl
-    libiodbc pcre cairo libuuid libzip libsecret
-    libsigcxx proj
+    gtk3
+    gtkmm3
+    libX11
+    antlr4_7.runtime.cpp
+    python2
+    mysql
+    libxml2
+    libmysqlconnectorcpp
+    vsqlite
+    gdal
+    boost
+    libssh
+    openssl
+    libiodbc
+    pcre
+    cairo
+    libuuid
+    libzip
+    libsecret
+    libsigcxx
+    proj
     # python dependencies:
-    paramiko pycairo pyodbc # sqlanydb
+    paramiko
+    pycairo
+    pyodbc # sqlanydb
     # transitive dependencies:
-    libpthreadstubs libXdmcp libxkbcommon epoxy at-spi2-core dbus
+    libpthreadstubs
+    libXdmcp
+    libxkbcommon
+    epoxy
+    at-spi2-core
+    dbus
   ];
 
   postPatch = ''

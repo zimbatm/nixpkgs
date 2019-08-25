@@ -1,6 +1,10 @@
-{ lib, buildPythonPackage, fetchPypi
-, six, cryptography
-, mock, pyfakefs
+{ lib
+, buildPythonPackage
+, fetchPypi
+, six
+, cryptography
+, mock
+, pyfakefs
 }:
 
 buildPythonPackage rec {

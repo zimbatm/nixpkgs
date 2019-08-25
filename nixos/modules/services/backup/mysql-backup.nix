@@ -84,23 +84,28 @@ in
   };
 
   config = mkIf cfg.enable {
-    users.users = optionalAttrs (cfg.user == defaultUser) (singleton
-      { name = defaultUser;
-        isSystemUser = true;
-        createHome = false;
-        home = cfg.location;
-        group = "nogroup";
-      });
+    users.users = optionalAttrs (cfg.user == defaultUser) (
+      singleton
+        {
+          name = defaultUser;
+          isSystemUser = true;
+          createHome = false;
+          home = cfg.location;
+          group = "nogroup";
+        }
+    );
 
-    services.mysql.ensureUsers = [{
-      name = cfg.user;
-      ensurePermissions = with lib;
-        let
-          privs = "SELECT, SHOW VIEW, TRIGGER, LOCK TABLES";
-          grant = db: nameValuePair "${db}.*" privs;
-        in
-          listToAttrs (map grant cfg.databases);
-    }];
+    services.mysql.ensureUsers = [
+      {
+        name = cfg.user;
+        ensurePermissions = with lib;
+          let
+            privs = "SELECT, SHOW VIEW, TRIGGER, LOCK TABLES";
+            grant = db: nameValuePair "${db}.*" privs;
+          in
+            listToAttrs (map grant cfg.databases);
+      }
+    ];
 
     systemd = {
       timers."mysql-backup" = {

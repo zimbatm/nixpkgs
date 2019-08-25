@@ -47,10 +47,12 @@ stdenv.mkDerivation rec {
   ];
 
   patches = [
-    (substituteAll {
-      src = ./timezone.patch;
-      tzdata = "${tzdata}/share/zoneinfo/zone.tab";
-    })
+    (
+      substituteAll {
+        src = ./timezone.patch;
+        tzdata = "${tzdata}/share/zoneinfo/zone.tab";
+      }
+    )
     # Use "clock-format" GSettings key that's been moved to granite
     ./clock-format.patch
   ];

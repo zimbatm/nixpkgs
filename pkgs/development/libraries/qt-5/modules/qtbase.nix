@@ -1,29 +1,67 @@
-{
-  stdenv, lib,
-  src, patches, version, qtCompatVersion,
-
-  coreutils, bison, flex, gdb, gperf, lndir, perl, pkgconfig, python2,
-  which,
-  # darwin support
-  darwin, libiconv,
-
-  dbus, fontconfig, freetype, glib, harfbuzz, icu, libX11, libXcomposite,
-  libXcursor, libXext, libXi, libXrender, libinput, libjpeg, libpng, libtiff,
-  libxcb, libxkbcommon, libxml2, libxslt, openssl, pcre16, pcre2, sqlite, udev,
-  xcbutil, xcbutilimage, xcbutilkeysyms, xcbutilrenderutil, xcbutilwm,
-  zlib,
-
-  # optional dependencies
-  cups ? null, mysql ? null, postgresql ? null,
-  withGtk3 ? false, dconf ? null, gtk3 ? null,
-
-  # options
-  libGLSupported ? !stdenv.isDarwin,
-  libGL,
-  buildExamples ? false,
-  buildTests ? false,
-  developerBuild ? false,
-  decryptSslTraffic ? false
+{ stdenv
+, lib
+, src
+, patches
+, version
+, qtCompatVersion
+, coreutils
+, bison
+, flex
+, gdb
+, gperf
+, lndir
+, perl
+, pkgconfig
+, python2
+, which
+, # darwin support
+  darwin
+, libiconv
+, dbus
+, fontconfig
+, freetype
+, glib
+, harfbuzz
+, icu
+, libX11
+, libXcomposite
+, libXcursor
+, libXext
+, libXi
+, libXrender
+, libinput
+, libjpeg
+, libpng
+, libtiff
+, libxcb
+, libxkbcommon
+, libxml2
+, libxslt
+, openssl
+, pcre16
+, pcre2
+, sqlite
+, udev
+, xcbutil
+, xcbutilimage
+, xcbutilkeysyms
+, xcbutilrenderutil
+, xcbutilwm
+, zlib
+, # optional dependencies
+  cups ? null
+, mysql ? null
+, postgresql ? null
+, withGtk3 ? false
+, dconf ? null
+, gtk3 ? null
+, # options
+  libGLSupported ? !stdenv.isDarwin
+, libGL
+, buildExamples ? false
+, buildTests ? false
+, developerBuild ? false
+, decryptSslTraffic ? false
 }:
 
 assert withGtk3 -> dconf != null;
@@ -40,48 +78,82 @@ stdenv.mkDerivation {
 
   propagatedBuildInputs =
     [
-      libxml2 libxslt openssl sqlite zlib
+      libxml2
+      libxslt
+      openssl
+      sqlite
+      zlib
 
       # Text rendering
-      harfbuzz icu
+      harfbuzz
+      icu
 
       # Image formats
-      libjpeg libpng libtiff
+      libjpeg
+      libpng
+      libtiff
       (if compareVersion "5.9.0" >= 0 then pcre2 else pcre16)
     ]
     ++ (
-      if stdenv.isDarwin
-      then with darwin.apple_sdk.frameworks;
-        [
-          # TODO: move to buildInputs, this should not be propagated.
-          AGL AppKit ApplicationServices Carbon Cocoa CoreAudio CoreBluetooth
-          CoreLocation CoreServices DiskArbitration Foundation OpenGL
-          darwin.libobjc libiconv MetalKit
-        ]
-      else
-        [
-          dbus glib udev
+         if stdenv.isDarwin
+         then with darwin.apple_sdk.frameworks;
+         [
+           # TODO: move to buildInputs, this should not be propagated.
+           AGL
+           AppKit
+           ApplicationServices
+           Carbon
+           Cocoa
+           CoreAudio
+           CoreBluetooth
+           CoreLocation
+           CoreServices
+           DiskArbitration
+           Foundation
+           OpenGL
+           darwin.libobjc
+           libiconv
+           MetalKit
+         ]
+         else
+           [
+             dbus
+             glib
+             udev
 
-          # Text rendering
-          fontconfig freetype
+             # Text rendering
+             fontconfig
+             freetype
 
-          # X11 libs
-          libX11 libXcomposite libXext libXi libXrender libxcb libxkbcommon xcbutil
-          xcbutilimage xcbutilkeysyms xcbutilrenderutil xcbutilwm
-        ]
-        ++ lib.optional libGLSupported libGL
-    );
+             # X11 libs
+             libX11
+             libXcomposite
+             libXext
+             libXi
+             libXrender
+             libxcb
+             libxkbcommon
+             xcbutil
+             xcbutilimage
+             xcbutilkeysyms
+             xcbutilrenderutil
+             xcbutilwm
+           ]
+           ++ lib.optional libGLSupported libGL
+       )
+  ;
 
   buildInputs =
     lib.optionals (!stdenv.isDarwin)
-    (
-      [ libinput ]
-      ++ lib.optional withGtk3 gtk3
-    )
+      (
+        [ libinput ]
+        ++ lib.optional withGtk3 gtk3
+      )
     ++ lib.optional developerBuild gdb
     ++ lib.optional (cups != null) cups
     ++ lib.optional (mysql != null) mysql.connector-c
-    ++ lib.optional (postgresql != null) postgresql;
+    ++ lib.optional (postgresql != null) postgresql
+  ;
 
   nativeBuildInputs =
     [ bison flex gperf lndir perl pkgconfig python2 which ];
@@ -120,39 +192,40 @@ stdenv.mkDerivation {
     ''
 
     + (
-      if stdenv.isDarwin
-      then
-        ''
-          sed -i \
-              -e 's|! /usr/bin/xcode-select --print-path >/dev/null 2>&1;|false;|' \
-              -e 's|! /usr/bin/xcrun -find xcodebuild >/dev/null 2>&1;|false;|' \
-              -e 's|sysroot=$(/usr/bin/xcodebuild -sdk $sdk -version Path 2>/dev/null)|sysroot=/nonsense|' \
-              -e 's|sysroot=$(/usr/bin/xcrun --sdk $sdk --show-sdk-path 2>/dev/null)|sysroot=/nonsense|' \
-              -e 's|QMAKE_CONF_COMPILER=`getXQMakeConf QMAKE_CXX`|QMAKE_CXX="clang++"\nQMAKE_CONF_COMPILER="clang++"|' \
-              -e 's|XCRUN=`/usr/bin/xcrun -sdk macosx clang -v 2>&1`|XCRUN="clang -v 2>&1"|' \
-              -e 's#sdk_val=$(/usr/bin/xcrun -sdk $sdk -find $(echo $val | cut -d \x27 \x27 -f 1))##' \
-              -e 's#val=$(echo $sdk_val $(echo $val | cut -s -d \x27 \x27 -f 2-))##' \
-              ./configure
-              substituteInPlace ./mkspecs/common/mac.conf \
-                  --replace "/System/Library/Frameworks/OpenGL.framework/" "${darwin.apple_sdk.frameworks.OpenGL}/Library/Frameworks/OpenGL.framework/"
-              substituteInPlace ./mkspecs/common/mac.conf \
-                  --replace "/System/Library/Frameworks/AGL.framework/" "${darwin.apple_sdk.frameworks.AGL}/Library/Frameworks/AGL.framework/"
-        ''
-        # Note on the above: \x27 is a way if including a single-quote
-        # character in the sed string arguments.
-      else
-        lib.optionalString libGLSupported
+        if stdenv.isDarwin
+        then
           ''
-            sed -i mkspecs/common/linux.conf \
-                -e "/^QMAKE_INCDIR_OPENGL/ s|$|${libGL.dev or libGL}/include|" \
-                -e "/^QMAKE_LIBDIR_OPENGL/ s|$|${libGL.out}/lib|"
-          '' +
-        lib.optionalString (stdenv.hostPlatform.isx86_32 && stdenv.cc.isGNU)
+            sed -i \
+                -e 's|! /usr/bin/xcode-select --print-path >/dev/null 2>&1;|false;|' \
+                -e 's|! /usr/bin/xcrun -find xcodebuild >/dev/null 2>&1;|false;|' \
+                -e 's|sysroot=$(/usr/bin/xcodebuild -sdk $sdk -version Path 2>/dev/null)|sysroot=/nonsense|' \
+                -e 's|sysroot=$(/usr/bin/xcrun --sdk $sdk --show-sdk-path 2>/dev/null)|sysroot=/nonsense|' \
+                -e 's|QMAKE_CONF_COMPILER=`getXQMakeConf QMAKE_CXX`|QMAKE_CXX="clang++"\nQMAKE_CONF_COMPILER="clang++"|' \
+                -e 's|XCRUN=`/usr/bin/xcrun -sdk macosx clang -v 2>&1`|XCRUN="clang -v 2>&1"|' \
+                -e 's#sdk_val=$(/usr/bin/xcrun -sdk $sdk -find $(echo $val | cut -d \x27 \x27 -f 1))##' \
+                -e 's#val=$(echo $sdk_val $(echo $val | cut -s -d \x27 \x27 -f 2-))##' \
+                ./configure
+                substituteInPlace ./mkspecs/common/mac.conf \
+                    --replace "/System/Library/Frameworks/OpenGL.framework/" "${darwin.apple_sdk.frameworks.OpenGL}/Library/Frameworks/OpenGL.framework/"
+                substituteInPlace ./mkspecs/common/mac.conf \
+                    --replace "/System/Library/Frameworks/AGL.framework/" "${darwin.apple_sdk.frameworks.AGL}/Library/Frameworks/AGL.framework/"
           ''
-            sed -i mkspecs/common/gcc-base-unix.conf \
-                -e "/^QMAKE_LFLAGS_SHLIB/ s/-shared/-shared -static-libgcc/"
-          ''
-    );
+          # Note on the above: \x27 is a way if including a single-quote
+          # character in the sed string arguments.
+        else
+          lib.optionalString libGLSupported
+            ''
+              sed -i mkspecs/common/linux.conf \
+                  -e "/^QMAKE_INCDIR_OPENGL/ s|$|${libGL.dev or libGL}/include|" \
+                  -e "/^QMAKE_LIBDIR_OPENGL/ s|$|${libGL.out}/lib|"
+            ''
+          + lib.optionalString (stdenv.hostPlatform.isx86_32 && stdenv.cc.isGNU)
+              ''
+                sed -i mkspecs/common/gcc-base-unix.conf \
+                    -e "/^QMAKE_LFLAGS_SHLIB/ s/-shared/-shared -static-libgcc/"
+              ''
+      )
+  ;
 
   qtPluginPrefix = "lib/qt-${qtCompatVersion}/plugins";
   qtQmlPrefix = "lib/qt-${qtCompatVersion}/qml";
@@ -164,7 +237,7 @@ stdenv.mkDerivation {
     ${lib.optionalString (compareVersion "5.9.0" < 0) ''
     # We need to set LD to CXX or otherwise we get nasty compile errors
     export LD=$CXX
-    ''}
+  ''}
 
     configureFlags+="\
         -plugindir $out/$qtPluginPrefix \
@@ -205,7 +278,8 @@ stdenv.mkDerivation {
          ''-DNIXPKGS_QGTK3_XDG_DATA_DIRS="${gtk3}/share/gsettings-schemas/${gtk3.name}"''
          ''-DNIXPKGS_QGTK3_GIO_EXTRA_MODULES="${dconf.lib}/lib/gio/modules"''
        ]
-    ++ lib.optional decryptSslTraffic "-DQT_DECRYPT_SSL_TRAFFIC";
+    ++ lib.optional decryptSslTraffic "-DQT_DECRYPT_SSL_TRAFFIC"
+  ;
 
   prefixKey = "-prefix ";
 
@@ -237,96 +311,97 @@ stdenv.mkDerivation {
       "-pch"
     ]
     ++ lib.optionals (compareVersion "5.11.0" < 0)
-    [
-      "-qml-debug"
-    ]
+         [
+           "-qml-debug"
+         ]
     ++ lib.optionals (compareVersion "5.9.0" < 0)
-    [
-      "-c++11"
-      "-no-reduce-relocations"
-    ]
+         [
+           "-c++11"
+           "-no-reduce-relocations"
+         ]
     ++ lib.optionals developerBuild [
-      "-developer-build"
-      "-no-warnings-are-errors"
-    ]
+         "-developer-build"
+         "-no-warnings-are-errors"
+       ]
     ++ (
-      if (!stdenv.hostPlatform.isx86_64)
-      then [ "-no-sse2" ]
-      else lib.optionals (compareVersion "5.9.0" >= 0) {
-        "default"        = [ "-sse2" "-no-sse3" "-no-ssse3" "-no-sse4.1" "-no-sse4.2" "-no-avx" "-no-avx2" ];
-        "westmere"       = [ "-sse2"    "-sse3"    "-ssse3"    "-sse4.1"    "-sse4.2" "-no-avx" "-no-avx2" ];
-        "sandybridge"    = [ "-sse2"    "-sse3"    "-ssse3"    "-sse4.1"    "-sse4.2"    "-avx" "-no-avx2" ];
-        "ivybridge"      = [ "-sse2"    "-sse3"    "-ssse3"    "-sse4.1"    "-sse4.2"    "-avx" "-no-avx2" ];
-        "haswell"        = [ "-sse2"    "-sse3"    "-ssse3"    "-sse4.1"    "-sse4.2"    "-avx"    "-avx2" ];
-        "broadwell"      = [ "-sse2"    "-sse3"    "-ssse3"    "-sse4.1"    "-sse4.2"    "-avx"    "-avx2" ];
-        "skylake"        = [ "-sse2"    "-sse3"    "-ssse3"    "-sse4.1"    "-sse4.2"    "-avx"    "-avx2" ];
-        "skylake-avx512" = [ "-sse2"    "-sse3"    "-ssse3"    "-sse4.1"    "-sse4.2"    "-avx"    "-avx2" ];
-      }.${stdenv.hostPlatform.platform.gcc.arch or "default"}
-    )
+         if (!stdenv.hostPlatform.isx86_64)
+         then [ "-no-sse2" ]
+         else lib.optionals (compareVersion "5.9.0" >= 0) {
+           "default" = [ "-sse2" "-no-sse3" "-no-ssse3" "-no-sse4.1" "-no-sse4.2" "-no-avx" "-no-avx2" ];
+           "westmere" = [ "-sse2" "-sse3" "-ssse3" "-sse4.1" "-sse4.2" "-no-avx" "-no-avx2" ];
+           "sandybridge" = [ "-sse2" "-sse3" "-ssse3" "-sse4.1" "-sse4.2" "-avx" "-no-avx2" ];
+           "ivybridge" = [ "-sse2" "-sse3" "-ssse3" "-sse4.1" "-sse4.2" "-avx" "-no-avx2" ];
+           "haswell" = [ "-sse2" "-sse3" "-ssse3" "-sse4.1" "-sse4.2" "-avx" "-avx2" ];
+           "broadwell" = [ "-sse2" "-sse3" "-ssse3" "-sse4.1" "-sse4.2" "-avx" "-avx2" ];
+           "skylake" = [ "-sse2" "-sse3" "-ssse3" "-sse4.1" "-sse4.2" "-avx" "-avx2" ];
+           "skylake-avx512" = [ "-sse2" "-sse3" "-ssse3" "-sse4.1" "-sse4.2" "-avx" "-avx2" ];
+         }.${stdenv.hostPlatform.platform.gcc.arch or "default"}
+       )
     ++ [
-      "-no-mips_dsp"
-      "-no-mips_dspr2"
-    ]
+         "-no-mips_dsp"
+         "-no-mips_dspr2"
+       ]
 
     ++ [
-      "-system-zlib"
-      "-system-libjpeg"
-      "-system-harfbuzz"
-      "-system-pcre"
-      "-openssl-linked"
-      "-system-sqlite"
-      ''-${if mysql != null then "plugin" else "no"}-sql-mysql''
-      ''-${if postgresql != null then "plugin" else "no"}-sql-psql''
+         "-system-zlib"
+         "-system-libjpeg"
+         "-system-harfbuzz"
+         "-system-pcre"
+         "-openssl-linked"
+         "-system-sqlite"
+         ''-${if mysql != null then "plugin" else "no"}-sql-mysql''
+         ''-${if postgresql != null then "plugin" else "no"}-sql-psql''
 
-      "-make libs"
-      "-make tools"
-      ''-${lib.optionalString (!buildExamples) "no"}make examples''
-      ''-${lib.optionalString (!buildTests) "no"}make tests''
-      "-v"
-    ]
+         "-make libs"
+         "-make tools"
+         ''-${lib.optionalString (!buildExamples) "no"}make examples''
+         ''-${lib.optionalString (!buildTests) "no"}make tests''
+         "-v"
+       ]
 
     ++ (
-      if stdenv.isDarwin
-      then
-        [
-          "-platform macx-clang"
-          "-no-fontconfig"
-          "-qt-freetype"
-          "-qt-libpng"
-          "-no-framework"
-        ]
-      else
-        [
-          "-${lib.optionalString (compareVersion "5.9.0" < 0) "no-"}rpath"
+         if stdenv.isDarwin
+         then
+           [
+             "-platform macx-clang"
+             "-no-fontconfig"
+             "-qt-freetype"
+             "-qt-libpng"
+             "-no-framework"
+           ]
+         else
+           [
+             "-${lib.optionalString (compareVersion "5.9.0" < 0) "no-"}rpath"
 
-          "-system-xcb"
-          "-xcb"
-          "-qpa xcb"
+             "-system-xcb"
+             "-xcb"
+             "-qpa xcb"
 
-          "-system-xkbcommon"
-          "-libinput"
-          "-xkbcommon-evdev"
+             "-system-xkbcommon"
+             "-libinput"
+             "-xkbcommon-evdev"
 
-          "-no-eglfs"
-          "-no-gbm"
-          "-no-kms"
-          "-no-linuxfb"
+             "-no-eglfs"
+             "-no-gbm"
+             "-no-kms"
+             "-no-linuxfb"
 
-          ''-${lib.optionalString (cups == null) "no-"}cups''
-          "-dbus-linked"
-          "-glib"
-          "-system-libjpeg"
-          "-system-libpng"
-        ]
-        ++ lib.optional withGtk3 "-gtk"
-        ++ lib.optional (compareVersion "5.9.0" >= 0) "-inotify"
-        ++ lib.optionals (compareVersion "5.10.0" >= 0) [
-          # Without these, Qt stops working on kernels < 3.17. See:
-          # https://github.com/NixOS/nixpkgs/issues/38832
-          "-no-feature-renameat2"
-          "-no-feature-getentropy"
-        ]
-    );
+             ''-${lib.optionalString (cups == null) "no-"}cups''
+             "-dbus-linked"
+             "-glib"
+             "-system-libjpeg"
+             "-system-libpng"
+           ]
+           ++ lib.optional withGtk3 "-gtk"
+           ++ lib.optional (compareVersion "5.9.0" >= 0) "-inotify"
+           ++ lib.optionals (compareVersion "5.10.0" >= 0) [
+                # Without these, Qt stops working on kernels < 3.17. See:
+                # https://github.com/NixOS/nixpkgs/issues/38832
+                "-no-feature-renameat2"
+                "-no-feature-getentropy"
+              ]
+       )
+  ;
 
   enableParallelBuilding = true;
 
@@ -371,7 +446,8 @@ stdenv.mkDerivation {
           sed -i "$dev/lib/pkgconfig/Qt5Core.pc" \
               -e "/^host_bins=/ c host_bins=$dev/bin"
         ''
-    );
+      )
+  ;
 
   setupHook = ../hooks/qtbase-setup-hook.sh;
 

@@ -226,7 +226,8 @@ in
     environment.pathsToLink = []
       ++ optional cfg.vendor.config.enable "/share/fish/vendor_conf.d"
       ++ optional cfg.vendor.completions.enable "/share/fish/vendor_completions.d"
-      ++ optional cfg.vendor.functions.enable "/share/fish/vendor_functions.d";
+      ++ optional cfg.vendor.functions.enable "/share/fish/vendor_functions.d"
+      ;
 
     environment.systemPackages = [ pkgs.fish ];
 

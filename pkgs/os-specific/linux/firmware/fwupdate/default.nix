@@ -1,7 +1,8 @@
 { efivar, fetchurl, gettext, gnu-efi, libsmbios, pkgconfig, popt, stdenv }:
 let
   version = "12";
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "fwupdate-${version}";
   src = fetchurl {
     url = "https://github.com/rhinstaller/fwupdate/releases/download/${version}/fwupdate-${version}.tar.bz2";
@@ -53,7 +54,7 @@ in stdenv.mkDerivation {
 
   meta = with stdenv.lib; {
     description = "Tools for using the ESRT and UpdateCapsule() to apply firmware updates";
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
     license = licenses.gpl2;
     platforms = platforms.linux;
   };

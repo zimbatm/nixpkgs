@@ -4,7 +4,9 @@ stdenv.mkDerivation {
   name = "virtualbox-modules-${virtualbox.version}-${kernel.version}";
   src = virtualbox.modsrc;
   hardeningDisable = [
-    "fortify" "pic" "stackprotector"
+    "fortify"
+    "pic"
+    "stackprotector"
   ];
 
   nativeBuildInputs = kernel.moduleBuildDependencies;
@@ -16,7 +18,9 @@ stdenv.mkDerivation {
 
   enableParallelBuilding = true;
 
-  meta = virtualbox.meta // {
-    description = virtualbox.meta.description + " (kernel modules)";
-  };
+  meta = virtualbox.meta
+    // {
+         description = virtualbox.meta.description + " (kernel modules)";
+       }
+    ;
 }

@@ -1,5 +1,10 @@
-{ stdenv, fetchFromGitHub, pythonPackages, wrapGAppsHook
-, gst_all_1, glib-networking, gobject-introspection
+{ stdenv
+, fetchFromGitHub
+, pythonPackages
+, wrapGAppsHook
+, gst_all_1
+, glib-networking
+, gobject-introspection
 }:
 
 pythonPackages.buildPythonApplication rec {
@@ -16,13 +21,22 @@ pythonPackages.buildPythonApplication rec {
   nativeBuildInputs = [ wrapGAppsHook ];
 
   buildInputs = with gst_all_1; [
-    gst-plugins-base gst-plugins-good gst-plugins-ugly gst-plugins-bad
-    glib-networking gobject-introspection
+    gst-plugins-base
+    gst-plugins-good
+    gst-plugins-ugly
+    gst-plugins-bad
+    glib-networking
+    gobject-introspection
   ];
 
   propagatedBuildInputs = with pythonPackages; [
-    gst-python pygobject3 pykka tornado_4 requests
-  ] ++ stdenv.lib.optional (!stdenv.isDarwin) dbus-python;
+    gst-python
+    pygobject3
+    pykka
+    tornado_4
+    requests
+  ]
+    ++ stdenv.lib.optional (!stdenv.isDarwin) dbus-python;
 
   # There are no tests
   doCheck = false;

@@ -3,7 +3,8 @@
 let
   pname = "spleen";
   version = "1.0.5";
-in fetchurl rec {
+in
+fetchurl rec {
   name = "${pname}-${version}";
   url = "https://github.com/fcambus/spleen/releases/download/${version}/spleen-${version}.tar.gz";
 

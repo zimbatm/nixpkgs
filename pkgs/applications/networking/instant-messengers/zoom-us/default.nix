@@ -1,12 +1,37 @@
-{ stdenv, fetchurl, mkDerivation, autoPatchelfHook
+{ stdenv
+, fetchurl
+, mkDerivation
+, autoPatchelfHook
 , fetchFromGitHub
-# Dynamic libraries
-, dbus, glib, libGL, libX11, libXfixes, libuuid, libxcb, qtbase, qtdeclarative
-, qtimageformats, qtlocation, qtquickcontrols, qtquickcontrols2, qtscript, qtsvg
-, qttools, qtwayland, qtwebchannel, qtwebengine
-# Runtime
-, coreutils, libjpeg_turbo, pciutils, procps, utillinux, libv4l
-, pulseaudioSupport ? true, libpulseaudio ? null
+  # Dynamic libraries
+, dbus
+, glib
+, libGL
+, libX11
+, libXfixes
+, libuuid
+, libxcb
+, qtbase
+, qtdeclarative
+, qtimageformats
+, qtlocation
+, qtquickcontrols
+, qtquickcontrols2
+, qtscript
+, qtsvg
+, qttools
+, qtwayland
+, qtwebchannel
+, qtwebengine
+  # Runtime
+, coreutils
+, libjpeg_turbo
+, pciutils
+, procps
+, utillinux
+, libv4l
+, pulseaudioSupport ? true
+, libpulseaudio ? null
 }:
 
 assert pulseaudioSupport -> libpulseaudio != null;
@@ -30,7 +55,8 @@ let
     sha256 = "0rm188844a10v8d6zgl2pnwsliwknawj09b02iabrvjw5w1lp6wl";
   };
 
-in mkDerivation {
+in
+mkDerivation {
   name = "zoom-us-${version}";
 
   src = srcs.${stdenv.hostPlatform.system};
@@ -38,9 +64,26 @@ in mkDerivation {
   nativeBuildInputs = [ autoPatchelfHook ];
 
   buildInputs = [
-    dbus glib libGL libX11 libXfixes libuuid libxcb libjpeg_turbo
-    qtbase qtdeclarative qtlocation qtquickcontrols qtquickcontrols2 qtscript
-    qtwebchannel qtwebengine qtimageformats qtsvg qttools qtwayland
+    dbus
+    glib
+    libGL
+    libX11
+    libXfixes
+    libuuid
+    libxcb
+    libjpeg_turbo
+    qtbase
+    qtdeclarative
+    qtlocation
+    qtquickcontrols
+    qtquickcontrols2
+    qtscript
+    qtwebchannel
+    qtwebengine
+    qtimageformats
+    qtsvg
+    qttools
+    qtwayland
   ];
 
   runtimeDependencies = optional pulseaudioSupport libpulseaudio;
@@ -61,18 +104,19 @@ in mkDerivation {
         "zoomlinux"
         "zopen"
       ];
-    in ''
-      runHook preInstall
+    in
+      ''
+        runHook preInstall
 
-      mkdir -p $out/{bin,share/zoom-us}
+        mkdir -p $out/{bin,share/zoom-us}
 
-      cp -ar ${files} $out/share/zoom-us
+        cp -ar ${files} $out/share/zoom-us
 
-      # TODO Patch this somehow; tries to dlopen './libturbojpeg.so' from cwd
-      ln -s $(readlink -e "${libjpeg_turbo.out}/lib/libturbojpeg.so") $out/share/zoom-us/libturbojpeg.so
+        # TODO Patch this somehow; tries to dlopen './libturbojpeg.so' from cwd
+        ln -s $(readlink -e "${libjpeg_turbo.out}/lib/libturbojpeg.so") $out/share/zoom-us/libturbojpeg.so
 
-      runHook postInstall
-    '';
+        runHook postInstall
+      '';
 
   postInstall = ''
     mkdir -p $out/share/{applications,appdata,icons}

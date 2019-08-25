@@ -22,22 +22,26 @@ stdenv.mkDerivation rec {
     tachyon
     jmol
     cddlib
-  ] ++ (with python.pkgs; [
-    psutil
-    future
-    sphinx
-    sagenb
-    scipy
-    sympy
-    matplotlib
-    pillow
-    networkx
-    ipykernel
-    ipywidgets
-    jupyter_client
-    typing
-    pybrial
-  ]);
+  ]
+  ++ (
+       with python.pkgs; [
+         psutil
+         future
+         sphinx
+         sagenb
+         scipy
+         sympy
+         matplotlib
+         pillow
+         networkx
+         ipykernel
+         ipywidgets
+         jupyter_client
+         typing
+         pybrial
+       ]
+     )
+  ;
 
   unpackPhase = ''
     export SAGE_DOC_OVERRIDE="$PWD/share/doc/sage"

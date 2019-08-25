@@ -1,5 +1,11 @@
-{ lib, fetchurl, pythonPackages, pkgconfig
-, qmake, qtbase, qtsvg, qtwebengine
+{ lib
+, fetchurl
+, pythonPackages
+, pkgconfig
+, qmake
+, qtbase
+, qtsvg
+, qtwebengine
 }:
 
 let
@@ -7,7 +13,8 @@ let
   inherit (pythonPackages) buildPythonPackage python isPy3k pyqt5 enum34;
   inherit (pyqt5) sip;
 
-in buildPythonPackage rec {
+in
+buildPythonPackage rec {
   pname = "pyqtwebengine";
   version = "5.12.1";
   format = "other";
@@ -36,7 +43,8 @@ in buildPythonPackage rec {
   ];
 
   propagatedBuildInputs = [ pyqt5 ]
-    ++ lib.optional (!isPy3k) enum34;
+    ++ lib.optional (!isPy3k) enum34
+    ;
 
   configurePhase = ''
     runHook preConfigure
@@ -70,10 +78,11 @@ in buildPythonPackage rec {
       "PyQt5.QtWebEngineWidgets"
     ];
     imports = lib.concatMapStrings (module: "import ${module};") modules;
-  in ''
-    echo "Checking whether modules can be imported..."
-    PYTHONPATH=$PYTHONPATH:$out/${python.sitePackages} ${python.interpreter} -c "${imports}"
-  '';
+  in
+    ''
+      echo "Checking whether modules can be imported..."
+      PYTHONPATH=$PYTHONPATH:$out/${python.sitePackages} ${python.interpreter} -c "${imports}"
+    '';
 
   doCheck = true;
 
@@ -82,8 +91,8 @@ in buildPythonPackage rec {
 
   meta = with lib; {
     description = "Python bindings for Qt5";
-    homepage    = http://www.riverbankcomputing.co.uk;
-    license     = licenses.gpl3;
-    platforms   = platforms.mesaPlatforms;
+    homepage = http://www.riverbankcomputing.co.uk;
+    license = licenses.gpl3;
+    platforms = platforms.mesaPlatforms;
   };
 }

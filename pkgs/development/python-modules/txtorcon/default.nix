@@ -1,6 +1,20 @@
-{lib, buildPythonPackage, fetchPypi, isPy3k, incremental, ipaddress, twisted
-, automat, zope_interface, idna, pyopenssl, service-identity, pytest, mock, lsof
-, GeoIP}:
+{ lib
+, buildPythonPackage
+, fetchPypi
+, isPy3k
+, incremental
+, ipaddress
+, twisted
+, automat
+, zope_interface
+, idna
+, pyopenssl
+, service-identity
+, pytest
+, mock
+, lsof
+, GeoIP
+}:
 
 buildPythonPackage rec {
   pname = "txtorcon";
@@ -8,10 +22,17 @@ buildPythonPackage rec {
 
   checkInputs = [ pytest mock lsof GeoIP ];
   propagatedBuildInputs = [
-    incremental twisted automat zope_interface
+    incremental
+    twisted
+    automat
+    zope_interface
     # extra dependencies required by twisted[tls]
-    idna pyopenssl service-identity
-  ] ++ lib.optionals (!isPy3k) [ ipaddress ];
+    idna
+    pyopenssl
+    service-identity
+  ]
+  ++ lib.optionals (!isPy3k) [ ipaddress ]
+  ;
 
   src = fetchPypi {
     inherit pname version;

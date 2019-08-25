@@ -27,6 +27,6 @@ stdenv.mkDerivation rec {
     homepage = https://proj4.org;
     license = licenses.mit;
     platforms = platforms.linux ++ platforms.darwin;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
   };
 }

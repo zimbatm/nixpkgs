@@ -1,7 +1,13 @@
-{ stdenv, fetchFromGitHub,
-  autoconf, automake, libtool, cmake,
-  rtl-sdr, libao, fftwFloat
-} :
+{ stdenv
+, fetchFromGitHub
+, autoconf
+, automake
+, libtool
+, cmake
+, rtl-sdr
+, libao
+, fftwFloat
+}:
 let
   src_faad2 = fetchFromGitHub {
     owner = "dsvensson";
@@ -12,7 +18,8 @@ let
 
   version = "1.0";
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "nrsc5-${version}";
 
   src = fetchFromGitHub {
@@ -49,4 +56,3 @@ in stdenv.mkDerivation {
     maintainers = with maintainers; [ markuskowa ];
   };
 }
-

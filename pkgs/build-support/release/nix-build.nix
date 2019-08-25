@@ -12,7 +12,8 @@
 , doCoverityAnalysis ? false
 , lcovFilter ? []
 , lcovExtraTraceFiles ? []
-, src, stdenv
+, src
+, stdenv
 , name ? if doCoverageAnalysis then "nix-coverage" else "nix-build"
 , failureHook ? null
 , prePhases ? []
@@ -20,7 +21,8 @@
 , buildInputs ? []
 , preHook ? ""
 , postHook ? ""
-, ... } @ args:
+, ...
+} @ args:
 
 let
   doingAnalysis = doCoverageAnalysis || doClangAnalysis || doCoverityAnalysis;
@@ -69,8 +71,8 @@ stdenv.mkDerivation (
         fi
       '';
 
-    failureHook = (stdenv.lib.optionalString (failureHook != null) failureHook) +
-    ''
+    failureHook = (stdenv.lib.optionalString (failureHook != null) failureHook)
+      + ''
       if test -n "$succeedOnFailure"; then
           if test -n "$keepBuildDirectory"; then
               KEEPBUILDDIR="$out/`basename $TMPDIR`"
@@ -80,88 +82,90 @@ stdenv.mkDerivation (
               stopNest
           fi
       fi
-    '';
+    ''
+      ;
   }
 
-  // args //
+  // args
+  // {
+       name = name + (if src ? version then "-" + src.version else "");
 
-  {
-    name = name + (if src ? version then "-" + src.version else "");
+       postHook = ''
+         . ${./functions.sh}
+         origSrc=$src
+         src=$(findTarball $src)
+         ${postHook}
+       '';
 
-    postHook = ''
-      . ${./functions.sh}
-      origSrc=$src
-      src=$(findTarball $src)
-      ${postHook}
-    '';
+       preHook = ''
+         # Perform Coverity Analysis
+         if [ ! -z "${toString doCoverityAnalysis}" ]; then
+           shopt -s expand_aliases
+           mkdir _coverity_$name
+           alias make="cov-build --dir _coverity_$name/cov-int make"
+         fi
 
-    preHook = ''
-      # Perform Coverity Analysis
-      if [ ! -z "${toString doCoverityAnalysis}" ]; then
-        shopt -s expand_aliases
-        mkdir _coverity_$name
-        alias make="cov-build --dir _coverity_$name/cov-int make"
-      fi
+         # Perform Clang Analysis
+         if [ ! -z "${toString doClangAnalysis}" ]; then
+           shopt -s expand_aliases
+           alias make="scan-build -o _clang_analyze_$name --html-title='Scan results for $name' make"
+         fi
 
-      # Perform Clang Analysis
-      if [ ! -z "${toString doClangAnalysis}" ]; then
-        shopt -s expand_aliases
-        alias make="scan-build -o _clang_analyze_$name --html-title='Scan results for $name' make"
-      fi
+         ${preHook}
+       '';
 
-      ${preHook}
-    '';
+       # Clean up after analysis
+       postBuild = ''
+         if [ ! -z "${toString (doCoverityAnalysis || doClangAnalysis)}" ]; then
+           unalias make
+         fi
+       '';
 
-    # Clean up after analysis
-    postBuild = ''
-      if [ ! -z "${toString (doCoverityAnalysis || doClangAnalysis)}" ]; then
-        unalias make
-      fi
-    '';
+       initPhase = ''
+         mkdir -p $out/nix-support
+         echo "$system" > $out/nix-support/system
 
-    initPhase = ''
-      mkdir -p $out/nix-support
-      echo "$system" > $out/nix-support/system
+         if [ -z "${toString doingAnalysis}" ]; then
+             for i in $outputs; do
+                 if [ "$i" = out ]; then j=none; else j="$i"; fi
+                 mkdir -p ''${!i}/nix-support
+                 echo "nix-build $j ''${!i}" >> ''${!i}/nix-support/hydra-build-products
+             done
+         fi
+       '';
 
-      if [ -z "${toString doingAnalysis}" ]; then
-          for i in $outputs; do
-              if [ "$i" = out ]; then j=none; else j="$i"; fi
-              mkdir -p ''${!i}/nix-support
-              echo "nix-build $j ''${!i}" >> ''${!i}/nix-support/hydra-build-products
-          done
-      fi
-    '';
+       prePhases = [ "initPhase" ] ++ prePhases;
 
-    prePhases = ["initPhase"] ++ prePhases;
+       buildInputs =
+         buildInputs
+         ++ (stdenv.lib.optional doCoverageAnalysis args.makeGCOVReport)
+         ++ (stdenv.lib.optional doClangAnalysis args.clang-analyzer)
+         ++ (stdenv.lib.optional doCoverityAnalysis args.cov-build)
+         ++ (stdenv.lib.optional doCoverityAnalysis args.xz)
+         ;
 
-    buildInputs =
-      buildInputs ++
-      (stdenv.lib.optional doCoverageAnalysis args.makeGCOVReport) ++
-      (stdenv.lib.optional doClangAnalysis args.clang-analyzer) ++
-      (stdenv.lib.optional doCoverityAnalysis args.cov-build) ++
-      (stdenv.lib.optional doCoverityAnalysis args.xz);
+       lcovFilter = [ "/nix/store/*" ] ++ lcovFilter;
 
-    lcovFilter = ["/nix/store/*"] ++ lcovFilter;
+       inherit lcovExtraTraceFiles;
 
-    inherit lcovExtraTraceFiles;
+       postPhases = postPhases ++ [ "finalPhase" ];
 
-    postPhases = postPhases ++ ["finalPhase"];
+       meta = (if args ? meta then args.meta else {})
+         // {
+              description = if doCoverageAnalysis then "Coverage analysis" else "Nix package for ${stdenv.hostPlatform.system}";
+            }
+         ;
 
-    meta = (if args ? meta then args.meta else {}) // {
-      description = if doCoverageAnalysis then "Coverage analysis" else "Nix package for ${stdenv.hostPlatform.system}";
-    };
+     }
 
-  }
-
-  //
-
-  (if buildOutOfSourceTree
-   then {
-     preConfigure =
-       # Build out of source tree and make the source tree read-only.  This
-       # helps catch violations of the GNU Coding Standards (info
-       # "(standards) Configuration"), like `make distcheck' does.
-       '' mkdir "../build"
+  // (
+       if buildOutOfSourceTree
+       then {
+         preConfigure =
+           # Build out of source tree and make the source tree read-only.  This
+           # helps catch violations of the GNU Coding Standards (info
+           # "(standards) Configuration"), like `make distcheck' does.
+           '' mkdir "../build"
           cd "../build"
           configureScript="../$sourceRoot/configure"
           chmod -R a-w "../$sourceRoot"
@@ -170,6 +174,7 @@ stdenv.mkDerivation (
 
           ${if preConfigure != null then preConfigure else ""}
        '';
-   }
-   else {})
+       }
+       else {}
+     )
 )

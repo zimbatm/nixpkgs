@@ -1,11 +1,25 @@
-{ stdenv, lib, fetchFromGitHub, makeWrapper, cmake, pkgconfig
-, boost, curl, expat, glew, libpng, tbb, wxGTK30
-, gtest, nlopt, xorg, makeDesktopItem
+{ stdenv
+, lib
+, fetchFromGitHub
+, makeWrapper
+, cmake
+, pkgconfig
+, boost
+, curl
+, expat
+, glew
+, libpng
+, tbb
+, wxGTK30
+, gtest
+, nlopt
+, xorg
+, makeDesktopItem
 }:
 let
   nloptVersion = if lib.hasAttr "version" nlopt
-                 then lib.getAttr "version" nlopt
-                 else "2.4";
+  then lib.getAttr "version" nlopt
+  else "2.4";
 in
 stdenv.mkDerivation rec {
   name = "prusa-slicer-${version}";
@@ -30,7 +44,9 @@ stdenv.mkDerivation rec {
     tbb
     wxGTK30
     xorg.libX11
-  ] ++ checkInputs;
+  ]
+  ++ checkInputs
+  ;
 
   checkInputs = [ gtest ];
 
@@ -45,11 +61,13 @@ stdenv.mkDerivation rec {
     # on other distributions. As the copy in glibc seems to be identical to the
     # one in the kernel, we use that one instead.
     sed -i 's|"/usr/include/asm-generic/ioctls.h"|<asm-generic/ioctls.h>|g' src/libslic3r/GCodeSender.cpp
-  '' + lib.optionalString (lib.versionOlder "2.5" nloptVersion) ''
-    # Since version 2.5.0 of nlopt we need to link to libnlopt, as libnlopt_cxx
-    # now seems to be integrated into the main lib.
-    sed -i 's|nlopt_cxx|nlopt|g' src/libnest2d/cmake_modules/FindNLopt.cmake
-  '';
+  ''
+  + lib.optionalString (lib.versionOlder "2.5" nloptVersion) ''
+      # Since version 2.5.0 of nlopt we need to link to libnlopt, as libnlopt_cxx
+      # now seems to be integrated into the main lib.
+      sed -i 's|nlopt_cxx|nlopt|g' src/libnest2d/cmake_modules/FindNLopt.cmake
+    ''
+  ;
 
   src = fetchFromGitHub {
     owner = "prusa3d";
@@ -60,7 +78,7 @@ stdenv.mkDerivation rec {
 
   cmakeFlags = [
     "-DSLIC3R_FHS=1"
-    "-DSLIC3R_WX_STABLE=1"  # necessary when compiling against wxGTK 3.0
+    "-DSLIC3R_WX_STABLE=1" # necessary when compiling against wxGTK 3.0
   ];
 
   postInstall = ''

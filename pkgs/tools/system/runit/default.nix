@@ -1,6 +1,7 @@
-{ stdenv, fetchurl
+{ stdenv
+, fetchurl
 
-# Build runit-init as a static binary
+  # Build runit-init as a static binary
 , static ? false
 }:
 
@@ -30,9 +31,11 @@ stdenv.mkDerivation rec {
     # usernamespace sandbox of nix seems to conflict with runit's assumptions
     # about unix users. Therefor skip the check
     sed -i '/.\/chkshsgr/d' src/Makefile
-  '' + stdenv.lib.optionalString (!static) ''
-    sed -i 's,-static,,g' src/Makefile
-  '';
+  ''
+  + stdenv.lib.optionalString (!static) ''
+      sed -i 's,-static,,g' src/Makefile
+    ''
+  ;
 
   preBuild = ''
     cd src

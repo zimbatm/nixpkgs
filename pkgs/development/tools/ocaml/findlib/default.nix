@@ -9,13 +9,13 @@ stdenv.mkDerivation rec {
     sha256 = "00s3sfb02pnjmkax25pcnljcnhcggiliccfz69a72ic7gsjwz1cf";
   };
 
-  buildInputs = [m4 ncurses ocaml];
+  buildInputs = [ m4 ncurses ocaml ];
 
   patches = [ ./ldconf.patch ./install_topfind.patch ];
 
-  dontAddPrefix=true;
+  dontAddPrefix = true;
 
-  preConfigure=''
+  preConfigure = ''
     configureFlagsArray=(
       -bindir $out/bin
       -mandir $out/share/man
@@ -57,5 +57,3 @@ stdenv.mkDerivation rec {
     ];
   };
 }
-
-

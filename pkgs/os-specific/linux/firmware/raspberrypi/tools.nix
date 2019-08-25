@@ -17,9 +17,11 @@ stdenv.mkDerivation rec {
 
   preConfigure = ''
     cmakeFlagsArray+=("-DVMCS_INSTALL_PREFIX=$out")
-  '' + stdenv.lib.optionalString stdenv.isAarch64 ''
-    cmakeFlagsArray+=("-DARM64=1")
-  '';
+  ''
+  + stdenv.lib.optionalString stdenv.isAarch64 ''
+      cmakeFlagsArray+=("-DARM64=1")
+    ''
+  ;
 
   meta = with stdenv.lib; {
     description = "Userland tools for the Raspberry Pi board";

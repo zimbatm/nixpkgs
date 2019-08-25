@@ -1,5 +1,19 @@
-{ stdenv, fetchFromGitHub, cmake, makeWrapper, pkgconfig, vala, gtk3, libgee
-, poppler, libpthreadstubs, gstreamer, gst-plugins-base, librsvg, pcre, gobject-introspection }:
+{ stdenv
+, fetchFromGitHub
+, cmake
+, makeWrapper
+, pkgconfig
+, vala
+, gtk3
+, libgee
+, poppler
+, libpthreadstubs
+, gstreamer
+, gst-plugins-base
+, librsvg
+, pcre
+, gobject-introspection
+}:
 
 stdenv.mkDerivation rec {
   name = "${product}-${version}";
@@ -14,12 +28,23 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    cmake pkgconfig vala
+    cmake
+    pkgconfig
+    vala
     # For setup hook
     gobject-introspection
   ];
-  buildInputs = [ gstreamer gst-plugins-base gtk3 libgee poppler
-    libpthreadstubs makeWrapper librsvg pcre ];
+  buildInputs = [
+    gstreamer
+    gst-plugins-base
+    gtk3
+    libgee
+    poppler
+    libpthreadstubs
+    makeWrapper
+    librsvg
+    pcre
+  ];
 
   cmakeFlags = stdenv.lib.optionalString stdenv.isDarwin "-DMOVIES=OFF";
 

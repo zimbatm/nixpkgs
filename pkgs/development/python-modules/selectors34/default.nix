@@ -27,5 +27,5 @@ buildPythonPackage rec {
     homepage = https://github.com/berkerpeksag/selectors34;
     license = licenses.psfl;
     maintainers = with maintainers; [ prusnak ];
-    };
+  };
 }

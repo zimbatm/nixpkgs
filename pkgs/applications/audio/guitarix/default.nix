@@ -1,8 +1,34 @@
-{ stdenv, fetchurl, gettext, intltool, pkgconfig, python2
-, avahi, bluez, boost, eigen, fftw, glib, glib-networking
-, glibmm, gsettings-desktop-schemas, gtkmm2, libjack2
-, ladspaH, libav, librdf, libsndfile, lilv, lv2, serd, sord, sratom
-, wrapGAppsHook, zita-convolver, zita-resampler, curl, wafHook
+{ stdenv
+, fetchurl
+, gettext
+, intltool
+, pkgconfig
+, python2
+, avahi
+, bluez
+, boost
+, eigen
+, fftw
+, glib
+, glib-networking
+, glibmm
+, gsettings-desktop-schemas
+, gtkmm2
+, libjack2
+, ladspaH
+, libav
+, librdf
+, libsndfile
+, lilv
+, lv2
+, serd
+, sord
+, sratom
+, wrapGAppsHook
+, zita-convolver
+, zita-resampler
+, curl
+, wafHook
 , optimizationSupport ? false # Enable support for native CPU extensions
 }:
 
@@ -22,10 +48,29 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ gettext intltool wrapGAppsHook pkgconfig python2 wafHook ];
 
   buildInputs = [
-    avahi bluez boost eigen fftw glib glibmm glib-networking.out
-    gsettings-desktop-schemas gtkmm2 libjack2 ladspaH libav librdf
-    libsndfile lilv lv2 serd sord sratom zita-convolver
-    zita-resampler curl
+    avahi
+    bluez
+    boost
+    eigen
+    fftw
+    glib
+    glibmm
+    glib-networking.out
+    gsettings-desktop-schemas
+    gtkmm2
+    libjack2
+    ladspaH
+    libav
+    librdf
+    libsndfile
+    lilv
+    lv2
+    serd
+    sord
+    sratom
+    zita-convolver
+    zita-resampler
+    curl
   ];
 
   wafConfigureFlags = [
@@ -36,7 +81,9 @@ stdenv.mkDerivation rec {
     "--install-roboto-font"
     "--includeresampler"
     "--convolver-ffmpeg"
-  ] ++ optional optimizationSupport "--optimization";
+  ]
+  ++ optional optimizationSupport "--optimization"
+  ;
 
   meta = with stdenv.lib; {
     description = "A virtual guitar amplifier for Linux running with JACK";

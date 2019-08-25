@@ -1,4 +1,12 @@
-{ buildPythonPackage, fetchPypi, stdenv, sip, qtbase, pyqt5, poppler, pkgconfig, fetchpatch
+{ buildPythonPackage
+, fetchPypi
+, stdenv
+, sip
+, qtbase
+, pyqt5
+, poppler
+, pkgconfig
+, fetchpatch
 , substituteAll
 }:
 
@@ -12,14 +20,18 @@ buildPythonPackage rec {
   };
 
   patches = [
-    (substituteAll {
-      src = ./poppler-include-dir.patch;
-      poppler_include_dir = "${poppler.dev}/include/poppler";
-    })
-    (fetchpatch {
-      url = "https://github.com/wbsoft/python-poppler-qt5/commit/faf4d1308f89560b0d849671226e3080dfc72e79.patch";
-      sha256 = "18krhh6wzsnpxzlzv02nginb1vralla8ai24zqk10nc4mj6fkj86";
-    })
+    (
+      substituteAll {
+        src = ./poppler-include-dir.patch;
+        poppler_include_dir = "${poppler.dev}/include/poppler";
+      }
+    )
+    (
+      fetchpatch {
+        url = "https://github.com/wbsoft/python-poppler-qt5/commit/faf4d1308f89560b0d849671226e3080dfc72e79.patch";
+        sha256 = "18krhh6wzsnpxzlzv02nginb1vralla8ai24zqk10nc4mj6fkj86";
+      }
+    )
   ];
 
   setupPyBuildFlags = [

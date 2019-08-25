@@ -1,5 +1,13 @@
-{ stdenv, fetchurl, lib
-, cmocka, curl, pandoc, pkgconfig, openssl, tpm2-tss }:
+{ stdenv
+, fetchurl
+, lib
+, cmocka
+, curl
+, pandoc
+, pkgconfig
+, openssl
+, tpm2-tss
+}:
 
 stdenv.mkDerivation rec {
   pname = "tpm2-tools";
@@ -12,7 +20,9 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ pandoc pkgconfig ];
   buildInputs = [
-    curl openssl tpm2-tss
+    curl
+    openssl
+    tpm2-tss
     # For unit tests.
     cmocka
   ];

@@ -4,7 +4,8 @@ with lib;
 
 let
   cfg = config.services.gocd-server;
-in {
+in
+{
   options = {
     services.gocd-server = {
       enable = mkEnableOption "gocd-server";
@@ -26,7 +27,7 @@ in {
       };
 
       extraGroups = mkOption {
-        default = [ ];
+        default = [];
         example = [ "wheel" "docker" ];
         description = ''
           List of extra groups that the "gocd-server" user should be a part of.
@@ -112,7 +113,7 @@ in {
       };
 
       extraOptions = mkOption {
-        default = [ ];
+        default = [];
         example = [
           "-X debug"
           "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"
@@ -130,7 +131,7 @@ in {
       };
 
       environment = mkOption {
-        default = { };
+        default = {};
         type = with types; attrsOf str;
         description = ''
           Additional environment variables to be passed to the gocd-server process.
@@ -170,10 +171,11 @@ in {
             lib.filterAttrs (n: v: builtins.elem n [ "NIX_PATH" ])
               config.environment.sessionVariables;
         in
-          selectedSessionVars //
-            { NIX_REMOTE = "daemon";
-            } //
-            cfg.environment;
+          selectedSessionVars
+          // {
+               NIX_REMOTE = "daemon";
+             }
+          // cfg.environment;
 
       path = cfg.packages;
 

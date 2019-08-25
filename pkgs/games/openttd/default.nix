@@ -1,7 +1,24 @@
-{ stdenv, fetchurl, fetchzip, pkgconfig, SDL, libpng, zlib, xz, freetype, fontconfig
-, withOpenGFX ? true, withOpenSFX ? true, withOpenMSX ? true
-, withFluidSynth ? true, audioDriver ? "alsa", fluidsynth, soundfont-fluid, procps
-, writeScriptBin, makeWrapper, runtimeShell
+{ stdenv
+, fetchurl
+, fetchzip
+, pkgconfig
+, SDL
+, libpng
+, zlib
+, xz
+, freetype
+, fontconfig
+, withOpenGFX ? true
+, withOpenSFX ? true
+, withOpenMSX ? true
+, withFluidSynth ? true
+, audioDriver ? "alsa"
+, fluidsynth
+, soundfont-fluid
+, procps
+, writeScriptBin
+, makeWrapper
+, runtimeShell
 }:
 
 let
@@ -38,7 +55,8 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ pkgconfig makeWrapper ];
   buildInputs = [ SDL libpng xz zlib freetype fontconfig ]
-    ++ stdenv.lib.optionals withFluidSynth [ fluidsynth soundfont-fluid ];
+    ++ stdenv.lib.optionals withFluidSynth [ fluidsynth soundfont-fluid ]
+    ;
 
   prefixKey = "--prefix-dir=";
 
@@ -52,26 +70,26 @@ stdenv.mkDerivation rec {
     mv $out/games/ $out/bin
 
     ${stdenv.lib.optionalString withOpenGFX ''
-      cp ${opengfx}/* $out/share/games/openttd/baseset
-    ''}
+    cp ${opengfx}/* $out/share/games/openttd/baseset
+  ''}
 
     mkdir -p $out/share/games/openttd/data
 
     ${stdenv.lib.optionalString withOpenSFX ''
-      cp ${opensfx}/*.{obs,cat} $out/share/games/openttd/data
-    ''}
+    cp ${opensfx}/*.{obs,cat} $out/share/games/openttd/data
+  ''}
 
     mkdir $out/share/games/openttd/baseset/openmsx
 
     ${stdenv.lib.optionalString withOpenMSX ''
-      cp ${openmsx}/*.{obm,mid} $out/share/games/openttd/baseset/openmsx
-    ''}
+    cp ${openmsx}/*.{obm,mid} $out/share/games/openttd/baseset/openmsx
+  ''}
 
     ${stdenv.lib.optionalString withFluidSynth ''
-      wrapProgram $out/bin/openttd \
-        --add-flags -m \
-        --add-flags extmidi:cmd=${playmidi}/bin/playmidi
-    ''}
+    wrapProgram $out/bin/openttd \
+      --add-flags -m \
+      --add-flags extmidi:cmd=${playmidi}/bin/playmidi
+  ''}
   '';
 
   meta = {

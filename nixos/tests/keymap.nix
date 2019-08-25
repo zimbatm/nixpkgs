@@ -1,12 +1,12 @@
-{ system ? builtins.currentSystem,
-  config ? {},
-  pkgs ? import ../.. { inherit system config; }
+{ system ? builtins.currentSystem
+, config ? {}
+, pkgs ? import ../.. { inherit system config; }
 }:
 
 with import ../lib/testing.nix { inherit system pkgs; };
 
 let
-  readyFile  = "/tmp/readerReady";
+  readyFile = "/tmp/readerReady";
   resultFile = "/tmp/readerResult";
 
   testReader = pkgs.writeScript "test-input-reader" ''
@@ -29,22 +29,23 @@ let
 
   mkKeyboardTest = layout: { extraConfig ? {}, tests }: with pkgs.lib; let
     combinedTests = foldAttrs (acc: val: acc ++ val) [] (builtins.attrValues tests);
-    perlStr = val: "'${escape ["'" "\\"] val}'";
+    perlStr = val: "'${escape [ "'" "\\" ] val}'";
     lq = length combinedTests.qwerty;
     le = length combinedTests.expect;
     msg = "length mismatch between qwerty (${toString lq}) and expect (${toString le}) lists!";
-    send   = concatMapStringsSep ", " perlStr combinedTests.qwerty;
+    send = concatMapStringsSep ", " perlStr combinedTests.qwerty;
     expect = if (lq == le) then concatStrings combinedTests.expect else throw msg;
 
-  in makeTest {
-    name = "keymap-${layout}";
+  in
+    makeTest {
+      name = "keymap-${layout}";
 
-    machine.services.xserver.desktopManager.xterm.enable = false;
-    machine.i18n.consoleKeyMap = mkOverride 900 layout;
-    machine.services.xserver.layout = mkOverride 900 layout;
-    machine.imports = [ ./common/x11.nix extraConfig ];
+      machine.services.xserver.desktopManager.xterm.enable = false;
+      machine.i18n.consoleKeyMap = mkOverride 900 layout;
+      machine.services.xserver.layout = mkOverride 900 layout;
+      machine.imports = [ ./common/x11.nix extraConfig ];
 
-    testScript = ''
+      testScript = ''
 
       sub mkTest ($$) {
         my ($desc, $cmd) = @_;
@@ -78,15 +79,16 @@ let
       mkTest "VT keymap", "openvt -sw --";
       mkTest "Xorg keymap", "DISPLAY=:0 xterm -title testterm -class testterm -fullscreen -e";
     '';
-  };
+    };
 
-in pkgs.lib.mapAttrs mkKeyboardTest {
+in
+pkgs.lib.mapAttrs mkKeyboardTest {
   azerty = {
     tests = {
       azqw.qwerty = [ "q" "w" ];
       azqw.expect = [ "a" "z" ];
       altgr.qwerty = [ "alt_r-2" "alt_r-3" "alt_r-4" "alt_r-5" "alt_r-6" ];
-      altgr.expect = [ "~"       "#"       "{"       "["       "|"       ];
+      altgr.expect = [ "~" "#" "{" "[" "|" ];
     };
 
     extraConfig.i18n.consoleKeyMap = "azerty/fr";
@@ -96,7 +98,7 @@ in pkgs.lib.mapAttrs mkKeyboardTest {
   colemak = {
     tests = {
       homerow.qwerty = [ "a" "s" "d" "f" "j" "k" "l" "semicolon" ];
-      homerow.expect = [ "a" "r" "s" "t" "n" "e" "i" "o"         ];
+      homerow.expect = [ "a" "r" "s" "t" "n" "e" "i" "o" ];
     };
 
     extraConfig.i18n.consoleKeyMap = "colemak/colemak";
@@ -107,18 +109,18 @@ in pkgs.lib.mapAttrs mkKeyboardTest {
   dvorak = {
     tests = {
       homerow.qwerty = [ "a" "s" "d" "f" "j" "k" "l" "semicolon" ];
-      homerow.expect = [ "a" "o" "e" "u" "h" "t" "n" "s"         ];
+      homerow.expect = [ "a" "o" "e" "u" "h" "t" "n" "s" ];
       symbols.qwerty = [ "q" "w" "e" "minus" "equal" ];
-      symbols.expect = [ "'" "," "." "["     "]"     ];
+      symbols.expect = [ "'" "," "." "[" "]" ];
     };
   };
 
   dvp = {
     tests = {
       homerow.qwerty = [ "a" "s" "d" "f" "j" "k" "l" "semicolon" ];
-      homerow.expect = [ "a" "o" "e" "u" "h" "t" "n" "s"         ];
+      homerow.expect = [ "a" "o" "e" "u" "h" "t" "n" "s" ];
       numbers.qwerty = map (x: "shift-${x}")
-                       [ "1" "2" "3" "4" "5" "6" "7" "8" "9" "0" "minus" ];
+        [ "1" "2" "3" "4" "5" "6" "7" "8" "9" "0" "minus" ];
       numbers.expect = [ "%" "7" "5" "3" "1" "9" "0" "2" "4" "6" "8" ];
       symbols.qwerty = [ "1" "2" "3" "4" "5" "6" "7" "8" "9" "0" "minus" ];
       symbols.expect = [ "&" "[" "{" "}" "(" "=" "*" ")" "+" "]" "!" ];
@@ -130,12 +132,12 @@ in pkgs.lib.mapAttrs mkKeyboardTest {
 
   neo = {
     tests = {
-      layer1.qwerty = [ "f"           "j"                     ];
-      layer1.expect = [ "e"           "n"                     ];
-      layer2.qwerty = [ "shift-f"     "shift-j"     "shift-6" ];
-      layer2.expect = [ "E"           "N"           "$"       ];
-      layer3.qwerty = [ "caps_lock-d" "caps_lock-f"           ];
-      layer3.expect = [ "{"           "}"                     ];
+      layer1.qwerty = [ "f" "j" ];
+      layer1.expect = [ "e" "n" ];
+      layer2.qwerty = [ "shift-f" "shift-j" "shift-6" ];
+      layer2.expect = [ "E" "N" "$" ];
+      layer3.qwerty = [ "caps_lock-d" "caps_lock-f" ];
+      layer3.expect = [ "{" "}" ];
     };
 
     extraConfig.services.xserver.layout = "de";
@@ -147,8 +149,8 @@ in pkgs.lib.mapAttrs mkKeyboardTest {
       zy.qwerty = [ "z" "y" ];
       zy.expect = [ "y" "z" ];
       altgr.qwerty = map (x: "alt_r-${x}")
-                     [ "q" "less" "7" "8" "9" "0" ];
-      altgr.expect = [ "@" "|"    "{" "[" "]" "}" ];
+        [ "q" "less" "7" "8" "9" "0" ];
+      altgr.expect = [ "@" "|" "{" "[" "]" "}" ];
     };
 
     extraConfig.i18n.consoleKeyMap = "de";

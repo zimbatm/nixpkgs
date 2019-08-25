@@ -20,8 +20,10 @@ rustPlatform.buildRustPackage rec {
 
   LIBCLANG_PATH = libclang + "/lib";
 
-  buildInputs = [ openssl libsodium nettle libclang ] ++ stdenv.lib.optionals stdenv.isDarwin
-    (with darwin.apple_sdk.frameworks; [ CoreServices Security ]);
+  buildInputs = [ openssl libsodium nettle libclang ]
+    ++ stdenv.lib.optionals stdenv.isDarwin
+         (with darwin.apple_sdk.frameworks; [ CoreServices Security ])
+    ;
 
   doCheck = false;
 

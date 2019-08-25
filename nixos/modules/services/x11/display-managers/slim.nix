@@ -35,7 +35,8 @@ let
           unpackFile ${cfg.theme}
           ln -s * default
         '';
-    in if cfg.theme == null then "${pkgs.slim}/share/slim/themes" else unpackedTheme;
+    in
+      if cfg.theme == null then "${pkgs.slim}/share/slim/themes" else unpackedTheme;
 
 in
 
@@ -129,8 +130,10 @@ in
   config = mkIf cfg.enable {
 
     services.xserver.displayManager.job =
-      { environment =
-          { SLIM_CFGFILE = slimConfig;
+      {
+        environment =
+          {
+            SLIM_CFGFILE = slimConfig;
             SLIM_THEMESDIR = slimThemesDir;
           };
         execCmd = "exec ${pkgs.slim}/bin/slim";

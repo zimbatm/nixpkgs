@@ -1,5 +1,11 @@
-{ stdenv, fetchurl, makeDesktopItem, makeWrapper
-, jdk, jre, libpulseaudio, libXxf86vm
+{ stdenv
+, fetchurl
+, makeDesktopItem
+, makeWrapper
+, jdk
+, jre
+, libpulseaudio
+, libXxf86vm
 }:
 
 let
@@ -18,7 +24,8 @@ let
     libXxf86vm # Needed only for versions <1.13
   ];
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "minecraft-2015-07-24";
 
   src = fetchurl {

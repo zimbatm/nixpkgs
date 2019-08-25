@@ -45,16 +45,18 @@ with lib;
 
     environment.etc."modprobe.d/nixos.conf".text =
       ''
-        ${flip concatMapStrings config.boot.blacklistedKernelModules (name: ''
+        ${flip concatMapStrings config.boot.blacklistedKernelModules (
+        name: ''
           blacklist ${name}
-        '')}
+        ''
+      )}
         ${config.boot.extraModprobeConfig}
       '';
     environment.etc."modprobe.d/debian.conf".source = pkgs.kmod-debian-aliases;
 
     environment.systemPackages = [ pkgs.kmod ];
 
-    system.activationScripts.modprobe = stringAfter ["specialfs"]
+    system.activationScripts.modprobe = stringAfter [ "specialfs" ]
       ''
         # Allow the kernel to find our wrapped modprobe (which searches
         # in the right location in the Nix store for kernel modules).

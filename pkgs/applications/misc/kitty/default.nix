@@ -1,21 +1,42 @@
-{ stdenv, substituteAll, fetchFromGitHub, python3Packages, glfw, libunistring,
-  harfbuzz, fontconfig, pkgconfig, ncurses, imagemagick, xsel,
-  libstartup_notification, libGL, libX11, libXrandr, libXinerama, libXcursor,
-  libxkbcommon, libXi, libXext, wayland-protocols, wayland,
-  which, dbus,
-  Cocoa,
-  CoreGraphics,
-  Foundation,
-  IOKit,
-  Kernel,
-  OpenGL,
-  libcanberra,
-  libicns,
-  libpng,
-  librsvg,
-  optipng,
-  python3,
-  zlib,
+{ stdenv
+, substituteAll
+, fetchFromGitHub
+, python3Packages
+, glfw
+, libunistring
+, harfbuzz
+, fontconfig
+, pkgconfig
+, ncurses
+, imagemagick
+, xsel
+, libstartup_notification
+, libGL
+, libX11
+, libXrandr
+, libXinerama
+, libXcursor
+, libxkbcommon
+, libXi
+, libXext
+, wayland-protocols
+, wayland
+, which
+, dbus
+, Cocoa
+, CoreGraphics
+, Foundation
+, IOKit
+, Kernel
+, OpenGL
+, libcanberra
+, libicns
+, libpng
+, librsvg
+, optipng
+, python3
+, zlib
+,
 }:
 
 with python3Packages;
@@ -34,47 +55,70 @@ buildPythonApplication rec {
   buildInputs = [
     harfbuzz
     ncurses
-  ] ++ stdenv.lib.optionals stdenv.isDarwin [
-    Cocoa
-    CoreGraphics
-    Foundation
-    IOKit
-    Kernel
-    OpenGL
-    libpng
-    python3
-    zlib
-  ] ++ stdenv.lib.optionals stdenv.isLinux [
-    fontconfig glfw libunistring libcanberra libX11
-    libXrandr libXinerama libXcursor libxkbcommon libXi libXext
-    wayland-protocols wayland dbus
-  ];
+  ]
+  ++ stdenv.lib.optionals stdenv.isDarwin [
+       Cocoa
+       CoreGraphics
+       Foundation
+       IOKit
+       Kernel
+       OpenGL
+       libpng
+       python3
+       zlib
+     ]
+  ++ stdenv.lib.optionals stdenv.isLinux [
+       fontconfig
+       glfw
+       libunistring
+       libcanberra
+       libX11
+       libXrandr
+       libXinerama
+       libXcursor
+       libxkbcommon
+       libXi
+       libXext
+       wayland-protocols
+       wayland
+       dbus
+     ]
+  ;
 
   nativeBuildInputs = [
-    pkgconfig which sphinx ncurses
-  ] ++ stdenv.lib.optionals stdenv.isDarwin [
-    imagemagick
-    libicns  # For the png2icns tool.
-    librsvg
-    optipng
-  ];
+    pkgconfig
+    which
+    sphinx
+    ncurses
+  ]
+  ++ stdenv.lib.optionals stdenv.isDarwin [
+       imagemagick
+       libicns # For the png2icns tool.
+       librsvg
+       optipng
+     ]
+  ;
 
   propagatedBuildInputs = stdenv.lib.optional stdenv.isLinux libGL;
 
   outputs = [ "out" "terminfo" ];
 
   patches = [
-    (substituteAll {
-      src = ./fix-paths.patch;
-      libstartup_notification = "${libstartup_notification}/lib/libstartup-notification-1.so";
-    })
-  ] ++ stdenv.lib.optionals stdenv.isDarwin [
-    ./no-lto.patch
-    ./no-werror.patch
-    ./png2icns.patch
-  ];
+    (
+      substituteAll {
+        src = ./fix-paths.patch;
+        libstartup_notification = "${libstartup_notification}/lib/libstartup-notification-1.so";
+      }
+    )
+  ]
+  ++ stdenv.lib.optionals stdenv.isDarwin [
+       ./no-lto.patch
+       ./no-werror.patch
+       ./png2icns.patch
+     ]
+  ;
 
-  preConfigure  = stdenv.lib.optional (!stdenv.isDarwin) ''
+  preConfigure = stdenv.lib.optional (!stdenv.isDarwin) ''
     substituteInPlace glfw/egl_context.c --replace "libEGL.so.1" "${stdenv.lib.getLib libGL}/lib/libEGL.so.1"
   '';
 
@@ -92,9 +136,9 @@ buildPythonApplication rec {
     ln -s ../Applications/kitty.app/Contents/MacOS/kitty-deref-symlink "$out/bin/kitty"
     mkdir "$out/Applications"
     cp -r kitty.app "$out/Applications/kitty.app"
-    '' else ''
+  '' else ''
     cp -r linux-package/{bin,share,lib} $out
-    ''}
+  ''}
     wrapProgram "$out/bin/kitty" --prefix PATH : "$out/bin:${stdenv.lib.makeBinPath [ imagemagick xsel ncurses.dev ]}"
     runHook postInstall
 
@@ -107,9 +151,9 @@ buildPythonApplication rec {
 
   postInstall = ''
     terminfo_src=${if stdenv.isDarwin then
-      ''"$out/Applications/kitty.app/Contents/Resources/terminfo"''
-      else
-      "$out/share/terminfo"}
+    ''"$out/Applications/kitty.app/Contents/Resources/terminfo"''
+  else
+    "$out/share/terminfo"}
 
     mkdir -p $terminfo/share
     mv "$terminfo_src" $terminfo/share/terminfo

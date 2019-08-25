@@ -5,7 +5,7 @@ rec {
 
   description = ''cl-paths: vectorial paths manipulation'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/cl-vectors/2018-02-28/cl-vectors-20180228-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "cl-paths";
 
-  asdFilesToKeep = ["cl-paths.asd"];
+  asdFilesToKeep = [ "cl-paths.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM cl-paths DESCRIPTION cl-paths: vectorial paths manipulation SHA256

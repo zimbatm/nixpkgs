@@ -51,7 +51,7 @@ let
   # is non-null, then the CockroachDB server will attempt to join/connect to
   # the cluster node specified at that address.
   makeNode = locality: myAddr: joinNode:
-    { nodes, pkgs, lib, config, ... }:
+  { nodes, pkgs, lib, config, ... }:
 
     {
       # Bank/TPC-C benchmarks take some memory to complete
@@ -66,7 +66,7 @@ let
       # Enable and configure Chrony, using the given virtualized clock passed
       # through by KVM.
       services.chrony.enable = true;
-      services.chrony.servers = lib.mkForce [ ];
+      services.chrony.servers = lib.mkForce [];
       services.chrony.extraConfig = ''
         refclock PHC /dev/ptp0 poll 2 prefer require refid KVM
         makestep 0.1 3
@@ -95,32 +95,35 @@ let
       '';
     };
 
-in import ./make-test.nix ({ pkgs, ...} : {
-  name = "cockroachdb";
-  meta.maintainers = with pkgs.stdenv.lib.maintainers;
-    [ thoughtpolice ];
+in
+import ./make-test.nix (
+  { pkgs, ... }: {
+    name = "cockroachdb";
+    meta.maintainers = with pkgs.stdenv.lib.maintainers;
+      [ thoughtpolice ];
 
-  nodes = rec {
-    node1 = makeNode "country=us,region=east,dc=1"  "192.168.1.1" null;
-    node2 = makeNode "country=us,region=west,dc=2b" "192.168.1.2" "192.168.1.1";
-    node3 = makeNode "country=eu,region=west,dc=2"  "192.168.1.3" "192.168.1.1";
-  };
+    nodes = rec {
+      node1 = makeNode "country=us,region=east,dc=1" "192.168.1.1" null;
+      node2 = makeNode "country=us,region=west,dc=2b" "192.168.1.2" "192.168.1.1";
+      node3 = makeNode "country=eu,region=west,dc=2" "192.168.1.3" "192.168.1.1";
+    };
 
-  # NOTE: All the nodes must start in order and you must NOT use startAll, because
-  # there's otherwise no way to guarantee that node1 will start before the others try
-  # to join it.
-  testScript = ''
-    $node1->start;
-    $node1->waitForUnit("cockroachdb");
+    # NOTE: All the nodes must start in order and you must NOT use startAll, because
+    # there's otherwise no way to guarantee that node1 will start before the others try
+    # to join it.
+    testScript = ''
+      $node1->start;
+      $node1->waitForUnit("cockroachdb");
 
-    $node2->start;
-    $node2->waitForUnit("cockroachdb");
+      $node2->start;
+      $node2->waitForUnit("cockroachdb");
 
-    $node3->start;
-    $node3->waitForUnit("cockroachdb");
+      $node3->start;
+      $node3->waitForUnit("cockroachdb");
 
-    $node1->mustSucceed("cockroach sql --host=192.168.1.1 --insecure -e 'SHOW ALL CLUSTER SETTINGS' 2>&1");
-    $node1->mustSucceed("cockroach workload init bank 'postgresql://root\@192.168.1.1:26257?sslmode=disable'");
-    $node1->mustSucceed("cockroach workload run bank --duration=1m 'postgresql://root\@192.168.1.1:26257?sslmode=disable'");
-  '';
-})
+      $node1->mustSucceed("cockroach sql --host=192.168.1.1 --insecure -e 'SHOW ALL CLUSTER SETTINGS' 2>&1");
+      $node1->mustSucceed("cockroach workload init bank 'postgresql://root\@192.168.1.1:26257?sslmode=disable'");
+      $node1->mustSucceed("cockroach workload run bank --duration=1m 'postgresql://root\@192.168.1.1:26257?sslmode=disable'");
+    '';
+  }
+)

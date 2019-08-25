@@ -1,7 +1,9 @@
-{ stdenv, buildPythonPackage
+{ stdenv
+, buildPythonPackage
 , fetchFromGitHub
 , six
-, mock, pytest
+, mock
+, pytest
 }:
 
 buildPythonPackage rec {
@@ -29,6 +31,6 @@ buildPythonPackage rec {
     description = "Config file reading, writing and validation";
     homepage = https://pypi.python.org/pypi/configobj;
     license = licenses.bsd3;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
   };
 }

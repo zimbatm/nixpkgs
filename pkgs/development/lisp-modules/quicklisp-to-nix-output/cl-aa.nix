@@ -5,7 +5,7 @@ rec {
 
   description = ''cl-aa: polygon rasterizer'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/cl-vectors/2018-02-28/cl-vectors-20180228-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "cl-aa";
 
-  asdFilesToKeep = ["cl-aa.asd"];
+  asdFilesToKeep = [ "cl-aa.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM cl-aa DESCRIPTION cl-aa: polygon rasterizer SHA256

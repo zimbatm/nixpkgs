@@ -4,5 +4,6 @@
   inherit (lib.evalModules {
     inherit modules;
     specialArgs.modulesPath = ./.;
-  }) config options;
+  }) config options
+    ;
 }

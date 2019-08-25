@@ -22,7 +22,8 @@ buildPythonPackage rec {
     glibcLocales
   ]
   # pathlib was made part of standard library in 3.5:
-  ++ (lib.optionals (pythonOlder "3.4") [ pathlib ]);
+  ++ (lib.optionals (pythonOlder "3.4") [ pathlib ])
+  ;
 
   src = fetchPypi {
     inherit pname version;

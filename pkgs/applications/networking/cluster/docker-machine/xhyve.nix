@@ -8,9 +8,9 @@ buildGoPackage rec {
   goDeps = ./xhyve-deps.nix;
 
   src = fetchFromGitHub {
-    rev    = "v${version}";
-    owner  = "zchee";
-    repo   = "docker-machine-driver-xhyve";
+    rev = "v${version}";
+    owner = "zchee";
+    repo = "docker-machine-driver-xhyve";
     sha256 = "0rj6pyqp4yv4j28bglqjs95rip5i77vv8mrkmqv1rxrsl3i8aqqy";
   };
 

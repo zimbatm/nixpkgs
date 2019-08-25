@@ -1,5 +1,12 @@
-{ stdenv, intltool, fetchurl, pkgconfig
-, itstool, libxml2, libxslt, gnome3 }:
+{ stdenv
+, intltool
+, fetchurl
+, pkgconfig
+, itstool
+, libxml2
+, libxslt
+, gnome3
+}:
 
 stdenv.mkDerivation rec {
   name = "yelp-xsl-${version}";
@@ -23,7 +30,7 @@ stdenv.mkDerivation rec {
     homepage = https://wiki.gnome.org/Apps/Yelp;
     description = "Yelp's universal stylesheets for Mallard and DocBook";
     maintainers = gnome3.maintainers;
-    license = [licenses.gpl2 licenses.lgpl2];
+    license = [ licenses.gpl2 licenses.lgpl2 ];
     platforms = platforms.linux;
   };
 }

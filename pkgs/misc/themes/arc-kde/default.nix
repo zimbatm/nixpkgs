@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
     sha256 = "1p6f4ny97096nb054lrgyjwikmvg0qlbcnsjag7m5dfbclfnvzkg";
   };
 
-  makeFlags = ["PREFIX=$(out)" ];
+  makeFlags = [ "PREFIX=$(out)" ];
 
   # Make this a fixed-output derivation
   outputHashMode = "recursive";

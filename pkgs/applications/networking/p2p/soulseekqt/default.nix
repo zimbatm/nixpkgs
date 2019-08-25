@@ -1,21 +1,31 @@
 { stdenv
 , fetchurl
 , dbus
-, zlib, fontconfig
-, qtbase, qtmultimedia
-, libjson, libgpgerror
-, libX11, libxcb, libXau, libXdmcp, freetype, libbsd
-, pythonPackages, squashfsTools, desktop-file-utils
+, zlib
+, fontconfig
+, qtbase
+, qtmultimedia
+, libjson
+, libgpgerror
+, libX11
+, libxcb
+, libXau
+, libXdmcp
+, freetype
+, libbsd
+, pythonPackages
+, squashfsTools
+, desktop-file-utils
 }:
 
 with stdenv.lib;
 let
   libPath = makeLibraryPath
-    [ stdenv.cc.cc qtbase qtmultimedia dbus libX11 zlib libX11 libxcb libXau libXdmcp freetype fontconfig libbsd libjson libgpgerror];
+    [ stdenv.cc.cc qtbase qtmultimedia dbus libX11 zlib libX11 libxcb libXau libXdmcp freetype fontconfig libbsd libjson libgpgerror ];
 
   version = "2018-1-30";
 
-  mainbin = "SoulseekQt-" + (version) +"-"+ (if stdenv.is64bit then "64bit" else "32bit");
+  mainbin = "SoulseekQt-" + (version) + "-" + (if stdenv.is64bit then "64bit" else "32bit");
   srcs = {
     "x86_64-linux" = fetchurl {
       url = "https://www.dropbox.com/s/0vi87eef3ooh7iy/${mainbin}.tgz";
@@ -23,7 +33,8 @@ let
     };
   };
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
 
   name = "soulseekqt-${version}";
   inherit version;
@@ -38,8 +49,8 @@ in stdenv.mkDerivation rec {
     export HOME=$(pwd) # workaround for binwalk
     appimage=$(tar xvf $curSrc) && binwalk --quiet \
        $appimage -D 'squashfs:squashfs:unsquashfs %e'
-    '';
-  
+  '';
+
   patchPhase = ''
     cd squashfs-root/
     binary="$(readlink AppRun)"

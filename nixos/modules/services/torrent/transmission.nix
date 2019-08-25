@@ -120,65 +120,73 @@ in
     # It's useful to have transmission in path, e.g. for remote control
     environment.systemPackages = [ pkgs.transmission ];
 
-    users.users = optionalAttrs (cfg.user == "transmission") (singleton
-      { name = "transmission";
-        group = cfg.group;
-        uid = config.ids.uids.transmission;
-        description = "Transmission BitTorrent user";
-        home = homeDir;
-        createHome = true;
-      });
+    users.users = optionalAttrs (cfg.user == "transmission") (
+      singleton
+        {
+          name = "transmission";
+          group = cfg.group;
+          uid = config.ids.uids.transmission;
+          description = "Transmission BitTorrent user";
+          home = homeDir;
+          createHome = true;
+        }
+    );
 
-    users.groups = optionalAttrs (cfg.group == "transmission") (singleton
-      { name = "transmission";
-        gid = config.ids.gids.transmission;
-      });
+    users.groups = optionalAttrs (cfg.group == "transmission") (
+      singleton
+        {
+          name = "transmission";
+          gid = config.ids.gids.transmission;
+        }
+    );
 
     # AppArmor profile
     security.apparmor.profiles = mkIf apparmor [
-      (pkgs.writeText "apparmor-transmission-daemon" ''
-        #include <tunables/global>
+      (
+        pkgs.writeText "apparmor-transmission-daemon" ''
+          #include <tunables/global>
 
-        ${pkgs.transmission}/bin/transmission-daemon {
-          #include <abstractions/base>
-          #include <abstractions/nameservice>
+          ${pkgs.transmission}/bin/transmission-daemon {
+            #include <abstractions/base>
+            #include <abstractions/nameservice>
 
-          ${getLib pkgs.glibc}/lib/*.so                    mr,
-          ${getLib pkgs.libevent}/lib/libevent*.so*        mr,
-          ${getLib pkgs.curl}/lib/libcurl*.so*             mr,
-          ${getLib pkgs.openssl}/lib/libssl*.so*           mr,
-          ${getLib pkgs.openssl}/lib/libcrypto*.so*        mr,
-          ${getLib pkgs.zlib}/lib/libz*.so*                mr,
-          ${getLib pkgs.libssh2}/lib/libssh2*.so*          mr,
-          ${getLib pkgs.systemd}/lib/libsystemd*.so*       mr,
-          ${getLib pkgs.xz}/lib/liblzma*.so*               mr,
-          ${getLib pkgs.libgcrypt}/lib/libgcrypt*.so*      mr,
-          ${getLib pkgs.libgpgerror}/lib/libgpg-error*.so* mr,
-          ${getLib pkgs.nghttp2}/lib/libnghttp2*.so*       mr,
-          ${getLib pkgs.c-ares}/lib/libcares*.so*          mr,
-          ${getLib pkgs.libcap}/lib/libcap*.so*            mr,
-          ${getLib pkgs.attr}/lib/libattr*.so*             mr,
-          ${getLib pkgs.lz4}/lib/liblz4*.so*               mr,
-          ${getLib pkgs.libkrb5}/lib/lib*.so*              mr,
-          ${getLib pkgs.keyutils}/lib/libkeyutils*.so*     mr,
-          ${getLib pkgs.utillinuxMinimal.out}/lib/libblkid.so.* mr,
-          ${getLib pkgs.utillinuxMinimal.out}/lib/libmount.so.* mr,
-          ${getLib pkgs.utillinuxMinimal.out}/lib/libuuid.so.* mr,
+            ${getLib pkgs.glibc}/lib/*.so                    mr,
+            ${getLib pkgs.libevent}/lib/libevent*.so*        mr,
+            ${getLib pkgs.curl}/lib/libcurl*.so*             mr,
+            ${getLib pkgs.openssl}/lib/libssl*.so*           mr,
+            ${getLib pkgs.openssl}/lib/libcrypto*.so*        mr,
+            ${getLib pkgs.zlib}/lib/libz*.so*                mr,
+            ${getLib pkgs.libssh2}/lib/libssh2*.so*          mr,
+            ${getLib pkgs.systemd}/lib/libsystemd*.so*       mr,
+            ${getLib pkgs.xz}/lib/liblzma*.so*               mr,
+            ${getLib pkgs.libgcrypt}/lib/libgcrypt*.so*      mr,
+            ${getLib pkgs.libgpgerror}/lib/libgpg-error*.so* mr,
+            ${getLib pkgs.nghttp2}/lib/libnghttp2*.so*       mr,
+            ${getLib pkgs.c-ares}/lib/libcares*.so*          mr,
+            ${getLib pkgs.libcap}/lib/libcap*.so*            mr,
+            ${getLib pkgs.attr}/lib/libattr*.so*             mr,
+            ${getLib pkgs.lz4}/lib/liblz4*.so*               mr,
+            ${getLib pkgs.libkrb5}/lib/lib*.so*              mr,
+            ${getLib pkgs.keyutils}/lib/libkeyutils*.so*     mr,
+            ${getLib pkgs.utillinuxMinimal.out}/lib/libblkid.so.* mr,
+            ${getLib pkgs.utillinuxMinimal.out}/lib/libmount.so.* mr,
+            ${getLib pkgs.utillinuxMinimal.out}/lib/libuuid.so.* mr,
 
-          @{PROC}/sys/kernel/random/uuid   r,
-          @{PROC}/sys/vm/overcommit_memory r,
+            @{PROC}/sys/kernel/random/uuid   r,
+            @{PROC}/sys/vm/overcommit_memory r,
 
-          ${pkgs.openssl.out}/etc/**                     r,
-          ${pkgs.transmission}/share/transmission/** r,
+            ${pkgs.openssl.out}/etc/**                     r,
+            ${pkgs.transmission}/share/transmission/** r,
 
-          owner ${settingsDir}/** rw,
+            owner ${settingsDir}/** rw,
 
-          ${fullSettings.download-dir}/** rw,
-          ${optionalString fullSettings.incomplete-dir-enabled ''
-            ${fullSettings.incomplete-dir}/** rw,
-          ''}
-        }
-      '')
+            ${fullSettings.download-dir}/** rw,
+            ${optionalString fullSettings.incomplete-dir-enabled ''
+          ${fullSettings.incomplete-dir}/** rw,
+        ''}
+          }
+        ''
+      )
     ];
   };
 

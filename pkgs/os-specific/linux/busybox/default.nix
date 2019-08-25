@@ -1,7 +1,11 @@
-{ stdenv, lib, buildPackages, fetchurl
+{ stdenv
+, lib
+, buildPackages
+, fetchurl
 , enableStatic ? false
 , enableMinimal ? false
-, useMusl ? stdenv.hostPlatform.libc == "musl", musl
+, useMusl ? stdenv.hostPlatform.libc == "musl"
+, musl
 , extraConfig ? ""
 }:
 
@@ -43,11 +47,14 @@ stdenv.mkDerivation rec {
   };
 
   hardeningDisable = [ "format" "pie" ]
-    ++ lib.optionals enableStatic [ "fortify" ];
+    ++ lib.optionals enableStatic [ "fortify" ]
+    ;
 
   patches = [
     ./busybox-in-store.patch
-  ] ++ stdenv.lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) ./clang-cross.patch;
+  ]
+  ++ stdenv.lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) ./clang-cross.patch
+  ;
 
   postPatch = "patchShebangs .";
 
@@ -65,8 +72,8 @@ stdenv.mkDerivation rec {
     CONFIG_LFS y
 
     ${lib.optionalString enableStatic ''
-      CONFIG_STATIC y
-    ''}
+    CONFIG_STATIC y
+  ''}
 
     # Use the external mount.cifs program.
     CONFIG_FEATURE_MOUNT_CIFS n
@@ -104,7 +111,7 @@ stdenv.mkDerivation rec {
     description = "Tiny versions of common UNIX utilities in a single small executable";
     homepage = https://busybox.net/;
     license = licenses.gpl2;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
     platforms = platforms.linux;
     priority = 10;
   };

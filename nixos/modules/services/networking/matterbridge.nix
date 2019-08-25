@@ -93,12 +93,14 @@ in
       "The option services.matterbridge.configFile is insecure and should be replaced with services.matterbridge.configPath";
 
     users.users = optional (cfg.user == "matterbridge")
-      { name = "matterbridge";
+      {
+        name = "matterbridge";
         group = "matterbridge";
       };
 
     users.groups = optional (cfg.group == "matterbridge")
-      { name = "matterbridge";
+      {
+        name = "matterbridge";
       };
 
     systemd.services.matterbridge = {

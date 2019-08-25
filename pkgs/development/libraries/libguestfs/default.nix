@@ -1,10 +1,40 @@
-{ stdenv, fetchurl, pkgconfig, autoreconfHook, makeWrapper
-, ncurses, cpio, gperf, cdrkit, flex, bison, qemu, pcre, augeas, libxml2
-, acl, libcap, libcap_ng, libconfig, systemd, fuse, yajl, libvirt, hivex
-, gmp, readline, file, numactl, xen, libapparmor
-, getopt, perlPackages, ocamlPackages
+{ stdenv
+, fetchurl
+, pkgconfig
+, autoreconfHook
+, makeWrapper
+, ncurses
+, cpio
+, gperf
+, cdrkit
+, flex
+, bison
+, qemu
+, pcre
+, augeas
+, libxml2
+, acl
+, libcap
+, libcap_ng
+, libconfig
+, systemd
+, fuse
+, yajl
+, libvirt
+, hivex
+, gmp
+, readline
+, file
+, numactl
+, xen
+, libapparmor
+, getopt
+, perlPackages
+, ocamlPackages
 , appliance ? null
-, javaSupport ? false, jdk ? null }:
+, javaSupport ? false
+, jdk ? null
+}:
 
 assert appliance == null || stdenv.lib.isDerivation appliance;
 assert javaSupport -> jdk != null;
@@ -20,13 +50,40 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ pkgconfig ];
   buildInputs = [
-    makeWrapper autoreconfHook ncurses cpio gperf
-    cdrkit flex bison qemu pcre augeas libxml2 acl libcap libcap_ng libconfig
-    systemd fuse yajl libvirt gmp readline file hivex
-    numactl xen libapparmor getopt perlPackages.ModuleBuild
-  ] ++ (with perlPackages; [ perl libintl_perl GetoptLong SysVirt ])
-    ++ (with ocamlPackages; [ ocaml findlib ocamlbuild ocaml_libvirt ocaml_gettext ounit ])
-    ++ stdenv.lib.optional javaSupport jdk;
+    makeWrapper
+    autoreconfHook
+    ncurses
+    cpio
+    gperf
+    cdrkit
+    flex
+    bison
+    qemu
+    pcre
+    augeas
+    libxml2
+    acl
+    libcap
+    libcap_ng
+    libconfig
+    systemd
+    fuse
+    yajl
+    libvirt
+    gmp
+    readline
+    file
+    hivex
+    numactl
+    xen
+    libapparmor
+    getopt
+    perlPackages.ModuleBuild
+  ]
+  ++ (with perlPackages; [ perl libintl_perl GetoptLong SysVirt ])
+  ++ (with ocamlPackages; [ ocaml findlib ocamlbuild ocaml_libvirt ocaml_gettext ounit ])
+  ++ stdenv.lib.optional javaSupport jdk
+  ;
 
   prePatch = ''
     # build-time scripts
@@ -43,9 +100,10 @@ stdenv.mkDerivation rec {
     patchShebangs .
   '';
   configureFlags = [ "--disable-appliance" "--disable-daemon" "--with-distro=NixOS" ]
-    ++ stdenv.lib.optionals (!javaSupport) [ "--disable-java" "--without-java" ];
+    ++ stdenv.lib.optionals (!javaSupport) [ "--disable-java" "--without-java" ]
+    ;
   patches = [ ./libguestfs-syms.patch ];
-  NIX_CFLAGS_COMPILE="-I${libxml2.dev}/include/libxml2/";
+  NIX_CFLAGS_COMPILE = "-I${libxml2.dev}/include/libxml2/";
   installFlags = "REALLY_INSTALL=yes";
   enableParallelBuilding = true;
 
@@ -83,7 +141,7 @@ stdenv.mkDerivation rec {
     description = "Tools for accessing and modifying virtual machine disk images";
     license = licenses.gpl2;
     homepage = http://libguestfs.org/;
-    maintainers = with maintainers; [offline];
+    maintainers = with maintainers; [ offline ];
     platforms = platforms.linux;
   };
 }

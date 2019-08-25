@@ -28,6 +28,6 @@ stdenv.mkDerivation {
     license = stdenv.lib.licenses.gpl3Plus;
 
     platforms = stdenv.lib.platforms.all;
-    maintainers = [ ];
+    maintainers = [];
   };
 }

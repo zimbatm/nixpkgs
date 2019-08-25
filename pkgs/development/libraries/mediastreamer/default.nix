@@ -1,7 +1,33 @@
-{ stdenv, pkgconfig, intltool, alsaLib, libpulseaudio, speex, gsm
-, libopus, ffmpeg, libX11, libXv, libGLU_combined, glew, libtheora, libvpx, SDL, libupnp
-, ortp, libv4l, libpcap, srtp, fetchFromGitHub, cmake, bctoolbox, doxygen
-, python, libXext, libmatroska, openssl, fetchpatch
+{ stdenv
+, pkgconfig
+, intltool
+, alsaLib
+, libpulseaudio
+, speex
+, gsm
+, libopus
+, ffmpeg
+, libX11
+, libXv
+, libGLU_combined
+, glew
+, libtheora
+, libvpx
+, SDL
+, libupnp
+, ortp
+, libv4l
+, libpcap
+, srtp
+, fetchFromGitHub
+, cmake
+, bctoolbox
+, doxygen
+, python
+, libXext
+, libmatroska
+, openssl
+, fetchpatch
 }:
 
 stdenv.mkDerivation rec {
@@ -17,20 +43,40 @@ stdenv.mkDerivation rec {
   };
 
   patches = [
-    (fetchpatch {
-      name = "allow-build-without-git.patch";
-      url = "https://github.com/BelledonneCommunications/mediastreamer2/commit/de3a24b795d7a78e78eab6b974e7ec5abf2259ac.patch";
-      sha256 = "1zqkrab42n4dha0knfsyj4q0wc229ma125gk9grj67ps7r7ipscy";
-    })
+    (
+      fetchpatch {
+        name = "allow-build-without-git.patch";
+        url = "https://github.com/BelledonneCommunications/mediastreamer2/commit/de3a24b795d7a78e78eab6b974e7ec5abf2259ac.patch";
+        sha256 = "1zqkrab42n4dha0knfsyj4q0wc229ma125gk9grj67ps7r7ipscy";
+      }
+    )
     ./plugins_dir.patch
   ];
 
   nativeBuildInputs = [ pkgconfig intltool cmake doxygen python ];
 
   propagatedBuildInputs = [
-    alsaLib libpulseaudio speex gsm libopus
-    ffmpeg libX11 libXv libGLU_combined glew libtheora libvpx SDL libupnp
-    ortp libv4l libpcap srtp bctoolbox libXext libmatroska
+    alsaLib
+    libpulseaudio
+    speex
+    gsm
+    libopus
+    ffmpeg
+    libX11
+    libXv
+    libGLU_combined
+    glew
+    libtheora
+    libvpx
+    SDL
+    libupnp
+    ortp
+    libv4l
+    libpcap
+    srtp
+    bctoolbox
+    libXext
+    libmatroska
     openssl
   ];
 

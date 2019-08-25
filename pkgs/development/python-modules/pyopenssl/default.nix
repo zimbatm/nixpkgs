@@ -48,11 +48,14 @@ let
     "test_fallback_default_verify_paths"
     # https://github.com/pyca/pyopenssl/issues/768
     "test_wantWriteError"
-  ] ++ (
-    optionals (hasPrefix "libressl" openssl.meta.name) failingLibresslTests
-  ) ++ (
-    optionals (versionAtLeast (getVersion openssl.name) "1.1") failingOpenSSL_1_1Tests
-  );
+  ]
+  ++ (
+       optionals (hasPrefix "libressl" openssl.meta.name) failingLibresslTests
+     )
+  ++ (
+       optionals (versionAtLeast (getVersion openssl.name) "1.1") failingOpenSSL_1_1Tests
+     )
+  ;
 
   # Compose the final string expression, including the "-k" and the single quotes.
   testExpression = optionalString (disabledTests != [])

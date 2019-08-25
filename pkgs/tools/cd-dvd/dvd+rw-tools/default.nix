@@ -1,4 +1,4 @@
-{stdenv, fetchurl, cdrkit, m4}:
+{ stdenv, fetchurl, cdrkit, m4 }:
 
 stdenv.mkDerivation {
   name = "dvd+rw-tools-7.1";
@@ -20,7 +20,7 @@ stdenv.mkDerivation {
     ./dvd+rw-tools-7.1-layerbreaksetup.patch
   ];
 
-  buildInputs = [cdrkit m4];
+  buildInputs = [ cdrkit m4 ];
 
   preBuild = ''
     makeFlags="prefix=$out"

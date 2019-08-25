@@ -28,8 +28,14 @@ stdenv.mkDerivation rec {
   doCheck = true;
   checkPhase = "python runtests.py";
 
-  buildInputs = [ python libxslt
-    libxml2 pythonPackages.genshi pythonPackages.lxml makeWrapper ];
+  buildInputs = [
+    python
+    libxslt
+    libxml2
+    pythonPackages.genshi
+    pythonPackages.lxml
+    makeWrapper
+  ];
 
   installPhase = ''
     mkdir -p $out/bin

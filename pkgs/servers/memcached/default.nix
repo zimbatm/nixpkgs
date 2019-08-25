@@ -1,4 +1,4 @@
-{stdenv, fetchurl, cyrus_sasl, libevent}:
+{ stdenv, fetchurl, cyrus_sasl, libevent }:
 
 stdenv.mkDerivation rec {
   version = "1.5.16";
@@ -10,10 +10,10 @@ stdenv.mkDerivation rec {
   };
 
   configureFlags = [
-     "ac_cv_c_endian=${if stdenv.hostPlatform.isBigEndian then "big" else "little"}"
+    "ac_cv_c_endian=${if stdenv.hostPlatform.isBigEndian then "big" else "little"}"
   ];
 
-  buildInputs = [cyrus_sasl libevent];
+  buildInputs = [ cyrus_sasl libevent ];
 
   hardeningEnable = [ "pie" ];
 

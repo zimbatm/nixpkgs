@@ -14,7 +14,7 @@ buildPythonApplication rec {
   disabled = isPyPy;
   buildInputs = [ glibcLocales ];
 
-  LC_ALL="en_US.UTF-8";
+  LC_ALL = "en_US.UTF-8";
 
   # No tests available
   doCheck = false;
@@ -23,6 +23,6 @@ buildPythonApplication rec {
     description = "Copy your docs directly to the gh-pages branch";
     homepage = "https://github.com/davisp/ghp-import";
     license = "Tumbolia Public License";
-    maintainers = with lib.maintainers; [ ];
+    maintainers = with lib.maintainers; [];
   };
 }

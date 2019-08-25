@@ -10,9 +10,9 @@ stdenv.mkDerivation rec {
 
   preConfigure =
     ''
-       # Fix for building on Glibc 2.16.  Won't be needed once the
-       # gnulib in idutils is updated.
-       sed -i '/gets is a security hole/d' lib/stdio.in.h
+      # Fix for building on Glibc 2.16.  Won't be needed once the
+      # gnulib in idutils is updated.
+      sed -i '/gets is a security hole/d' lib/stdio.in.h
     '';
 
   buildInputs = stdenv.lib.optional stdenv.isLinux emacs;
@@ -48,7 +48,7 @@ stdenv.mkDerivation rec {
     homepage = https://www.gnu.org/software/idutils/;
     license = stdenv.lib.licenses.gpl3Plus;
 
-    maintainers = [ ];
+    maintainers = [];
     platforms = stdenv.lib.platforms.all;
   };
 }

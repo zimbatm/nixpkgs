@@ -1,4 +1,4 @@
-{stdenv, fetchurl}:
+{ stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
   name = "fcrackzip-${version}";
@@ -23,4 +23,3 @@ stdenv.mkDerivation rec {
     platforms = with platforms; unix;
   };
 }
-

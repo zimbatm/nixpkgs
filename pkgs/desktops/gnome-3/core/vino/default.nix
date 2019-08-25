@@ -1,8 +1,29 @@
-{ stdenv, fetchurl, lib, wrapGAppsHook
-, pkgconfig, gnome3, gtk3, glib, intltool, libXtst, libnotify, libsoup
-, telepathySupport ? false, dbus-glib ? null, telepathy-glib ? null
-, libsecret, gnutls, libgcrypt, avahi, zlib, libjpeg, libXdamage, libXfixes, libXext
-, networkmanager }:
+{ stdenv
+, fetchurl
+, lib
+, wrapGAppsHook
+, pkgconfig
+, gnome3
+, gtk3
+, glib
+, intltool
+, libXtst
+, libnotify
+, libsoup
+, telepathySupport ? false
+, dbus-glib ? null
+, telepathy-glib ? null
+, libsecret
+, gnutls
+, libgcrypt
+, avahi
+, zlib
+, libjpeg
+, libXdamage
+, libXfixes
+, libXext
+, networkmanager
+}:
 
 with lib;
 
@@ -20,10 +41,25 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ intltool wrapGAppsHook pkgconfig ];
 
   buildInputs = [
-    gnome3.adwaita-icon-theme gtk3 glib libXtst libnotify libsoup
-    libsecret gnutls libgcrypt avahi zlib libjpeg
-    libXdamage libXfixes libXext networkmanager
-  ] ++ optionals telepathySupport [ dbus-glib telepathy-glib ];
+    gnome3.adwaita-icon-theme
+    gtk3
+    glib
+    libXtst
+    libnotify
+    libsoup
+    libsecret
+    gnutls
+    libgcrypt
+    avahi
+    zlib
+    libjpeg
+    libXdamage
+    libXfixes
+    libXext
+    networkmanager
+  ]
+  ++ optionals telepathySupport [ dbus-glib telepathy-glib ]
+  ;
 
   passthru = {
     updateScript = gnome3.updateScript {

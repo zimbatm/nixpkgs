@@ -51,10 +51,12 @@ stdenv.mkDerivation rec {
   ];
 
   patches = [
-    (substituteAll {
-      src = ./xkb.patch;
-      config = "${xorg.xkeyboardconfig}/share/X11/xkb/rules/evdev.xml";
-    })
+    (
+      substituteAll {
+        src = ./xkb.patch;
+        config = "${xorg.xkeyboardconfig}/share/X11/xkb/rules/evdev.xml";
+      }
+    )
   ];
 
   PKG_CONFIG_SWITCHBOARD_2_0_PLUGSDIR = "${placeholder ''out''}/lib/switchboard";

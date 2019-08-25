@@ -1,6 +1,21 @@
-{ lib, buildPythonPackage, fetchPypi
-, Babel, decorator, requests, requests_oauthlib, six, click, markdown, pyyaml
-, pytestrunner, coverage, flake8, mock, pytest, pytestcov, tox
+{ lib
+, buildPythonPackage
+, fetchPypi
+, Babel
+, decorator
+, requests
+, requests_oauthlib
+, six
+, click
+, markdown
+, pyyaml
+, pytestrunner
+, coverage
+, flake8
+, mock
+, pytest
+, pytestcov
+, tox
 }:
 
 buildPythonPackage rec {
@@ -15,11 +30,23 @@ buildPythonPackage rec {
   nativeBuildInputs = [ Babel ];
 
   propagatedBuildInputs = [
-    decorator requests requests_oauthlib six click markdown pyyaml
+    decorator
+    requests
+    requests_oauthlib
+    six
+    click
+    markdown
+    pyyaml
   ];
 
   checkInputs = [
-    pytestrunner coverage flake8 mock pytest pytestcov tox
+    pytestrunner
+    coverage
+    flake8
+    mock
+    pytest
+    pytestcov
+    tox
   ];
 
   meta = with lib; {

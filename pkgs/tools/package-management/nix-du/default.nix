@@ -17,7 +17,9 @@ rustPlatform.buildRustPackage rec {
   buildInputs = [
     boost
     nix
-  ] ++ stdenv.lib.optional stdenv.isDarwin darwin.apple_sdk.frameworks.Security;
+  ]
+  ++ stdenv.lib.optional stdenv.isDarwin darwin.apple_sdk.frameworks.Security
+  ;
 
   meta = with stdenv.lib; {
     description = "A tool to determine which gc-roots take space in your nix store";

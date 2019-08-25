@@ -1,18 +1,20 @@
 # run installed tests
-import ./make-test.nix ({ pkgs, ... }:
+import ./make-test.nix (
+  { pkgs, ... }:
 
-{
-  name = "graphene";
+    {
+      name = "graphene";
 
-  meta = {
-    maintainers = pkgs.graphene.meta.maintainers;
-  };
+      meta = {
+        maintainers = pkgs.graphene.meta.maintainers;
+      };
 
-  machine = { pkgs, ... }: {
-    environment.systemPackages = with pkgs; [ gnome-desktop-testing ];
-  };
+      machine = { pkgs, ... }: {
+        environment.systemPackages = with pkgs; [ gnome-desktop-testing ];
+      };
 
-  testScript = ''
-    $machine->succeed("gnome-desktop-testing-runner -d '${pkgs.graphene.installedTests}/share'");
-  '';
-})
+      testScript = ''
+        $machine->succeed("gnome-desktop-testing-runner -d '${pkgs.graphene.installedTests}/share'");
+      '';
+    }
+)

@@ -17,11 +17,13 @@ buildPythonPackage rec {
   inherit (xgboost) version src meta;
 
   patches = [
-    (substituteAll {
-      src = ./lib-path-for-python.patch;
-      libpath = "${xgboost}/lib";
-      extention = stdenv.hostPlatform.extensions.sharedLibrary;
-    })
+    (
+      substituteAll {
+        src = ./lib-path-for-python.patch;
+        libpath = "${xgboost}/lib";
+        extention = stdenv.hostPlatform.extensions.sharedLibrary;
+      }
+    )
   ];
 
   postPatch = "cd python-package";

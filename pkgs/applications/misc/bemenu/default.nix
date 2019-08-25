@@ -1,8 +1,20 @@
-{ stdenv, fetchFromGitHub, cairo, cmake, libxkbcommon
-, pango, fribidi, harfbuzz, pcre, pkgconfig
-, ncursesSupport ? true, ncurses ? null
-, waylandSupport ? true, wayland ? null
-, x11Support ? true, xlibs ? null, xorg ? null
+{ stdenv
+, fetchFromGitHub
+, cairo
+, cmake
+, libxkbcommon
+, pango
+, fribidi
+, harfbuzz
+, pcre
+, pkgconfig
+, ncursesSupport ? true
+, ncurses ? null
+, waylandSupport ? true
+, wayland ? null
+, x11Support ? true
+, xlibs ? null
+, xorg ? null
 }:
 
 assert ncursesSupport -> ncurses != null;
@@ -28,12 +40,17 @@ stdenv.mkDerivation rec {
     harfbuzz
     libxkbcommon
     pango
-  ] ++ optionals ncursesSupport [ ncurses ]
+  ]
+    ++ optionals ncursesSupport [ ncurses ]
     ++ optionals waylandSupport [ wayland ]
     ++ optionals x11Support [
-      xlibs.libX11 xlibs.libXinerama xlibs.libXft
-      xorg.libXdmcp xorg.libpthreadstubs xorg.libxcb
-    ];
+         xlibs.libX11
+         xlibs.libXinerama
+         xlibs.libXft
+         xorg.libXdmcp
+         xorg.libpthreadstubs
+         xorg.libxcb
+       ];
 
   meta = with stdenv.lib; {
     homepage = "https://github.com/Cloudef/bemenu";

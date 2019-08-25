@@ -13,5 +13,5 @@
     inherit pythonPackages;
   };
 
-  weechat-autosort = callPackage ./weechat-autosort { };
+  weechat-autosort = callPackage ./weechat-autosort {};
 }

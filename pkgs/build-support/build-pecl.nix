@@ -12,15 +12,18 @@
 , ...
 }@args:
 
-stdenv.mkDerivation (args // {
-  name = "php-${pname}-${version}";
+stdenv.mkDerivation (
+  args
+  // {
+       name = "php-${pname}-${version}";
 
-  inherit src;
+       inherit src;
 
-  nativeBuildInputs = [ autoreconfHook re2c ] ++ nativeBuildInputs;
-  buildInputs = [ php ] ++ buildInputs;
+       nativeBuildInputs = [ autoreconfHook re2c ] ++ nativeBuildInputs;
+       buildInputs = [ php ] ++ buildInputs;
 
-  makeFlags = [ "EXTENSION_DIR=$(out)/lib/php/extensions" ] ++ makeFlags;
+       makeFlags = [ "EXTENSION_DIR=$(out)/lib/php/extensions" ] ++ makeFlags;
 
-  autoreconfPhase = "phpize";
-})
+       autoreconfPhase = "phpize";
+     }
+)

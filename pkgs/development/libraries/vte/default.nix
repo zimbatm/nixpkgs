@@ -1,6 +1,17 @@
-{ stdenv, fetchurl, intltool, pkgconfig
-, gnome3, glib, gtk3, ncurses, gobject-introspection, vala, libxml2, gnutls
-, gperf, pcre2
+{ stdenv
+, fetchurl
+, intltool
+, pkgconfig
+, gnome3
+, glib
+, gtk3
+, ncurses
+, gobject-introspection
+, vala
+, libxml2
+, gnutls
+, gperf
+, pcre2
 }:
 
 stdenv.mkDerivation rec {
@@ -48,4 +59,3 @@ stdenv.mkDerivation rec {
     platforms = platforms.linux ++ platforms.darwin;
   };
 }
-

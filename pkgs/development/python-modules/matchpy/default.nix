@@ -23,11 +23,13 @@ buildPythonPackage rec {
 
   patches = [
     # Fix tests for pytest 4. Remove with the next release
-    (fetchpatch {
-      url = "https://github.com/HPAC/matchpy/commit/b405a2717a7793d58c47b2e2197d9d00c06fb13c.patch";
-      includes = [ "tests/conftest.py" ];
-      sha256 = "1b6gqf2vy9qxg384nqr9k8il335afhbdmlyx4vhd8r8rqpv7gax9";
-    })
+    (
+      fetchpatch {
+        url = "https://github.com/HPAC/matchpy/commit/b405a2717a7793d58c47b2e2197d9d00c06fb13c.patch";
+        includes = [ "tests/conftest.py" ];
+        sha256 = "1b6gqf2vy9qxg384nqr9k8il335afhbdmlyx4vhd8r8rqpv7gax9";
+      }
+    )
   ];
 
   postPatch = ''

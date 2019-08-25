@@ -6,13 +6,13 @@ stdenv.mkDerivation rec{
   name = "vms-empire-${version}";
   version = "1.14";
 
-  src = fetchurl{
+  src = fetchurl {
     url = "http://www.catb.org/~esr/vms-empire/${name}.tar.gz";
     sha256 = "0cymzhivvaahgqz0p11w25a710ls4w0jhyqj789jas5s07nvd890";
   };
 
   buildInputs =
-  [ ncurses xmlto ];
+    [ ncurses xmlto ];
 
   patchPhase = ''
     sed -i -e 's|^install: empire\.6 uninstall|install: empire.6|' -e 's|usr/||g' Makefile
@@ -38,5 +38,3 @@ stdenv.mkDerivation rec{
     platforms = platforms.linux;
   };
 }
-
-

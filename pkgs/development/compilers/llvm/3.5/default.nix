@@ -40,4 +40,5 @@ let
 
     #openmp = callPackage ./openmp {};
   };
-in self
+in
+self

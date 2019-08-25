@@ -1,5 +1,12 @@
-{ stdenv, lib, fetchurl, utillinux, makeWrapper
-, enableReadline ? true, readline, ncurses }:
+{ stdenv
+, lib
+, fetchurl
+, utillinux
+, makeWrapper
+, enableReadline ? true
+, readline
+, ncurses
+}:
 
 stdenv.mkDerivation rec {
   name = "calc-${version}";
@@ -20,7 +27,8 @@ stdenv.mkDerivation rec {
   '';
 
   buildInputs = [ utillinux makeWrapper ]
-             ++ lib.optionals enableReadline [ readline ncurses ];
+    ++ lib.optionals enableReadline [ readline ncurses ]
+    ;
 
   makeFlags = [
     "T=$(out)"
@@ -33,10 +41,12 @@ stdenv.mkDerivation rec {
 
     # Handle LDFLAGS defaults in calc
     "DEFAULT_LIB_INSTALL_PATH=$(out)/lib"
-  ] ++ lib.optionals enableReadline [
-    "READLINE_LIB=-lreadline"
-    "USE_READLINE=-DUSE_READLINE"
-  ];
+  ]
+  ++ lib.optionals enableReadline [
+       "READLINE_LIB=-lreadline"
+       "USE_READLINE=-DUSE_READLINE"
+     ]
+  ;
 
   meta = with lib; {
     description = "C-style arbitrary precision calculator";

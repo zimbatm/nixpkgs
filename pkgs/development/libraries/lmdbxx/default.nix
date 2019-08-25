@@ -1,6 +1,7 @@
 { stdenv
 , fetchFromGitHub
-, lmdb }:
+, lmdb
+}:
 
 stdenv.mkDerivation rec {
   name = "lmdbxx-${version}";
@@ -23,4 +24,3 @@ stdenv.mkDerivation rec {
     maintainers = with stdenv.lib.maintainers; [ fgaz ];
   };
 }
-

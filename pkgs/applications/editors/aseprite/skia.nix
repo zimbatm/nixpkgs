@@ -1,6 +1,19 @@
-{ stdenv, lib, fetchFromGitHub, fetchgit, python2, gn, ninja
-, fontconfig, expat, icu58, libjpeg, libpng, libwebp, zlib
-, mesa, libX11
+{ stdenv
+, lib
+, fetchFromGitHub
+, fetchgit
+, python2
+, gn
+, ninja
+, fontconfig
+, expat
+, icu58
+, libjpeg
+, libpng
+, libwebp
+, zlib
+, mesa
+, libX11
 }:
 
 let
@@ -21,8 +34,15 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ python2 gn ninja ];
 
   buildInputs = [
-    fontconfig expat icu58 libjpeg libpng libwebp zlib
-    mesa libX11
+    fontconfig
+    expat
+    icu58
+    libjpeg
+    libpng
+    libwebp
+    zlib
+    mesa
+    libX11
   ];
 
   preConfigure = with depSrcs; ''

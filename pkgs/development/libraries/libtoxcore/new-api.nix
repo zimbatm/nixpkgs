@@ -1,13 +1,22 @@
-{ stdenv, fetchFromGitHub, autoreconfHook, libsodium, ncurses, libopus
-, libvpx, check, libconfig, pkgconfig }:
+{ stdenv
+, fetchFromGitHub
+, autoreconfHook
+, libsodium
+, ncurses
+, libopus
+, libvpx
+, check
+, libconfig
+, pkgconfig
+}:
 
 stdenv.mkDerivation rec {
   name = "tox-core-new-20160727";
 
   src = fetchFromGitHub {
-    owner  = "irungentoo";
-    repo   = "toxcore";
-    rev    = "755f084e8720b349026c85afbad58954cb7ff1d4";
+    owner = "irungentoo";
+    repo = "toxcore";
+    rev = "755f084e8720b349026c85afbad58954cb7ff1d4";
     sha256 = "0ap1gvlyihnfivv235dbrgsxsiiz70bhlmlr5gn1027w3h5kqz8w";
   };
 
@@ -32,10 +41,16 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ autoreconfHook pkgconfig ];
   buildInputs = [
-    autoreconfHook libsodium ncurses check libconfig
-  ] ++ stdenv.lib.optionals (!stdenv.isAarch32) [
-    libopus
-  ];
+    autoreconfHook
+    libsodium
+    ncurses
+    check
+    libconfig
+  ]
+  ++ stdenv.lib.optionals (!stdenv.isAarch32) [
+       libopus
+     ]
+  ;
 
   propagatedBuildInputs = stdenv.lib.optionals (!stdenv.isAarch32) [ libvpx ];
 
@@ -50,7 +65,7 @@ stdenv.mkDerivation rec {
   meta = with stdenv.lib; {
     description = "P2P FOSS instant messaging application aimed to replace Skype with crypto";
     license = licenses.gpl3Plus;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
     platforms = platforms.all;
   };
 }

@@ -5,8 +5,8 @@ with lib;
 let
   cfg = config.system.nixos;
 
-  gitRepo      = "${toString pkgs.path}/.git";
-  gitCommitId  = lib.substring 0 7 (commitIdFromGitRepo gitRepo);
+  gitRepo = "${toString pkgs.path}/.git";
+  gitCommitId = lib.substring 0 7 (commitIdFromGitRepo gitRepo);
 in
 
 {
@@ -78,7 +78,7 @@ in
       # These defaults are set here rather than up there so that
       # changing them would not rebuild the manual
       version = mkDefault (cfg.release + cfg.versionSuffix);
-      revision      = mkIf (pathIsDirectory gitRepo) (mkDefault            gitCommitId);
+      revision = mkIf (pathIsDirectory gitRepo) (mkDefault gitCommitId);
       versionSuffix = mkIf (pathIsDirectory gitRepo) (mkDefault (".git." + gitCommitId));
     };
 

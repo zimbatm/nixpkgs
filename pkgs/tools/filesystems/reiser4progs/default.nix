@@ -1,6 +1,8 @@
-{stdenv, fetchurl, libaal}:
+{ stdenv, fetchurl, libaal }:
 
-let version = "1.2.1"; in
+let
+  version = "1.2.1";
+in
 stdenv.mkDerivation rec {
   name = "reiser4progs-${version}";
 
@@ -9,7 +11,7 @@ stdenv.mkDerivation rec {
     sha256 = "03vdqvpyd48wxrpqpb9kg76giaffw9b8k334kr4wc0zxgybknhl7";
   };
 
-  buildInputs = [libaal];
+  buildInputs = [ libaal ];
 
   hardeningDisable = [ "format" ];
 

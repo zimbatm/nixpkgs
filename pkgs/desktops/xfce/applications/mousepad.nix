@@ -1,9 +1,18 @@
-{ stdenv, fetchurl, pkgconfig, intltool, libxfce4util
-, gtk, gtksourceview, dbus, dbus-glib, makeWrapper
-, dconf }:
+{ stdenv
+, fetchurl
+, pkgconfig
+, intltool
+, libxfce4util
+, gtk
+, gtksourceview
+, dbus
+, dbus-glib
+, makeWrapper
+, dconf
+}:
 
 stdenv.mkDerivation rec {
-  p_name  = "mousepad";
+  p_name = "mousepad";
   ver_maj = "0.4";
   ver_min = "0";
 
@@ -16,8 +25,15 @@ stdenv.mkDerivation rec {
   patches = [ ./mousepad-12134.patch ];
 
   buildInputs =
-    [ pkgconfig intltool libxfce4util
-      gtk gtksourceview dbus dbus-glib makeWrapper
+    [
+      pkgconfig
+      intltool
+      libxfce4util
+      gtk
+      gtksourceview
+      dbus
+      dbus-glib
+      makeWrapper
       dconf
     ];
 

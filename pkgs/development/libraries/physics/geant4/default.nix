@@ -1,35 +1,37 @@
 { enableMultiThreading ? true
-, enableG3toG4         ? false
-, enableInventor       ? false
-, enableGDML           ? false
-, enableQT             ? false
-, enableXM             ? false
-, enableOpenGLX11      ? true
-, enableRaytracerX11   ? false
+, enableG3toG4 ? false
+, enableInventor ? false
+, enableGDML ? false
+, enableQT ? false
+, enableXM ? false
+, enableOpenGLX11 ? true
+, enableRaytracerX11 ? false
 
-# Standard build environment with cmake.
-, stdenv, fetchurl, cmake
+  # Standard build environment with cmake.
+, stdenv
+, fetchurl
+, cmake
 
-# Optional system packages, otherwise internal GEANT4 packages are used.
+  # Optional system packages, otherwise internal GEANT4 packages are used.
 , clhep ? null # not packaged currently
 , expat
 , zlib
 
-# For enableGDML.
+  # For enableGDML.
 , xercesc
 
-# For enableQT.
+  # For enableQT.
 , qtbase
 
-# For enableXM.
+  # For enableXM.
 , motif
 
-# For enableInventor
+  # For enableInventor
 , coin3d
 , soxt
 , libXpm
 
-# For enableQT, enableXM, enableOpenGLX11, enableRaytracerX11.
+  # For enableQT, enableXM, enableOpenGLX11, enableRaytracerX11.
 , libGLU_combined
 , xlibsWrapper
 , libXmu
@@ -39,7 +41,7 @@ stdenv.mkDerivation rec {
   version = "10.4.1";
   name = "geant4-${version}";
 
-  src = fetchurl{
+  src = fetchurl {
     url = "http://cern.ch/geant4-data/releases/geant4.10.04.p01.tar.gz";
     sha256 = "a3eb13e4f1217737b842d3869dc5b1fb978f761113e74bd4eaf6017307d234dd";
   };
@@ -57,18 +59,21 @@ stdenv.mkDerivation rec {
     "-DGEANT4_USE_SYSTEM_EXPAT=${if expat != null then "ON" else "OFF"}"
     "-DGEANT4_USE_SYSTEM_ZLIB=${if zlib != null then "ON" else "OFF"}"
     "-DGEANT4_BUILD_MULTITHREADED=${if enableMultiThreading then "ON" else "OFF"}"
-  ] ++ stdenv.lib.optionals enableInventor [
-    "-DINVENTOR_INCLUDE_DIR=${coin3d}/include"
-    "-DINVENTOR_LIBRARY_RELEASE=${coin3d}/lib/libCoin.so"
-  ];
+  ]
+  ++ stdenv.lib.optionals enableInventor [
+       "-DINVENTOR_INCLUDE_DIR=${coin3d}/include"
+       "-DINVENTOR_LIBRARY_RELEASE=${coin3d}/lib/libCoin.so"
+     ]
+  ;
 
   enableParallelBuilding = true;
-  nativeBuildInputs =  [ cmake ];
+  nativeBuildInputs = [ cmake ];
   buildInputs = [ clhep expat zlib libGLU_combined xlibsWrapper libXmu ]
     ++ stdenv.lib.optionals enableGDML [ xercesc ]
     ++ stdenv.lib.optionals enableXM [ motif ]
     ++ stdenv.lib.optionals enableQT [ qtbase ]
-    ++ stdenv.lib.optionals enableInventor [ libXpm coin3d soxt motif ];
+    ++ stdenv.lib.optionals enableInventor [ libXpm coin3d soxt motif ]
+    ;
 
   postFixup = ''
     # Don't try to export invalid environment variables.

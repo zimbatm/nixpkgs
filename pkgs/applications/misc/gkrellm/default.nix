@@ -1,5 +1,15 @@
-{ fetchurl, stdenv, gettext, pkgconfig, glib, gtk2, libX11, libSM, libICE, which
-, IOKit ? null }:
+{ fetchurl
+, stdenv
+, gettext
+, pkgconfig
+, glib
+, gtk2
+, libX11
+, libSM
+, libICE
+, which
+, IOKit ? null
+}:
 
 with stdenv.lib;
 
@@ -12,8 +22,9 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ pkgconfig which ];
-  buildInputs = [gettext glib gtk2 libX11 libSM libICE]
-    ++ optionals stdenv.isDarwin [ IOKit ];
+  buildInputs = [ gettext glib gtk2 libX11 libSM libICE ]
+    ++ optionals stdenv.isDarwin [ IOKit ]
+    ;
 
   hardeningDisable = [ "format" ];
 
@@ -40,7 +51,7 @@ stdenv.mkDerivation rec {
 
     homepage = http://gkrellm.srcbox.net;
     license = licenses.gpl3Plus;
-    maintainers = [ ];
+    maintainers = [];
     platforms = platforms.linux;
   };
 }

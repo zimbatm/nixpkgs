@@ -2,7 +2,8 @@
 , buildPythonPackage
 , fetchPypi
 , dask
-, numpy, toolz # dask[array]
+, numpy
+, toolz # dask[array]
 , numba
 , pandas
 , scikitlearn

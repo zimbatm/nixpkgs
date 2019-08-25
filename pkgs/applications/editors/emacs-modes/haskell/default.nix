@@ -37,6 +37,6 @@ stdenv.mkDerivation {
 
     platforms = stdenv.lib.platforms.unix;
     maintainers = [ stdenv.lib.maintainers.peti ];
-    broken = true;  # no longer compiles and this package is obsolete anyway
+    broken = true; # no longer compiles and this package is obsolete anyway
   };
 }

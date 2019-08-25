@@ -7,7 +7,7 @@ rec {
 
   description = ''Jonathan Amsterdam's iterator/gatherer/accumulator facility'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/iterate/2018-02-28/iterate-20180228-git.tgz'';
@@ -16,7 +16,7 @@ rec {
 
   packageName = "iterate";
 
-  asdFilesToKeep = ["iterate.asd"];
+  asdFilesToKeep = [ "iterate.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM iterate DESCRIPTION

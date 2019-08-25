@@ -1,9 +1,34 @@
-{ config, lib, stdenv, fetchurl, zlib, lzo, libtasn1, nettle, pkgconfig, lzip
-, perl, gmp, autoconf, autogen, automake, libidn, p11-kit, libiconv
-, unbound, dns-root-data, gettext, cacert
-, guileBindings ? config.gnutls.guile or false, guile
-, tpmSupport ? false, trousers, which, nettools, libunistring
-, withSecurity ? false, Security  # darwin Security.framework
+{ config
+, lib
+, stdenv
+, fetchurl
+, zlib
+, lzo
+, libtasn1
+, nettle
+, pkgconfig
+, lzip
+, perl
+, gmp
+, autoconf
+, autogen
+, automake
+, libidn
+, p11-kit
+, libiconv
+, unbound
+, dns-root-data
+, gettext
+, cacert
+, guileBindings ? config.gnutls.guile or false
+, guile
+, tpmSupport ? false
+, trousers
+, which
+, nettools
+, libunistring
+, withSecurity ? false
+, Security  # darwin Security.framework
 }:
 
 assert guileBindings -> guile != null;
@@ -13,7 +38,8 @@ let
   # XXX: Gnulib's `test-select' fails on FreeBSD:
   # http://hydra.nixos.org/build/2962084/nixlog/1/raw .
   doCheck = !stdenv.isFreeBSD && !stdenv.isDarwin && lib.versionAtLeast version "3.4"
-      && stdenv.buildPlatform == stdenv.hostPlatform;
+    && stdenv.buildPlatform == stdenv.hostPlatform
+    ;
 
   inherit (stdenv.hostPlatform) isDarwin;
 in
@@ -31,8 +57,9 @@ stdenv.mkDerivation {
   outputInfo = "devdoc";
 
   patches = [ ./nix-ssl-cert-file.patch ]
-    # Disable native add_system_trust.
-    ++ lib.optional (isDarwin && !withSecurity) ./no-security-framework.patch;
+  # Disable native add_system_trust.
+    ++ lib.optional (isDarwin && !withSecurity) ./no-security-framework.patch
+    ;
 
   # Skip some tests:
   #  - pkgconfig: building against the result won't work before installing (3.5.11)
@@ -42,32 +69,38 @@ stdenv.mkDerivation {
   # Change p11-kit test to use pkg-config to find p11-kit
   postPatch = lib.optionalString (lib.versionAtLeast version "3.4") ''
     sed '2iecho "name constraints tests skipped due to datefudge problems"\nexit 0' -i tests/cert-tests/name-constraints
-  '' + lib.optionalString (lib.versionAtLeast version "3.6") ''
-    sed '2iexit 77' -i tests/{pkgconfig,fastopen}.sh
-    sed '/^void doit(void)/,/^{/ s/{/{ exit(77);/' -i tests/{trust-store,psk-file}.c
-    sed 's:/usr/lib64/pkcs11/ /usr/lib/pkcs11/ /usr/lib/x86_64-linux-gnu/pkcs11/:`pkg-config --variable=p11_module_path p11-kit-1`:' -i tests/p11-kit-trust.sh
-  '';
+  ''
+  + lib.optionalString (lib.versionAtLeast version "3.6") ''
+      sed '2iexit 77' -i tests/{pkgconfig,fastopen}.sh
+      sed '/^void doit(void)/,/^{/ s/{/{ exit(77);/' -i tests/{trust-store,psk-file}.c
+      sed 's:/usr/lib64/pkcs11/ /usr/lib/pkcs11/ /usr/lib/x86_64-linux-gnu/pkcs11/:`pkg-config --variable=p11_module_path p11-kit-1`:' -i tests/p11-kit-trust.sh
+    ''
+  ;
 
   preConfigure = "patchShebangs .";
   configureFlags =
     lib.optional stdenv.isLinux "--with-default-trust-store-file=/etc/ssl/certs/ca-certificates.crt"
-  ++ [
-    "--disable-dependency-tracking"
-    "--enable-fast-install"
-    "--with-unbound-root-key-file=${dns-root-data}/root.key"
-  ] ++ lib.optional guileBindings
-    [ "--enable-guile" "--with-guile-site-dir=\${out}/share/guile/site" ];
+    ++ [
+         "--disable-dependency-tracking"
+         "--enable-fast-install"
+         "--with-unbound-root-key-file=${dns-root-data}/root.key"
+       ]
+    ++ lib.optional guileBindings
+         [ "--enable-guile" "--with-guile-site-dir=\${out}/share/guile/site" ]
+    ;
 
   enableParallelBuilding = true;
 
   buildInputs = [ lzo lzip libtasn1 libidn p11-kit zlib gmp autogen libunistring unbound gettext libiconv ]
     ++ lib.optional (isDarwin && withSecurity) Security
     ++ lib.optional (tpmSupport && stdenv.isLinux) trousers
-    ++ lib.optional guileBindings guile;
+    ++ lib.optional guileBindings guile
+    ;
 
   nativeBuildInputs = [ perl pkgconfig ]
     ++ lib.optionals (isDarwin && !withSecurity) [ autoconf automake ]
-    ++ lib.optionals doCheck [ which nettools ];
+    ++ lib.optionals doCheck [ which nettools ]
+    ;
 
   propagatedBuildInputs = [ nettle ];
 
@@ -83,27 +116,29 @@ stdenv.mkDerivation {
         -e 's,-L${gmp.dev}/lib,-L${gmp.out}/lib,' \
         -e 's,-lgmp,-L${gmp.out}/lib -lgmp,' \
         -i $out/lib/*.la "$dev/lib/pkgconfig/gnutls.pc"
-  '' + ''
+  ''
+  + ''
     # It seems only useful for static linking but basically noone does that.
     substituteInPlace "$out/lib/libgnutls.la" \
       --replace "-lunistring" ""
-  '';
+  ''
+  ;
 
   meta = with lib; {
     description = "The GNU Transport Layer Security Library";
 
     longDescription = ''
-       GnuTLS is a project that aims to develop a library which
-       provides a secure layer, over a reliable transport
-       layer. Currently the GnuTLS library implements the proposed standards by
-       the IETF's TLS working group.
+      GnuTLS is a project that aims to develop a library which
+      provides a secure layer, over a reliable transport
+      layer. Currently the GnuTLS library implements the proposed standards by
+      the IETF's TLS working group.
 
-       Quoting from the TLS protocol specification:
+      Quoting from the TLS protocol specification:
 
-       "The TLS protocol provides communications privacy over the
-       Internet. The protocol allows client/server applications to
-       communicate in a way that is designed to prevent eavesdropping,
-       tampering, or message forgery."
+      "The TLS protocol provides communications privacy over the
+      Internet. The protocol allows client/server applications to
+      communicate in a way that is designed to prevent eavesdropping,
+      tampering, or message forgery."
     '';
 
     homepage = https://www.gnu.org/software/gnutls/;

@@ -1,4 +1,4 @@
-{stdenv, fetchFromGitHub, which, autoreconfHook, pkgconfig, curl, vala, python, intltool, fuse, ccnet}:
+{ stdenv, fetchFromGitHub, which, autoreconfHook, pkgconfig, curl, vala, python, intltool, fuse, ccnet }:
 
 stdenv.mkDerivation rec {
   version = "7.0.2";
@@ -25,6 +25,6 @@ stdenv.mkDerivation rec {
     description = "Shared components of Seafile: seafile-daemon, libseafile, libseafile python bindings, manuals, and icons";
     license = licenses.gpl3;
     platforms = platforms.linux;
-    maintainers = [ ];
+    maintainers = [];
   };
 }

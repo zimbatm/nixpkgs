@@ -6,7 +6,8 @@ let
   cfg = config.services.fluentd;
 
   pluginArgs = concatStringsSep " " (map (x: "-p ${x}") cfg.plugins);
-in {
+in
+{
   ###### interface
 
   options = {

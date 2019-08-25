@@ -1,8 +1,17 @@
-{ lib, stdenv, fetchFromGitHub, cmake, curl, openssl, zlib
-, aws-c-common, aws-c-event-stream, aws-checksums
-, CoreAudio, AudioToolbox
+{ lib
+, stdenv
+, fetchFromGitHub
+, cmake
+, curl
+, openssl
+, zlib
+, aws-c-common
+, aws-c-event-stream
+, aws-checksums
+, CoreAudio
+, AudioToolbox
 , # Allow building a limited set of APIs, e.g. ["s3" "ec2"].
-  apis ? ["*"]
+  apis ? [ "*" ]
 , # Whether to enable AWS' custom memory management.
   customMemoryManagement ? true
 }:
@@ -26,22 +35,35 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ cmake curl ];
 
   buildInputs = [
-    curl openssl zlib
-    aws-c-common aws-c-event-stream aws-checksums
-  ] ++ lib.optionals (stdenv.isDarwin &&
-                        ((builtins.elem "text-to-speech" apis) ||
-                         (builtins.elem "*" apis)))
-         [ CoreAudio AudioToolbox ];
+    curl
+    openssl
+    zlib
+    aws-c-common
+    aws-c-event-stream
+    aws-checksums
+  ]
+  ++ lib.optionals (
+       stdenv.isDarwin
+       && (
+            (builtins.elem "text-to-speech" apis)
+            || (builtins.elem "*" apis)
+          )
+     )
+       [ CoreAudio AudioToolbox ]
+  ;
 
   cmakeFlags = [
     "-DBUILD_DEPS=OFF"
     "-DCMAKE_SKIP_BUILD_RPATH=OFF"
-  ] ++ lib.optional (!customMemoryManagement) "-DCUSTOM_MEMORY_MANAGEMENT=0"
+  ]
+  ++ lib.optional (!customMemoryManagement) "-DCUSTOM_MEMORY_MANAGEMENT=0"
   ++ lib.optionals (stdenv.buildPlatform != stdenv.hostPlatform) [
-    "-DENABLE_TESTING=OFF"
-    "-DCURL_HAS_H2=0"
-  ] ++ lib.optional (apis != ["*"])
-    "-DBUILD_ONLY=${lib.concatStringsSep ";" apis}";
+       "-DENABLE_TESTING=OFF"
+       "-DCURL_HAS_H2=0"
+     ]
+  ++ lib.optional (apis != [ "*" ])
+       "-DBUILD_ONLY=${lib.concatStringsSep ";" apis}"
+  ;
 
   preConfigure =
     ''

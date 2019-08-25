@@ -131,13 +131,15 @@ stdenv.mkDerivation rec {
   ];
 
   patches = [
-    (substituteAll {
-      src = ./paths.patch;
-      gcm = gnome-color-manager;
-      gnome_desktop = gnome-desktop;
-      inherit glibc libgnomekbd tzdata;
-      inherit cups networkmanagerapplet;
-    })
+    (
+      substituteAll {
+        src = ./paths.patch;
+        gcm = gnome-color-manager;
+        gnome_desktop = gnome-desktop;
+        inherit glibc libgnomekbd tzdata;
+        inherit cups networkmanagerapplet;
+      }
+    )
   ];
 
   postPatch = ''

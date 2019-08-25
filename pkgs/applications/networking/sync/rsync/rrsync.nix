@@ -9,7 +9,7 @@ stdenv.mkDerivation rec {
   src = base.src;
 
   buildInputs = [ rsync ];
-  nativeBuildInputs = [perl];
+  nativeBuildInputs = [ perl ];
 
   # Skip configure and build phases.
   # We just want something from the support directory
@@ -26,8 +26,10 @@ stdenv.mkDerivation rec {
     chmod a+x $out/bin/rrsync
   '';
 
-  meta = base.meta // {
-    description = "A helper to run rsync-only environments from ssh-logins";
-    maintainers = [ stdenv.lib.maintainers.kampfschlaefer ];
-  };
+  meta = base.meta
+    // {
+         description = "A helper to run rsync-only environments from ssh-logins";
+         maintainers = [ stdenv.lib.maintainers.kampfschlaefer ];
+       }
+    ;
 }

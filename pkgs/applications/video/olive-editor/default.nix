@@ -1,6 +1,16 @@
-{ stdenv, fetchFromGitHub, pkgconfig, which, qmake, 
-  qtbase, qtmultimedia, frei0r, opencolorio, hicolor-icon-theme, ffmpeg-full,
-  CoreFoundation  }:
+{ stdenv
+, fetchFromGitHub
+, pkgconfig
+, which
+, qmake
+, qtbase
+, qtmultimedia
+, frei0r
+, opencolorio
+, hicolor-icon-theme
+, ffmpeg-full
+, CoreFoundation
+}:
 
 stdenv.mkDerivation rec {
   pname = "olive-editor";
@@ -13,9 +23,9 @@ stdenv.mkDerivation rec {
     sha256 = "191nk4c35gys4iypykcidn6h27c3sbjfy117q7h9h1qilz2wm94z";
   };
 
-  nativeBuildInputs = [ 
-    pkgconfig 
-    which 
+  nativeBuildInputs = [
+    pkgconfig
+    which
     qmake
   ];
 
@@ -27,7 +37,9 @@ stdenv.mkDerivation rec {
     qtmultimedia
     qtmultimedia.dev
     hicolor-icon-theme
-  ] ++ stdenv.lib.optional stdenv.isDarwin CoreFoundation;
+  ]
+  ++ stdenv.lib.optional stdenv.isDarwin CoreFoundation
+  ;
 
   meta = with stdenv.lib; {
     description = "Professional open-source NLE video editor";

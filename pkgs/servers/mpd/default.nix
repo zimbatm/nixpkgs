@@ -1,33 +1,70 @@
-{ stdenv, fetchFromGitHub, autoreconfHook, pkgconfig, glib, systemd, boost, darwin
-, alsaSupport ? true, alsaLib
-, avahiSupport ? true, avahi, dbus
-, flacSupport ? true, flac
-, vorbisSupport ? true, libvorbis
-, madSupport ? true, libmad
-, id3tagSupport ? true, libid3tag
-, mikmodSupport ? true, libmikmod
-, shoutSupport ? true, libshout
-, sqliteSupport ? true, sqlite
-, curlSupport ? true, curl
-, audiofileSupport ? true, audiofile
-, bzip2Support ? true, bzip2
-, ffmpegSupport ? true, ffmpeg
-, fluidsynthSupport ? true, fluidsynth
-, zipSupport ? true, zziplib
-, samplerateSupport ? true, libsamplerate
-, mmsSupport ? true, libmms
-, mpg123Support ? true, mpg123
-, aacSupport ? true, faad2
-, lameSupport ? true, lame
-, pulseaudioSupport ? true, libpulseaudio
-, jackSupport ? true, libjack2
-, gmeSupport ? true, game-music-emu
-, icuSupport ? true, icu
-, clientSupport ? true, mpd_clientlib
-, opusSupport ? true, libopus
-, soundcloudSupport ? true, yajl
-, nfsSupport ? true, libnfs
-, smbSupport ? true, samba
+{ stdenv
+, fetchFromGitHub
+, autoreconfHook
+, pkgconfig
+, glib
+, systemd
+, boost
+, darwin
+, alsaSupport ? true
+, alsaLib
+, avahiSupport ? true
+, avahi
+, dbus
+, flacSupport ? true
+, flac
+, vorbisSupport ? true
+, libvorbis
+, madSupport ? true
+, libmad
+, id3tagSupport ? true
+, libid3tag
+, mikmodSupport ? true
+, libmikmod
+, shoutSupport ? true
+, libshout
+, sqliteSupport ? true
+, sqlite
+, curlSupport ? true
+, curl
+, audiofileSupport ? true
+, audiofile
+, bzip2Support ? true
+, bzip2
+, ffmpegSupport ? true
+, ffmpeg
+, fluidsynthSupport ? true
+, fluidsynth
+, zipSupport ? true
+, zziplib
+, samplerateSupport ? true
+, libsamplerate
+, mmsSupport ? true
+, libmms
+, mpg123Support ? true
+, mpg123
+, aacSupport ? true
+, faad2
+, lameSupport ? true
+, lame
+, pulseaudioSupport ? true
+, libpulseaudio
+, jackSupport ? true
+, libjack2
+, gmeSupport ? true
+, game-music-emu
+, icuSupport ? true
+, icu
+, clientSupport ? true
+, mpd_clientlib
+, opusSupport ? true
+, libopus
+, soundcloudSupport ? true
+, yajl
+, nfsSupport ? true
+, libnfs
+, smbSupport ? true
+, samba
 }:
 
 assert avahiSupport -> avahi != null && dbus != null;
@@ -38,14 +75,15 @@ let
   major = "0.20";
   minor = "23";
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "mpd-${version}";
   version = "${major}${if minor == "" then "" else "." + minor}";
 
   src = fetchFromGitHub {
-    owner  = "MusicPlayerDaemon";
-    repo   = "MPD";
-    rev    = "v${version}";
+    owner = "MusicPlayerDaemon";
+    repo = "MPD";
+    rev = "v${version}";
     sha256 = "1z1pdgiddimnmck0ardrpxkvgk1wn9zxri5wfv5ppasbb7kfm350";
   };
 
@@ -59,8 +97,8 @@ in stdenv.mkDerivation rec {
     ++ opt avahiSupport dbus
     ++ opt flacSupport flac
     ++ opt vorbisSupport libvorbis
-    # using libmad to decode mp3 files on darwin is causing a segfault -- there
-    # is probably a solution, but I'm disabling it for now
+  # using libmad to decode mp3 files on darwin is causing a segfault -- there
+  # is probably a solution, but I'm disabling it for now
     ++ opt (!stdenv.isDarwin && madSupport) libmad
     ++ opt id3tagSupport libid3tag
     ++ opt mikmodSupport libmikmod
@@ -85,14 +123,16 @@ in stdenv.mkDerivation rec {
     ++ opt opusSupport libopus
     ++ opt soundcloudSupport yajl
     ++ opt (!stdenv.isDarwin && nfsSupport) libnfs
-    ++ opt (!stdenv.isDarwin && smbSupport) samba;
+    ++ opt (!stdenv.isDarwin && smbSupport) samba
+    ;
 
   nativeBuildInputs = [ autoreconfHook pkgconfig ];
 
   enableParallelBuilding = true;
 
   configureFlags =
-    [ (mkFlag (!stdenv.isDarwin && alsaSupport) "alsa")
+    [
+      (mkFlag (!stdenv.isDarwin && alsaSupport) "alsa")
       (mkFlag flacSupport "flac")
       (mkFlag vorbisSupport "vorbis")
       (mkFlag vorbisSupport "vorbis-encoder")
@@ -126,7 +166,8 @@ in stdenv.mkDerivation rec {
       "--with-zeroconf=avahi"
     ]
     ++ opt stdenv.isLinux
-      "--with-systemdsystemunitdir=$(out)/etc/systemd/system";
+         "--with-systemdsystemunitdir=$(out)/etc/systemd/system"
+  ;
 
   NIX_LDFLAGS = ''
     ${if shoutSupport then "-lshout" else ""}
@@ -134,10 +175,10 @@ in stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     description = "A flexible, powerful daemon for playing music";
-    homepage    = http://mpd.wikia.com/wiki/Music_Player_Daemon_Wiki;
-    license     = licenses.gpl2;
+    homepage = http://mpd.wikia.com/wiki/Music_Player_Daemon_Wiki;
+    license = licenses.gpl2;
     maintainers = with maintainers; [ astsmtl fuuzetsu ehmry fpletz ];
-    platforms   = platforms.unix;
+    platforms = platforms.unix;
 
     longDescription = ''
       Music Player Daemon (MPD) is a flexible, powerful daemon for playing

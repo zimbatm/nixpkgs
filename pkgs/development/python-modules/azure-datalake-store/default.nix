@@ -22,10 +22,12 @@ buildPythonPackage rec {
     requests
     adal
     azure-common
-  ] ++ lib.optionals (!isPy3k) [
-    futures
-    pathlib2
-  ];
+  ]
+  ++ lib.optionals (!isPy3k) [
+       futures
+       pathlib2
+     ]
+  ;
 
   # has no tests
   doCheck = false;

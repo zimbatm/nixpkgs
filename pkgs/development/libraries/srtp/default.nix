@@ -1,5 +1,8 @@
-{ stdenv, fetchFromGitHub, pkgconfig
-, openssl ? null, libpcap ? null
+{ stdenv
+, fetchFromGitHub
+, pkgconfig
+, openssl ? null
+, libpcap ? null
 }:
 
 with stdenv.lib;
@@ -21,7 +24,9 @@ stdenv.mkDerivation rec {
 
   configureFlags = [
     "--disable-debug"
-  ] ++ optional (openssl != null) "--enable-openssl";
+  ]
+  ++ optional (openssl != null) "--enable-openssl"
+  ;
 
   buildFlags = [ "shared_library" ];
 

@@ -1,13 +1,19 @@
 { stdenv, hspell }:
 
 let
-  dict = a: stdenv.mkDerivation ({
-    inherit (hspell) src patchPhase nativeBuildInputs;
-    meta = hspell.meta // {
-      broken = true;
-      description = "${a.buildFlags} Hebrew dictionary";
-    } // (if a ? meta then a.meta else {});
-  } // (removeAttrs a ["meta"]));
+  dict = a: stdenv.mkDerivation (
+    {
+      inherit (hspell) src patchPhase nativeBuildInputs;
+      meta = hspell.meta
+        // {
+             broken = true;
+             description = "${a.buildFlags} Hebrew dictionary";
+           }
+        // (if a ? meta then a.meta else {})
+        ;
+    }
+    // (removeAttrs a [ "meta" ])
+  );
 in
 {
   recurseForDerivations = true;

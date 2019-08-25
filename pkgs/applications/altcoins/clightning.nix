@@ -1,5 +1,18 @@
-{ stdenv, python3, pkgconfig, which, libtool, autoconf, automake,
-  autogen, sqlite, gmp, zlib, fetchurl, unzip, fetchpatch }:
+{ stdenv
+, python3
+, pkgconfig
+, which
+, libtool
+, autoconf
+, automake
+, autogen
+, sqlite
+, gmp
+, zlib
+, fetchurl
+, unzip
+, fetchpatch
+}:
 
 with stdenv.lib;
 stdenv.mkDerivation rec {
@@ -30,7 +43,7 @@ stdenv.mkDerivation rec {
 
   meta = {
     description = "A Bitcoin Lightning Network implementation in C";
-    longDescription= ''
+    longDescription = ''
       c-lightning is a standard compliant implementation of the Lightning
       Network protocol. The Lightning Network is a scalability solution for
       Bitcoin, enabling secure and instant transfer of funds between any two

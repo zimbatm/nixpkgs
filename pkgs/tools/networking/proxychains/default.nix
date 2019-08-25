@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub } :
+{ stdenv, fetchFromGitHub }:
 stdenv.mkDerivation rec {
   name = "proxychains-${version}";
   version = "4.2.0";

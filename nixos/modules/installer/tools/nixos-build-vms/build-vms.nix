@@ -3,11 +3,13 @@
 , networkExpr
 }:
 
-let nodes = import networkExpr; in
+let
+  nodes = import networkExpr;
+in
 
-with import ../../../../lib/testing.nix {
-  inherit system;
-  pkgs = import ../../../../.. { inherit system config; };
-};
+  with import ../../../../lib/testing.nix {
+    inherit system;
+    pkgs = import ../../../../.. { inherit system config; };
+  };
 
-(makeTest { inherit nodes; testScript = ""; }).driver
+  (makeTest { inherit nodes; testScript = ""; }).driver

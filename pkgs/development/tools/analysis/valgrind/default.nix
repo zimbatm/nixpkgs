@@ -16,38 +16,41 @@ stdenv.mkDerivation rec {
   hardeningDisable = [ "stackprotector" ];
 
   # GDB is needed to provide a sane default for `--db-command'.
-  buildInputs = [ gdb ]  ++ stdenv.lib.optionals (stdenv.isDarwin) [ bootstrap_cmds xnu ];
+  buildInputs = [ gdb ] ++ stdenv.lib.optionals (stdenv.isDarwin) [ bootstrap_cmds xnu ];
 
   enableParallelBuilding = true;
   separateDebugInfo = stdenv.isLinux;
 
   preConfigure = stdenv.lib.optionalString stdenv.isDarwin (
-    let OSRELEASE = ''
-      $(awk -F '"' '/#define OSRELEASE/{ print $2 }' \
-      <${xnu}/Library/Frameworks/Kernel.framework/Headers/libkern/version.h)'';
-    in ''
-      echo "Don't derive our xnu version using uname -r."
-      substituteInPlace configure --replace "uname -r" "echo ${OSRELEASE}"
+    let
+      OSRELEASE = ''
+        $(awk -F '"' '/#define OSRELEASE/{ print $2 }' \
+        <${xnu}/Library/Frameworks/Kernel.framework/Headers/libkern/version.h)'';
+    in
+      ''
+        echo "Don't derive our xnu version using uname -r."
+        substituteInPlace configure --replace "uname -r" "echo ${OSRELEASE}"
 
-      # Apple's GCC doesn't recognize `-arch' (as of version 4.2.1, build 5666).
-      echo "getting rid of the \`-arch' GCC option..."
-      find -name Makefile\* -exec \
-        sed -i {} -e's/DARWIN\(.*\)-arch [^ ]\+/DARWIN\1/g' \;
+        # Apple's GCC doesn't recognize `-arch' (as of version 4.2.1, build 5666).
+        echo "getting rid of the \`-arch' GCC option..."
+        find -name Makefile\* -exec \
+          sed -i {} -e's/DARWIN\(.*\)-arch [^ ]\+/DARWIN\1/g' \;
 
-      sed -i coregrind/link_tool_exe_darwin.in \
-          -e 's/^my \$archstr = .*/my $archstr = "x86_64";/g'
+        sed -i coregrind/link_tool_exe_darwin.in \
+            -e 's/^my \$archstr = .*/my $archstr = "x86_64";/g'
 
-      echo "substitute hardcoded /usr/include/mach with ${xnu}/include/mach"
-      substituteInPlace coregrind/Makefile.in \
-         --replace /usr/include/mach ${xnu}/include/mach
+        echo "substitute hardcoded /usr/include/mach with ${xnu}/include/mach"
+        substituteInPlace coregrind/Makefile.in \
+           --replace /usr/include/mach ${xnu}/include/mach
 
-      substituteInPlace coregrind/m_debuginfo/readmacho.c \
-         --replace /usr/bin/dsymutil ${stdenv.cc.bintools.bintools}/bin/dsymutil
+        substituteInPlace coregrind/m_debuginfo/readmacho.c \
+           --replace /usr/bin/dsymutil ${stdenv.cc.bintools.bintools}/bin/dsymutil
 
-      echo "substitute hardcoded /usr/bin/ld with ${cctools}/bin/ld"
-      substituteInPlace coregrind/link_tool_exe_darwin.in \
-        --replace /usr/bin/ld ${cctools}/bin/ld
-    '');
+        echo "substitute hardcoded /usr/bin/ld with ${cctools}/bin/ld"
+        substituteInPlace coregrind/link_tool_exe_darwin.in \
+          --replace /usr/bin/ld ${cctools}/bin/ld
+      ''
+  );
 
   # To prevent rebuild on linux when moving darwin's postPatch fixes to preConfigure
   postPatch = "";
@@ -83,9 +86,13 @@ stdenv.mkDerivation rec {
     maintainers = [ stdenv.lib.maintainers.eelco ];
     platforms = stdenv.lib.platforms.unix;
     badPlatforms = [
-      "armv5tel-linux" "armv6l-linux" "armv6m-linux"
-      "sparc-linux" "sparc64-linux"
-      "riscv32-linux" "riscv64-linux"
+      "armv5tel-linux"
+      "armv6l-linux"
+      "armv6m-linux"
+      "sparc-linux"
+      "sparc64-linux"
+      "riscv32-linux"
+      "riscv64-linux"
       "alpha-linux"
     ];
   };

@@ -5,7 +5,7 @@ rec {
 
   description = ''A tiny logging utility.'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/vom/2016-08-25/vom-20160825-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "vom";
 
-  asdFilesToKeep = ["vom.asd"];
+  asdFilesToKeep = [ "vom.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM vom DESCRIPTION A tiny logging utility. SHA256

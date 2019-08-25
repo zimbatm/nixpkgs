@@ -20,8 +20,8 @@ let
     sources = map (x: x.source) etc';
     targets = map (x: x.target) etc';
     modes = map (x: x.mode) etc';
-    users  = map (x: x.user) etc';
-    groups  = map (x: x.group) etc';
+    users = map (x: x.user) etc';
+    groups = map (x: x.group) etc';
   };
 
 in
@@ -46,98 +46,105 @@ in
         Set of files that have to be linked in <filename>/etc</filename>.
       '';
 
-      type = with types; loaOf (submodule (
-        { name, config, ... }:
-        { options = {
+      type = with types; loaOf (
+        submodule (
+          { name, config, ... }:
+            {
+              options = {
 
-            enable = mkOption {
-              type = types.bool;
-              default = true;
-              description = ''
-                Whether this /etc file should be generated.  This
-                option allows specific /etc files to be disabled.
-              '';
-            };
+                enable = mkOption {
+                  type = types.bool;
+                  default = true;
+                  description = ''
+                    Whether this /etc file should be generated.  This
+                    option allows specific /etc files to be disabled.
+                  '';
+                };
 
-            target = mkOption {
-              type = types.str;
-              description = ''
-                Name of symlink (relative to
-                <filename>/etc</filename>).  Defaults to the attribute
-                name.
-              '';
-            };
+                target = mkOption {
+                  type = types.str;
+                  description = ''
+                    Name of symlink (relative to
+                    <filename>/etc</filename>).  Defaults to the attribute
+                    name.
+                  '';
+                };
 
-            text = mkOption {
-              default = null;
-              type = types.nullOr types.lines;
-              description = "Text of the file.";
-            };
+                text = mkOption {
+                  default = null;
+                  type = types.nullOr types.lines;
+                  description = "Text of the file.";
+                };
 
-            source = mkOption {
-              type = types.path;
-              description = "Path of the source file.";
-            };
+                source = mkOption {
+                  type = types.path;
+                  description = "Path of the source file.";
+                };
 
-            mode = mkOption {
-              type = types.str;
-              default = "symlink";
-              example = "0600";
-              description = ''
-                If set to something else than <literal>symlink</literal>,
-                the file is copied instead of symlinked, with the given
-                file mode.
-              '';
-            };
+                mode = mkOption {
+                  type = types.str;
+                  default = "symlink";
+                  example = "0600";
+                  description = ''
+                    If set to something else than <literal>symlink</literal>,
+                    the file is copied instead of symlinked, with the given
+                    file mode.
+                  '';
+                };
 
-            uid = mkOption {
-              default = 0;
-              type = types.int;
-              description = ''
-                UID of created file. Only takes affect when the file is
-                copied (that is, the mode is not 'symlink').
-                '';
-            };
+                uid = mkOption {
+                  default = 0;
+                  type = types.int;
+                  description = ''
+                    UID of created file. Only takes affect when the file is
+                    copied (that is, the mode is not 'symlink').
+                  '';
+                };
 
-            gid = mkOption {
-              default = 0;
-              type = types.int;
-              description = ''
-                GID of created file. Only takes affect when the file is
-                copied (that is, the mode is not 'symlink').
-              '';
-            };
+                gid = mkOption {
+                  default = 0;
+                  type = types.int;
+                  description = ''
+                    GID of created file. Only takes affect when the file is
+                    copied (that is, the mode is not 'symlink').
+                  '';
+                };
 
-            user = mkOption {
-              default = "+${toString config.uid}";
-              type = types.str;
-              description = ''
-                User name of created file.
-                Only takes affect when the file is copied (that is, the mode is not 'symlink').
-                Changing this option takes precedence over <literal>uid</literal>.
-              '';
-            };
+                user = mkOption {
+                  default = "+${toString config.uid}";
+                  type = types.str;
+                  description = ''
+                    User name of created file.
+                    Only takes affect when the file is copied (that is, the mode is not 'symlink').
+                    Changing this option takes precedence over <literal>uid</literal>.
+                  '';
+                };
 
-            group = mkOption {
-              default = "+${toString config.gid}";
-              type = types.str;
-              description = ''
-                Group name of created file.
-                Only takes affect when the file is copied (that is, the mode is not 'symlink').
-                Changing this option takes precedence over <literal>gid</literal>.
-              '';
-            };
+                group = mkOption {
+                  default = "+${toString config.gid}";
+                  type = types.str;
+                  description = ''
+                    Group name of created file.
+                    Only takes affect when the file is copied (that is, the mode is not 'symlink').
+                    Changing this option takes precedence over <literal>gid</literal>.
+                  '';
+                };
 
-          };
+              };
 
-          config = {
-            target = mkDefault name;
-            source = mkIf (config.text != null) (
-              let name' = "etc-" + baseNameOf name;
-              in mkDefault (pkgs.writeText name' config.text));
-          };
+              config = {
+                target = mkDefault name;
+                source = mkIf (config.text != null) (
+                  let
+                    name' = "etc-" + baseNameOf name;
+                  in
+                    mkDefault (pkgs.writeText name' config.text)
+                );
+              };
 
-        }));
+            }
+        )
+      );
 
     };
 

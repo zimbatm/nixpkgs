@@ -1,6 +1,8 @@
-{stdenv, fetchurl}: 
+{ stdenv, fetchurl }:
 
-let version = "1.5.0"; in
+let
+  version = "1.5.0";
+in
 stdenv.mkDerivation {
   name = "tetgen-${version}";
 

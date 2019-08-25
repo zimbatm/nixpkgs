@@ -9,7 +9,7 @@ let
 
   python = cfg.package.pythonModule;
 
-  escapeStr = s: escape ["'"] s;
+  escapeStr = s: escape [ "'" ] s;
 
   defaultMasterCfg = pkgs.writeText "master.cfg" ''
     from buildbot.plugins import *
@@ -54,7 +54,8 @@ let
     m.setServiceParent(application)
   '';
 
-in {
+in
+{
   options = {
     services.buildbot-master = {
 
@@ -213,7 +214,7 @@ in {
       };
 
       pythonPackages = mkOption {
-        default = pythonPackages: with pythonPackages; [ ];
+        default = pythonPackages: with pythonPackages; [];
         defaultText = "pythonPackages: with pythonPackages; [ ]";
         description = "Packages to add the to the PYTHONPATH of the buildbot process.";
         example = literalExample "pythonPackages: with pythonPackages; [ requests ]";

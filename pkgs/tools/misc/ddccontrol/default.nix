@@ -1,9 +1,18 @@
-{ stdenv, fetchFromGitHub, autoreconfHook, intltool, libxml2
-, pciutils, pkgconfig, gtk2, ddccontrol-db
+{ stdenv
+, fetchFromGitHub
+, autoreconfHook
+, intltool
+, libxml2
+, pciutils
+, pkgconfig
+, gtk2
+, ddccontrol-db
 , makeDesktopItem
 }:
 
-let version = "0.4.4"; in
+let
+  version = "0.4.4";
+in
 stdenv.mkDerivation rec {
   name = "ddccontrol-${version}";
 

@@ -1,6 +1,7 @@
 { stdenv, fetchurl, pkgconfig, glib, gtkmm2 }:
 
-let version = "1.6.1";
+let
+  version = "1.6.1";
 in
 stdenv.mkDerivation rec {
   name = "nitrogen-${version}";

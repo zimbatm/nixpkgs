@@ -1,6 +1,15 @@
-{ stdenv, lib, fetchFromGitHub, python3Packages
-, hackrf, rtl-sdr, airspy, limesuite, libiio
-, USRPSupport ? false, uhd }:
+{ stdenv
+, lib
+, fetchFromGitHub
+, python3Packages
+, hackrf
+, rtl-sdr
+, airspy
+, limesuite
+, libiio
+, USRPSupport ? false
+, uhd
+}:
 
 python3Packages.buildPythonApplication rec {
   pname = "urh";
@@ -14,10 +23,16 @@ python3Packages.buildPythonApplication rec {
   };
 
   buildInputs = [ hackrf rtl-sdr airspy limesuite libiio ]
-    ++ lib.optional USRPSupport uhd;
+    ++ lib.optional USRPSupport uhd
+    ;
 
   propagatedBuildInputs = with python3Packages; [
-    pyqt5 numpy psutil cython pyzmq pyaudio
+    pyqt5
+    numpy
+    psutil
+    cython
+    pyzmq
+    pyaudio
   ];
 
   doCheck = false;

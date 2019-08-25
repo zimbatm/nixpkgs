@@ -1,6 +1,12 @@
-{ stdenv, fetchgit, buildPythonPackage
+{ stdenv
+, fetchgit
+, buildPythonPackage
 , python
-, srht, redis, alembic, pystache }:
+, srht
+, redis
+, alembic
+, pystache
+}:
 
 buildPythonPackage rec {
   pname = "todosrht";

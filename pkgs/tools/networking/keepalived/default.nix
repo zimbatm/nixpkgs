@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
   configureFlags = [
     "--enable-sha1"
     "--enable-snmp"
- ];
+  ];
 
   meta = with stdenv.lib; {
     homepage = https://keepalived.org;

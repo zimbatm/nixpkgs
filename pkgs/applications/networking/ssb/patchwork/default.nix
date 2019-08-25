@@ -30,15 +30,15 @@ let
   };
 
 in
-  symlinkJoin {
-    inherit name;
-    paths = [ binary ];
+symlinkJoin {
+  inherit name;
+  paths = [ binary ];
 
-    postBuild = ''
-      mkdir -p $out/share/pixmaps/ $out/share/applications
-      cp ${appimage-contents}/ssb-patchwork.png $out/share/pixmaps
-      cp ${desktopItem}/share/applications/* $out/share/applications/
-    '';
+  postBuild = ''
+    mkdir -p $out/share/pixmaps/ $out/share/applications
+    cp ${appimage-contents}/ssb-patchwork.png $out/share/pixmaps
+    cp ${desktopItem}/share/applications/* $out/share/applications/
+  '';
 
   meta = with lib; {
     description = "A decentralized messaging and sharing app built on top of Secure Scuttlebutt (SSB)";

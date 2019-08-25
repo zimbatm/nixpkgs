@@ -21,7 +21,7 @@ buildPythonPackage rec {
     description = "Python humanize utilities";
     homepage = https://github.com/jmoiron/humanize;
     license = licenses.mit;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
     platforms = platforms.unix;
   };
 

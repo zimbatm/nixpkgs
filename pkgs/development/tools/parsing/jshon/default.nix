@@ -15,10 +15,12 @@ stdenv.mkDerivation rec {
   patches = [
     # Fix null termination in read_stream.
     # https://github.com/keenerd/jshon/issues/53
-    (fetchpatch {
-      url = https://github.com/mbrock/jshon/commit/32288dd186573ceb58164f30be1782d4580466d8.patch;
-      sha256 = "04rss2nprl9nqblc7smq0477n54hm801xgnnmvyzni313i1n6vhl";
-    })
+    (
+      fetchpatch {
+        url = https://github.com/mbrock/jshon/commit/32288dd186573ceb58164f30be1782d4580466d8.patch;
+        sha256 = "04rss2nprl9nqblc7smq0477n54hm801xgnnmvyzni313i1n6vhl";
+      }
+    )
   ];
 
   buildInputs = [ jansson ];

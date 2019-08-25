@@ -5,7 +5,7 @@ rec {
 
   description = ''Portable test harness package'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/ptester/2016-09-29/ptester-20160929-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "ptester";
 
-  asdFilesToKeep = ["ptester.asd"];
+  asdFilesToKeep = [ "ptester.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM ptester DESCRIPTION Portable test harness package SHA256

@@ -1,7 +1,29 @@
-{ stdenv, fetchurl, vala, atk, cairo, glib, gnome3, gtk3, libwnck3
-, libX11, libXfixes, libXi, pango, intltool, pkgconfig, libxml2
-, bamf, gdk-pixbuf, libdbusmenu-gtk3, file, gnome-menus, libgee
-, wrapGAppsHook, autoreconfHook, pantheon }:
+{ stdenv
+, fetchurl
+, vala
+, atk
+, cairo
+, glib
+, gnome3
+, gtk3
+, libwnck3
+, libX11
+, libXfixes
+, libXi
+, pango
+, intltool
+, pkgconfig
+, libxml2
+, bamf
+, gdk-pixbuf
+, libdbusmenu-gtk3
+, file
+, gnome-menus
+, libgee
+, wrapGAppsHook
+, autoreconfHook
+, pantheon
+}:
 
 stdenv.mkDerivation rec {
   pname = "plank";

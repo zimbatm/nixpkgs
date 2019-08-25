@@ -2,7 +2,8 @@
 
 let
   version = "5.0.4";
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "mingw-w64-${version}";
 
   src = fetchurl {

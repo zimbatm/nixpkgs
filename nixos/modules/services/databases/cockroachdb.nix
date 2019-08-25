@@ -6,11 +6,12 @@ let
   cfg = config.services.cockroachdb;
   crdb = cfg.package;
 
-  escape    = builtins.replaceStrings ["%"] ["%%"];
+  escape = builtins.replaceStrings [ "%" ] [ "%%" ];
   ifNotNull = v: s: optionalString (v != null) s;
 
   startupCommand = lib.concatStringsSep " "
-    [ # Basic startup
+    [
+      # Basic startup
       "${crdb}/bin/cockroach start"
       "--logtostderr"
       "--store=/var/lib/cockroachdb"
@@ -33,19 +34,19 @@ let
       (if cfg.insecure then "--insecure" else "--certs-dir=${cfg.certsDir}")
     ];
 
-    addressOption = descr: defaultPort: {
-      address = mkOption {
-        type = types.str;
-        default = "localhost";
-        description = "Address to bind to for ${descr}";
-      };
-
-      port = mkOption {
-        type = types.port;
-        default = defaultPort;
-        description = "Port to bind to for ${descr}";
-      };
+  addressOption = descr: defaultPort: {
+    address = mkOption {
+      type = types.str;
+      default = "localhost";
+      description = "Address to bind to for ${descr}";
     };
+
+    port = mkOption {
+      type = types.port;
+      default = defaultPort;
+      description = "Port to bind to for ${descr}";
+    };
+  };
 in
 
 {
@@ -164,40 +165,49 @@ in
 
   config = mkIf config.services.cockroachdb.enable {
     assertions = [
-      { assertion = !cfg.insecure -> cfg.certsDir != null;
+      {
+        assertion = !cfg.insecure -> cfg.certsDir != null;
         message = "CockroachDB must have a set of SSL certificates (.certsDir), or run in Insecure Mode (.insecure = true)";
       }
     ];
 
     environment.systemPackages = [ crdb ];
 
-    users.users = optionalAttrs (cfg.user == "cockroachdb") (singleton
-      { name        = "cockroachdb";
-        description = "CockroachDB Server User";
-        uid         = config.ids.uids.cockroachdb;
-        group       = cfg.group;
-      });
+    users.users = optionalAttrs (cfg.user == "cockroachdb") (
+      singleton
+        {
+          name = "cockroachdb";
+          description = "CockroachDB Server User";
+          uid = config.ids.uids.cockroachdb;
+          group = cfg.group;
+        }
+    );
 
-    users.groups = optionalAttrs (cfg.group == "cockroachdb") (singleton
-      { name = "cockroachdb";
-        gid  = config.ids.gids.cockroachdb;
-      });
+    users.groups = optionalAttrs (cfg.group == "cockroachdb") (
+      singleton
+        {
+          name = "cockroachdb";
+          gid = config.ids.gids.cockroachdb;
+        }
+    );
 
     networking.firewall.allowedTCPPorts = lib.optionals cfg.openPorts
       [ cfg.http.port cfg.listen.port ];
 
     systemd.services.cockroachdb =
-      { description   = "CockroachDB Server";
+      {
+        description = "CockroachDB Server";
         documentation = [ "man:cockroach(1)" "https://www.cockroachlabs.com" ];
 
-        after    = [ "network.target" "time-sync.target" ];
+        after = [ "network.target" "time-sync.target" ];
         requires = [ "time-sync.target" ];
         wantedBy = [ "multi-user.target" ];
 
         unitConfig.RequiresMountsFor = "/var/lib/cockroachdb";
 
         serviceConfig =
-          { ExecStart = startupCommand;
+          {
+            ExecStart = startupCommand;
             Type = "notify";
             User = cfg.user;
             StateDirectory = "cockroachdb";

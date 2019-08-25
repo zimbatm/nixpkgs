@@ -20,9 +20,11 @@ stdenv.mkDerivation {
     ghostscriptX
     perl
     pkgconfig
-  ] ++ stdenv.lib.optionals stdenv.isDarwin [
-    libiconv
-  ];
+  ]
+  ++ stdenv.lib.optionals stdenv.isDarwin [
+       libiconv
+     ]
+  ;
 
   patchPhase = ''
     sed 's|\<gs\>|${ghostscriptX}/bin/gs|g' -i "src/"*.in
@@ -42,7 +44,7 @@ stdenv.mkDerivation {
     '';
 
     license = stdenv.lib.licenses.gpl3Plus;
-    maintainers = [ ];
+    maintainers = [];
     platforms = stdenv.lib.platforms.unix;
   };
 }

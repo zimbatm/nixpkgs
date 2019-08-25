@@ -12,57 +12,63 @@ let
     name = "${ext.publisher}-${ext.name}.zip";
   };
 
-  buildVscodeExtension = a@{
-    name,
-    namePrefix ? "${extendedPkgName}-extension-",
-    src,
-    # Same as "Unique Identifier" on the extension's web page.
-    # For the moment, only serve as unique extension dir.
-    vscodeExtUniqueId,
-    configurePhase ? ":",
-    buildPhase ? ":",
-    dontPatchELF ? true,
-    dontStrip ? true,
-    buildInputs ? [],
-    ...
-  }:
-  stdenv.mkDerivation ((removeAttrs a [ "vscodeExtUniqueId" ]) //  {
+  buildVscodeExtension =
+    a@{ name
+    , namePrefix ? "${extendedPkgName}-extension-"
+    , src
+    , # Same as "Unique Identifier" on the extension's web page.
+      # For the moment, only serve as unique extension dir.
+      vscodeExtUniqueId
+    , configurePhase ? ":"
+    , buildPhase ? ":"
+    , dontPatchELF ? true
+    , dontStrip ? true
+    , buildInputs ? []
+    , ...
+    }:
+      stdenv.mkDerivation (
+        (removeAttrs a [ "vscodeExtUniqueId" ])
+        // {
 
-    name = namePrefix + name;
+             name = namePrefix + name;
 
-    inherit vscodeExtUniqueId;
-    inherit configurePhase buildPhase dontPatchELF dontStrip;
+             inherit vscodeExtUniqueId;
+             inherit configurePhase buildPhase dontPatchELF dontStrip;
 
-    installPrefix = "share/${extendedPkgName}/extensions/${vscodeExtUniqueId}";
+             installPrefix = "share/${extendedPkgName}/extensions/${vscodeExtUniqueId}";
 
-    buildInputs = [ unzip ] ++ buildInputs;
+             buildInputs = [ unzip ] ++ buildInputs;
 
-    installPhase = ''
-      runHook preInstall
+             installPhase = ''
+               runHook preInstall
 
-      mkdir -p "$out/$installPrefix"
-      find . -mindepth 1 -maxdepth 1 | xargs -d'\n' mv -t "$out/$installPrefix/"
+               mkdir -p "$out/$installPrefix"
+               find . -mindepth 1 -maxdepth 1 | xargs -d'\n' mv -t "$out/$installPrefix/"
 
-      runHook postInstall
-    '';
+               runHook postInstall
+             '';
 
-  });
+           }
+      );
 
 
   fetchVsixFromVscodeMarketplace = mktplcExtRef:
-    fetchurl((mktplcExtRefToFetchArgs mktplcExtRef));
+    fetchurl ((mktplcExtRefToFetchArgs mktplcExtRef));
 
-  buildVscodeMarketplaceExtension = a@{
-    name ? "",
-    src ? null,
-    mktplcRef,
-    ...
-  }: assert "" == name; assert null == src;
-  buildVscodeExtension ((removeAttrs a [ "mktplcRef" ]) // {
-    name = "${mktplcRef.publisher}-${mktplcRef.name}-${mktplcRef.version}";
-    src = fetchVsixFromVscodeMarketplace mktplcRef;
-    vscodeExtUniqueId = "${mktplcRef.publisher}.${mktplcRef.name}";
-  });
+  buildVscodeMarketplaceExtension =
+    a@{ name ? ""
+    , src ? null
+    , mktplcRef
+    , ...
+    }: assert "" == name; assert null == src;
+    buildVscodeExtension (
+      (removeAttrs a [ "mktplcRef" ])
+      // {
+           name = "${mktplcRef.publisher}-${mktplcRef.name}-${mktplcRef.version}";
+           src = fetchVsixFromVscodeMarketplace mktplcRef;
+           vscodeExtUniqueId = "${mktplcRef.publisher}.${mktplcRef.name}";
+         }
+    );
 
   mktplcRefAttrList = [
     "name"
@@ -72,9 +78,12 @@ let
   ];
 
   mktplcExtRefToExtDrv = ext:
-    buildVscodeMarketplaceExtension ((removeAttrs ext mktplcRefAttrList) // {
-      mktplcRef = ext;
-    });
+    buildVscodeMarketplaceExtension (
+      (removeAttrs ext mktplcRefAttrList)
+      // {
+           mktplcRef = ext;
+         }
+    );
 
   extensionFromVscodeMarketplace = mktplcExtRefToExtDrv;
   extensionsFromVscodeMarketplace = mktplcExtRefList:
@@ -84,6 +93,7 @@ in
 
 {
   inherit fetchVsixFromVscodeMarketplace buildVscodeExtension
-          buildVscodeMarketplaceExtension extensionFromVscodeMarketplace
-          extensionsFromVscodeMarketplace;
+    buildVscodeMarketplaceExtension extensionFromVscodeMarketplace
+    extensionsFromVscodeMarketplace
+    ;
 }

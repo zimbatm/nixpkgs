@@ -1,7 +1,22 @@
-{ stdenv, fetchFromGitLab, pkgconfig, glib, sqlite, gobject-introspection, vala
-, autoconf, automake, libtool, gettext, dbus, telepathy-glib
-, gtk3, json-glib, librdf_raptor2, dbus-glib
-, pythonSupport ? true, python2Packages
+{ stdenv
+, fetchFromGitLab
+, pkgconfig
+, glib
+, sqlite
+, gobject-introspection
+, vala
+, autoconf
+, automake
+, libtool
+, gettext
+, dbus
+, telepathy-glib
+, gtk3
+, json-glib
+, librdf_raptor2
+, dbus-glib
+, pythonSupport ? true
+, python2Packages
 }:
 
 stdenv.mkDerivation rec {
@@ -23,11 +38,25 @@ stdenv.mkDerivation rec {
   configureFlags = [ "--with-session-bus-services-dir=${placeholder ''out''}/share/dbus-1/services" ];
 
   nativeBuildInputs = [
-    autoconf automake libtool pkgconfig gettext gobject-introspection vala python2Packages.python
+    autoconf
+    automake
+    libtool
+    pkgconfig
+    gettext
+    gobject-introspection
+    vala
+    python2Packages.python
   ];
   buildInputs = [
-    glib sqlite dbus telepathy-glib dbus-glib
-    gtk3 json-glib librdf_raptor2 python2Packages.rdflib
+    glib
+    sqlite
+    dbus
+    telepathy-glib
+    dbus-glib
+    gtk3
+    json-glib
+    librdf_raptor2
+    python2Packages.rdflib
   ];
 
   postPatch = ''

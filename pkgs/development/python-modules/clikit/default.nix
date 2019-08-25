@@ -1,6 +1,13 @@
-{ lib, buildPythonPackage, fetchPypi
-, isPy27, isPy34
-, pylev, pastel, typing, enum34 }:
+{ lib
+, buildPythonPackage
+, fetchPypi
+, isPy27
+, isPy34
+, pylev
+, pastel
+, typing
+, enum34
+}:
 
 buildPythonPackage rec {
   pname = "clikit";
@@ -12,9 +19,12 @@ buildPythonPackage rec {
   };
 
   propagatedBuildInputs = [
-    pylev pastel
-  ] ++ lib.optional (isPy27 || isPy34) typing
-    ++ lib.optional isPy27 enum34;
+    pylev
+    pastel
+  ]
+  ++ lib.optional (isPy27 || isPy34) typing
+  ++ lib.optional isPy27 enum34
+  ;
 
   # The Pypi tarball doesn't include tests, and the GitHub source isn't
   # buildable until we bootstrap poetry, see

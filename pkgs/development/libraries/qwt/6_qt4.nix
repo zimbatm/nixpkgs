@@ -10,7 +10,9 @@ stdenv.mkDerivation rec {
 
   buildInputs = [
     qt4
-  ] ++ stdenv.lib.optionals stdenv.isDarwin [ AGL ];
+  ]
+  ++ stdenv.lib.optionals stdenv.isDarwin [ AGL ]
+  ;
 
   nativeBuildInputs = [ qmake4Hook ];
 

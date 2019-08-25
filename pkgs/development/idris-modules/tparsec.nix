@@ -2,7 +2,7 @@
 , fetchFromGitHub
 , lib
 }:
-build-idris-package  {
+build-idris-package {
   name = "tparsec";
   version = "2019-06-18";
 

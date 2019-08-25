@@ -2,7 +2,9 @@
 #
 # Contact: stdenv.lib.maintainers.fuuzetsu
 
-{ stdenv, Agda, glibcLocales
+{ stdenv
+, Agda
+, glibcLocales
 , writeShellScriptBin
 , extension ? (self: super: {})
 }:
@@ -10,7 +12,7 @@
 with stdenv.lib.strings;
 
 let
-  defaults = self : {
+  defaults = self: {
     # There is no Hackage for Agda so we require src.
     inherit (self) src name;
 
@@ -36,7 +38,7 @@ let
     propagatedUserEnvPkgs = self.buildDependsAgda;
 
     # Immediate source directories under which modules can be found.
-    sourceDirectories = [ ];
+    sourceDirectories = [];
 
     # This is used if we have a top-level element that only serves
     # as the container for the source and we only care about its
@@ -47,8 +49,10 @@ let
 
     # FIXME: `dirOf self.everythingFile` is what we really want, not hardcoded "./"
     includeDirs = self.buildDependsAgdaShareAgda
-                  ++ self.sourceDirectories ++ self.topSourceDirectories
-                  ++ [ "." ];
+      ++ self.sourceDirectories
+      ++ self.topSourceDirectories
+      ++ [ "." ]
+      ;
     buildFlags = concatStringsSep " " (map (x: "-i " + x) self.includeDirs);
 
     agdaWithArgs = "${Agda}/bin/agda ${self.buildFlags}";
@@ -61,13 +65,15 @@ let
 
     installPhase = let
       srcFiles = self.sourceDirectories
-                 ++ map (x: x + "/*") self.topSourceDirectories;
-    in ''
-      runHook preInstall
-      mkdir -p $out/share/agda
-      cp -pR ${concatStringsSep " " srcFiles} $out/share/agda
-      runHook postInstall
-    '';
+        ++ map (x: x + "/*") self.topSourceDirectories
+        ;
+    in
+      ''
+        runHook preInstall
+        mkdir -p $out/share/agda
+        cp -pR ${concatStringsSep " " srcFiles} $out/share/agda
+        runHook postInstall
+      '';
 
     passthru = {
       env = stdenv.mkDerivation {
@@ -80,13 +86,16 @@ let
           agdaWrapper = writeShellScriptBin "agda" ''
             exec ${self.agdaWithArgs} "$@"
           '';
-        in [agdaWrapper] ++ self.buildDepends;
+        in
+          [ agdaWrapper ] ++ self.buildDepends;
       };
     };
   };
 in
-{ mkDerivation = args: let
-      super = defaults self // args self;
-      self  = super // extension self super;
-    in stdenv.mkDerivation self;
+{
+  mkDerivation = args: let
+    super = defaults self // args self;
+    self = super // extension self super;
+  in
+    stdenv.mkDerivation self;
 }

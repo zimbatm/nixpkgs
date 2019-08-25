@@ -4,10 +4,10 @@ let
   # See https://mesonbuild.com/Reference-tables.html#cpu-families
   cpuFamilies = {
     "aarch64" = "aarch64";
-    "armv6l"  = "arm";
-    "armv7l"  = "arm";
-    "i686"    = "x86";
-    "x86_64"  = "x86_64";
+    "armv6l" = "arm";
+    "armv7l" = "arm";
+    "i686" = "x86";
+    "x86_64" = "x86_64";
   };
 in
 python3Packages.buildPythonApplication rec {
@@ -50,18 +50,22 @@ python3Packages.buildPythonApplication rec {
     # are not as predictable, therefore we need to keep them in the RPATH.
     # At the moment we are keeping the paths starting with /nix/store.
     # https://github.com/NixOS/nixpkgs/issues/31222#issuecomment-365811634
-    (substituteAll {
-      src = ./fix-rpath.patch;
-      inherit (builtins) storeDir;
-    })
-  ] ++ lib.optionals stdenv.isDarwin [
-    # We use custom Clang, which makes Meson think *not Apple*, while still
-    # relying on system linker. When it detects standard Clang, Meson will
-    # pass it `-Wl,-O1` flag but optimizations are not recognized by
-    # Mac linker.
-    # https://github.com/mesonbuild/meson/issues/4784
-    ./fix-objc-linking.patch
-  ];
+    (
+      substituteAll {
+        src = ./fix-rpath.patch;
+        inherit (builtins) storeDir;
+      }
+    )
+  ]
+  ++ lib.optionals stdenv.isDarwin [
+       # We use custom Clang, which makes Meson think *not Apple*, while still
+       # relying on system linker. When it detects standard Clang, Meson will
+       # pass it `-Wl,-O1` flag but optimizations are not recognized by
+       # Mac linker.
+       # https://github.com/mesonbuild/meson/issues/4784
+       ./fix-objc-linking.patch
+     ]
+  ;
 
   setupHook = ./setup-hook.sh;
 

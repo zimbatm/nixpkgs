@@ -1,5 +1,19 @@
-{ stdenv, fetchzip, wrapGAppsHook, alsaLib, atk, cairo, gdk-pixbuf
-, glib, gst_all_1,  gtk3, libSM, libX11, libpng12, pango, zlib }:
+{ stdenv
+, fetchzip
+, wrapGAppsHook
+, alsaLib
+, atk
+, cairo
+, gdk-pixbuf
+, glib
+, gst_all_1
+, gtk3
+, libSM
+, libX11
+, libpng12
+, pango
+, zlib
+}:
 
 stdenv.mkDerivation rec {
   name = "transcribe-${version}";
@@ -19,14 +33,30 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ wrapGAppsHook ];
 
-  buildInputs = with gst_all_1; [ gst-plugins-base gst-plugins-good
-    gst-plugins-bad gst-plugins-ugly ];
+  buildInputs = with gst_all_1; [
+    gst-plugins-base
+    gst-plugins-good
+    gst-plugins-bad
+    gst-plugins-ugly
+  ];
 
   dontPatchELF = true;
 
   libPath = with gst_all_1; stdenv.lib.makeLibraryPath [
-    stdenv.cc.cc glib gtk3 atk pango cairo gdk-pixbuf alsaLib
-    libX11 libSM libpng12 gstreamer gst-plugins-base zlib
+    stdenv.cc.cc
+    glib
+    gtk3
+    atk
+    pango
+    cairo
+    gdk-pixbuf
+    alsaLib
+    libX11
+    libSM
+    libpng12
+    gstreamer
+    gst-plugins-base
+    zlib
   ];
 
   installPhase = ''

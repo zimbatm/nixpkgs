@@ -1,9 +1,10 @@
-{ stdenv, fetchurl, ghostscript, libpng } :
+{ stdenv, fetchurl, ghostscript, libpng }:
 
 let
   version = "3.2.7a";
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "fig2dev-${version}";
 
   src = fetchurl {
@@ -13,7 +14,7 @@ in stdenv.mkDerivation {
 
   buildInputs = [ libpng ];
 
-  GSEXE="${ghostscript}/bin/gs";
+  GSEXE = "${ghostscript}/bin/gs";
 
   meta = with stdenv.lib; {
     description = "Tool to convert Xfig files to other formats";
@@ -22,4 +23,3 @@ in stdenv.mkDerivation {
     platforms = platforms.linux;
   };
 }
-

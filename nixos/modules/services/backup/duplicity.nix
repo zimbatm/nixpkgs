@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ...}:
+{ config, lib, pkgs, ... }:
 
 with lib;
 
@@ -8,9 +8,10 @@ let
   stateDirectory = "/var/lib/duplicity";
 
   localTarget = if hasPrefix "file://" cfg.targetUrl
-    then removePrefix "file://" cfg.targetUrl else null;
+  then removePrefix "file://" cfg.targetUrl else null;
 
-in {
+in
+{
   options.services.duplicity = {
     enable = mkEnableOption "backups with duplicity";
 
@@ -102,27 +103,34 @@ in {
         serviceConfig = {
           ExecStart = ''
             ${pkgs.duplicity}/bin/duplicity ${escapeShellArgs (
-              [
-                cfg.root
-                cfg.targetUrl
-                "--archive-dir" stateDirectory
-              ]
-              ++ concatMap (p: [ "--include" p ]) cfg.include
-              ++ concatMap (p: [ "--exclude" p ]) cfg.exclude
-              ++ cfg.extraFlags)}
+            [
+              cfg.root
+              cfg.targetUrl
+              "--archive-dir"
+              stateDirectory
+            ]
+            ++ concatMap (p: [ "--include" p ]) cfg.include
+            ++ concatMap (p: [ "--exclude" p ]) cfg.exclude
+            ++ cfg.extraFlags
+          )}
           '';
           PrivateTmp = true;
           ProtectSystem = "strict";
           ProtectHome = "read-only";
           StateDirectory = baseNameOf stateDirectory;
-        } // optionalAttrs (localTarget != null) {
-          ReadWritePaths = localTarget;
-        } // optionalAttrs (cfg.secretFile != null) {
-          EnvironmentFile = cfg.secretFile;
-        };
-      } // optionalAttrs (cfg.frequency != null) {
-        startAt = cfg.frequency;
-      };
+        }
+        // optionalAttrs (localTarget != null) {
+             ReadWritePaths = localTarget;
+           }
+        // optionalAttrs (cfg.secretFile != null) {
+             EnvironmentFile = cfg.secretFile;
+           }
+        ;
+      }
+      // optionalAttrs (cfg.frequency != null) {
+           startAt = cfg.frequency;
+         }
+      ;
 
       tmpfiles.rules = optional (localTarget != null) "d ${localTarget} 0700 root root -";
     };

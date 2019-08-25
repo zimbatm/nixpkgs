@@ -23,6 +23,6 @@ stdenv.mkDerivation rec {
     license = licenses.gpl2;
     platforms = platforms.linux;
     broken = true; # Needs vulnerable Samba, missing source link
-                   # 2018-08-21
+    # 2018-08-21
   };
 }

@@ -10,11 +10,13 @@ stdenv.mkDerivation rec {
   };
 
   patches = [
-    (fetchpatch {
-      name = "CVE-2016-10091-0001-convert.c-Use-safe-buffer-size-and-snprintf.patch";
-      url = "https://bugs.debian.org/cgi-bin/bugreport.cgi?att=1;bug=849705;filename=0001-convert.c-Use-safe-buffer-size-and-snprintf.patch;msg=20";
-      sha256 = "0s0fjvm3zdm9967sijlipfrwjs0h23n2n8fa6f40xxp8y5qq5a0b";
-    })
+    (
+      fetchpatch {
+        name = "CVE-2016-10091-0001-convert.c-Use-safe-buffer-size-and-snprintf.patch";
+        url = "https://bugs.debian.org/cgi-bin/bugreport.cgi?att=1;bug=849705;filename=0001-convert.c-Use-safe-buffer-size-and-snprintf.patch;msg=20";
+        sha256 = "0s0fjvm3zdm9967sijlipfrwjs0h23n2n8fa6f40xxp8y5qq5a0b";
+      }
+    )
   ];
 
   nativeBuildInputs = [ autoconf automake ];

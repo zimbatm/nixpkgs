@@ -5,14 +5,19 @@ stdenv.mkDerivation rec {
   version = "2019a";
 
   srcs =
-    [ (fetchurl {
-        url = "https://data.iana.org/time-zones/releases/tzdata${version}.tar.gz";
-        sha256 = "0wlpqm4asvi0waaz24xj20iq40gqfypmb4nldjhkfgm09bgnsdlh";
-      })
-      (fetchurl {
-        url = "https://data.iana.org/time-zones/releases/tzcode${version}.tar.gz";
-        sha256 = "1x9z8fpgnhzlsnps0hamb54ymaskjab7ys9m4i4gpk9hpiig2fc7";
-      })
+    [
+      (
+        fetchurl {
+          url = "https://data.iana.org/time-zones/releases/tzdata${version}.tar.gz";
+          sha256 = "0wlpqm4asvi0waaz24xj20iq40gqfypmb4nldjhkfgm09bgnsdlh";
+        }
+      )
+      (
+        fetchurl {
+          url = "https://data.iana.org/time-zones/releases/tzcode${version}.tar.gz";
+          sha256 = "1x9z8fpgnhzlsnps0hamb54ymaskjab7ys9m4i4gpk9hpiig2fc7";
+        }
+      )
     ];
 
   sourceRoot = ".";
@@ -42,12 +47,12 @@ stdenv.mkDerivation rec {
   installFlags = [ "ZIC=./zic-native" ];
 
   preInstall = ''
-     mv zic.o zic.o.orig
-     mv zic zic.orig
-     make $makeFlags cc=cc AR=ar zic
-     mv zic zic-native
-     mv zic.o.orig zic.o
-     mv zic.orig zic
+    mv zic.o zic.o.orig
+    mv zic zic.orig
+    make $makeFlags cc=cc AR=ar zic
+    mv zic zic-native
+    mv zic.o.orig zic.o
+    mv zic.orig zic
   '';
 
   postInstall =

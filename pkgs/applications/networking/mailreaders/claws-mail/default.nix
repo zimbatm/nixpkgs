@@ -1,14 +1,42 @@
-{ config, fetchurl, stdenv, wrapGAppsHook, autoreconfHook
-, curl, dbus, dbus-glib, enchant, gtk2, gnutls, gnupg, gpgme, hicolor-icon-theme
-, libarchive, libcanberra-gtk2, libetpan, libnotify, libsoup, libxml2, networkmanager
-, openldap, perl, pkgconfig, poppler, python, shared-mime-info, webkitgtk24x-gtk2
-, glib-networking, gsettings-desktop-schemas, libSM, libytnef, libical 
-# Build options
-# TODO: A flag to build the manual.
-# TODO: Plugins that complain about their missing dependencies, even when
-#       provided:
-#         gdata requires libgdata
-#         geolocation requires libchamplain
+{ config
+, fetchurl
+, stdenv
+, wrapGAppsHook
+, autoreconfHook
+, curl
+, dbus
+, dbus-glib
+, enchant
+, gtk2
+, gnutls
+, gnupg
+, gpgme
+, hicolor-icon-theme
+, libarchive
+, libcanberra-gtk2
+, libetpan
+, libnotify
+, libsoup
+, libxml2
+, networkmanager
+, openldap
+, perl
+, pkgconfig
+, poppler
+, python
+, shared-mime-info
+, webkitgtk24x-gtk2
+, glib-networking
+, gsettings-desktop-schemas
+, libSM
+, libytnef
+, libical
+  # Build options
+  # TODO: A flag to build the manual.
+  # TODO: Plugins that complain about their missing dependencies, even when
+  #       provided:
+  #         gdata requires libgdata
+  #         geolocation requires libchamplain
 , enableLdap ? false
 , enableNetworkManager ? config.networking.networkmanager.enable or false
 , enablePgp ? true
@@ -56,8 +84,19 @@ stdenv.mkDerivation rec {
   propagatedBuildInputs = with python.pkgs; [ python ] ++ optionals enablePluginPython [ pygtk pygobject2 ];
 
   buildInputs =
-    [ curl dbus dbus-glib gtk2 gnutls gsettings-desktop-schemas hicolor-icon-theme
-      libetpan perl glib-networking libSM libytnef
+    [
+      curl
+      dbus
+      dbus-glib
+      gtk2
+      gnutls
+      gsettings-desktop-schemas
+      hicolor-icon-theme
+      libetpan
+      perl
+      glib-networking
+      libSM
+      libytnef
     ]
     ++ optional enableSpellcheck enchant
     ++ optionals (enablePgp || enablePluginSmime) [ gnupg gpgme ]
@@ -70,16 +109,17 @@ stdenv.mkDerivation rec {
     ++ optional enableLdap openldap
     ++ optional enablePluginPdf poppler
     ++ optional enablePluginFancy webkitgtk24x-gtk2
-    ++ optional enablePluginVcalendar libical;
+    ++ optional enablePluginVcalendar libical
+  ;
 
   configureFlags =
     optional (!enableLdap) "--disable-ldap"
     ++ optional (!enableNetworkManager) "--disable-networkmanager"
     ++ optionals (!enablePgp) [
-      "--disable-pgpcore-plugin"
-      "--disable-pgpinline-plugin"
-      "--disable-pgpmime-plugin"
-    ]
+         "--disable-pgpcore-plugin"
+         "--disable-pgpinline-plugin"
+         "--disable-pgpmime-plugin"
+       ]
     ++ optional (!enablePluginArchive) "--disable-archive-plugin"
     ++ optional (!enablePluginFancy) "--disable-fancy-plugin"
     ++ optional (!enablePluginPdf) "--disable-pdf_viewer-plugin"
@@ -90,7 +130,8 @@ stdenv.mkDerivation rec {
     ++ optional (!enablePluginSpamassassin) "--disable-spamassassin-plugin"
     ++ optional (!enablePluginSpamReport) "--disable-spam_report-plugin"
     ++ optional (!enablePluginVcalendar) "--disable-vcalendar-plugin"
-    ++ optional (!enableSpellcheck) "--disable-enchant";
+    ++ optional (!enableSpellcheck) "--disable-enchant"
+    ;
 
   enableParallelBuilding = true;
 

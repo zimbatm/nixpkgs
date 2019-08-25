@@ -5,7 +5,7 @@ rec {
 
   description = ''Anonymous function helpers for Common Lisp'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/cl-anonfun/2011-12-03/cl-anonfun-20111203-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "cl-anonfun";
 
-  asdFilesToKeep = ["cl-anonfun.asd"];
+  asdFilesToKeep = [ "cl-anonfun.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM cl-anonfun DESCRIPTION Anonymous function helpers for Common Lisp

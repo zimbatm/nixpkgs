@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
   patches = [];
 
   nativeBuildInputs = [ pkgconfig gettext autoreconfHook ];
-  buildInputs = [ libtool libjpeg libusb1  ];
+  buildInputs = [ libtool libjpeg libusb1 ];
 
   # These are mentioned in the Requires line of libgphoto's pkg-config file.
   propagatedBuildInputs = [ libexif ];

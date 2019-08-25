@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ...}:
+{ config, lib, pkgs, ... }:
 
 with lib;
 
@@ -19,58 +19,68 @@ let
   # Converts the config option to a string
   semanticString = let
 
-      sortedAttrs = set: sort (l: r:
+    sortedAttrs = set: sort (
+      l: r:
         if l == "extraConfig" then false # Always put extraConfig last
         else if isAttrs set.${l} == isAttrs set.${r} then l < r
         else isAttrs set.${r} # Attrsets should be last, makes for a nice config
-        # This last case occurs when any side (but not both) is an attrset
-        # The order of these is correct when the attrset is on the right
-        # which we're just returning
-      ) (attrNames set);
+      # This last case occurs when any side (but not both) is an attrset
+      # The order of these is correct when the attrset is on the right
+      # which we're just returning
+    ) (attrNames set);
 
-      # Specifies an attrset that encodes the value according to its type
-      encode = name: value: {
-          null = [];
-          bool = [ "${name} = ${boolToString value}" ];
-          int = [ "${name} = ${toString value}" ];
+    # Specifies an attrset that encodes the value according to its type
+    encode = name: value: {
+      null = [];
+      bool = [ "${name} = ${boolToString value}" ];
+      int = [ "${name} = ${toString value}" ];
 
-          # extraConfig should be inserted verbatim
-          string = [ (if name == "extraConfig" then value else "${name} = ${value}") ];
+      # extraConfig should be inserted verbatim
+      string = [ (if name == "extraConfig" then value else "${name} = ${value}") ];
 
-          # Values like `Foo = [ "bar" "baz" ];` should be transformed into
-          #   Foo=bar
-          #   Foo=baz
-          list = concatMap (encode name) value;
+      # Values like `Foo = [ "bar" "baz" ];` should be transformed into
+      #   Foo=bar
+      #   Foo=baz
+      list = concatMap (encode name) value;
 
-          # Values like `Foo = { bar = { Baz = "baz"; Qux = "qux"; Florps = null; }; };` should be transmed into
-          #   <Foo bar>
-          #     Baz=baz
-          #     Qux=qux
-          #   </Foo>
-          set = concatMap (subname: optionals (value.${subname} != null) ([
-              "<${name} ${subname}>"
-            ] ++ map (line: "\t${line}") (toLines value.${subname}) ++ [
-              "</${name}>"
-            ])) (filter (v: v != null) (attrNames value));
+      # Values like `Foo = { bar = { Baz = "baz"; Qux = "qux"; Florps = null; }; };` should be transmed into
+      #   <Foo bar>
+      #     Baz=baz
+      #     Qux=qux
+      #   </Foo>
+      set = concatMap (
+        subname: optionals (value.${subname} != null) (
+          [
+            "<${name} ${subname}>"
+          ]
+          ++ map (line: "\t${line}") (toLines value.${subname})
+          ++ [
+               "</${name}>"
+             ]
+        )
+      ) (filter (v: v != null) (attrNames value));
 
-        }.${builtins.typeOf value};
+    }.${builtins.typeOf value};
 
-      # One level "above" encode, acts upon a set and uses encode on each name,value pair
-      toLines = set: concatMap (name: encode name set.${name}) (sortedAttrs set);
+    # One level "above" encode, acts upon a set and uses encode on each name,value pair
+    toLines = set: concatMap (name: encode name set.${name}) (sortedAttrs set);
 
-    in
-      concatStringsSep "\n" (toLines cfg.config);
+  in
+    concatStringsSep "\n" (toLines cfg.config);
 
   semanticTypes = with types; rec {
     zncAtom = nullOr (oneOf [ int bool str ]);
     zncAttr = attrsOf (nullOr zncConf);
     zncAll = oneOf [ zncAtom (listOf zncAtom) zncAttr ];
-    zncConf = attrsOf (zncAll // {
-      # Since this is a recursive type and the description by default contains
-      # the description of its subtypes, infinite recursion would occur without
-      # explicitly breaking this cycle
-      description = "znc values (null, atoms (str, int, bool), list of atoms, or attrsets of znc values)";
-    });
+    zncConf = attrsOf (
+      zncAll
+      // {
+           # Since this is a recursive type and the description by default contains
+           # the description of its subtypes, infinite recursion would occur without
+           # explicitly breaking this cycle
+           description = "znc values (null, atoms (str, int, bool), list of atoms, or attrsets of znc values)";
+         }
+    );
   };
 
 in
@@ -194,7 +204,7 @@ in
 
       modulePackages = mkOption {
         type = types.listOf types.package;
-        default = [ ];
+        default = [];
         example = literalExample "[ pkgs.zncModules.fish pkgs.zncModules.push ]";
         description = ''
           A list of global znc module packages to add to znc.
@@ -221,7 +231,7 @@ in
       };
 
       extraFlags = mkOption {
-        default = [ ];
+        default = [];
         example = [ "--debug" ];
         type = types.listOf types.str;
         description = ''
@@ -264,9 +274,9 @@ in
 
         # If mutable, regenerate conf file every time.
         ${optionalString (!cfg.mutable) ''
-          echo "znc is set to be system-managed. Now deleting old znc.conf file to be regenerated."
-          rm -f ${cfg.dataDir}/configs/znc.conf
-        ''}
+        echo "znc is set to be system-managed. Now deleting old znc.conf file to be regenerated."
+        rm -f ${cfg.dataDir}/configs/znc.conf
+      ''}
 
         # Ensure essential files exist.
         if [[ ! -f ${cfg.dataDir}/configs/znc.conf ]]; then
@@ -288,7 +298,8 @@ in
     };
 
     users.users = optional (cfg.user == defaultUser)
-      { name = defaultUser;
+      {
+        name = defaultUser;
         description = "ZNC server daemon owner";
         group = defaultUser;
         uid = config.ids.uids.znc;
@@ -297,7 +308,8 @@ in
       };
 
     users.groups = optional (cfg.user == defaultUser)
-      { name = defaultUser;
+      {
+        name = defaultUser;
         gid = config.ids.gids.znc;
         members = [ defaultUser ];
       };

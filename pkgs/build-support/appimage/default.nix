@@ -33,30 +33,40 @@ rec {
     '';
   };
 
-  wrapAppImage = args@{ name, src, extraPkgs, ... }: buildFHSUserEnv (defaultFhsEnvArgs // {
-    inherit name;
+  wrapAppImage = args@{ name, src, extraPkgs, ... }: buildFHSUserEnv (
+    defaultFhsEnvArgs
+    // {
+         inherit name;
 
-    targetPkgs = pkgs: defaultFhsEnvArgs.targetPkgs pkgs ++ extraPkgs pkgs;
+         targetPkgs = pkgs: defaultFhsEnvArgs.targetPkgs pkgs ++ extraPkgs pkgs;
 
-    runScript = writeScript "run" ''
-      #!${stdenv.shell}
+         runScript = writeScript "run" ''
+           #!${stdenv.shell}
 
-      export APPDIR=${src}
-      export APPIMAGE_SILENT_INSTALL=1
-      cd $APPDIR
-      exec ./AppRun "$@"
-    '';
-  } // (removeAttrs args (builtins.attrNames (builtins.functionArgs wrapAppImage))));
+           export APPDIR=${src}
+           export APPIMAGE_SILENT_INSTALL=1
+           cd $APPDIR
+           exec ./AppRun "$@"
+         '';
+       }
+    // (removeAttrs args (builtins.attrNames (builtins.functionArgs wrapAppImage)))
+  );
 
-  wrapType1 = args@{ name, src, extraPkgs ? pkgs: [], ... }: wrapAppImage (args // {
-    inherit name extraPkgs;
-    src = extractType1 { inherit name src; };
-  });
+  wrapType1 = args@{ name, src, extraPkgs ? pkgs: [], ... }: wrapAppImage (
+    args
+    // {
+         inherit name extraPkgs;
+         src = extractType1 { inherit name src; };
+       }
+  );
 
-  wrapType2 = args@{ name, src, extraPkgs ? pkgs: [], ... }: wrapAppImage (args // {
-    inherit name extraPkgs;
-    src = extractType2 { inherit name src; };
-  });
+  wrapType2 = args@{ name, src, extraPkgs ? pkgs: [], ... }: wrapAppImage (
+    args
+    // {
+         inherit name extraPkgs;
+         src = extractType2 { inherit name src; };
+       }
+  );
 
   defaultFhsEnvArgs = {
     name = "appimage-env";

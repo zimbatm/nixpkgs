@@ -14,8 +14,8 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ gtk3 ];
 
   installPhase = ''
-     mkdir -p $out/share/icons
-     mv {,e}Papirus* $out/share/icons
+    mkdir -p $out/share/icons
+    mv {,e}Papirus* $out/share/icons
   '';
 
   postFixup = ''

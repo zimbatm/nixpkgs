@@ -1,13 +1,23 @@
-{ stdenv, darwin, fetchurl, makeWrapper, pkgconfig
-, harfbuzz, icu
-, fontconfig, lua, libiconv
-, makeFontsConf, gentium, gentium-book-basic, dejavu_fonts
+{ stdenv
+, darwin
+, fetchurl
+, makeWrapper
+, pkgconfig
+, harfbuzz
+, icu
+, fontconfig
+, lua
+, libiconv
+, makeFontsConf
+, gentium
+, gentium-book-basic
+, dejavu_fonts
 }:
 
 with stdenv.lib;
 
 let
-  luaEnv = lua.withPackages(ps: with ps;[ lpeg luaexpat lua-zlib luafilesystem luasocket luasec]);
+  luaEnv = lua.withPackages (ps: with ps;[ lpeg luaexpat lua-zlib luafilesystem luasocket luasec ]);
 
 in
 
@@ -20,10 +30,10 @@ stdenv.mkDerivation rec {
     sha256 = "0fh0jbpsyqyq0hzq4midn7yw2z11hqdgqb9mmgz766cp152wrkb0";
   };
 
-  nativeBuildInputs = [pkgconfig makeWrapper];
+  nativeBuildInputs = [ pkgconfig makeWrapper ];
   buildInputs = [ harfbuzz icu fontconfig libiconv luaEnv ]
-  ++ optional stdenv.isDarwin darwin.apple_sdk.frameworks.AppKit
-  ;
+    ++ optional stdenv.isDarwin darwin.apple_sdk.frameworks.AppKit
+    ;
 
   preConfigure = optionalString stdenv.isDarwin ''
     sed -i -e 's|@import AppKit;|#import <AppKit/AppKit.h>|' src/macfonts.m
@@ -40,8 +50,9 @@ stdenv.mkDerivation rec {
   };
 
   doCheck = stdenv.targetPlatform == stdenv.hostPlatform
-  && ! stdenv.isAarch64 # random seg. faults
-  && ! stdenv.isDarwin; # dy lib not found
+    && ! stdenv.isAarch64 # random seg. faults
+    && ! stdenv.isDarwin
+    ; # dy lib not found
 
   enableParallelBuilding = true;
 

@@ -5,7 +5,7 @@ rec {
 
   description = ''Bind is a macro that generalizes multiple-value-bind, let, let*, destructuring-bind, structure and slot accessors, and a whole lot more.'';
 
-  deps = [ ];
+  deps = [];
 
   src = fetchurl {
     url = ''http://beta.quicklisp.org/archive/metabang-bind/2017-11-30/metabang-bind-20171130-git.tgz'';
@@ -14,7 +14,7 @@ rec {
 
   packageName = "metabang-bind";
 
-  asdFilesToKeep = ["metabang-bind.asd"];
+  asdFilesToKeep = [ "metabang-bind.asd" ];
   overrides = x: x;
 }
 /* (SYSTEM metabang-bind DESCRIPTION

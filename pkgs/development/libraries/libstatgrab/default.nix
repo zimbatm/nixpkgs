@@ -1,5 +1,7 @@
-{ stdenv, fetchurl
-, IOKit ? null }:
+{ stdenv
+, fetchurl
+, IOKit ? null
+}:
 
 stdenv.mkDerivation rec {
   name = "libstatgrab-0.92";

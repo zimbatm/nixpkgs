@@ -1,7 +1,15 @@
-{ lib, stdenv
-, fetchgit, fetchFromGitHub, fetchurl
-, writeShellScript, runCommand
-, rustPlatform, jq, nix-prefetch-git, xe, curl
+{ lib
+, stdenv
+, fetchgit
+, fetchFromGitHub
+, fetchurl
+, writeShellScript
+, runCommand
+, rustPlatform
+, jq
+, nix-prefetch-git
+, xe
+, curl
 }:
 
 # TODO: move to carnix or https://github.com/kolloch/crate2nix
@@ -25,7 +33,7 @@ let
     fetchSubmodules = true;
   };
 
-  fetchDist = {file, sha256}: fetchurl {
+  fetchDist = { file, sha256 }: fetchurl {
     url = "https://github.com/tree-sitter/tree-sitter/releases/download/${version}/${file}";
     inherit sha256;
   };
@@ -47,16 +55,26 @@ let
   };
 
   grammars =
-    let fetch =
-      (v: fetchgit {inherit (v) url rev sha256 fetchSubmodules; });
-    in runCommand "grammars" {} (''
-       mkdir $out
-     '' + (lib.concatStrings (lib.mapAttrsToList
-            (name: grammar: "ln -s ${fetch grammar} $out/${name}\n")
-            (import ./grammars))));
+    let
+      fetch =
+        (v: fetchgit { inherit (v) url rev sha256 fetchSubmodules; });
+    in
+      runCommand "grammars" {} (
+        ''
+          mkdir $out
+        ''
+        + (
+            lib.concatStrings (
+              lib.mapAttrsToList
+                (name: grammar: "ln -s ${fetch grammar} $out/${name}\n")
+                (import ./grammars)
+            )
+          )
+      );
 
 
-in rustPlatform.buildRustPackage {
+in
+rustPlatform.buildRustPackage {
   pname = "tree-sitter";
   inherit version;
   inherit src;

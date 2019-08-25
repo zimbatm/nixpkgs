@@ -1,4 +1,7 @@
-{ stdenv, buildPythonPackage, fetchPypi, isPy27
+{ stdenv
+, buildPythonPackage
+, fetchPypi
+, isPy27
 , backports_ssl_match_hostname
 , mock
 , paramiko
@@ -22,7 +25,9 @@ buildPythonPackage rec {
     requests
     websocket_client
     paramiko
-  ] ++ stdenv.lib.optional isPy27 backports_ssl_match_hostname;
+  ]
+  ++ stdenv.lib.optional isPy27 backports_ssl_match_hostname
+  ;
 
   checkInputs = [
     mock

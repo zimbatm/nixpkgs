@@ -2,7 +2,8 @@
 
 let
   version = "1.32b-3";
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "quake3-pointrelease-${version}";
 
   src = fetchurl {

@@ -4,7 +4,8 @@ with lib;
 
 let
   cfg = config.services.undervolt;
-in {
+in
+{
   options.services.undervolt = {
     enable = mkOption {
       type = types.bool;

@@ -7,9 +7,9 @@ buildGoModule rec {
   subPackages = [ "." ];
 
   src = fetchFromGitHub {
-    owner  = "errata-ai";
-    repo   = "vale";
-    rev    = "v${version}";
+    owner = "errata-ai";
+    repo = "vale";
+    rev = "v${version}";
     sha256 = "1qi3brjppiymk6as0xic2n3bhq8g8qw1z8d9a24w60x9gp52yq5m";
   };
 

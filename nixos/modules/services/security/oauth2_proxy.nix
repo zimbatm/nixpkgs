@@ -16,15 +16,19 @@ let
       resource = cfg.azure.resource;
     };
 
-    github = cfg: { github = {
-      inherit (cfg.github) org team;
-    }; };
+    github = cfg: {
+      github = {
+        inherit (cfg.github) org team;
+      };
+    };
 
-    google = cfg: { google = with cfg.google; optionalAttrs (groups != []) {
-      admin-email = adminEmail;
-      service-account = serviceAccountJSON;
-      group = groups;
-    }; };
+    google = cfg: {
+      google = with cfg.google; optionalAttrs (groups != []) {
+        admin-email = adminEmail;
+        service-account = serviceAccountJSON;
+        group = groups;
+      };
+    };
   };
 
   authenticatedEmailsFile = pkgs.writeText "authenticated-emails" cfg.email.addresses;
@@ -58,27 +62,34 @@ let
       httponly = cookie.httpOnly;
     };
     set-xauthrequest = setXauthrequest;
-  } // lib.optionalAttrs (cfg.email.addresses != null) {
-    authenticated-emails-file = authenticatedEmailsFile;
-  } // lib.optionalAttrs (cfg.passBasicAuth) {
-    basic-auth-password = cfg.basicAuthPassword;
-  } // lib.optionalAttrs (cfg.htpasswd.file != null) {
-    display-htpasswd-file = cfg.htpasswd.displayForm;
-  } // lib.optionalAttrs tls.enable {
-    tls-cert = tls.certificate;
-    tls-key = tls.key;
-    https-address = tls.httpsAddress;
-  } // (getProviderOptions cfg cfg.provider) // cfg.extraConfig;
+  }
+    // lib.optionalAttrs (cfg.email.addresses != null) {
+         authenticated-emails-file = authenticatedEmailsFile;
+       }
+    // lib.optionalAttrs (cfg.passBasicAuth) {
+         basic-auth-password = cfg.basicAuthPassword;
+       }
+    // lib.optionalAttrs (cfg.htpasswd.file != null) {
+         display-htpasswd-file = cfg.htpasswd.displayForm;
+       }
+    // lib.optionalAttrs tls.enable {
+         tls-cert = tls.certificate;
+         tls-key = tls.key;
+         https-address = tls.httpsAddress;
+       }
+    // (getProviderOptions cfg cfg.provider)
+    // cfg.extraConfig;
 
   mapConfig = key: attr:
-  if attr != null && attr != [] then (
-    if isDerivation attr then mapConfig key (toString attr) else
-    if (builtins.typeOf attr) == "set" then concatStringsSep " "
-      (mapAttrsToList (name: value: mapConfig (key + "-" + name) value) attr) else
-    if (builtins.typeOf attr) == "list" then concatMapStringsSep " " (mapConfig key) attr else
-    if (builtins.typeOf attr) == "bool" then "--${key}=${boolToString attr}" else
-    if (builtins.typeOf attr) == "string" then "--${key}='${attr}'" else
-    "--${key}=${toString attr}")
+    if attr != null && attr != [] then (
+      if isDerivation attr then mapConfig key (toString attr) else
+        if (builtins.typeOf attr) == "set" then concatStringsSep " "
+          (mapAttrsToList (name: value: mapConfig (key + "-" + name) value) attr) else
+          if (builtins.typeOf attr) == "list" then concatMapStringsSep " " (mapConfig key) attr else
+            if (builtins.typeOf attr) == "bool" then "--${key}=${boolToString attr}" else
+              if (builtins.typeOf attr) == "string" then "--${key}='${attr}'" else
+                "--${key}=${toString attr}"
+    )
     else "";
 
   configString = concatStringsSep " " (mapAttrsToList mapConfig allConfig);
@@ -114,7 +125,7 @@ in
     };
 
     approvalPrompt = mkOption {
-      type = types.enum ["force" "auto"];
+      type = types.enum [ "force" "auto" ];
       default = "force";
       description = ''
         OAuth approval_prompt.
@@ -137,12 +148,12 @@ in
     };
 
     skipAuthRegexes = mkOption {
-     type = types.listOf types.str;
-     default = [];
-     description = ''
-       Skip authentication for requests matching any of these regular
-       expressions.
-     '';
+      type = types.listOf types.str;
+      default = [];
+      description = ''
+        Skip authentication for requests matching any of these regular
+        expressions.
+      '';
     };
 
     # XXX: Not clear whether these two options are mutually exclusive or not.
@@ -284,7 +295,7 @@ in
     ####################################################
     # UPSTREAM Configuration
     upstream = mkOption {
-      type = with types; coercedTo string (x: [x]) (listOf string);
+      type = with types; coercedTo string (x: [ x ]) (listOf string);
       default = [];
       description = ''
         The http url(s) of the upstream endpoint or <literal>file://</literal>
@@ -503,7 +514,7 @@ in
       type = types.nullOr types.str;
       default = null;
       description = ''
-      	Profile access endpoint.
+        	Profile access endpoint.
       '';
     };
 

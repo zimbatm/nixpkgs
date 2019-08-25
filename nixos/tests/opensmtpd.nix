@@ -97,7 +97,8 @@ import ./make-test.nix {
             print("===> lastline:", lastline)
             assert lastline.strip() == b'Hello World'
         '';
-      in [ sendTestMail checkMailLanded ];
+      in
+        [ sendTestMail checkMailLanded ];
     };
   };
 

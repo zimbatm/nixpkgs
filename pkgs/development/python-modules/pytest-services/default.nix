@@ -21,7 +21,9 @@ buildPythonPackage rec {
     requests
     psutil
     pytest
-  ] ++ lib.optional (!isPy3k) subprocess32;
+  ]
+  ++ lib.optional (!isPy3k) subprocess32
+  ;
 
   # no tests in PyPI tarball
   doCheck = false;

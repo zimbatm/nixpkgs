@@ -6,10 +6,13 @@
 with lib;
 
 let
-  makeProg = args: pkgs.substituteAll (args // {
-    dir = "bin";
-    isExecutable = true;
-  });
+  makeProg = args: pkgs.substituteAll (
+    args
+    // {
+         dir = "bin";
+         isExecutable = true;
+       }
+  );
 
   nixos-build-vms = makeProg {
     name = "nixos-build-vms";
@@ -24,14 +27,16 @@ let
   };
 
   nixos-rebuild =
-    let fallback = import ./nix-fallback-paths.nix; in
-    makeProg {
-      name = "nixos-rebuild";
-      src = ./nixos-rebuild.sh;
-      nix = config.nix.package.out;
-      nix_x86_64_linux = fallback.x86_64-linux;
-      nix_i686_linux = fallback.i686-linux;
-    };
+    let
+      fallback = import ./nix-fallback-paths.nix;
+    in
+      makeProg {
+        name = "nixos-rebuild";
+        src = ./nixos-rebuild.sh;
+        nix = config.nix.package.out;
+        nix_x86_64_linux = fallback.x86_64-linux;
+        nix_i686_linux = fallback.i686-linux;
+      };
 
   nixos-generate-config = makeProg {
     name = "nixos-generate-config";
@@ -167,7 +172,8 @@ in
     '';
 
     environment.systemPackages =
-      [ nixos-build-vms
+      [
+        nixos-build-vms
         nixos-install
         nixos-rebuild
         nixos-generate-config

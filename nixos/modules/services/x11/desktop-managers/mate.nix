@@ -60,13 +60,15 @@ in
         export CAJA_EXTENSION_DIRS=$CAJA_EXTENSION_DIRS''${CAJA_EXTENSION_DIRS:+:}${config.system.path}/lib/caja/extensions-2.0
 
         # Let caja extensions find gsettings schemas
-        ${concatMapStrings (p: ''
+        ${concatMapStrings (
+        p: ''
           if [ -d "${p}/lib/caja/extensions-2.0" ]; then
             ${addToXDGDirs p}
           fi
-          '')
-          config.environment.systemPackages
-        }
+        ''
+      )
+        config.environment.systemPackages
+      }
 
         # Let mate-panel find applets
         export MATE_PANEL_APPLETS_DIR=$MATE_PANEL_APPLETS_DIR''${MATE_PANEL_APPLETS_DIR:+:}${config.system.path}/share/mate-panel/applets
@@ -81,17 +83,20 @@ in
     };
 
     environment.systemPackages =
-      pkgs.mate.basePackages ++
-      (pkgs.gnome3.removePackagesByName
-        pkgs.mate.extraPackages
-        config.environment.mate.excludePackages) ++
-      [
-        pkgs.desktop-file-utils
-        pkgs.glib
-        pkgs.gtk3.out
-        pkgs.shared-mime-info
-        pkgs.xdg-user-dirs # Update user dirs as described in https://freedesktop.org/wiki/Software/xdg-user-dirs/
-      ];
+      pkgs.mate.basePackages
+      ++ (
+           pkgs.gnome3.removePackagesByName
+             pkgs.mate.extraPackages
+             config.environment.mate.excludePackages
+         )
+      ++ [
+           pkgs.desktop-file-utils
+           pkgs.glib
+           pkgs.gtk3.out
+           pkgs.shared-mime-info
+           pkgs.xdg-user-dirs # Update user dirs as described in https://freedesktop.org/wiki/Software/xdg-user-dirs/
+         ]
+      ;
 
     programs.dconf.enable = true;
     # Shell integration for VTE terminals

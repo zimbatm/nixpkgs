@@ -1,6 +1,30 @@
-{fetchurl, stdenv, dpkg, makeWrapper,
- alsaLib, cups, curl, dbus, expat, fontconfig, freetype, glib, gst_all_1, harfbuzz, libcap,
- libpulseaudio, libxml2, libxslt, libGLU_combined, nspr, nss, openssl, systemd, wayland, xorg, zlib, ...
+{ fetchurl
+, stdenv
+, dpkg
+, makeWrapper
+, alsaLib
+, cups
+, curl
+, dbus
+, expat
+, fontconfig
+, freetype
+, glib
+, gst_all_1
+, harfbuzz
+, libcap
+, libpulseaudio
+, libxml2
+, libxslt
+, libGLU_combined
+, nspr
+, nss
+, openssl
+, systemd
+, wayland
+, xorg
+, zlib
+, ...
 }:
 
 stdenv.mkDerivation rec {
@@ -17,50 +41,50 @@ stdenv.mkDerivation rec {
   dontUnpack = true;
 
   libPath = stdenv.lib.makeLibraryPath [
-      alsaLib
-      cups
-      curl
-      dbus
-      expat
-      fontconfig
-      freetype
-      glib
-      gst_all_1.gst-plugins-base
-      gst_all_1.gstreamer
-      harfbuzz
-      libcap
-      libpulseaudio
-      libxml2
-      libxslt
-      libGLU_combined
-      nspr
-      nss
-      openssl
-      stdenv.cc.cc
-      systemd
-      wayland
-      zlib
+    alsaLib
+    cups
+    curl
+    dbus
+    expat
+    fontconfig
+    freetype
+    glib
+    gst_all_1.gst-plugins-base
+    gst_all_1.gstreamer
+    harfbuzz
+    libcap
+    libpulseaudio
+    libxml2
+    libxslt
+    libGLU_combined
+    nspr
+    nss
+    openssl
+    stdenv.cc.cc
+    systemd
+    wayland
+    zlib
 
-      xorg.libICE
-      xorg.libSM
-      xorg.libX11
-      xorg.libxcb
-      xorg.libXcomposite
-      xorg.libXcursor
-      xorg.libXdamage
-      xorg.libXext
-      xorg.libXfixes
-      xorg.libXi
-      xorg.libXrandr
-      xorg.libXrender
-      xorg.libXScrnSaver
-      xorg.libXtst
-      xorg.xcbutilimage
-      xorg.xcbutilkeysyms
-      xorg.xcbutilrenderutil
-      xorg.xcbutilwm
+    xorg.libICE
+    xorg.libSM
+    xorg.libX11
+    xorg.libxcb
+    xorg.libXcomposite
+    xorg.libXcursor
+    xorg.libXdamage
+    xorg.libXext
+    xorg.libXfixes
+    xorg.libXi
+    xorg.libXrandr
+    xorg.libXrender
+    xorg.libXScrnSaver
+    xorg.libXtst
+    xorg.xcbutilimage
+    xorg.xcbutilkeysyms
+    xorg.xcbutilrenderutil
+    xorg.xcbutilwm
   ]
-  ;
+    ;
 
   installPhase = ''
     dpkg-deb -x $src $out

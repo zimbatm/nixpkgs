@@ -456,7 +456,7 @@ in
         ${lib.concatStringsSep ", " (map (n: "\"${n}\"") cfg.extraPluginPaths) }
       }
 
-      ${ optionalString  (cfg.ssl != null) (createSSLOptsStr cfg.ssl) }
+      ${ optionalString (cfg.ssl != null) (createSSLOptsStr cfg.ssl) }
 
       admins = ${toLua cfg.admins}
 
@@ -465,9 +465,11 @@ in
 
       modules_enabled = {
 
-        ${ lib.concatStringsSep "\n\ \ " (lib.mapAttrsToList
-          (name: val: optionalString val "${toLua name};")
-        cfg.modules) }
+        ${ lib.concatStringsSep "\n\ \ " (
+      lib.mapAttrsToList
+        (name: val: optionalString val "${toLua name};")
+        cfg.modules
+    ) }
         ${ lib.concatStringsSep "\n" (map (x: "${toLua x};") cfg.package.communityModules)}
         ${ lib.concatStringsSep "\n" (map (x: "${toLua x};") cfg.extraModules)}
       };
@@ -488,12 +490,16 @@ in
 
       ${ cfg.extraConfig }
 
-      ${ lib.concatStringsSep "\n" (lib.mapAttrsToList (n: v: ''
-        VirtualHost "${v.domain}"
-          enabled = ${boolToString v.enabled};
-          ${ optionalString (v.ssl != null) (createSSLOptsStr v.ssl) }
-          ${ v.extraConfig }
-        '') cfg.virtualHosts) }
+      ${ lib.concatStringsSep "\n" (
+      lib.mapAttrsToList (
+        n: v: ''
+          VirtualHost "${v.domain}"
+            enabled = ${boolToString v.enabled};
+            ${ optionalString (v.ssl != null) (createSSLOptsStr v.ssl) }
+            ${ v.extraConfig }
+        ''
+      ) cfg.virtualHosts
+    ) }
     '';
 
     users.users.prosody = mkIf (cfg.user == "prosody") {

@@ -1,6 +1,31 @@
-{ stdenv, fetchurl, fetchpatch, pkgconfig, gtk-doc, gobject-introspection, gnome3
-, glib, systemd, xz, e2fsprogs, libsoup, gpgme, which, autoconf, automake, libtool, fuse, utillinuxMinimal, libselinux
-, libarchive, libcap, bzip2, yacc, libxslt, docbook_xsl, docbook_xml_dtd_42, python3
+{ stdenv
+, fetchurl
+, fetchpatch
+, pkgconfig
+, gtk-doc
+, gobject-introspection
+, gnome3
+, glib
+, systemd
+, xz
+, e2fsprogs
+, libsoup
+, gpgme
+, which
+, autoconf
+, automake
+, libtool
+, fuse
+, utillinuxMinimal
+, libselinux
+, libarchive
+, libcap
+, bzip2
+, yacc
+, libxslt
+, docbook_xsl
+, docbook_xml_dtd_42
+, python3
 }:
 
 stdenv.mkDerivation rec {
@@ -26,15 +51,34 @@ stdenv.mkDerivation rec {
   ];
 
   nativeBuildInputs = [
-    autoconf automake libtool pkgconfig gtk-doc gobject-introspection which yacc
-    libxslt docbook_xsl docbook_xml_dtd_42
+    autoconf
+    automake
+    libtool
+    pkgconfig
+    gtk-doc
+    gobject-introspection
+    which
+    yacc
+    libxslt
+    docbook_xsl
+    docbook_xml_dtd_42
   ];
 
   buildInputs = [
-    glib systemd e2fsprogs libsoup gpgme fuse libselinux libcap
-    libarchive bzip2 xz
+    glib
+    systemd
+    e2fsprogs
+    libsoup
+    gpgme
+    fuse
+    libselinux
+    libcap
+    libarchive
+    bzip2
+    xz
     utillinuxMinimal # for libmount
-    (python3.withPackages (p: with p; [ pyyaml ])) gnome3.gjs # for tests
+    (python3.withPackages (p: with p; [ pyyaml ]))
+    gnome3.gjs # for tests
   ];
 
   preConfigure = ''

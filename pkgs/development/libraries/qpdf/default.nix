@@ -1,6 +1,7 @@
 { stdenv, fetchurl, libjpeg, zlib, perl }:
 
-let version = "8.4.2";
+let
+  version = "8.4.2";
 in
 stdenv.mkDerivation rec {
   name = "qpdf-${version}";

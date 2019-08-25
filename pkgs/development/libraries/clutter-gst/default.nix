@@ -3,7 +3,8 @@
 let
   pname = "clutter-gst";
   version = "3.0.27";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "${pname}-${version}";
 
   src = fetchurl {
@@ -30,6 +31,6 @@ in stdenv.mkDerivation rec {
     license = stdenv.lib.licenses.lgpl2Plus;
 
     maintainers = with stdenv.lib.maintainers; [ lethalman ];
-    platforms = stdenv.lib.platforms.gnu ++ stdenv.lib.platforms.linux;  # arbitrary choice
+    platforms = stdenv.lib.platforms.gnu ++ stdenv.lib.platforms.linux; # arbitrary choice
   };
 }

@@ -1,5 +1,14 @@
-{ lib, stdenv, fetchurl,
-  pkgconfig, pure, glpk, gmp, libtool, mysql, libiodbc }:
+{ lib
+, stdenv
+, fetchurl
+, pkgconfig
+, pure
+, glpk
+, gmp
+, libtool
+, mysql
+, libiodbc
+}:
 
 stdenv.mkDerivation rec {
   baseName = "glpk";
@@ -11,20 +20,24 @@ stdenv.mkDerivation rec {
     sha256 = "5d6dc11706985dda02d96d481ea5f164c9e95ee446432fc4fc3d0db61a076346";
   };
 
-  glpkWithExtras = lib.overrideDerivation glpk (attrs: {
-    propagatedBuildInputs = [ gmp libtool mysql.connector-c libiodbc ];
+  glpkWithExtras = lib.overrideDerivation glpk (
+    attrs: {
+      propagatedBuildInputs = [ gmp libtool mysql.connector-c libiodbc ];
 
-    CPPFLAGS = "-I${gmp.dev}/include";
+      CPPFLAGS = "-I${gmp.dev}/include";
 
-    preConfigure = ''
-      substituteInPlace configure \
-        --replace /usr/include/mysql ${mysql.connector-c}/include/mysql
-    '';
-    configureFlags = [ "--enable-dl"
-                       "--enable-odbc"
-                       "--enable-mysql"
-                       "--with-gmp=yes" ];
-  });
+      preConfigure = ''
+        substituteInPlace configure \
+          --replace /usr/include/mysql ${mysql.connector-c}/include/mysql
+      '';
+      configureFlags = [
+        "--enable-dl"
+        "--enable-odbc"
+        "--enable-mysql"
+        "--with-gmp=yes"
+      ];
+    }
+  );
 
   nativeBuildInputs = [ pkgconfig ];
   propagatedBuildInputs = [ pure glpkWithExtras ];

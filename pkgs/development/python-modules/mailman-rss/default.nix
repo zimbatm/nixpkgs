@@ -1,4 +1,4 @@
-{ stdenv, python3Packages, withTwitter ? false}:
+{ stdenv, python3Packages, withTwitter ? false }:
 
 python3Packages.buildPythonApplication rec {
   pname = "mailman-rss";
@@ -11,7 +11,7 @@ python3Packages.buildPythonApplication rec {
 
   propagatedBuildInputs = with python3Packages; [ dateutil future requests beautifulsoup4 ]
     ++ stdenv.lib.optional withTwitter python3Packages.twitter
-  ;
+    ;
 
   # No tests in Pypi Tarball
   doCheck = false;

@@ -1,5 +1,12 @@
-{ stdenv, runCommand, openssh, qemu, controller, mkCygwinImage
-, writeText, dosfstools, mtools
+{ stdenv
+, runCommand
+, openssh
+, qemu
+, controller
+, mkCygwinImage
+, writeText
+, dosfstools
+, mtools
 }:
 
 { isoFile
@@ -60,7 +67,8 @@ let
     ];
   };
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "cygwin-base-vm";
   buildCommand = ''
     ${qemu}/bin/qemu-img create -f qcow2 winvm.img 2G

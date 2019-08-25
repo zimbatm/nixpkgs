@@ -80,18 +80,21 @@ in
 
       (thunar.override { thunarPlugins = cfg.thunarPlugins; })
       thunar-volman # TODO: drop
-    ] ++ (if config.hardware.pulseaudio.enable
-          then [ xfce4-mixer-pulse xfce4-volumed-pulse ]
-          else [ xfce4-mixer xfce4-volumed ])
-      # TODO: NetworkManager doesn't belong here
+    ]
+      ++ (
+           if config.hardware.pulseaudio.enable
+           then [ xfce4-mixer-pulse xfce4-volumed-pulse ]
+           else [ xfce4-mixer xfce4-volumed ]
+         )
+    # TODO: NetworkManager doesn't belong here
       ++ optionals config.networking.networkmanager.enable [ networkmanagerapplet ]
       ++ optionals config.powerManagement.enable [ xfce4-power-manager ]
       ++ optionals cfg.enableXfwm [ xfwm4 ]
       ++ optionals (!cfg.noDesktop) [
-        xfce4-panel
-        xfce4-notifyd
-        xfdesktop
-      ];
+           xfce4-panel
+           xfce4-notifyd
+           xfdesktop
+         ];
 
     environment.pathsToLink = [
       "/share/xfce4"
@@ -101,22 +104,24 @@ in
 
     services.xserver.gdk-pixbuf.modulePackages = [ pkgs.librsvg ];
 
-    services.xserver.desktopManager.session = [{
-      name = "xfce";
-      bgSupport = true;
-      start = ''
-        ${cfg.extraSessionCommands}
+    services.xserver.desktopManager.session = [
+      {
+        name = "xfce";
+        bgSupport = true;
+        start = ''
+          ${cfg.extraSessionCommands}
 
-        # Set GTK_PATH so that GTK+ can find the theme engines.
-        export GTK_PATH="${config.system.path}/lib/gtk-2.0:${config.system.path}/lib/gtk-3.0"
+          # Set GTK_PATH so that GTK+ can find the theme engines.
+          export GTK_PATH="${config.system.path}/lib/gtk-2.0:${config.system.path}/lib/gtk-3.0"
 
-        # Set GTK_DATA_PREFIX so that GTK+ can find the Xfce themes.
-        export GTK_DATA_PREFIX=${config.system.path}
+          # Set GTK_DATA_PREFIX so that GTK+ can find the Xfce themes.
+          export GTK_DATA_PREFIX=${config.system.path}
 
-        ${pkgs.runtimeShell} ${pkgs.xfce.xinitrc} &
-        waitPID=$!
-      '';
-    }];
+          ${pkgs.runtimeShell} ${pkgs.xfce.xinitrc} &
+          waitPID=$!
+        '';
+      }
+    ];
 
     services.xserver.updateDbusEnvironment = true;
 

@@ -1,5 +1,24 @@
-{ stdenv, fetchurl, unzip, cairo, xorg, gdk-pixbuf, fontconfig, pango, gnome2, atk, gtk2, glib
-, freetype, dbus, nss, nspr, alsaLib, cups, expat, udev, makeDesktopItem
+{ stdenv
+, fetchurl
+, unzip
+, cairo
+, xorg
+, gdk-pixbuf
+, fontconfig
+, pango
+, gnome2
+, atk
+, gtk2
+, glib
+, freetype
+, dbus
+, nss
+, nspr
+, alsaLib
+, cups
+, expat
+, udev
+, makeDesktopItem
 }:
 
 let
@@ -36,7 +55,8 @@ let
     xorg.libXrender
     xorg.libXScrnSaver
   ];
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "react-native-debugger-${version}";
   version = "0.9.10";
 

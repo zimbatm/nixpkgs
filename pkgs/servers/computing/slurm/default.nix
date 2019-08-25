@@ -1,8 +1,26 @@
-{ stdenv, fetchFromGitHub, pkgconfig, libtool, curl
-, python, munge, perl, pam, openssl, zlib
-, ncurses, mysql, gtk2, lua, hwloc, numactl
-, readline, freeipmi, libssh2, xorg, lz4
-# enable internal X11 support via libssh2
+{ stdenv
+, fetchFromGitHub
+, pkgconfig
+, libtool
+, curl
+, python
+, munge
+, perl
+, pam
+, openssl
+, zlib
+, ncurses
+, mysql
+, gtk2
+, lua
+, hwloc
+, numactl
+, readline
+, freeipmi
+, libssh2
+, xorg
+, lz4
+  # enable internal X11 support via libssh2
 , enableX11 ? true
 }:
 
@@ -16,7 +34,7 @@ stdenv.mkDerivation rec {
     owner = "SchedMD";
     repo = "slurm";
     # The release tags use - instead of .
-    rev = "${builtins.replaceStrings ["."] ["-"] name}";
+    rev = "${builtins.replaceStrings [ "." ] [ "-" ] name}";
     sha256 = "1k19z0qyjr6nwqxv93wbnnhy498788rc4fl9zyf0smc5yq1zbjir";
   };
 
@@ -34,21 +52,38 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ pkgconfig libtool ];
   buildInputs = [
-    curl python munge perl pam openssl zlib
-      mysql.connector-c ncurses gtk2 lz4
-      lua hwloc numactl readline freeipmi
-  ] ++ stdenv.lib.optionals enableX11 [ libssh2 xorg.xauth ];
+    curl
+    python
+    munge
+    perl
+    pam
+    openssl
+    zlib
+    mysql.connector-c
+    ncurses
+    gtk2
+    lz4
+    lua
+    hwloc
+    numactl
+    readline
+    freeipmi
+  ]
+  ++ stdenv.lib.optionals enableX11 [ libssh2 xorg.xauth ]
+  ;
 
   configureFlags = with stdenv.lib;
-    [ "--with-freeipmi=${freeipmi}"
+    [
+      "--with-freeipmi=${freeipmi}"
       "--with-hwloc=${hwloc.dev}"
       "--with-lz4=${lz4.dev}"
       "--with-munge=${munge}"
       "--with-ssl=${openssl.dev}"
       "--with-zlib=${zlib}"
       "--sysconfdir=/etc/slurm"
-    ] ++ (optional (gtk2 == null)  "--disable-gtktest")
-      ++ (optional enableX11 "--with-libssh2=${libssh2.dev}");
+    ]
+    ++ (optional (gtk2 == null) "--disable-gtktest")
+    ++ (optional enableX11 "--with-libssh2=${libssh2.dev}");
 
 
   preConfigure = ''

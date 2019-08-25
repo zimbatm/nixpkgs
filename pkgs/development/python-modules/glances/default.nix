@@ -1,9 +1,17 @@
-{ buildPythonPackage, fetchFromGitHub, isPyPy, lib
-, psutil, setuptools, bottle, batinfo, pysnmp
-, hddtemp, future
-# Optional dependencies:
+{ buildPythonPackage
+, fetchFromGitHub
+, isPyPy
+, lib
+, psutil
+, setuptools
+, bottle
+, batinfo
+, pysnmp
+, hddtemp
+, future
+  # Optional dependencies:
 , netifaces # IP module
-# Tests:
+  # Tests:
 , unittest2
 }:
 
@@ -25,7 +33,14 @@ buildPythonPackage rec {
   doCheck = true;
   checkInputs = [ unittest2 ];
 
-  propagatedBuildInputs = [ psutil setuptools bottle batinfo pysnmp hddtemp future
+  propagatedBuildInputs = [
+    psutil
+    setuptools
+    bottle
+    batinfo
+    pysnmp
+    hddtemp
+    future
     netifaces
   ];
 

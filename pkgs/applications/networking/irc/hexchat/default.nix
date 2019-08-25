@@ -1,8 +1,25 @@
-{ stdenv, fetchFromGitHub, pkgconfig, gtk2, lua, perl, python2
-, libtool, pciutils, dbus-glib, libcanberra-gtk2, libproxy
-, libsexy, enchant1, libnotify, openssl, intltool
-, desktop-file-utils, hicolor-icon-theme
-, autoconf, automake, autoconf-archive
+{ stdenv
+, fetchFromGitHub
+, pkgconfig
+, gtk2
+, lua
+, perl
+, python2
+, libtool
+, pciutils
+, dbus-glib
+, libcanberra-gtk2
+, libproxy
+, libsexy
+, enchant1
+, libnotify
+, openssl
+, intltool
+, desktop-file-utils
+, hicolor-icon-theme
+, autoconf
+, automake
+, autoconf-archive
 }:
 
 stdenv.mkDerivation rec {
@@ -17,13 +34,28 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    pkgconfig libtool intltool
-    autoconf autoconf-archive automake
+    pkgconfig
+    libtool
+    intltool
+    autoconf
+    autoconf-archive
+    automake
   ];
 
   buildInputs = [
-    gtk2 lua perl python2 pciutils dbus-glib libcanberra-gtk2 libproxy
-    libsexy libnotify openssl desktop-file-utils hicolor-icon-theme
+    gtk2
+    lua
+    perl
+    python2
+    pciutils
+    dbus-glib
+    libcanberra-gtk2
+    libproxy
+    libsexy
+    libnotify
+    openssl
+    desktop-file-utils
+    hicolor-icon-theme
   ];
 
   enableParallelBuilding = true;

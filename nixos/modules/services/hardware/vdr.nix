@@ -5,7 +5,8 @@ with lib;
 let
   cfg = config.services.vdr;
   libDir = "/var/lib/vdr";
-in {
+in
+{
 
   ###### interface
 
@@ -40,42 +41,48 @@ in {
 
   ###### implementation
 
-  config = mkIf cfg.enable (mkMerge [{
-    systemd.tmpfiles.rules = [
-      "d ${cfg.videoDir} 0755 vdr vdr -"
-      "Z ${cfg.videoDir} - vdr vdr -"
-    ];
+  config = mkIf cfg.enable (
+    mkMerge [
+      {
+        systemd.tmpfiles.rules = [
+          "d ${cfg.videoDir} 0755 vdr vdr -"
+          "Z ${cfg.videoDir} - vdr vdr -"
+        ];
 
-    systemd.services.vdr = {
-      description = "VDR";
-      wantedBy = [ "multi-user.target" ];
-      serviceConfig = {
-        ExecStart = ''
-          ${cfg.package}/bin/vdr \
-            --video="${cfg.videoDir}" \
-            --config="${libDir}" \
-            ${escapeShellArgs cfg.extraArguments}
-        '';
-        User = "vdr";
-        CacheDirectory = "vdr";
-        StateDirectory = "vdr";
-        Restart = "on-failure";
-      };
-    };
+        systemd.services.vdr = {
+          description = "VDR";
+          wantedBy = [ "multi-user.target" ];
+          serviceConfig = {
+            ExecStart = ''
+              ${cfg.package}/bin/vdr \
+                --video="${cfg.videoDir}" \
+                --config="${libDir}" \
+                ${escapeShellArgs cfg.extraArguments}
+            '';
+            User = "vdr";
+            CacheDirectory = "vdr";
+            StateDirectory = "vdr";
+            Restart = "on-failure";
+          };
+        };
 
-    users.users.vdr = {
-      group = "vdr";
-      home = libDir;
-    };
+        users.users.vdr = {
+          group = "vdr";
+          home = libDir;
+        };
 
-    users.groups.vdr = {};
-  }
+        users.groups.vdr = {};
+      }
 
-  (mkIf cfg.enableLirc {
-    services.lirc.enable = true;
-    users.users.vdr.extraGroups = [ "lirc" ];
-    services.vdr.extraArguments = [
-      "--lirc=${config.passthru.lirc.socket}"
-    ];
-  })]);
+      (
+        mkIf cfg.enableLirc {
+          services.lirc.enable = true;
+          users.users.vdr.extraGroups = [ "lirc" ];
+          services.vdr.extraArguments = [
+            "--lirc=${config.passthru.lirc.socket}"
+          ];
+        }
+      )
+    ]
+  );
 }

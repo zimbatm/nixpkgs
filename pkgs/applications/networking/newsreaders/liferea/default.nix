@@ -1,7 +1,26 @@
-{ stdenv, fetchurl, pkgconfig, intltool, python3Packages, wrapGAppsHook
-, glib, libxml2, libxslt, sqlite, libsoup , webkitgtk, json-glib, gst_all_1
-, libnotify, gtk3, gsettings-desktop-schemas, libpeas, dconf, librsvg
-, gobject-introspection, glib-networking, hicolor-icon-theme
+{ stdenv
+, fetchurl
+, pkgconfig
+, intltool
+, python3Packages
+, wrapGAppsHook
+, glib
+, libxml2
+, libxslt
+, sqlite
+, libsoup
+, webkitgtk
+, json-glib
+, gst_all_1
+, libnotify
+, gtk3
+, gsettings-desktop-schemas
+, libpeas
+, dconf
+, librsvg
+, gobject-introspection
+, glib-networking
+, hicolor-icon-theme
 }:
 
 stdenv.mkDerivation rec {
@@ -16,12 +35,33 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ wrapGAppsHook python3Packages.wrapPython intltool pkgconfig ];
 
   buildInputs = [
-    glib gtk3 webkitgtk libxml2 libxslt sqlite libsoup gsettings-desktop-schemas
-    libpeas gsettings-desktop-schemas json-glib dconf gobject-introspection
-    librsvg glib-networking libnotify hicolor-icon-theme
-  ] ++ (with gst_all_1; [
-    gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad
-  ]);
+    glib
+    gtk3
+    webkitgtk
+    libxml2
+    libxslt
+    sqlite
+    libsoup
+    gsettings-desktop-schemas
+    libpeas
+    gsettings-desktop-schemas
+    json-glib
+    dconf
+    gobject-introspection
+    librsvg
+    glib-networking
+    libnotify
+    hicolor-icon-theme
+  ]
+  ++ (
+       with gst_all_1; [
+         gstreamer
+         gst-plugins-base
+         gst-plugins-good
+         gst-plugins-bad
+       ]
+     )
+  ;
 
   pythonPath = with python3Packages; [ pygobject3 pycairo ];
 

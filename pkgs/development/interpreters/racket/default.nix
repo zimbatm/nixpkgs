@@ -1,15 +1,28 @@
-{ stdenv, fetchurl, makeFontsConf
+{ stdenv
+, fetchurl
+, makeFontsConf
 , cacert
-, cairo, coreutils, fontconfig, freefont_ttf
-, glib, gmp
+, cairo
+, coreutils
+, fontconfig
+, freefont_ttf
+, glib
+, gmp
 , gtk3
-, libedit, libffi
+, libedit
+, libffi
 , libiconv
 , libGL
 , libGLU
 , libjpeg
-, libpng, libtool, mpfr, openssl, pango, poppler
-, readline, sqlite
+, libpng
+, libtool
+, mpfr
+, openssl
+, pango
+, poppler
+, readline
+, sqlite
 , disableDocs ? false
 , CoreFoundation
 , gsettings-desktop-schemas
@@ -48,12 +61,15 @@ stdenv.mkDerivation rec {
   name = "racket-${version}";
   version = "7.3"; # always change at once with ./minimal.nix
 
-  src = (stdenv.lib.makeOverridable ({ name, sha256 }:
-    fetchurl rec {
-      url = "https://mirror.racket-lang.org/installers/${version}/${name}-src.tgz";
-      inherit sha256;
-    }
-  )) {
+  src = (
+    stdenv.lib.makeOverridable (
+      { name, sha256 }:
+        fetchurl rec {
+          url = "https://mirror.racket-lang.org/installers/${version}/${name}-src.tgz";
+          inherit sha256;
+        }
+    )
+  ) {
     inherit name;
     sha256 = "0h6072njhb87rkz4arijvahxgjzn8r14s4wns0ijvxm89bg136yl";
   };
@@ -68,7 +84,8 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ cacert wrapGAppsHook ];
 
   buildInputs = [ fontconfig libffi libtool sqlite gsettings-desktop-schemas gtk3 ]
-    ++ stdenv.lib.optionals stdenv.isDarwin [ libiconv CoreFoundation ];
+    ++ stdenv.lib.optionals stdenv.isDarwin [ libiconv CoreFoundation ]
+    ;
 
   preConfigure = ''
     unset AR
@@ -82,9 +99,10 @@ stdenv.mkDerivation rec {
   '';
 
   shared = if stdenv.isDarwin then "dylib" else "shared";
-  configureFlags = [ "--enable-${shared}"  "--enable-lt=${libtool}/bin/libtool" ]
-                   ++ stdenv.lib.optional disableDocs [ "--disable-docs" ]
-                   ++ stdenv.lib.optional stdenv.isDarwin [ "--enable-xonx" ];
+  configureFlags = [ "--enable-${shared}" "--enable-lt=${libtool}/bin/libtool" ]
+    ++ stdenv.lib.optional disableDocs [ "--disable-docs" ]
+    ++ stdenv.lib.optional stdenv.isDarwin [ "--enable-xonx" ]
+    ;
 
   configureScript = "../configure";
 

@@ -49,4 +49,5 @@ let
     '';
   };
 
-in testBazel
+in
+testBazel

@@ -14,10 +14,12 @@ buildPythonPackage rec {
 
   patches = [
     # Add Python 3.7 support. Remove with the next release
-    (fetchpatch {
-      url = https://github.com/xZise/flake8-future-import/commit/cace194a44d3b95c9c1ed96640bae49183acca04.patch;
-      sha256 = "17pkqnh035j5s5c53afs8bk49bq7lnmdwqp5k7izx7sw80z73p9r";
-    })
+    (
+      fetchpatch {
+        url = https://github.com/xZise/flake8-future-import/commit/cace194a44d3b95c9c1ed96640bae49183acca04.patch;
+        sha256 = "17pkqnh035j5s5c53afs8bk49bq7lnmdwqp5k7izx7sw80z73p9r";
+      }
+    )
   ];
 
   propagatedBuildInputs = [ flake8 six ];

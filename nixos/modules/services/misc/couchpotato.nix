@@ -30,7 +30,8 @@ in
     };
 
     users.users = singleton
-      { name = "couchpotato";
+      {
+        name = "couchpotato";
         group = "couchpotato";
         home = "/var/lib/couchpotato/";
         description = "CouchPotato daemon user";
@@ -38,7 +39,8 @@ in
       };
 
     users.groups = singleton
-      { name = "couchpotato";
+      {
+        name = "couchpotato";
         gid = config.ids.gids.couchpotato;
       };
   };

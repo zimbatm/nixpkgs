@@ -15,7 +15,8 @@ let
     sha256 = "1nzzxcz4r9932cha80q1bzn1425m67fsl89pn7n7ybrv6y0jnxpc";
   };
 
-in mkYarnPackage rec {
+in
+mkYarnPackage rec {
   name = "riot-desktop-${version}";
   inherit version;
 

@@ -1,9 +1,26 @@
-{ stdenv, fetchzip, jam, unzip, libX11, libXxf86vm, libXrandr, libXinerama
-, libXrender, libXext, libtiff, libjpeg, libpng, libXScrnSaver, writeText
-, libXdmcp, libXau, lib, openssl }:
+{ stdenv
+, fetchzip
+, jam
+, unzip
+, libX11
+, libXxf86vm
+, libXrandr
+, libXinerama
+, libXrender
+, libXext
+, libtiff
+, libjpeg
+, libpng
+, libXScrnSaver
+, writeText
+, libXdmcp
+, libXau
+, lib
+, openssl
+}:
 let
   version = "2.1.1";
- in
+in
 stdenv.mkDerivation rec {
   name = "argyllcms-${version}";
 
@@ -89,8 +106,19 @@ stdenv.mkDerivation rec {
   '';
 
   buildInputs = [
-    libtiff libjpeg libpng libX11 libXxf86vm libXrandr libXinerama libXext
-    libXrender libXScrnSaver libXdmcp libXau openssl
+    libtiff
+    libjpeg
+    libpng
+    libX11
+    libXxf86vm
+    libXrandr
+    libXinerama
+    libXext
+    libXrender
+    libXScrnSaver
+    libXdmcp
+    libXau
+    openssl
   ];
 
   buildFlags = "PREFIX=$(out) all";

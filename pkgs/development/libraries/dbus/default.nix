@@ -1,15 +1,25 @@
-{ stdenv, lib, fetchurl, pkgconfig, expat, systemd
-, libX11 ? null, libICE ? null, libSM ? null, x11Support ? (stdenv.isLinux || stdenv.isDarwin) }:
+{ stdenv
+, lib
+, fetchurl
+, pkgconfig
+, expat
+, systemd
+, libX11 ? null
+, libICE ? null
+, libSM ? null
+, x11Support ? (stdenv.isLinux || stdenv.isDarwin)
+}:
 
-assert x11Support -> libX11 != null
-                  && libICE != null
-                  && libSM != null;
+assert x11Support
+-> libX11 != null
+   && libICE != null
+   && libSM != null;
 
 let
   version = "1.12.16";
   sha256 = "107ckxaff1cv4q6kmfdi2fb1nlsv03312a7kf6lb4biglhpjv8jl";
 
-self = stdenv.mkDerivation {
+  self = stdenv.mkDerivation {
     name = "dbus-${version}";
     inherit version;
 
@@ -26,19 +36,22 @@ self = stdenv.mkDerivation {
         --replace 'installcheck-local:' 'disabled:'
       substituteInPlace bus/Makefile.in \
         --replace '$(mkinstalldirs) $(DESTDIR)$(localstatedir)/run/dbus' ':'
-    '' + /* cleanup of runtime references */ ''
+    ''
+    + /* cleanup of runtime references */ ''
       substituteInPlace ./dbus/dbus-sysdeps-unix.c \
         --replace 'DBUS_BINDIR "/dbus-launch"' "\"$lib/bin/dbus-launch\""
       substituteInPlace ./tools/dbus-launch.c \
         --replace 'DBUS_DAEMONDIR"/dbus-daemon"' '"/run/current-system/sw/bin/dbus-daemon"'
-    '';
+    ''
+    ;
 
     outputs = [ "out" "dev" "lib" "doc" ];
 
     nativeBuildInputs = [ pkgconfig ];
     propagatedBuildInputs = [ expat ];
     buildInputs = lib.optional stdenv.isLinux systemd
-      ++ lib.optionals x11Support [ libX11 libICE libSM ];
+      ++ lib.optionals x11Support [ libX11 libICE libSM ]
+      ;
     # ToDo: optional selinux?
 
     configureFlags = [
@@ -52,7 +65,9 @@ self = stdenv.mkDerivation {
       "--enable-user-session"
       "--datadir=/etc"
       "--libexecdir=$(out)/libexec"
-    ] ++ lib.optional (!x11Support) "--without-x";
+    ]
+    ++ lib.optional (!x11Support) "--without-x"
+    ;
 
     # Enable X11 autolaunch support in libdbus. This doesn't actually depend on X11
     # (it just execs dbus-launch in dbus.tools), contrary to what the configure script demands.
@@ -89,4 +104,5 @@ self = stdenv.mkDerivation {
       platforms = platforms.unix;
     };
   };
-in self
+in
+self

@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
     description = "Tools for MTD filesystems";
     license = stdenv.lib.licenses.gpl2Plus;
     homepage = http://www.linux-mtd.infradead.org/;
-    maintainers = with stdenv.lib.maintainers; [viric];
+    maintainers = with stdenv.lib.maintainers; [ viric ];
     platforms = with stdenv.lib.platforms; linux;
   };
 }

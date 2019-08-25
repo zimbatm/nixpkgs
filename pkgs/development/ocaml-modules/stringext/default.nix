@@ -1,9 +1,17 @@
-{ stdenv, fetchzip, ocaml, findlib, ocamlbuild, ounit, qcheck
-# Optionally enable tests; test script use OCaml-4.01+ features
+{ stdenv
+, fetchzip
+, ocaml
+, findlib
+, ocamlbuild
+, ounit
+, qcheck
+  # Optionally enable tests; test script use OCaml-4.01+ features
 , doCheck ? stdenv.lib.versionAtLeast (stdenv.lib.getVersion ocaml) "4.01"
 }:
 
-let version = "1.4.3"; in
+let
+  version = "1.4.3";
+in
 
 stdenv.mkDerivation {
   name = "ocaml${ocaml.version}-stringext-${version}";
@@ -16,7 +24,8 @@ stdenv.mkDerivation {
   buildInputs = [ ocaml findlib ocamlbuild ounit qcheck ];
 
   configurePhase = "ocaml setup.ml -configure --prefix $out"
-  + stdenv.lib.optionalString doCheck " --enable-tests";
+    + stdenv.lib.optionalString doCheck " --enable-tests"
+    ;
   buildPhase = "ocaml setup.ml -build";
   inherit doCheck;
   checkPhase = "ocaml setup.ml -test";

@@ -1,5 +1,11 @@
-{ lib, buildGoPackage, fetchFromGitHub, fetchpatch
-, pkgconfig, zlib, geoip }:
+{ lib
+, buildGoPackage
+, fetchFromGitHub
+, fetchpatch
+, pkgconfig
+, zlib
+, geoip
+}:
 
 buildGoPackage rec {
   name = "mirrorbits-${version}";
@@ -14,10 +20,12 @@ buildGoPackage rec {
   };
 
   patches = [
-    (fetchpatch {
-      url = "https://github.com/etix/mirrorbits/commit/03a4e02214bdb7bb60240ddf25b887ccac5fb118.patch";
-      sha256 = "08332cfxmp2nsfdj2ymg3lxkav8h44f6cf2h6g9jkn03mkliblm5";
-    })
+    (
+      fetchpatch {
+        url = "https://github.com/etix/mirrorbits/commit/03a4e02214bdb7bb60240ddf25b887ccac5fb118.patch";
+        sha256 = "08332cfxmp2nsfdj2ymg3lxkav8h44f6cf2h6g9jkn03mkliblm5";
+      }
+    )
   ];
 
   postPatch = ''

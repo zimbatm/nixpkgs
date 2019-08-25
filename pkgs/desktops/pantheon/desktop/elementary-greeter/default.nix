@@ -1,8 +1,29 @@
-{ stdenv, fetchFromGitHub, pantheon, pkgconfig, substituteAll, meson
-, ninja, vala, desktop-file-utils, gtk3, granite, libgee, elementary-settings-daemon
-, gnome-desktop, mutter, elementary-icon-theme, wingpanel-with-indicators
-, elementary-gtk-theme, nixos-artwork, lightdm, numlockx
-, clutter-gtk, libGL, dbus, wrapGAppsHook }:
+{ stdenv
+, fetchFromGitHub
+, pantheon
+, pkgconfig
+, substituteAll
+, meson
+, ninja
+, vala
+, desktop-file-utils
+, gtk3
+, granite
+, libgee
+, elementary-settings-daemon
+, gnome-desktop
+, mutter
+, elementary-icon-theme
+, wingpanel-with-indicators
+, elementary-gtk-theme
+, nixos-artwork
+, lightdm
+, numlockx
+, clutter-gtk
+, libGL
+, dbus
+, wrapGAppsHook
+}:
 
 stdenv.mkDerivation rec {
   pname = "elementary-greeter";
@@ -49,14 +70,18 @@ stdenv.mkDerivation rec {
   ];
 
   patches = [
-    (substituteAll {
-      src = ./gsd.patch;
-      elementary_settings_daemon = "${elementary-settings-daemon}/libexec/";
-    })
-    (substituteAll {
-      src = ./numlockx.patch;
-      inherit numlockx;
-    })
+    (
+      substituteAll {
+        src = ./gsd.patch;
+        elementary_settings_daemon = "${elementary-settings-daemon}/libexec/";
+      }
+    )
+    (
+      substituteAll {
+        src = ./numlockx.patch;
+        inherit numlockx;
+      }
+    )
     ./01-sysconfdir-install.patch
     ./hardcode-theme.patch
   ];

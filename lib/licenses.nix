@@ -1,9 +1,10 @@
 { lib }:
 let
 
-  spdx = lic: lic // {
-    url = "http://spdx.org/licenses/${lic.spdxId}.html";
-  };
+  spdx = lic: lic
+    // {
+         url = "http://spdx.org/licenses/${lic.spdxId}.html";
+       };
 
 in
 
@@ -200,12 +201,12 @@ lib.mapAttrs (n: v: v // { shortName = n; }) rec {
 
   cecill-b = spdx {
     spdxId = "CECILL-B";
-    fullName  = "CeCILL-B Free Software License Agreement";
+    fullName = "CeCILL-B Free Software License Agreement";
   };
 
   cecill-c = spdx {
     spdxId = "CECILL-C";
-    fullName  = "CeCILL-C Free Software License Agreement";
+    fullName = "CeCILL-C Free Software License Agreement";
   };
 
   cpal10 = spdx {
@@ -384,15 +385,15 @@ lib.mapAttrs (n: v: v // { shortName = n; }) rec {
   };
 
   inria-compcert = {
-    fullName  = "INRIA Non-Commercial License Agreement for the CompCert verified compiler";
-    url       = "http://compcert.inria.fr/doc/LICENSE";
-    free      = false;
+    fullName = "INRIA Non-Commercial License Agreement for the CompCert verified compiler";
+    url = "http://compcert.inria.fr/doc/LICENSE";
+    free = false;
   };
 
   inria-icesl = {
     fullName = "INRIA Non-Commercial License Agreement for IceSL";
-    url      = "http://shapeforge.loria.fr/icesl/EULA_IceSL_binary.pdf";
-    free     = false;
+    url = "http://shapeforge.loria.fr/icesl/EULA_IceSL_binary.pdf";
+    free = false;
   };
 
   ipa = spdx {
@@ -520,8 +521,8 @@ lib.mapAttrs (n: v: v // { shortName = n; }) rec {
   };
 
   msrla = {
-    fullName  = "Microsoft Research License Agreement";
-    url       = "http://research.microsoft.com/en-us/projects/pex/msr-la.txt";
+    fullName = "Microsoft Research License Agreement";
+    url = "http://research.microsoft.com/en-us/projects/pex/msr-la.txt";
     free = false;
   };
 
@@ -533,7 +534,7 @@ lib.mapAttrs (n: v: v // { shortName = n; }) rec {
 
   ncsa = spdx {
     spdxId = "NCSA";
-    fullName  = "University of Illinois/NCSA Open Source License";
+    fullName = "University of Illinois/NCSA Open Source License";
   };
 
   notion_lgpl = {

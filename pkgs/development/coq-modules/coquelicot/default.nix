@@ -1,17 +1,19 @@
 { stdenv, fetchurl, which, coq, ssreflect }:
 
-let param =
-  if stdenv.lib.versionAtLeast coq.coq-version "8.8"
-  then {
-    version = "3.0.3";
-    uid = "38105";
-    sha256 = "0y52lqx1jphv6fwf0d702vzprxmfmxggnh1hy3fznxyl4isfpg4j";
-  } else {
-    version = "3.0.2";
-    uid = "37523";
-    sha256 = "1biia7nfqf7vaqq5gmykl4rwjyvrcwss6r2jdf0in5pvp2rnrj2w";
-  }
-; in
+let
+  param =
+    if stdenv.lib.versionAtLeast coq.coq-version "8.8"
+    then {
+      version = "3.0.3";
+      uid = "38105";
+      sha256 = "0y52lqx1jphv6fwf0d702vzprxmfmxggnh1hy3fznxyl4isfpg4j";
+    } else {
+      version = "3.0.2";
+      uid = "37523";
+      sha256 = "1biia7nfqf7vaqq5gmykl4rwjyvrcwss6r2jdf0in5pvp2rnrj2w";
+    }
+    ;
+in
 
 stdenv.mkDerivation {
   name = "coq${coq.coq-version}-coquelicot-${param.version}";

@@ -41,16 +41,18 @@ let
 
   unpackTheme = unpack "theme";
   unpackPlugin = unpack "plugin";
-  unpack = id: (name: source:
-    pkgs.stdenv.mkDerivation {
-      name = "redmine-${id}-${name}";
-      buildInputs = [ pkgs.unzip ];
-      buildCommand = ''
-        mkdir -p $out
-        cd $out
-        unpackFile ${source}
-      '';
-  });
+  unpack = id: (
+    name: source:
+      pkgs.stdenv.mkDerivation {
+        name = "redmine-${id}-${name}";
+        buildInputs = [ pkgs.unzip ];
+        buildCommand = ''
+          mkdir -p $out
+          cd $out
+          unpackFile ${source}
+        '';
+      }
+  );
 
   mysqlLocal = cfg.database.createLocally && cfg.database.type == "mysql2";
   pgsqlLocal = cfg.database.createLocally && cfg.database.type == "postgresql";
@@ -66,9 +68,9 @@ in
       package = mkOption {
         type = types.package;
         default = if versionAtLeast config.system.stateVersion "19.03"
-          then pkgs.redmine_4
-          else pkgs.redmine
-        ;
+        then pkgs.redmine_4
+        else pkgs.redmine
+          ;
         defaultText = "pkgs.redmine";
         description = ''
           Which Redmine package to use. This defaults to version 3.x if
@@ -238,16 +240,20 @@ in
   config = mkIf cfg.enable {
 
     assertions = [
-      { assertion = cfg.database.passwordFile != null || cfg.database.password != "" || cfg.database.socket != null;
+      {
+        assertion = cfg.database.passwordFile != null || cfg.database.password != "" || cfg.database.socket != null;
         message = "one of services.redmine.database.socket, services.redmine.database.passwordFile, or services.redmine.database.password must be set";
       }
-      { assertion = cfg.database.createLocally -> cfg.database.user == cfg.user;
+      {
+        assertion = cfg.database.createLocally -> cfg.database.user == cfg.user;
         message = "services.redmine.database.user must be set to ${cfg.user} if services.redmine.database.createLocally is set true";
       }
-      { assertion = cfg.database.createLocally -> cfg.database.socket != null;
+      {
+        assertion = cfg.database.createLocally -> cfg.database.socket != null;
         message = "services.redmine.database.socket must be set if services.redmine.database.createLocally is set to true";
       }
-      { assertion = cfg.database.createLocally -> cfg.database.host == "localhost";
+      {
+        assertion = cfg.database.createLocally -> cfg.database.host == "localhost";
         message = "services.redmine.database.host must be set to localhost if services.redmine.database.createLocally is set to true";
       }
     ];
@@ -257,7 +263,8 @@ in
       package = mkDefault pkgs.mariadb;
       ensureDatabases = [ cfg.database.name ];
       ensureUsers = [
-        { name = cfg.database.user;
+        {
+          name = cfg.database.user;
           ensurePermissions = { "${cfg.database.name}.*" = "ALL PRIVILEGES"; };
         }
       ];
@@ -267,7 +274,8 @@ in
       enable = true;
       ensureDatabases = [ cfg.database.name ];
       ensureUsers = [
-        { name = cfg.database.user;
+        {
+          name = cfg.database.user;
           ensurePermissions = { "DATABASE ${cfg.database.name}" = "ALL PRIVILEGES"; };
         }
       ];
@@ -371,22 +379,28 @@ in
         Group = cfg.group;
         TimeoutSec = "300";
         WorkingDirectory = "${cfg.package}/share/redmine";
-        ExecStart="${bundle} exec rails server webrick -e production -p ${toString cfg.port} -P '${cfg.stateDir}/redmine.pid'";
+        ExecStart = "${bundle} exec rails server webrick -e production -p ${toString cfg.port} -P '${cfg.stateDir}/redmine.pid'";
       };
 
     };
 
-    users.users = optionalAttrs (cfg.user == "redmine") (singleton
-      { name = "redmine";
-        group = cfg.group;
-        home = cfg.stateDir;
-        uid = config.ids.uids.redmine;
-      });
+    users.users = optionalAttrs (cfg.user == "redmine") (
+      singleton
+        {
+          name = "redmine";
+          group = cfg.group;
+          home = cfg.stateDir;
+          uid = config.ids.uids.redmine;
+        }
+    );
 
-    users.groups = optionalAttrs (cfg.group == "redmine") (singleton
-      { name = "redmine";
-        gid = config.ids.gids.redmine;
-      });
+    users.groups = optionalAttrs (cfg.group == "redmine") (
+      singleton
+        {
+          name = "redmine";
+          gid = config.ids.gids.redmine;
+        }
+    );
 
     warnings = optional (cfg.database.password != "")
       ''config.services.redmine.database.password will be stored as plaintext
@@ -394,10 +408,16 @@ in
 
     # Create database passwordFile default when password is configured.
     services.redmine.database.passwordFile =
-      (mkDefault (toString (pkgs.writeTextFile {
-        name = "redmine-database-password";
-        text = cfg.database.password;
-      })));
+      (
+        mkDefault (
+          toString (
+            pkgs.writeTextFile {
+              name = "redmine-database-password";
+              text = cfg.database.password;
+            }
+          )
+        )
+      );
 
   };
 

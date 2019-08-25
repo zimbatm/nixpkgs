@@ -37,13 +37,14 @@ with lib;
     homeDir = "/home/nixos/";
     desktopDir = homeDir + "Desktop/";
 
-  in ''
-    mkdir -p ${desktopDir}
-    chown nixos ${homeDir} ${desktopDir}
+  in
+    ''
+      mkdir -p ${desktopDir}
+      chown nixos ${homeDir} ${desktopDir}
 
-    ln -sfT ${manualDesktopFile} ${desktopDir + "nixos-manual.desktop"}
-    ln -sfT ${pkgs.gparted}/share/applications/gparted.desktop ${desktopDir + "gparted.desktop"}
-    ln -sfT ${pkgs.konsole}/share/applications/org.kde.konsole.desktop ${desktopDir + "org.kde.konsole.desktop"}
-  '';
+      ln -sfT ${manualDesktopFile} ${desktopDir + "nixos-manual.desktop"}
+      ln -sfT ${pkgs.gparted}/share/applications/gparted.desktop ${desktopDir + "gparted.desktop"}
+      ln -sfT ${pkgs.konsole}/share/applications/org.kde.konsole.desktop ${desktopDir + "org.kde.konsole.desktop"}
+    '';
 
 }

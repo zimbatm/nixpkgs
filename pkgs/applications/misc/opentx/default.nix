@@ -1,14 +1,22 @@
-{ stdenv, fetchFromGitHub
-, cmake, gcc-arm-embedded, binutils-arm-embedded, python
-, qt5, SDL, gtest
-, dfu-util, avrdude
+{ stdenv
+, fetchFromGitHub
+, cmake
+, gcc-arm-embedded
+, binutils-arm-embedded
+, python
+, qt5
+, SDL
+, gtest
+, dfu-util
+, avrdude
 }:
 
 let
 
   version = "2.2.1";
 
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
 
   name = "opentx-${version}";
 
@@ -23,12 +31,16 @@ in stdenv.mkDerivation {
 
   nativeBuildInputs = [
     cmake
-    gcc-arm-embedded binutils-arm-embedded
+    gcc-arm-embedded
+    binutils-arm-embedded
   ];
 
   buildInputs = with qt5; [
-    python python.pkgs.pyqt4
-    qtbase qtmultimedia qttranslations
+    python
+    python.pkgs.pyqt4
+    qtbase
+    qtmultimedia
+    qttranslations
     SDL
   ];
 

@@ -2,17 +2,18 @@
 
 with stdenv.lib;
 
-let versions = builtins.fromJSON (builtins.readFile ./versions.json);
-    arch = if stdenv.isi686 then "386"
-           else if stdenv.isx86_64 then "amd64"
-           else if stdenv.isAarch64 then "arm64"
-           else if stdenv.isArm then "arm"
-           else throw "Unsupported architecture";
-    os = if stdenv.isLinux then "linux"
-         else if stdenv.isDarwin then "darwin"
-         else throw "Unsupported os";
-    versionInfo = versions."${os}-${arch}";
-    inherit (versionInfo) version sha256 url;
+let
+  versions = builtins.fromJSON (builtins.readFile ./versions.json);
+  arch = if stdenv.isi686 then "386"
+  else if stdenv.isx86_64 then "amd64"
+  else if stdenv.isAarch64 then "arm64"
+  else if stdenv.isArm then "arm"
+  else throw "Unsupported architecture";
+  os = if stdenv.isLinux then "linux"
+  else if stdenv.isDarwin then "darwin"
+  else throw "Unsupported os";
+  versionInfo = versions."${os}-${arch}";
+  inherit (versionInfo) version sha256 url;
 
 in
 stdenv.mkDerivation {
@@ -32,10 +33,12 @@ stdenv.mkDerivation {
 
   installPhase = ''
     install -D ngrok $out/bin/ngrok
-  '' + optionalString stdenv.isLinux ''
-    patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
-              $out/bin/ngrok
-  '';
+  ''
+  + optionalString stdenv.isLinux ''
+      patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
+                $out/bin/ngrok
+    ''
+  ;
 
   passthru.updateScript = ./update.sh;
 

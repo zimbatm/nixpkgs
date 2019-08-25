@@ -1,13 +1,36 @@
-{ stdenv, writeScriptBin, makeWrapper, lib, fetchurl, git, cacert, libpng, libjpeg, libwebp
-, erlang, openssl, expat, libyaml, bash, gnused, gnugrep, coreutils, utillinux, procps, gd
+{ stdenv
+, writeScriptBin
+, makeWrapper
+, lib
+, fetchurl
+, git
+, cacert
+, libpng
+, libjpeg
+, libwebp
+, erlang
+, openssl
+, expat
+, libyaml
+, bash
+, gnused
+, gnugrep
+, coreutils
+, utillinux
+, procps
+, gd
 , flock
 , withMysql ? false
 , withPgsql ? false
-, withSqlite ? false, sqlite
-, withPam ? false, pam
-, withZlib ? true, zlib
+, withSqlite ? false
+, sqlite
+, withPam ? false
+, pam
+, withZlib ? true
+, zlib
 , withRiak ? false
-, withElixir ? false, elixir
+, withElixir ? false
+, elixir
 , withIconv ? true
 , withTools ? false
 , withRedis ? false
@@ -23,7 +46,8 @@ let
 
   ctlpath = lib.makeBinPath [ bash gnused gnugrep coreutils utillinux procps ];
 
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   version = "19.08";
   pname = "ejabberd";
 
@@ -79,7 +103,8 @@ in stdenv.mkDerivation rec {
   };
 
   configureFlags =
-    [ (lib.enableFeature withMysql "mysql")
+    [
+      (lib.enableFeature withMysql "mysql")
       (lib.enableFeature withPgsql "pgsql")
       (lib.enableFeature withSqlite "sqlite")
       (lib.enableFeature withPam "pam")
@@ -89,7 +114,9 @@ in stdenv.mkDerivation rec {
       (lib.enableFeature withIconv "iconv")
       (lib.enableFeature withTools "tools")
       (lib.enableFeature withRedis "redis")
-    ] ++ lib.optional withSqlite "--with-sqlite3=${sqlite.dev}";
+    ]
+    ++ lib.optional withSqlite "--with-sqlite3=${sqlite.dev}"
+  ;
 
   enableParallelBuilding = true;
 

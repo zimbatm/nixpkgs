@@ -1,36 +1,78 @@
-{ stdenv, llvmPackages, gn, ninja, which, nodejs, fetchpatch, gnutar
+{ stdenv
+, llvmPackages
+, gn
+, ninja
+, which
+, nodejs
+, fetchpatch
+, gnutar
 
-# default dependencies
-, bzip2, flac, speex, libopus
-, libevent, expat, libjpeg, snappy
-, libpng, libcap
-, xdg_utils, yasm, minizip, libwebp
-, libusb1, pciutils, nss, re2, zlib
+  # default dependencies
+, bzip2
+, flac
+, speex
+, libopus
+, libevent
+, expat
+, libjpeg
+, snappy
+, libpng
+, libcap
+, xdg_utils
+, yasm
+, minizip
+, libwebp
+, libusb1
+, pciutils
+, nss
+, re2
+, zlib
 
-, python2Packages, perl, pkgconfig
-, nspr, systemd, kerberos
-, utillinux, alsaLib
-, bison, gperf
-, glib, gtk3, dbus-glib
+, python2Packages
+, perl
+, pkgconfig
+, nspr
+, systemd
+, kerberos
+, utillinux
+, alsaLib
+, bison
+, gperf
+, glib
+, gtk3
+, dbus-glib
 , glibc
-, libXScrnSaver, libXcursor, libXtst, libGLU_combined, libGL
-, protobuf, speechd, libXdamage, cups
-, ffmpeg, libxslt, libxml2, at-spi2-core
+, libXScrnSaver
+, libXcursor
+, libXtst
+, libGLU_combined
+, libGL
+, protobuf
+, speechd
+, libXdamage
+, cups
+, ffmpeg
+, libxslt
+, libxml2
+, at-spi2-core
 , jdk
 
-# optional dependencies
+  # optional dependencies
 , libgcrypt ? null # gnomeSupport || cupsSupport
 , libva ? null # useVaapi
 
-# package customization
+  # package customization
 , enableNaCl ? false
 , enableWideVine ? false
 , useVaapi ? false
-, gnomeSupport ? false, gnome ? null
-, gnomeKeyringSupport ? false, libgnome-keyring3 ? null
+, gnomeSupport ? false
+, gnome ? null
+, gnomeKeyringSupport ? false
+, libgnome-keyring3 ? null
 , proprietaryCodecs ? true
 , cupsSupport ? true
-, pulseSupport ? false, libpulseaudio ? null
+, pulseSupport ? false
+, libpulseaudio ? null
 
 , upstream-info
 }:
@@ -55,7 +97,7 @@ let
     let
       # Serialize Nix types into GN types according to this document:
       # https://chromium.googlesource.com/chromium/src/+/master/tools/gn/docs/language.md
-      mkGnString = value: "\"${escape ["\"" "$" "\\"] value}\"";
+      mkGnString = value: "\"${escape [ "\"" "$" "\\" ] value}\"";
       sanitize = value:
         if value == true then "true"
         else if value == false then "false"
@@ -64,16 +106,23 @@ let
         else if isString value then mkGnString value
         else throw "Unsupported type for GN value `${value}'.";
       toFlag = key: value: "${key}=${sanitize value}";
-    in attrs: concatStringsSep " " (attrValues (mapAttrs toFlag attrs));
+    in
+      attrs: concatStringsSep " " (attrValues (mapAttrs toFlag attrs));
 
   gnSystemLibraries = [
-    "flac" "libwebp" "libxslt" "yasm" "opus" "snappy" "libpng"
+    "flac"
+    "libwebp"
+    "libxslt"
+    "yasm"
+    "opus"
+    "snappy"
+    "libpng"
     # "zlib" # version 77 reports unresolved dependency on //third_party/zlib:zlib_config
     # "libjpeg" # fails with multiple undefined references to chromium_jpeg_*
     # "re2" # fails with linker errors
     # "ffmpeg" # https://crbug.com/731766
     # "harfbuzz-ng" # in versions over 63 harfbuzz and freetype are being built together
-                    # so we can't build with one from system and other from source
+    # so we can't build with one from system and other from source
   ];
 
   opusWithCustomModes = libopus.override {
@@ -81,14 +130,28 @@ let
   };
 
   defaultDependencies = [
-    bzip2 flac speex opusWithCustomModes
-    libevent expat libjpeg snappy
-    libpng libcap
-    xdg_utils yasm minizip libwebp
-    libusb1 re2 zlib
-    ffmpeg libxslt libxml2
+    bzip2
+    flac
+    speex
+    opusWithCustomModes
+    libevent
+    expat
+    libjpeg
+    snappy
+    libpng
+    libcap
+    xdg_utils
+    yasm
+    minizip
+    libwebp
+    libusb1
+    re2
+    zlib
+    ffmpeg
+    libxslt
+    libxml2
     # harfbuzz # in versions over 63 harfbuzz and freetype are being built together
-               # so we can't build with one from system and other from source
+    # so we can't build with one from system and other from source
   ];
 
   # build paths and release info
@@ -98,13 +161,15 @@ let
   libExecPath = "$out/libexec/${packageName}";
 
   versionRange = min-version: upto-version:
-    let inherit (upstream-info) version;
-        result = versionAtLeast version min-version && versionOlder version upto-version;
-        stable-version = (import ./upstream-info.nix).stable.version;
-    in if versionAtLeast stable-version upto-version
-       then warn "chromium: stable version ${stable-version} is newer than a patchset bounded at ${upto-version}. You can safely delete it."
-            result
-       else result;
+    let
+      inherit (upstream-info) version;
+      result = versionAtLeast version min-version && versionOlder version upto-version;
+      stable-version = (import ./upstream-info.nix).stable.version;
+    in
+      if versionAtLeast stable-version upto-version
+      then warn "chromium: stable version ${stable-version} is newer than a patchset bounded at ${upto-version}. You can safely delete it."
+        result
+      else result;
 
   base = rec {
     name = "${packageName}-unwrapped-${version}";
@@ -114,57 +179,86 @@ let
     src = upstream-info.main;
 
     nativeBuildInputs = [
-      ninja which python2Packages.python perl pkgconfig
-      python2Packages.ply python2Packages.jinja2 nodejs
+      ninja
+      which
+      python2Packages.python
+      perl
+      pkgconfig
+      python2Packages.ply
+      python2Packages.jinja2
+      nodejs
       gnutar
     ];
 
-    buildInputs = defaultDependencies ++ [
-      nspr nss systemd
-      utillinux alsaLib
-      bison gperf kerberos
-      glib gtk3 dbus-glib
-      libXScrnSaver libXcursor libXtst libGLU_combined
-      pciutils protobuf speechd libXdamage at-spi2-core
-    ] ++ optional gnomeKeyringSupport libgnome-keyring3
+    buildInputs = defaultDependencies
+      ++ [
+           nspr
+           nss
+           systemd
+           utillinux
+           alsaLib
+           bison
+           gperf
+           kerberos
+           glib
+           gtk3
+           dbus-glib
+           libXScrnSaver
+           libXcursor
+           libXtst
+           libGLU_combined
+           pciutils
+           protobuf
+           speechd
+           libXdamage
+           at-spi2-core
+         ]
+      ++ optional gnomeKeyringSupport libgnome-keyring3
       ++ optionals gnomeSupport [ gnome.GConf libgcrypt ]
       ++ optionals cupsSupport [ libgcrypt cups ]
       ++ optional useVaapi libva
       ++ optional pulseSupport libpulseaudio
-      ++ optional (versionAtLeast version "72") jdk.jre;
+      ++ optional (versionAtLeast version "72") jdk.jre
+      ;
 
-    patches = optional enableWideVine ./patches/widevine.patch ++ [
-      ./patches/nix_plugin_paths_68.patch
-      ./patches/remove-webp-include-69.patch
-      ./patches/jumbo-sorted.patch
-      ./patches/no-build-timestamps.patch
+    patches = optional enableWideVine ./patches/widevine.patch
+      ++ [
+           ./patches/nix_plugin_paths_68.patch
+           ./patches/remove-webp-include-69.patch
+           ./patches/jumbo-sorted.patch
+           ./patches/no-build-timestamps.patch
 
-      # Unfortunately, chromium regularly breaks on major updates and
-      # then needs various patches backported in order to be compiled with GCC.
-      # Good sources for such patches and other hints:
-      # - https://gitweb.gentoo.org/repo/gentoo.git/plain/www-client/chromium/
-      # - https://git.archlinux.org/svntogit/packages.git/tree/trunk?h=packages/chromium
-      # - https://github.com/chromium/chromium/search?q=GCC&s=committer-date&type=Commits
-      #
-      # ++ optional (versionRange "68" "72") ( githubPatch "<patch>" "0000000000000000000000000000000000000000000000000000000000000000" )
-    ] ++ optionals (useVaapi) [
-      # source: https://aur.archlinux.org/cgit/aur.git/plain/chromium-vaapi.patch?h=chromium-vaapi
-      ./patches/chromium-vaapi.patch
-    ] ++ optionals (!stdenv.cc.isClang && (versionRange "71" "72")) [
-      ( githubPatch "65be571f6ac2f7942b4df9e50b24da517f829eec" "1sqv0aba0mpdi4x4f21zdkxz2cf8ji55ffgbfcr88c5gcg0qn2jh" )
-    ] ++ optional stdenv.isAarch64
-           (if (versionOlder version "71") then
-              fetchpatch {
-                url       = https://raw.githubusercontent.com/OSSystems/meta-browser/e4a667deaaf9a26a3a1aeb355770d1f29da549ad/recipes-browser/chromium/files/aarch64-skia-build-fix.patch;
-                sha256    = "0dkchqair8cy2f5a5p5vi24r9b4d28pgn2bfvm1568lypbjw6iab";
-              }
-            else
-              fetchpatch {
-                url       = https://raw.githubusercontent.com/OSSystems/meta-browser/e4a667deaaf9a26a3a1aeb355770d1f29da549ad/recipes-browser/chromium/files/aarch64-skia-build-fix.patch;
-                postFetch = "substituteInPlace $out --replace __aarch64__ SK_CPU_ARM64";
-                sha256    = "018fbdzyw9rvia8m0qkk5gv8q8gl7x34rrjbn7mi1fgxdsayn22s";
-              }
-            );
+           # Unfortunately, chromium regularly breaks on major updates and
+           # then needs various patches backported in order to be compiled with GCC.
+           # Good sources for such patches and other hints:
+           # - https://gitweb.gentoo.org/repo/gentoo.git/plain/www-client/chromium/
+           # - https://git.archlinux.org/svntogit/packages.git/tree/trunk?h=packages/chromium
+           # - https://github.com/chromium/chromium/search?q=GCC&s=committer-date&type=Commits
+           #
+           # ++ optional (versionRange "68" "72") ( githubPatch "<patch>" "0000000000000000000000000000000000000000000000000000000000000000" )
+         ]
+      ++ optionals (useVaapi) [
+           # source: https://aur.archlinux.org/cgit/aur.git/plain/chromium-vaapi.patch?h=chromium-vaapi
+           ./patches/chromium-vaapi.patch
+         ]
+      ++ optionals (!stdenv.cc.isClang && (versionRange "71" "72")) [
+           (githubPatch "65be571f6ac2f7942b4df9e50b24da517f829eec" "1sqv0aba0mpdi4x4f21zdkxz2cf8ji55ffgbfcr88c5gcg0qn2jh")
+         ]
+      ++ optional stdenv.isAarch64
+           (
+             if (versionOlder version "71") then
+               fetchpatch {
+                 url = https://raw.githubusercontent.com/OSSystems/meta-browser/e4a667deaaf9a26a3a1aeb355770d1f29da549ad/recipes-browser/chromium/files/aarch64-skia-build-fix.patch;
+                 sha256 = "0dkchqair8cy2f5a5p5vi24r9b4d28pgn2bfvm1568lypbjw6iab";
+               }
+             else
+               fetchpatch {
+                 url = https://raw.githubusercontent.com/OSSystems/meta-browser/e4a667deaaf9a26a3a1aeb355770d1f29da549ad/recipes-browser/chromium/files/aarch64-skia-build-fix.patch;
+                 postFetch = "substituteInPlace $out --replace __aarch64__ SK_CPU_ARM64";
+                 sha256 = "018fbdzyw9rvia8m0qkk5gv8q8gl7x34rrjbn7mi1fgxdsayn22s";
+               }
+           )
+      ;
 
     postPatch = ''
       # We want to be able to specify where the sandbox is via CHROME_DEVEL_SANDBOX
@@ -221,58 +315,67 @@ let
             \! -regex '.*\.\(gn\|gni\|isolate\|py\)' \
             -delete
       done
-    '' + optionalString stdenv.isAarch64 ''
-      substituteInPlace build/toolchain/linux/BUILD.gn \
-        --replace 'toolprefix = "aarch64-linux-gnu-"' 'toolprefix = ""'
-    '' + optionalString stdenv.cc.isClang ''
-      mkdir -p third_party/llvm-build/Release+Asserts/bin
-      ln -s ${stdenv.cc}/bin/clang              third_party/llvm-build/Release+Asserts/bin/clang
-      ln -s ${stdenv.cc}/bin/clang++            third_party/llvm-build/Release+Asserts/bin/clang++
-      ln -s ${llvmPackages.llvm}/bin/llvm-ar    third_party/llvm-build/Release+Asserts/bin/llvm-ar
-    '';
+    ''
+    + optionalString stdenv.isAarch64 ''
+        substituteInPlace build/toolchain/linux/BUILD.gn \
+          --replace 'toolprefix = "aarch64-linux-gnu-"' 'toolprefix = ""'
+      ''
+    + optionalString stdenv.cc.isClang ''
+        mkdir -p third_party/llvm-build/Release+Asserts/bin
+        ln -s ${stdenv.cc}/bin/clang              third_party/llvm-build/Release+Asserts/bin/clang
+        ln -s ${stdenv.cc}/bin/clang++            third_party/llvm-build/Release+Asserts/bin/clang++
+        ln -s ${llvmPackages.llvm}/bin/llvm-ar    third_party/llvm-build/Release+Asserts/bin/llvm-ar
+      ''
+    ;
 
-    gnFlags = mkGnFlags ({
-      linux_use_bundled_binutils = false;
-      use_lld = false;
-      use_gold = true;
-      gold_path = "${stdenv.cc}/bin";
-      is_debug = false;
-      # at least 2X compilation speedup
-      use_jumbo_build = true;
+    gnFlags = mkGnFlags (
+      {
+        linux_use_bundled_binutils = false;
+        use_lld = false;
+        use_gold = true;
+        gold_path = "${stdenv.cc}/bin";
+        is_debug = false;
+        # at least 2X compilation speedup
+        use_jumbo_build = true;
 
-      proprietary_codecs = false;
-      use_sysroot = false;
-      use_gnome_keyring = gnomeKeyringSupport;
-      use_gio = gnomeSupport;
-      enable_nacl = enableNaCl;
-      enable_widevine = enableWideVine;
-      use_cups = cupsSupport;
+        proprietary_codecs = false;
+        use_sysroot = false;
+        use_gnome_keyring = gnomeKeyringSupport;
+        use_gio = gnomeSupport;
+        enable_nacl = enableNaCl;
+        enable_widevine = enableWideVine;
+        use_cups = cupsSupport;
 
-      treat_warnings_as_errors = false;
-      is_clang = stdenv.cc.isClang;
-      clang_use_chrome_plugins = false;
-      blink_symbol_level = 0;
-      enable_swiftshader = false;
-      fieldtrial_testing_like_official_build = true;
+        treat_warnings_as_errors = false;
+        is_clang = stdenv.cc.isClang;
+        clang_use_chrome_plugins = false;
+        blink_symbol_level = 0;
+        enable_swiftshader = false;
+        fieldtrial_testing_like_official_build = true;
 
-      # Google API keys, see:
-      #   http://www.chromium.org/developers/how-tos/api-keys
-      # Note: These are for NixOS/nixpkgs use ONLY. For your own distribution,
-      # please get your own set of keys.
-      google_api_key = "AIzaSyDGi15Zwl11UNe6Y-5XW_upsfyw31qwZPI";
-      google_default_client_id = "404761575300.apps.googleusercontent.com";
-      google_default_client_secret = "9rIFQjfnkykEmqb6FfjJQD1D";
-    } // optionalAttrs proprietaryCodecs {
-      # enable support for the H.264 codec
-      proprietary_codecs = true;
-      enable_hangout_services_extension = true;
-      ffmpeg_branding = "Chrome";
-    } // optionalAttrs useVaapi {
-      use_vaapi = true;
-    } // optionalAttrs pulseSupport {
-      use_pulseaudio = true;
-      link_pulseaudio = true;
-    } // (extraAttrs.gnFlags or {}));
+        # Google API keys, see:
+        #   http://www.chromium.org/developers/how-tos/api-keys
+        # Note: These are for NixOS/nixpkgs use ONLY. For your own distribution,
+        # please get your own set of keys.
+        google_api_key = "AIzaSyDGi15Zwl11UNe6Y-5XW_upsfyw31qwZPI";
+        google_default_client_id = "404761575300.apps.googleusercontent.com";
+        google_default_client_secret = "9rIFQjfnkykEmqb6FfjJQD1D";
+      }
+      // optionalAttrs proprietaryCodecs {
+           # enable support for the H.264 codec
+           proprietary_codecs = true;
+           enable_hangout_services_extension = true;
+           ffmpeg_branding = "Chrome";
+         }
+      // optionalAttrs useVaapi {
+           use_vaapi = true;
+         }
+      // optionalAttrs pulseSupport {
+           use_pulseaudio = true;
+           link_pulseaudio = true;
+         }
+      // (extraAttrs.gnFlags or {})
+    );
 
     configurePhase = ''
       runHook preConfigure
@@ -308,7 +411,8 @@ let
       '';
       targets = extraAttrs.buildTargets or [];
       commands = map buildCommand targets;
-    in concatStringsSep "\n" commands;
+    in
+      concatStringsSep "\n" commands;
 
     postFixup = ''
       # Make sure that libGLESv2 is found by dlopen (if using EGL).
@@ -318,7 +422,13 @@ let
     '';
   };
 
-# Remove some extraAttrs we supplied to the base attributes already.
-in stdenv.mkDerivation (base // removeAttrs extraAttrs [
-  "name" "gnFlags" "buildTargets"
-])
+  # Remove some extraAttrs we supplied to the base attributes already.
+in
+stdenv.mkDerivation (
+  base
+  // removeAttrs extraAttrs [
+       "name"
+       "gnFlags"
+       "buildTargets"
+     ]
+)

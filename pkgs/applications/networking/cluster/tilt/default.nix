@@ -8,9 +8,9 @@ buildGoPackage rec {
   version = "0.9.7";
 
   src = fetchFromGitHub {
-    owner  = "windmilleng";
-    repo   = pname;
-    rev    = "v${version}";
+    owner = "windmilleng";
+    repo = pname;
+    rev = "v${version}";
     sha256 = "0b7jk7iwjzdsb2wp9qx4gs9g3gi2vcqw5ilkax3gfz7wsplm0n65";
   };
 

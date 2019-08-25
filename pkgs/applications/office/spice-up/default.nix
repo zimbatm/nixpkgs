@@ -12,7 +12,8 @@
 , libevdev
 , libgee
 , libsoup
-, wrapGAppsHook }:
+, wrapGAppsHook
+}:
 
 stdenv.mkDerivation rec {
   pname = "spice-up";

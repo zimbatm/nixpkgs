@@ -1,7 +1,18 @@
-{ stdenv, fetchFromGitHub, cmake, pkgconfig
-, qtbase, qtx11extras, qtsvg, makeWrapper
-, vulkan-loader, xorg
-, python3, bison, pcre, automake, autoconf
+{ stdenv
+, fetchFromGitHub
+, cmake
+, pkgconfig
+, qtbase
+, qtx11extras
+, qtsvg
+, makeWrapper
+, vulkan-loader
+, xorg
+, python3
+, bison
+, pcre
+, automake
+, autoconf
 }:
 let
   custom_swig = fetchFromGitHub {
@@ -23,7 +34,13 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [
-    qtbase qtsvg xorg.libpthreadstubs xorg.libXdmcp qtx11extras vulkan-loader python3
+    qtbase
+    qtsvg
+    xorg.libpthreadstubs
+    xorg.libXdmcp
+    qtx11extras
+    vulkan-loader
+    python3
   ];
 
   nativeBuildInputs = [ cmake makeWrapper pkgconfig bison pcre automake autoconf ];
@@ -67,7 +84,7 @@ stdenv.mkDerivation rec {
       of any application using Vulkan, D3D11, OpenGL or D3D12 across
       Windows 7 - 10, Linux or Android.
     '';
-    maintainers = [maintainers.jansol];
-    platforms = ["i686-linux" "x86_64-linux"];
+    maintainers = [ maintainers.jansol ];
+    platforms = [ "i686-linux" "x86_64-linux" ];
   };
 }

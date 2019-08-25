@@ -33,13 +33,15 @@ stdenv.mkDerivation rec {
       --replace 'float abs(float arg);' "" \
       --replace 'short abs(short arg);' "" \
       --replace 'long abs(long arg);' ""
-  '' + stdenv.lib.optionalString stdenv.isDarwin ''
-    # we are darwin, but we don't have all the quirks the source wants to compensate for
-    substituteInPlace src/nrnpython/setup.py.in --replace 'readline="edit"' 'readline="readline"'
-    for f in src/nrnpython/*.[ch] ; do
-      substituteInPlace $f --replace "<Python/Python.h>" "<Python.h>"
-    done
-  '';
+  ''
+  + stdenv.lib.optionalString stdenv.isDarwin ''
+      # we are darwin, but we don't have all the quirks the source wants to compensate for
+      substituteInPlace src/nrnpython/setup.py.in --replace 'readline="edit"' 'readline="readline"'
+      for f in src/nrnpython/*.[ch] ; do
+        substituteInPlace $f --replace "<Python/Python.h>" "<Python.h>"
+      done
+    ''
+  ;
 
   enableParallelBuilding = true;
 
@@ -52,19 +54,23 @@ stdenv.mkDerivation rec {
   '';
 
   configureFlags = with stdenv.lib;
-                    [ "--with-readline=${readline}" "--with-iv=${iv}" ]
-                    ++  optionals (python != null)  [ "--with-nrnpython=${python.interpreter}" ]
-                    ++ (if mpi != null then ["--with-mpi" "--with-paranrn"]
-                        else ["--without-mpi"]);
+    [ "--with-readline=${readline}" "--with-iv=${iv}" ]
+    ++ optionals (python != null) [ "--with-nrnpython=${python.interpreter}" ]
+    ++ (
+         if mpi != null then [ "--with-mpi" "--with-paranrn" ]
+         else [ "--without-mpi" ]
+       );
 
 
-  postInstall = stdenv.lib.optionals (python != null) [ ''
-    ## standardise python neuron install dir if any
-    if [[ -d $out/lib/python ]]; then
-        mkdir -p ''${out}/${python.sitePackages}
-        mv ''${out}/lib/python/*  ''${out}/${python.sitePackages}/
-    fi
-  ''];
+  postInstall = stdenv.lib.optionals (python != null) [
+    ''
+      ## standardise python neuron install dir if any
+      if [[ -d $out/lib/python ]]; then
+          mkdir -p ''${out}/${python.sitePackages}
+          mv ''${out}/lib/python/*  ''${out}/${python.sitePackages}/
+      fi
+    ''
+  ];
 
   propagatedBuildInputs = [ readline ncurses which libtool ];
 
@@ -77,11 +83,10 @@ stdenv.mkDerivation rec {
                 potential close to the membrane), and where cell membrane properties are complex,
                 involving many ion-specific channels, ion accumulation, and second messengers";
 
-    license     = licenses.bsd3;
-    homepage    = http://www.neuron.yale.edu/neuron;
+    license = licenses.bsd3;
+    homepage = http://www.neuron.yale.edu/neuron;
     maintainers = [ maintainers.adev ];
     # source claims it's only tested for x86 and powerpc
-    platforms   = platforms.x86_64 ++ platforms.i686;
+    platforms = platforms.x86_64 ++ platforms.i686;
   };
 }
-

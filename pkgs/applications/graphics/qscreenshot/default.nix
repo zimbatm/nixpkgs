@@ -9,7 +9,8 @@ stdenv.mkDerivation rec {
   };
 
   buildInputs = [ dos2unix which qt ]
-    ++ stdenv.lib.optional stdenv.isDarwin Carbon;
+    ++ stdenv.lib.optional stdenv.isDarwin Carbon
+    ;
 
   # Remove carriage returns that cause /bin/sh to abort
   preConfigure = ''

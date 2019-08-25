@@ -1,4 +1,4 @@
-{lib, fetchFromGitHub, pythonOlder, buildPythonPackage, gfortran, mock, xarray, wrapt, numpy, netcdf4}:
+{ lib, fetchFromGitHub, pythonOlder, buildPythonPackage, gfortran, mock, xarray, wrapt, numpy, netcdf4 }:
 
 buildPythonPackage rec {
   pname = "wrf-python";
@@ -23,7 +23,9 @@ buildPythonPackage rec {
 
   checkInputs = [
     netcdf4
-  ] ++ lib.optional (pythonOlder "3.3") mock;
+  ]
+  ++ lib.optional (pythonOlder "3.3") mock
+  ;
 
   doCheck = true;
   checkPhase = ''
@@ -38,5 +40,5 @@ buildPythonPackage rec {
     homepage = http://wrf-python.rtfd.org;
     license = lib.licenses.asl20;
     maintainers = with lib.maintainers; [ mhaselsteiner ];
-	};
+  };
 }

@@ -20,9 +20,10 @@ stdenv.mkDerivation rec {
   ]
   ++ lib.optional stdenv.isDarwin ./darwin.patch
   ++ stdenv.lib.optionals stdenv.hostPlatform.isMusl [
-    ../../libcxx-0001-musl-hacks.patch
-    ../../libcxx-max_align_t.patch
-  ];
+       ../../libcxx-0001-musl-hacks.patch
+       ../../libcxx-max_align_t.patch
+     ]
+  ;
 
   nativeBuildInputs = [ cmake ];
 
@@ -32,7 +33,9 @@ stdenv.mkDerivation rec {
     "-DLIBCXX_LIBCXXABI_LIB_PATH=${libcxxabi}/lib"
     "-DLIBCXX_LIBCPPABI_VERSION=2"
     "-DLIBCXX_CXX_ABI=libcxxabi"
-  ] ++ stdenv.lib.optional stdenv.hostPlatform.isMusl "-DLIBCXX_HAS_MUSL_LIBC=1";
+  ]
+  ++ stdenv.lib.optional stdenv.hostPlatform.isMusl "-DLIBCXX_HAS_MUSL_LIBC=1"
+  ;
 
   enableParallelBuilding = true;
 

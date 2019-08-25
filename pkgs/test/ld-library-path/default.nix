@@ -23,12 +23,14 @@ let
   };
 
   # A variant of libgreeting.so that returns a different message.
-  libgoodbye = libgreeting.overrideAttrs (_: {
-    name = "libgoodbye";
-    code = ''
-      const char* getGreeting() { return "Goodbye, world!"; }
-    '';
-  });
+  libgoodbye = libgreeting.overrideAttrs (
+    _: {
+      name = "libgoodbye";
+      code = ''
+        const char* getGreeting() { return "Goodbye, world!"; }
+      '';
+    }
+  );
 
   # A simple consumer of libgreeting.so that just prints the greeting to stdout.
   testProgram = stdenv.mkDerivation {
@@ -70,7 +72,8 @@ let
     '';
 
   };
-in stdenv.mkDerivation {
+in
+stdenv.mkDerivation {
   name = "test-LD_LIBRARY_PATH";
   nativeBuildInputs = [ testProgram ];
 

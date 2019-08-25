@@ -1,11 +1,28 @@
-{ stdenv, fetchurl, autoreconfHook, pkgconfig
-, CoreFoundation, IOKit, libossp_uuid
-, curl, libcap,  libuuid, lm_sensors, zlib
-, withCups ? false, cups
-, withDBengine ? true, libuv, lz4, judy
-, withIpmi ? (!stdenv.isDarwin), freeipmi
-, withNetfilter ? (!stdenv.isDarwin), libmnl, libnetfilter_acct
-, withSsl ? true, openssl
+{ stdenv
+, fetchurl
+, autoreconfHook
+, pkgconfig
+, CoreFoundation
+, IOKit
+, libossp_uuid
+, curl
+, libcap
+, libuuid
+, lm_sensors
+, zlib
+, withCups ? false
+, cups
+, withDBengine ? true
+, libuv
+, lz4
+, judy
+, withIpmi ? (!stdenv.isDarwin)
+, freeipmi
+, withNetfilter ? (!stdenv.isDarwin)
+, libmnl
+, libnetfilter_acct
+, withSsl ? true
+, openssl
 , withDebug ? false
 }:
 
@@ -28,7 +45,8 @@ stdenv.mkDerivation rec {
     ++ optionals withDBengine [ libuv lz4.dev judy ]
     ++ optionals withIpmi [ freeipmi ]
     ++ optionals withNetfilter [ libmnl libnetfilter_acct ]
-    ++ optionals withSsl [ openssl.dev ];
+    ++ optionals withSsl [ openssl.dev ]
+    ;
 
   patches = [
     ./no-files-in-etc-and-var.patch
@@ -41,12 +59,12 @@ stdenv.mkDerivation rec {
     mv $out/libexec/netdata/plugins.d/apps.plugin \
        $out/libexec/netdata/plugins.d/apps.plugin.org
     ${optionalString withIpmi ''
-      mv $out/libexec/netdata/plugins.d/freeipmi.plugin \
-         $out/libexec/netdata/plugins.d/freeipmi.plugin.org
-    ''}
+    mv $out/libexec/netdata/plugins.d/freeipmi.plugin \
+       $out/libexec/netdata/plugins.d/freeipmi.plugin.org
+  ''}
   '';
 
-  preConfigure =  optionalString (!stdenv.isDarwin) ''
+  preConfigure = optionalString (!stdenv.isDarwin) ''
     substituteInPlace collectors/python.d.plugin/python_modules/third_party/lm_sensors.py \
       --replace 'ctypes.util.find_library("sensors")' '"${lm_sensors.out}/lib/libsensors${stdenv.hostPlatform.extensions.sharedLibrary}"'
   '';

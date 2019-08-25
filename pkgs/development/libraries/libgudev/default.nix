@@ -2,7 +2,8 @@
 
 let
   pname = "libgudev";
-in stdenv.mkDerivation rec {
+in
+stdenv.mkDerivation rec {
   name = "libgudev-${version}";
   version = "232";
 

@@ -1,6 +1,8 @@
 { stdenv, fetchzip, ocaml, findlib, ocamlbuild, cppo }:
 
-let version = "1.0"; in
+let
+  version = "1.0";
+in
 
 stdenv.mkDerivation {
   name = "ocaml${ocaml.version}-ocplib-endian-${version}";

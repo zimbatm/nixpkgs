@@ -1,10 +1,23 @@
-{ stdenv, fetchurl, fetchpatch, meson, ninja
-, pkgconfig, gettext, gobject-introspection
-, bison, flex, python3, glib, makeWrapper
-, libcap,libunwind, darwin
+{ stdenv
+, fetchurl
+, fetchpatch
+, meson
+, ninja
+, pkgconfig
+, gettext
+, gobject-introspection
+, bison
+, flex
+, python3
+, glib
+, makeWrapper
+, libcap
+, libunwind
+, darwin
 , elfutils # for libdw
 , bash-completion
-, docbook_xsl, docbook_xml_dtd_412
+, docbook_xsl
+, docbook_xml_dtd_412
 , gtk-doc
 , lib
 , CoreServices
@@ -35,16 +48,26 @@ stdenv.mkDerivation rec {
   outputBin = "dev";
 
   nativeBuildInputs = [
-    meson ninja pkgconfig gettext bison flex python3 makeWrapper gobject-introspection
+    meson
+    ninja
+    pkgconfig
+    gettext
+    bison
+    flex
+    python3
+    makeWrapper
+    gobject-introspection
     bash-completion
     gtk-doc
     # Without these, enabling the 'gtk_doc' gives us `FAILED: meson-install`
-    docbook_xsl docbook_xml_dtd_412
+    docbook_xsl
+    docbook_xml_dtd_412
   ];
 
   buildInputs =
-       lib.optionals stdenv.isLinux [ libcap libunwind elfutils ]
-    ++ lib.optional stdenv.isDarwin CoreServices;
+    lib.optionals stdenv.isLinux [ libcap libunwind elfutils ]
+    ++ lib.optional stdenv.isDarwin CoreServices
+    ;
 
   propagatedBuildInputs = [ glib ];
 
@@ -54,8 +77,9 @@ stdenv.mkDerivation rec {
     "-Ddbghelp=disabled" # not needed as we already provide libunwind and libdw, and dbghelp is a fallback to those
     "-Dexamples=disabled" # requires many dependencies and probably not useful for our users
   ]
-    # darwin.libunwind doesn't have pkgconfig definitions so meson doesn't detect it.
-    ++ stdenv.lib.optionals stdenv.isDarwin [ "-Dlibunwind=disabled" "-Dlibdw=disabled" ];
+  # darwin.libunwind doesn't have pkgconfig definitions so meson doesn't detect it.
+  ++ stdenv.lib.optionals stdenv.isDarwin [ "-Dlibunwind=disabled" "-Dlibdw=disabled" ]
+  ;
 
   postInstall = ''
     for prog in "$dev/bin/"*; do
@@ -64,17 +88,18 @@ stdenv.mkDerivation rec {
     done
   '';
 
-  preConfigure=
+  preConfigure =
     # These files are not executable upstream, so we need to
     # make them executable for `patchShebangs` to pick them up.
     # Can be removed when this is merged and available:
     #     https://gitlab.freedesktop.org/gstreamer/gstreamer/merge_requests/141
     ''
       chmod +x gst/parse/get_flex_version.py
-    '' +
     ''
+    + ''
       patchShebangs .
-    '';
+    ''
+  ;
 
   preFixup = ''
     moveToOutput "share/bash-completion" "$dev"

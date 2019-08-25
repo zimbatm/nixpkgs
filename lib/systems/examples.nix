@@ -60,10 +60,12 @@ rec {
     useAndroidPrebuilt = true;
   };
 
-  scaleway-c1 = armv7l-hf-multiplatform // rec {
-    platform = platforms.scaleway-c1;
-    inherit (platform.gcc) fpu;
-  };
+  scaleway-c1 = armv7l-hf-multiplatform
+    // rec {
+         platform = platforms.scaleway-c1;
+         inherit (platform.gcc) fpu;
+       }
+    ;
 
   pogoplug4 = rec {
     config = "armv5tel-unknown-linux-gnueabi";
@@ -80,19 +82,23 @@ rec {
     platform = platforms.fuloong2f_n32;
   };
 
-  muslpi = raspberryPi // {
-    config = "armv6l-unknown-linux-musleabihf";
-  };
+  muslpi = raspberryPi
+    // {
+         config = "armv6l-unknown-linux-musleabihf";
+       }
+    ;
 
-  aarch64-multiplatform-musl = aarch64-multiplatform // {
-    config = "aarch64-unknown-linux-musl";
-  };
+  aarch64-multiplatform-musl = aarch64-multiplatform
+    // {
+         config = "aarch64-unknown-linux-musl";
+       }
+    ;
 
   gnu64 = { config = "x86_64-unknown-linux-gnu"; };
-  gnu32  = { config = "i686-unknown-linux-gnu"; };
+  gnu32 = { config = "i686-unknown-linux-gnu"; };
 
   musl64 = { config = "x86_64-unknown-linux-musl"; };
-  musl32  = { config = "i686-unknown-linux-musl"; };
+  musl32 = { config = "i686-unknown-linux-musl"; };
 
   riscv64 = riscv "64";
   riscv32 = riscv "32";

@@ -14,9 +14,11 @@ buildGoPackage rec {
 
   goPackagePath = "github.com/minio/mc";
 
-  buildFlagsArray = [''-ldflags=
+  buildFlagsArray = [
+    ''-ldflags=
     -X github.com/minio/mc/cmd.Version=${version}
-  ''];
+  ''
+  ];
 
   meta = with stdenv.lib; {
     homepage = https://github.com/minio/mc;

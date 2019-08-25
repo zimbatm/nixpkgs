@@ -1,10 +1,10 @@
-{stdenv, fetchgit, perl}:
+{ stdenv, fetchgit, perl }:
 
 stdenv.mkDerivation rec {
   name = "colormake-${version}";
   version = "2.1.0";
 
-  buildInputs = [perl];
+  buildInputs = [ perl ];
 
   src = fetchgit {
     url = https://github.com/pagekite/Colormake.git;

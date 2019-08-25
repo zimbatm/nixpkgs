@@ -1,4 +1,5 @@
-{ stdenv, lib
+{ stdenv
+, lib
 , virtualglLib
 , virtualglLib_i686 ? null
 }:
@@ -13,9 +14,11 @@ stdenv.mkDerivation {
     for i in ${virtualglLib}/bin/* ${virtualglLib}/bin/.vglrun*; do
       ln -s "$i" $out/bin
     done
-  '' + lib.optionalString (virtualglLib_i686 != null) ''
-    ln -sf ${virtualglLib_i686}/bin/.vglrun.vars32 $out/bin
-  '';
+  ''
+  + lib.optionalString (virtualglLib_i686 != null) ''
+      ln -sf ${virtualglLib_i686}/bin/.vglrun.vars32 $out/bin
+    ''
+  ;
 
   meta = {
     platforms = stdenv.lib.platforms.linux;

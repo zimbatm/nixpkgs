@@ -6,14 +6,18 @@
 , buildInputs ? []
 , name ? "source-tarball"
 , version ? "0"
-, versionSuffix ?
-    if officialRelease
-    then ""
-    else "pre${toString (src.rev or src.revCount or "")}"
-, src, stdenv, autoconf, automake, libtool
+, versionSuffix ? if officialRelease
+  then ""
+  else "pre${toString (src.rev or src.revCount or "")}"
+, src
+, stdenv
+, autoconf
+, automake
+, libtool
 , # By default, provide all the GNU Build System as input.
   bootstrapBuildInputs ? [ autoconf automake libtool ]
-, ... } @ args:
+, ...
+} @ args:
 
 stdenv.mkDerivation (
 
@@ -74,9 +78,8 @@ stdenv.mkDerivation (
   }
 
   # Then, the caller-supplied attributes.
-  // args //
-
-  # And finally, our own stuff.
+  // args
+  // # And finally, our own stuff.
   {
     name = name + "-" + version + versionSuffix;
 
@@ -118,13 +121,15 @@ stdenv.mkDerivation (
       version = version + versionSuffix;
     };
 
-    meta = (if args ? meta then args.meta else {}) // {
-      description = "Source distribution";
+    meta = (if args ? meta then args.meta else {})
+      // {
+           description = "Source distribution";
 
-      # Tarball builds are generally important, so give them a high
-      # default priority.
-      schedulingPriority = 200;
-    };
+           # Tarball builds are generally important, so give them a high
+           # default priority.
+           schedulingPriority = 200;
+         }
+      ;
   }
 
 )

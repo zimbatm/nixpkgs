@@ -1,8 +1,9 @@
 { system ? builtins.currentSystem
 , config ? {}
 , pkgs ? import ../.. { inherit system config; }
-# bool: whether to use networkd in the tests
-, networkd }:
+  # bool: whether to use networkd in the tests
+, networkd
+}:
 
 with import ../lib/testing.nix { inherit system pkgs; };
 with pkgs.lib;
@@ -12,62 +13,79 @@ let
     with pkgs.lib;
     let
       vlanIfs = range 1 (length config.virtualisation.vlans);
-    in {
-      environment.systemPackages = [ pkgs.iptables ]; # to debug firewall rules
-      virtualisation.vlans = [ 1 2 3 ];
-      boot.kernel.sysctl."net.ipv6.conf.all.forwarding" = true;
-      networking = {
-        useDHCP = false;
-        useNetworkd = networkd;
-        firewall.checkReversePath = true;
-        firewall.allowedUDPPorts = [ 547 ];
-        interfaces = mkOverride 0 (listToAttrs (forEach vlanIfs (n:
-          nameValuePair "eth${toString n}" {
-            ipv4.addresses = [ { address = "192.168.${toString n}.1"; prefixLength = 24; } ];
-            ipv6.addresses = [ { address = "fd00:1234:5678:${toString n}::1"; prefixLength = 64; } ];
-          })));
-      };
-      services.dhcpd4 = {
-        enable = true;
-        interfaces = map (n: "eth${toString n}") vlanIfs;
-        extraConfig = ''
-          authoritative;
-        '' + flip concatMapStrings vlanIfs (n: ''
-          subnet 192.168.${toString n}.0 netmask 255.255.255.0 {
-            option routers 192.168.${toString n}.1;
-            # XXX: technically it's _not guaranteed_ that IP addresses will be
-            # issued from the first item in range onwards! We assume that in
-            # our tests however.
-            range 192.168.${toString n}.2 192.168.${toString n}.254;
-          }
-        '');
-      };
-      services.radvd = {
-        enable = true;
-        config = flip concatMapStrings vlanIfs (n: ''
-          interface eth${toString n} {
-            AdvSendAdvert on;
-            AdvManagedFlag on;
-            AdvOtherConfigFlag on;
+    in
+      {
+        environment.systemPackages = [ pkgs.iptables ]; # to debug firewall rules
+        virtualisation.vlans = [ 1 2 3 ];
+        boot.kernel.sysctl."net.ipv6.conf.all.forwarding" = true;
+        networking = {
+          useDHCP = false;
+          useNetworkd = networkd;
+          firewall.checkReversePath = true;
+          firewall.allowedUDPPorts = [ 547 ];
+          interfaces = mkOverride 0 (
+            listToAttrs (
+              forEach vlanIfs (
+                n:
+                  nameValuePair "eth${toString n}" {
+                    ipv4.addresses = [ { address = "192.168.${toString n}.1"; prefixLength = 24; } ];
+                    ipv6.addresses = [ { address = "fd00:1234:5678:${toString n}::1"; prefixLength = 64; } ];
+                  }
+              )
+            )
+          );
+        };
+        services.dhcpd4 = {
+          enable = true;
+          interfaces = map (n: "eth${toString n}") vlanIfs;
+          extraConfig = ''
+            authoritative;
+          ''
+          + flip concatMapStrings vlanIfs (
+              n: ''
+                subnet 192.168.${toString n}.0 netmask 255.255.255.0 {
+                  option routers 192.168.${toString n}.1;
+                  # XXX: technically it's _not guaranteed_ that IP addresses will be
+                  # issued from the first item in range onwards! We assume that in
+                  # our tests however.
+                  range 192.168.${toString n}.2 192.168.${toString n}.254;
+                }
+              ''
+            )
+          ;
+        };
+        services.radvd = {
+          enable = true;
+          config = flip concatMapStrings vlanIfs (
+            n: ''
+              interface eth${toString n} {
+                AdvSendAdvert on;
+                AdvManagedFlag on;
+                AdvOtherConfigFlag on;
 
-            prefix fd00:1234:5678:${toString n}::/64 {
-              AdvAutonomous off;
-            };
-          };
-        '');
+                prefix fd00:1234:5678:${toString n}::/64 {
+                  AdvAutonomous off;
+                };
+              };
+            ''
+          );
+        };
+        services.dhcpd6 = {
+          enable = true;
+          interfaces = map (n: "eth${toString n}") vlanIfs;
+          extraConfig = ''
+            authoritative;
+          ''
+          + flip concatMapStrings vlanIfs (
+              n: ''
+                subnet6 fd00:1234:5678:${toString n}::/64 {
+                  range6 fd00:1234:5678:${toString n}::2 fd00:1234:5678:${toString n}::2;
+                }
+              ''
+            )
+          ;
+        };
       };
-      services.dhcpd6 = {
-        enable = true;
-        interfaces = map (n: "eth${toString n}") vlanIfs;
-        extraConfig = ''
-          authoritative;
-        '' + flip concatMapStrings vlanIfs (n: ''
-          subnet6 fd00:1234:5678:${toString n}::/64 {
-            range6 fd00:1234:5678:${toString n}::2 fd00:1234:5678:${toString n}::2;
-          }
-        '');
-      };
-    };
 
   testCases = {
     loopback = {
@@ -141,12 +159,12 @@ let
           useNetworkd = networkd;
           useDHCP = true;
           interfaces.eth1 = {
-            ipv4.addresses = mkOverride 0 [ ];
-            ipv6.addresses = mkOverride 0 [ ];
+            ipv4.addresses = mkOverride 0 [];
+            ipv6.addresses = mkOverride 0 [];
           };
           interfaces.eth2 = {
-            ipv4.addresses = mkOverride 0 [ ];
-            ipv6.addresses = mkOverride 0 [ ];
+            ipv4.addresses = mkOverride 0 [];
+            ipv6.addresses = mkOverride 0 [];
           };
         };
       };
@@ -195,10 +213,10 @@ let
           useNetworkd = networkd;
           useDHCP = false;
           interfaces.eth1 = {
-            ipv4.addresses = mkOverride 0 [ ];
+            ipv4.addresses = mkOverride 0 [];
             useDHCP = true;
           };
-          interfaces.eth2.ipv4.addresses = mkOverride 0 [ ];
+          interfaces.eth2.ipv4.addresses = mkOverride 0 [];
         };
       };
       testScript = { ... }:
@@ -237,32 +255,33 @@ let
             interfaces = [ "eth1" "eth2" ];
             driverOptions.mode = "balance-rr";
           };
-          interfaces.eth1.ipv4.addresses = mkOverride 0 [ ];
-          interfaces.eth2.ipv4.addresses = mkOverride 0 [ ];
+          interfaces.eth1.ipv4.addresses = mkOverride 0 [];
+          interfaces.eth2.ipv4.addresses = mkOverride 0 [];
           interfaces.bond.ipv4.addresses = mkOverride 0
             [ { inherit address; prefixLength = 30; } ];
         };
       };
-    in {
-      name = "Bond";
-      nodes.client1 = node "192.168.1.1";
-      nodes.client2 = node "192.168.1.2";
-      testScript = { ... }:
-        ''
-          startAll;
+    in
+      {
+        name = "Bond";
+        nodes.client1 = node "192.168.1.1";
+        nodes.client2 = node "192.168.1.2";
+        testScript = { ... }:
+          ''
+            startAll;
 
-          # Wait for networking to come up
-          $client1->waitForUnit("network.target");
-          $client2->waitForUnit("network.target");
+            # Wait for networking to come up
+            $client1->waitForUnit("network.target");
+            $client2->waitForUnit("network.target");
 
-          # Test bonding
-          $client1->waitUntilSucceeds("ping -c 2 192.168.1.1");
-          $client1->waitUntilSucceeds("ping -c 2 192.168.1.2");
+            # Test bonding
+            $client1->waitUntilSucceeds("ping -c 2 192.168.1.1");
+            $client1->waitUntilSucceeds("ping -c 2 192.168.1.2");
 
-          $client2->waitUntilSucceeds("ping -c 2 192.168.1.1");
-          $client2->waitUntilSucceeds("ping -c 2 192.168.1.2");
-        '';
-    };
+            $client2->waitUntilSucceeds("ping -c 2 192.168.1.1");
+            $client2->waitUntilSucceeds("ping -c 2 192.168.1.2");
+          '';
+      };
     bridge = let
       node = { address, vlan }: { pkgs, ... }: with pkgs.lib; {
         virtualisation.vlans = [ vlan ];
@@ -273,45 +292,46 @@ let
             [ { inherit address; prefixLength = 24; } ];
         };
       };
-    in {
-      name = "Bridge";
-      nodes.client1 = node { address = "192.168.1.2"; vlan = 1; };
-      nodes.client2 = node { address = "192.168.1.3"; vlan = 2; };
-      nodes.router = { pkgs, ... }: with pkgs.lib; {
-        virtualisation.vlans = [ 1 2 ];
-        networking = {
-          useNetworkd = networkd;
-          useDHCP = false;
-          bridges.bridge.interfaces = [ "eth1" "eth2" ];
-          interfaces.eth1.ipv4.addresses = mkOverride 0 [ ];
-          interfaces.eth2.ipv4.addresses = mkOverride 0 [ ];
-          interfaces.bridge.ipv4.addresses = mkOverride 0
-            [ { address = "192.168.1.1"; prefixLength = 24; } ];
+    in
+      {
+        name = "Bridge";
+        nodes.client1 = node { address = "192.168.1.2"; vlan = 1; };
+        nodes.client2 = node { address = "192.168.1.3"; vlan = 2; };
+        nodes.router = { pkgs, ... }: with pkgs.lib; {
+          virtualisation.vlans = [ 1 2 ];
+          networking = {
+            useNetworkd = networkd;
+            useDHCP = false;
+            bridges.bridge.interfaces = [ "eth1" "eth2" ];
+            interfaces.eth1.ipv4.addresses = mkOverride 0 [];
+            interfaces.eth2.ipv4.addresses = mkOverride 0 [];
+            interfaces.bridge.ipv4.addresses = mkOverride 0
+              [ { address = "192.168.1.1"; prefixLength = 24; } ];
+          };
         };
+        testScript = { ... }:
+          ''
+            startAll;
+
+            # Wait for networking to come up
+            $client1->waitForUnit("network.target");
+            $client2->waitForUnit("network.target");
+            $router->waitForUnit("network.target");
+
+            # Test bridging
+            $client1->waitUntilSucceeds("ping -c 1 192.168.1.1");
+            $client1->waitUntilSucceeds("ping -c 1 192.168.1.2");
+            $client1->waitUntilSucceeds("ping -c 1 192.168.1.3");
+
+            $client2->waitUntilSucceeds("ping -c 1 192.168.1.1");
+            $client2->waitUntilSucceeds("ping -c 1 192.168.1.2");
+            $client2->waitUntilSucceeds("ping -c 1 192.168.1.3");
+
+            $router->waitUntilSucceeds("ping -c 1 192.168.1.1");
+            $router->waitUntilSucceeds("ping -c 1 192.168.1.2");
+            $router->waitUntilSucceeds("ping -c 1 192.168.1.3");
+          '';
       };
-      testScript = { ... }:
-        ''
-          startAll;
-
-          # Wait for networking to come up
-          $client1->waitForUnit("network.target");
-          $client2->waitForUnit("network.target");
-          $router->waitForUnit("network.target");
-
-          # Test bridging
-          $client1->waitUntilSucceeds("ping -c 1 192.168.1.1");
-          $client1->waitUntilSucceeds("ping -c 1 192.168.1.2");
-          $client1->waitUntilSucceeds("ping -c 1 192.168.1.3");
-
-          $client2->waitUntilSucceeds("ping -c 1 192.168.1.1");
-          $client2->waitUntilSucceeds("ping -c 1 192.168.1.2");
-          $client2->waitUntilSucceeds("ping -c 1 192.168.1.3");
-
-          $router->waitUntilSucceeds("ping -c 1 192.168.1.1");
-          $router->waitUntilSucceeds("ping -c 1 192.168.1.2");
-          $router->waitUntilSucceeds("ping -c 1 192.168.1.3");
-        '';
-    };
     macvlan = {
       name = "MACVLAN";
       nodes.router = router;
@@ -326,7 +346,7 @@ let
           firewall.checkReversePath = false;
           useDHCP = true;
           macvlans.macvlan.interface = "eth1";
-          interfaces.eth1.ipv4.addresses = mkOverride 0 [ ];
+          interfaces.eth1.ipv4.addresses = mkOverride 0 [];
         };
       };
       testScript = { ... }:
@@ -380,30 +400,31 @@ let
             [ { address = address6; prefixLength = 64; } ];
         };
       };
-    in {
-      name = "Sit";
-      nodes.client1 = node { address4 = "192.168.1.1"; remote = "192.168.1.2"; address6 = "fc00::1"; };
-      nodes.client2 = node { address4 = "192.168.1.2"; remote = "192.168.1.1"; address6 = "fc00::2"; };
-      testScript = { ... }:
-        ''
-          startAll;
+    in
+      {
+        name = "Sit";
+        nodes.client1 = node { address4 = "192.168.1.1"; remote = "192.168.1.2"; address6 = "fc00::1"; };
+        nodes.client2 = node { address4 = "192.168.1.2"; remote = "192.168.1.1"; address6 = "fc00::2"; };
+        testScript = { ... }:
+          ''
+            startAll;
 
-          # Wait for networking to be configured
-          $client1->waitForUnit("network.target");
-          $client2->waitForUnit("network.target");
+            # Wait for networking to be configured
+            $client1->waitForUnit("network.target");
+            $client2->waitForUnit("network.target");
 
-          # Print diagnostic information
-          $client1->succeed("ip addr >&2");
-          $client2->succeed("ip addr >&2");
+            # Print diagnostic information
+            $client1->succeed("ip addr >&2");
+            $client2->succeed("ip addr >&2");
 
-          # Test ipv6
-          $client1->waitUntilSucceeds("ping -c 1 fc00::1");
-          $client1->waitUntilSucceeds("ping -c 1 fc00::2");
+            # Test ipv6
+            $client1->waitUntilSucceeds("ping -c 1 fc00::1");
+            $client1->waitUntilSucceeds("ping -c 1 fc00::2");
 
-          $client2->waitUntilSucceeds("ping -c 1 fc00::1");
-          $client2->waitUntilSucceeds("ping -c 1 fc00::2");
-        '';
-    };
+            $client2->waitUntilSucceeds("ping -c 1 fc00::1");
+            $client2->waitUntilSucceeds("ping -c 1 fc00::2");
+          '';
+      };
     vlan = let
       node = address: { pkgs, ... }: with pkgs.lib; {
         #virtualisation.vlans = [ 1 ];
@@ -414,29 +435,30 @@ let
             id = 1;
             interface = "eth0";
           };
-          interfaces.eth0.ipv4.addresses = mkOverride 0 [ ];
-          interfaces.eth1.ipv4.addresses = mkOverride 0 [ ];
+          interfaces.eth0.ipv4.addresses = mkOverride 0 [];
+          interfaces.eth1.ipv4.addresses = mkOverride 0 [];
           interfaces.vlan.ipv4.addresses = mkOverride 0
             [ { inherit address; prefixLength = 24; } ];
         };
       };
-    in {
-      name = "vlan";
-      nodes.client1 = node "192.168.1.1";
-      nodes.client2 = node "192.168.1.2";
-      testScript = { ... }:
-        ''
-          startAll;
+    in
+      {
+        name = "vlan";
+        nodes.client1 = node "192.168.1.1";
+        nodes.client2 = node "192.168.1.2";
+        testScript = { ... }:
+          ''
+            startAll;
 
-          # Wait for networking to be configured
-          $client1->waitForUnit("network.target");
-          $client2->waitForUnit("network.target");
+            # Wait for networking to be configured
+            $client1->waitForUnit("network.target");
+            $client2->waitForUnit("network.target");
 
-          # Test vlan is setup
-          $client1->succeed("ip addr show dev vlan >&2");
-          $client2->succeed("ip addr show dev vlan >&2");
-        '';
-    };
+            # Test vlan is setup
+            $client1->succeed("ip addr show dev vlan >&2");
+            $client2->succeed("ip addr show dev vlan >&2");
+          '';
+      };
     virtual = {
       name = "Virtual";
       machine = {
@@ -517,8 +539,8 @@ let
           useDHCP = true;
           interfaces.eth1 = {
             preferTempAddress = true;
-            ipv4.addresses = mkOverride 0 [ ];
-            ipv6.addresses = mkOverride 0 [ ];
+            ipv4.addresses = mkOverride 0 [];
+            ipv6.addresses = mkOverride 0 [];
           };
         };
       };
@@ -529,8 +551,8 @@ let
           useDHCP = true;
           interfaces.eth1 = {
             preferTempAddress = false;
-            ipv4.addresses = mkOverride 0 [ ];
-            ipv6.addresses = mkOverride 0 [ ];
+            ipv4.addresses = mkOverride 0 [];
+            ipv6.addresses = mkOverride 0 [];
           };
         };
       };
@@ -573,7 +595,7 @@ let
             { address = "192.168.2.0"; prefixLength = 24; via = "192.168.1.1"; }
           ];
         };
-        virtualisation.vlans = [ ];
+        virtualisation.vlans = [];
       };
 
       testScript = ''
@@ -622,6 +644,14 @@ let
     };
   };
 
-in mapAttrs (const (attrs: makeTest (attrs // {
-  name = "${attrs.name}-Networking-${if networkd then "Networkd" else "Scripted"}";
-}))) testCases
+in
+mapAttrs (
+  const (
+    attrs: makeTest (
+      attrs
+      // {
+           name = "${attrs.name}-Networking-${if networkd then "Networkd" else "Scripted"}";
+         }
+    )
+  )
+) testCases

@@ -1,9 +1,17 @@
-{ stdenv, fetchFromGitHub, rustPlatform, dbus, gmp, openssl, pkgconfig
-, darwin }:
+{ stdenv
+, fetchFromGitHub
+, rustPlatform
+, dbus
+, gmp
+, openssl
+, pkgconfig
+, darwin
+}:
 
 let
   inherit (darwin.apple_sdk.frameworks) Security;
-in rustPlatform.buildRustPackage rec {
+in
+rustPlatform.buildRustPackage rec {
   name = "pyo3-pack-${version}";
   version = "0.6.1";
 
@@ -20,7 +28,8 @@ in rustPlatform.buildRustPackage rec {
 
   buildInputs = [ gmp openssl ]
     ++ stdenv.lib.optional stdenv.isDarwin Security
-    ++ stdenv.lib.optional stdenv.isLinux dbus;
+    ++ stdenv.lib.optional stdenv.isLinux dbus
+    ;
 
   # Requires network access, fails in sandbox.
   doCheck = false;

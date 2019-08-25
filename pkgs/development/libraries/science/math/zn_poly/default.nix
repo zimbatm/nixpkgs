@@ -48,11 +48,13 @@ stdenv.mkDerivation rec {
   patches = [
     # fix format-security by not passing variables directly to printf
     # https://gitlab.com/sagemath/zn_poly/merge_requests/1
-    (fetchpatch {
-      name = "format-security.patch";
-      url = "https://gitlab.com/timokau/zn_poly/commit/1950900a80ec898d342b8bcafa148c8027649766.patch";
-      sha256 = "1gks9chvsfpc6sg5h3nqqfia4cgvph7jmj9dw67k7dk7kv9y0rk1";
-    })
+    (
+      fetchpatch {
+        name = "format-security.patch";
+        url = "https://gitlab.com/timokau/zn_poly/commit/1950900a80ec898d342b8bcafa148c8027649766.patch";
+        sha256 = "1gks9chvsfpc6sg5h3nqqfia4cgvph7jmj9dw67k7dk7kv9y0rk1";
+      }
+    )
   ];
 
   # `make install` fails to install some header files and the lib file.
