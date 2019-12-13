@@ -30,11 +30,7 @@ let
 
     buildDepends = [];
 
-    # Not much choice here ;)
-    LANG = "en_US.UTF-8";
-    LOCALE_ARCHIVE = stdenv.lib.optionalString
-      stdenv.isLinux
-      "${glibcLocales}/lib/locale/locale-archive";
+    LANG = "C.UTF-8";
 
     everythingFile = "Everything.agda";
 
