@@ -16,6 +16,9 @@ agda.mkDerivation (self: rec {
     runhaskell GenerateEverything.hs
   '';
 
+  everythingFile = "./Everything.agda";
+  sourceDirectories = [ "./." ];
+
   topSourceDirectories = [ "src" ];
 
   meta = with stdenv.lib; {
