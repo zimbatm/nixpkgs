@@ -58,7 +58,10 @@ let
     buildFlags = concatStringsSep " " (map (x: "-i " + x) self.includeDirs);
 
     buildPhase = ''
-      ${self.agda-with-packages}/bin/agda ${self.buildFlags} ${self.everythingFile}
+      # FIXME: adjust the output format
+      echo "$AGDA_LIBRARIES" > libraries
+      set -x
+      ${self.agda-with-packages}/bin/agda -i "$AGDA_LIBRARIES" ${self.everythingFile}
     '';
 
     installPhase = let
@@ -67,6 +70,11 @@ let
     in ''
       mkdir -p $out/share/agda
       cp -pR ${concatStringsSep " " srcFiles} $out/share/agda
+
+      mkdir $out/nix-support
+      cat <<SETUP_HOOK > $out/nix-support/setup-hook
+      export AGDA_LIBRARIES=$out/share/agda\''${AGDA_LIBRARIES+:\$AGDA_LIBRARIES}
+      SETUP_HOOK
     '';
   };
 in
