@@ -1,6 +1,7 @@
 #!/usr/bin/env nix-shell
 #! nix-shell -i bash -p bash coreutils curl jq nix
 # vim: ft=sh sw=2 et
+# shellcheck shell=bash
 #
 # This scripts scans the github terraform-providers repo for new releases,
 # generates the corresponding nix code and finally generates an index of
@@ -26,8 +27,15 @@ GET() {
 
 get_org_repos() {
   local org=$1
-  local page=1
-  GET "https://api.github.com/orgs/$org/repos?per_page=100" | jq -r '.[].name'
+  local page=0
+  while true; do
+    repos=$(GET "https://api.github.com/orgs/$org/repos?per_page=100&page=$page" | jq -r '.[].name')
+    if [[ -z $repos ]]; then
+      break
+    fi
+    echo "$repos"
+    ((page++))
+  done
 }
 
 get_repo_tags() {
@@ -59,7 +67,7 @@ echo_entry() {
   local owner=$1
   local repo=$2
   local rev=$3
-  local version=$(echo $3 | sed 's/^v//')
+  local version=${rev#v}
   local sha256=$4
   cat <<EOF
 {
@@ -93,15 +101,30 @@ add_repo() {
 
 cd "$(dirname "$0")"
 
+# individual repos to fetch
+slugs=(
+  ajbosco/terraform-provider-segment
+  camptocamp/terraform-provider-pass
+  poseidon/terraform-provider-matchbox
+  spaceapegames/terraform-provider-wavefront
+  tweag/terraform-provider-nixos
+  tweag/terraform-provider-secret
+)
+
+# a list of providers to ignore in the terraform-providers org
+blacklist=(
+  terraform-provider-azure-classic
+  terraform-provider-scaffolding
+  terraform-provider-cidr
+  terraform-provider-quorum
+)
+
 if [[ -z "${GITHUB_AUTH:-}" ]]; then
   cat <<'HELP'
 Missing the GITHUB_AUTH env. This is required to work around the 60 request
 per hour rate-limit.
 
-Go to https://github.com/settings/tokens and create a new token with the
-"public_repo" scope.
-
-Then `export GITHUB_AUTH=<your user>:<your token>` and run this script again.
+Go to https::<your token>` and run this script again.
 HELP
   exit 1
 fi
@@ -111,32 +134,26 @@ cat <<HEADER > data.nix
 {
 HEADER
 
-while read line; do
-  IFS=' ' read -r -a fields <<< "$line"
-  if [[ "${#fields[@]}" -eq 0 ]]; then
-    continue
-  fi
+# now fetch terraform-providers
+org=terraform-providers
+echo "*** fetching terraform-providers ***"
+repos=$(get_org_repos "$org")
+repos=$(echo "$repos" | grep "^terraform-provider-")
+for repo in "${blacklist[@]}"; do
+  repos=$(echo "$repos" | grep -v "^${repo}$")
+done
+repos=$(echo "$repos" | sort)
 
-  if [[ "${fields[0]}" = *"/"* ]]; then
-    org="$(echo "${fields[0]}" | cut -d/ -f1)"
-    repo="$(echo "${fields[0]}" | cut -d/ -f2)"
-    add_repo "${org}" "${repo}"
-  else
-    org="${fields[0]}"
-    repos=$(get_org_repos "$org")
-    if [[ "${#fields[@]}" -ge 2 ]] && [[ -n "${fields[1]}" ]]; then
-      repos="$( echo "${repos[@]}" | grep "${fields[1]}" )"
-    fi
-    if [[ "${#fields[@]}" -eq 3 ]] && [[ -n "${fields[2]}" ]]; then
-      repos="$( echo "${repos[@]}" | grep -v "${fields[2]}" )"
-    fi
-    repos="$( echo "${repos[@]}" | sort )"
+for repo in $repos; do
+  add_repo "$org" "$repo"
+done
 
-    for repo in $repos; do
-      add_repo "$org" "$repo"
-    done
-  fi
-done < <(grep -v '^#\|^$' providers.txt)
+# fetch individual repos
+for slug in "${slugs[@]}"; do
+  org=${slug%/*}
+  repo=${slug#*/}
+  add_repo "${org}" "${repo}"
+done
 
 cat <<FOOTER >> data.nix
 }
