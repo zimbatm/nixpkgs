@@ -50,9 +50,11 @@ let
 
   # These are the providers that don't fall in line with the default model
   special-providers = {
-    # Override the google providers
+    # Override providers that use Go modules + vendor/ folder
     google = patchGoModVendor automated-providers.google;
     google-beta = patchGoModVendor automated-providers.google-beta;
+    ibm = patchGoModVendor automated-providers.ibm;
+    sops = patchGoModVendor automated-providers.sops;
 
     # providers that were moved to the `hashicorp` organization,
     # but haven't updated their references yet:
@@ -129,12 +131,12 @@ let
       '';
     });
 
-    elasticsearch = callPackage ./elasticsearch {};
+    # Packages that don't fit the default model
+    ansible = callPackage ./ansible {};
     gandi = callPackage ./gandi {};
-    ibm = callPackage ./ibm {};
+    elasticsearch = callPackage ./elasticsearch {};
     libvirt = callPackage ./libvirt {};
     lxd = callPackage ./lxd {};
-    ansible = callPackage ./ansible {};
   };
 in
   automated-providers // special-providers
