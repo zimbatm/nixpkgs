@@ -122,6 +122,8 @@ let
       res self super;
     in res;
 
+  simplePackages = import ../simple;
+
   aliases = self: super: lib.optionalAttrs (config.allowAliases or true) (import ./aliases.nix lib self super);
 
   # stdenvOverrides is used to avoid having multiple of versions
@@ -238,6 +240,7 @@ let
     trivialBuilders
     splice
     allPackages
+    simplePackages
     otherPackageSets
     aliases
     configOverrides
