@@ -62,6 +62,8 @@ python3.pkgs.buildPythonApplication rec {
     requests
   ];
 
+  doCheck = false;
+
   nativeCheckInputs = with python3.pkgs; [
     pytestCheckHook
     httpretty

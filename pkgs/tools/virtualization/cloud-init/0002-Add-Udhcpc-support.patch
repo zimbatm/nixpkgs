@@ -1,5 +1,5 @@
 diff --git a/cloudinit/net/dhcp.py b/cloudinit/net/dhcp.py
-index a9a1c980..2d83089b 100644
+index a9a1c980..659c18f3 100644
 --- a/cloudinit/net/dhcp.py
 +++ b/cloudinit/net/dhcp.py
 @@ -14,12 +14,48 @@ from io import StringIO
@@ -57,7 +57,7 @@ index a9a1c980..2d83089b 100644
  
  def maybe_perform_dhcp_discovery(nic=None, dhcp_log_func=None, tmp_dir=None):
 -    """Perform dhcp discovery if nic valid and dhclient command exists.
-+    """Perform dhcp discovery if nic valid and dhclient or udhcpc command
++    """Perform dhcp discovery if nic valid and udhcpc or dhclient command
 +    exists.
  
      If the nic is invalid or undiscoverable or dhclient command is not found,
@@ -69,13 +69,16 @@ index a9a1c980..2d83089b 100644
      @param dhcp_log_func: A callable accepting the dhclient output and error
          streams.
      @param tmp_dir: Tmp dir with exec permissions.
-@@ -66,11 +104,16 @@ def maybe_perform_dhcp_discovery(nic=None, dhcp_log_func=None, tmp_dir=None):
+@@ -66,11 +104,19 @@ def maybe_perform_dhcp_discovery(nic=None, dhcp_log_func=None, tmp_dir=None):
              "Skip dhcp_discovery: nic %s not found in get_devicelist.", nic
          )
          raise NoDHCPLeaseInterfaceError()
 +    udhcpc_path = subp.which("udhcpc")
 +    if udhcpc_path:
 +        return dhcp_udhcpc_discovery(udhcpc_path, nic, dhcp_log_func)
++    LOG.debug(
++        "Skip udhcpc configuration: No udhcpc command found."
++    )
      dhclient_path = subp.which("dhclient")
 -    if not dhclient_path:
 -        LOG.debug("Skip dhclient configuration: No dhclient command found.")
@@ -84,13 +87,13 @@ index a9a1c980..2d83089b 100644
 +    if dhclient_path:
 +        return dhcp_discovery(dhclient_path, nic, dhcp_log_func)
 +    LOG.debug(
-+        "Skip dhclient configuration: No dhclient or udhcpc command found."
++        "Skip dhclient configuration: No dhclient command found."
 +    )
 +    raise NoDHCPLeaseMissingDhclientError()
  
  
  def parse_dhcp_lease_file(lease_file):
-@@ -107,6 +150,61 @@ def parse_dhcp_lease_file(lease_file):
+@@ -107,6 +153,70 @@ def parse_dhcp_lease_file(lease_file):
      return dhcp_leases
  
  
@@ -133,9 +136,18 @@ index a9a1c980..2d83089b 100644
 +        "-v",
 +    ]
 +
-+    out, err = subp.subp(
-+        cmd, update_env={"LEASE_FILE": lease_file}, capture=True
-+    )
++    try:
++        out, err = subp.subp(
++            cmd, update_env={"LEASE_FILE": lease_file}, capture=True
++        )
++    except subp.ProcessExecutionError as error:
++            LOG.debug(
++                "udhcpc exited with code: %s stderr: %r stdout: %r",
++                error.exit_code,
++                error.stderr,
++                error.stdout,
++            )
++            raise NoDHCPLeaseError from error
 +
 +    if dhcp_log_func is not None:
 +        dhcp_log_func(out, err)
@@ -152,8 +164,29 @@ index a9a1c980..2d83089b 100644
  def dhcp_discovery(dhclient_cmd_path, interface, dhcp_log_func=None):
      """Run dhclient on the interface without scripts or filesystem artifacts.
  
+diff --git a/cloudinit/sources/helpers/vultr.py b/cloudinit/sources/helpers/vultr.py
+index 836108d4..71f71d14 100644
+--- a/cloudinit/sources/helpers/vultr.py
++++ b/cloudinit/sources/helpers/vultr.py
+@@ -32,6 +32,7 @@ def get_metadata(url, timeout, retries, sec_between, agent, tmp_dir=None):
+             ):
+                 # Check for the metadata route, skip if not there
+                 if not check_route(url):
++                    LOG.error("no route found to %s", url)
+                     continue
+ 
+                 # Fetch the metadata
+@@ -46,7 +47,7 @@ def get_metadata(url, timeout, retries, sec_between, agent, tmp_dir=None):
+             RuntimeError,
+             exceptions.RequestException,
+         ) as exc:
+-            LOG.error("DHCP Exception: %s", exc)
++            LOG.error("DHCP Exception: (%s) %s", ext.__name__, exc)
+             exception = exc
+     raise exception
+ 
 diff --git a/tests/unittests/net/test_dhcp.py b/tests/unittests/net/test_dhcp.py
-index 40340553..8913cf65 100644
+index 40340553..c7e22202 100644
 --- a/tests/unittests/net/test_dhcp.py
 +++ b/tests/unittests/net/test_dhcp.py
 @@ -12,6 +12,7 @@ from cloudinit.net.dhcp import (
@@ -208,15 +241,3 @@ index 40340553..8913cf65 100644
  class TestDHCPDiscoveryClean(CiTestCase):
      with_logs = True
  
-@@ -372,7 +410,7 @@ class TestDHCPDiscoveryClean(CiTestCase):
-             maybe_perform_dhcp_discovery()
- 
-         self.assertIn(
--            "Skip dhclient configuration: No dhclient command found.",
-+            "Skip dhclient configuration: No dhclient or udhcpc command found.",
-             self.logs.getvalue(),
-         )
- 
--- 
-2.38.4
-
