@@ -3,6 +3,14 @@
 with lib;
 let
   cfg = config.services.rke2;
+  settingsFormat = pkgs.formats.yaml { };
+  configFile =
+    if cfg.configPath != null then
+      cfg.configPath
+    else if cfg.settings != { } then
+      settingsFormat.generate "rke2-config.yaml" cfg.settings
+    else
+      null;
 in
 {
   imports = [ ];
@@ -32,9 +40,19 @@ in
     };
 
     configPath = mkOption {
-      type = types.path;
+      type = types.nullOr types.path;
       description = "Load configuration from FILE.";
-      default = "/etc/rancher/rke2/config.yaml";
+      default = null;
+    };
+
+    settings = mkOption {
+      type = settingsFormat.type;
+      description = "Configuration settings (to replace configPath).";
+      default = { };
+      example = {
+        kube-apiserver-arg = ["anonymous-auth=false"];
+        write-kubeconfig-mode = "0644";
+      };
     };
 
     debug = mkOption {
@@ -202,12 +220,16 @@ in
   config = mkIf cfg.enable {
     assertions = [
       {
-        assertion = cfg.role == "agent" -> (builtins.pathExists cfg.configPath || cfg.serverAddr != "");
-        message = "serverAddr or configPath (with 'server' key) should be set if role is 'agent'";
+        assertion = cfg.configPath != null -> cfg.settings == {};
+        message = "either configFile or settings must be set";
       }
       {
-        assertion = cfg.role == "agent" -> (builtins.pathExists cfg.configPath || cfg.tokenFile != null || cfg.token != "");
-        message = "token or tokenFile or configPath (with 'token' or 'token-file' keys) should be set if role is 'agent'";
+        assertion = cfg.role == "agent" -> (configFile != null || cfg.serverAddr != "");
+        message = "serverAddr or configPath or settings (with 'server' key) should be set if role is 'agent'";
+      }
+      {
+        assertion = cfg.role == "agent" -> (configFile != null || cfg.tokenFile != null || cfg.token != "");
+        message = "token or tokenFile or configPath or settings (with 'token' or 'token-file' keys) should be set if role is 'agent'";
       }
       {
         assertion = cfg.role == "agent" -> ! (cfg.agentTokenFile != null || cfg.agentToken != "");
@@ -278,7 +300,7 @@ in
           "-${pkgs.kmod}/bin/modprobe overlay"
         ];
         ExecStart = "${cfg.package}/bin/rke2 '${cfg.role}' ${escapeShellArgs (
-             (optional (cfg.configPath != "/etc/rancher/rke2/config.yaml") "--config=${cfg.configPath}")
+             (optional (configFile != null) "--config=${configFile}")
           ++ (optional cfg.debug "--debug")
           ++ (optional (cfg.dataDir != "/var/lib/rancher/rke2") "--data-dir=${cfg.dataDir}")
           ++ (optional (cfg.token != "") "--token=${cfg.token}")
