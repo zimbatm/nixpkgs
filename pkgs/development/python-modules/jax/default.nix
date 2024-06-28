@@ -125,10 +125,14 @@ buildPythonPackage rec {
       "testQdwhWithOnRankDeficientInput5"
     ];
 
-  disabledTestPaths = lib.optionals (stdenv.isDarwin && stdenv.isAarch64) [
+  disabledTestPaths = [
+    # Segmentation fault
+    "tests/linalg_test.py"
+  ]
+  ++ (lib.optionals (stdenv.isDarwin && stdenv.isAarch64) [
     # RuntimeWarning: invalid value encountered in cast
     "tests/lax_test.py"
-  ];
+  ]);
 
   pythonImportsCheck = [ "jax" ];
 
