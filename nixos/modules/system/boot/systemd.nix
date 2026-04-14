@@ -527,23 +527,18 @@ in
         mkMountNetOnlineWarns =
           typeStr: defs: lib.concatLists (map (m: mkOneNetOnlineWarn typeStr m.what m) defs);
       in
+      # Per-service warnings must NOT access serviceConfig here.
+      # This iteration runs at `config.warnings` eval time for every
+      # service; accessing serviceConfig forces a full attrsOf merge
+      # (resolving ExecStart derivations, Environment values, etc.)
+      # which is O(N * serviceConfig-size) thunks. Checks that need
+      # serviceConfig belong in the type-level addCheck (see
+      # checkService in systemd-unit-options.nix).
       concatLists (
         mapAttrsToList (
           name: service:
-          let
-            type = service.serviceConfig.Type or "";
-            restart = service.serviceConfig.Restart or "no";
-            hasDeprecated = builtins.hasAttr "StartLimitInterval" service.serviceConfig;
-          in
-          concatLists [
-            (optional (type == "oneshot" && (restart == "always" || restart == "on-success"))
-              "Service '${name}.service' with 'Type=oneshot' cannot have 'Restart=always' or 'Restart=on-success'"
-            )
-            (optional hasDeprecated "Service '${name}.service' uses the attribute 'StartLimitInterval' in the Service section, which is deprecated. See https://github.com/NixOS/nixpkgs/issues/45786.")
-            (optional (service.reloadIfChanged && service.reloadTriggers != [ ])
-              "Service '${name}.service' has both 'reloadIfChanged' and 'reloadTriggers' set. This is probably not what you want, because 'reloadTriggers' behave the same whay as 'restartTriggers' if 'reloadIfChanged' is set."
-            )
-          ]
+          optional (service.reloadIfChanged && service.reloadTriggers != [ ])
+            "Service '${name}.service' has both 'reloadIfChanged' and 'reloadTriggers' set. This is probably not what you want, because 'reloadTriggers' behave the same whay as 'restartTriggers' if 'reloadIfChanged' is set."
         ) cfg.services
       )
       ++ (mkNetOnlineWarns "target" cfg.targets)

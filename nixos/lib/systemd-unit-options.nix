@@ -42,6 +42,20 @@ let
       "on-abort"
       "always"
     ])
+    # These run per-definition at type-merge time, avoiding a global iteration
+    # over all services that would force a full attrsOf merge per service.
+    (group: attr:
+      lib.optional (attr ? StartLimitInterval)
+        "Systemd ${group} field `StartLimitInterval' is deprecated, use `StartLimitIntervalSec' instead. See https://github.com/NixOS/nixpkgs/issues/45786."
+    )
+    (group: attr:
+      let
+        type = attr.Type or "";
+        restart = attr.Restart or "no";
+      in
+      lib.optional (type == "oneshot" && (restart == "always" || restart == "on-success"))
+        "Systemd ${group} with `Type=oneshot' cannot have `Restart=always' or `Restart=on-success'."
+    )
   ];
 
 in
