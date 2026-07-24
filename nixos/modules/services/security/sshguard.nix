@@ -95,7 +95,10 @@ in
       };
 
       services = lib.mkOption {
-        default = [ "sshd" ];
+        default = [
+          "sshd"
+          "sshd-session"
+        ];
         example = [
           "sshd"
           "exim"
@@ -103,6 +106,11 @@ in
         type = lib.types.listOf lib.types.str;
         description = ''
           Systemd services sshguard should receive logs of.
+
+          On OpenSSH 9.x the privilege-separated child that handles a
+          connection logs authentication failures ("Failed password",
+          "Invalid user") under the `sshd-session` syslog identifier
+          rather than `sshd`, so both are watched by default.
         '';
       };
     };
