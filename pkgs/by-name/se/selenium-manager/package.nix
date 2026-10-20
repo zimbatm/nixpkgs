@@ -17,11 +17,17 @@ rustPlatform.buildRustPackage rec {
 
   sourceRoot = "${src.name}/rust";
 
+  cargoPatches = [
+    # Verify TLS certificates against the system CA store
+    # instead of accepting any certificate.
+    ./use-system-ca-store.patch
+  ];
+
   patches = [
     ./disable-telemetry.patch
   ];
 
-  cargoHash = "sha256-D7lki2/xWcNStcHIS8q1fTkW+37Q+m/yetn05DwA2C8=";
+  cargoHash = "sha256-BH5jjY59LkKOXZARdOpxi07e373jIJd1uNHLGTEjfOE=";
 
   # TODO: enable tests
   # The test suite depends on a number of browsers and network requests,
