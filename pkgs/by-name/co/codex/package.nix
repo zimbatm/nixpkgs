@@ -82,7 +82,12 @@ rustPlatform.buildRustPackage (finalAttrs: {
 
   sourceRoot = "${finalAttrs.src.name}/codex-rs";
 
-  cargoHash = "sha256-TG1fDHQCRDDbk+G0NS/9NTouJupq0Zisi4LIJY4SgYw=";
+  # webpki-roots >= 1.0.10 drops the emSign ECC Root CA - G3 root, and
+  # rustls-webpki >= 0.103.16 rejects the revoked eMudhra intermediates.
+  # Remove when upstream Cargo.lock has these versions.
+  cargoPatches = [ ./bump-webpki.patch ];
+
+  cargoHash = "sha256-sfanS4BqUuEFK1QToXO2idaDhdoGSdnomHcjNGxU+2o=";
   # Disable bundled Opus so OPUS_LIB_DIR selects nixpkgs' libopus.
   cargoDeps =
     (rustPlatform.fetchCargoVendor {
@@ -93,6 +98,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
         sourceRoot
         ;
       hash = finalAttrs.cargoHash;
+      patches = finalAttrs.cargoPatches;
     }).overrideAttrs
       (previousAttrs: {
         buildCommand = previousAttrs.buildCommand + ''
