@@ -3,6 +3,8 @@
   brand-name ? "Eclipse Temurin",
   sourcePerArch,
   knownVulnerabilities ? [ ],
+  # semeru-bin also uses this file. Only temurin is tested.
+  replaceCacerts ? name-prefix == "temurin",
 }:
 
 {
@@ -11,6 +13,8 @@
   stdenv,
   fetchurl,
   setJavaClassPath,
+  cacert,
+  jre-generate-cacerts,
 }:
 
 let
@@ -52,6 +56,22 @@ let
       # Only for 11 and earlier.
       [ -e "$bundle/Contents/Home/man/ja" ] && rm -r $bundle/Contents/Home/man/ja
 
+    ''
+    + lib.optionalString replaceCacerts ''
+      # Replace the bundled CA list with one built from cacert.
+      # Like upstream, write a PKCS12 store without a password: the JDK opens
+      # cacerts without one, and cannot read password-protected certificates.
+      mkdir "$NIX_BUILD_TOP/cacerts-gen"
+      pushd "$NIX_BUILD_TOP/cacerts-gen"
+      JAVA_TOOL_OPTIONS="-Dkeystore.pkcs12.certProtectionAlgorithm=NONE -Dkeystore.pkcs12.macAlgorithm=NONE" \
+        ${jre-generate-cacerts} "$bundle/Contents/Home/bin/keytool" ${cacert}/etc/ssl/certs/ca-bundle.crt
+      popd
+      find "$bundle" -path '*/lib/security/cacerts' -print0 | while IFS= read -r -d "" f; do
+        rm "$f"
+        cp "$NIX_BUILD_TOP/cacerts-gen/cacerts" "$f"
+      done
+    ''
+    + ''
       ln -s $bundle/Contents/Home/* $out/
 
       # Propagate the setJavaClassPath setup hook from the JDK so that

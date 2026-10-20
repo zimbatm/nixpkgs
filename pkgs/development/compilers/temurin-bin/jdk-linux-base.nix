@@ -4,6 +4,8 @@
   sourcePerArch,
   jmodsSourcePreArch ? null,
   knownVulnerabilities ? [ ],
+  # semeru-bin also uses this file. Its OpenJ9 keytool fails in the sandbox.
+  replaceCacerts ? name-prefix == "temurin",
 }:
 
 {
@@ -13,6 +15,8 @@
   autoPatchelfHook,
   makeWrapper,
   setJavaClassPath,
+  cacert,
+  jre-generate-cacerts,
   # minimum dependencies
   alsa-lib,
   fontconfig,
@@ -136,6 +140,24 @@ let
     preFixup = ''
       find "$out" -name libfontmanager.so -exec \
         patchelf --add-needed libfontconfig.so {} \;
+    ''
+    + lib.optionalString replaceCacerts ''
+      # Replace the bundled CA list with one built from cacert.
+      # Like upstream, write a PKCS12 store without a password: the JDK opens
+      # cacerts without one, and cannot read password-protected certificates.
+      # keytool can run only after autoPatchelf, which is a postFixup hook.
+      replaceCacerts() {
+        mkdir "$NIX_BUILD_TOP/cacerts-gen"
+        pushd "$NIX_BUILD_TOP/cacerts-gen"
+        JAVA_TOOL_OPTIONS="-Dkeystore.pkcs12.certProtectionAlgorithm=NONE -Dkeystore.pkcs12.macAlgorithm=NONE" \
+          ${jre-generate-cacerts} "$out/bin/keytool" ${cacert}/etc/ssl/certs/ca-bundle.crt
+        popd
+        find "$out" -path '*/lib/security/cacerts' -print0 | while IFS= read -r -d "" f; do
+          rm "$f"
+          cp "$NIX_BUILD_TOP/cacerts-gen/cacerts" "$f"
+        done
+      }
+      postFixupHooks+=(replaceCacerts)
     '';
 
     # FIXME: use multiple outputs or return actual JRE package
