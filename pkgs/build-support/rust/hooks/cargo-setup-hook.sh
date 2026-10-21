@@ -1,3 +1,29 @@
+# Replace the root lists that webpki-roots and webpki-root-certs compile in
+# with the TLS roots of cacert, so that a cacert update reaches the binary.
+cargoSetupWebpkiRoots() {
+    local manifest crate dir lib sum
+    while IFS= read -r -d '' manifest; do
+        crate=$(sed -n 's/^name = "\(webpki-roots\|webpki-root-certs\)"$/\1/p' "$manifest" | head -n1)
+        [ -n "$crate" ] || continue
+        dir=$(dirname "$manifest")
+        lib="$dir/src/lib.rs"
+
+        # The 0.26.11 shims re-export 1.x, which this loop also replaces.
+        if grep -qs '^pub use parent::' "$lib"; then
+            continue
+        elif ! grep -qs "^pub const TLS_SERVER_ROOT\(S\|_CERTS\): &\[\(TrustAnchor\|CertificateDer\)\(<'static>\)\?\] = &\[$" "$lib" \
+            || ! grep -qs '^use pki_types::' "$lib"; then
+            echo "cargoSetupWebpkiRoots: unknown layout, not replaced: $dir"
+            continue
+        fi
+
+        echo "cargoSetupWebpkiRoots: using cacert roots in $dir"
+        cp --no-preserve=mode "@webpkiRoots@/$crate.rs" "$lib"
+        sum=$(sha256sum "$lib" | cut -d' ' -f1)
+        [ ! -f "$dir/.cargo-checksum.json" ] || sed -i 's|"src/lib.rs":"[0-9a-f]*"|"src/lib.rs":"'"$sum"'"|' "$dir/.cargo-checksum.json"
+    done < <(find -L "$1" -maxdepth 3 -name Cargo.toml -print0)
+}
+
 cargoSetupPostUnpackHook() {
     echo "Executing cargoSetupPostUnpackHook"
 
@@ -37,6 +63,10 @@ cargoSetupPostUnpackHook() {
     cat >> .cargo/config.toml <<'EOF'
     @cargoConfig@
 EOF
+
+    if [ -z "${dontUseSystemWebpkiRoots-}" ]; then
+        cargoSetupWebpkiRoots "$cargoDepsCopy"
+    fi
 
     echo "Finished cargoSetupPostUnpackHook"
 }

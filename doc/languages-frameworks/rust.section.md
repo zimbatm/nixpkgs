@@ -508,7 +508,11 @@ you of the correct hash.
   variable `cargoVendorDir` can be used instead. When the
   `Cargo.toml`/`Cargo.lock` files are not in `sourceRoot`, then the
   optional `cargoRoot` is used to specify the Cargo root directory
-  relative to `sourceRoot`.
+  relative to `sourceRoot`. The hook also replaces the root list of
+  vendored `webpki-roots` and `webpki-root-certs` crates with the TLS
+  roots of `cacert`. Set `dontUseSystemWebpkiRoots = true` (or
+  `useSystemWebpkiRoots = false` in `buildRustPackage`) to keep the
+  root list of the crate.
 * `cargoBuildHook`: use Cargo to build a crate. If the crate to be
   built is a crate in e.g. a Cargo workspace, the relative path to the
   crate to build can be set through the optional `buildAndTestSubdir`

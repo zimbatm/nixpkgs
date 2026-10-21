@@ -1,4 +1,5 @@
 {
+  buildPackages,
   cargo-nextest,
   clang,
   diffutils,
@@ -77,6 +78,7 @@
     name = "cargo-setup-hook.sh";
     substitutions = {
       defaultConfig = ../fetchcargo-default-config.toml;
+      webpkiRoots = buildPackages.callPackage ../webpki-roots { };
 
       # Specify the stdenv's `diff` by abspath to ensure that the user's build
       # inputs do not cause us to find the wrong `diff`.

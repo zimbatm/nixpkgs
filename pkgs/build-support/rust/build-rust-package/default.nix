@@ -37,6 +37,7 @@ lib.extendMkDerivation {
     "cargoLock"
     "useFetchCargoVendor"
     "RUSTFLAGS"
+    "useSystemWebpkiRoots"
   ];
 
   extendDrvArgs =
@@ -67,6 +68,7 @@ lib.extendMkDerivation {
       checkFeatures ? buildFeatures,
       useNextest ? false,
       auditable ? !cargo-auditable.meta.broken,
+      useSystemWebpkiRoots ? true,
 
       depsExtraArgs ? { },
 
@@ -132,6 +134,8 @@ lib.extendMkDerivation {
             // depsExtraArgs
           );
       inherit buildAndTestSubdir;
+
+      ${if useSystemWebpkiRoots then null else "dontUseSystemWebpkiRoots"} = true;
 
       cargoBuildType = buildType;
 
