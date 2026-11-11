@@ -86,7 +86,6 @@ py.pkgs.buildPythonApplication (finalAttrs: {
     sed -i '/pip>=/d' requirements/bootstrap.txt
 
     ln -sf ${cacert}/etc/ssl/certs/ca-no-trust-rules-bundle.crt awscli/botocore/cacert.pem
-    cat ${./system-ca-bundle.py} >> awscli/botocore/httpsession.py
   '';
 
   nativeBuildInputs = [
@@ -99,6 +98,8 @@ py.pkgs.buildPythonApplication (finalAttrs: {
 
   dependencies = with py.pkgs; [
     awscrt
+    # not required upstream, but without it the vendored botocore uses the cacert.pem above and ignores NIX_SSL_CERT_FILE
+    certifi
     colorama
     distro
     docutils
